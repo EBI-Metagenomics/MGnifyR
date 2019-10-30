@@ -175,17 +175,12 @@ mgnify_query_samples<- function(client, accession=NULL, asDataFrame=F, ...){
     # then using rbind.fill from plyr to combine. For ~most~ use cases the number of empty columns will hopefully
     # be minimal... because who's going to want cross study grabbing (?)
     samplist = lapply(result, function(r){
-      attrlist=names(r$attributes)
-      baseattrlist=attrlist[!(attrlist %in% "sample-metadata")]
-      metaattrlist=r$attributes$`sample-metadata`
-      metlist=sapply(metaattrlist, function(x) x$value)
-      names(metlist)=sapply(metaattrlist, function(x) x$key)
-      df = as.data.frame(t(unlist(c(r$attributes[baseattrlist], metlist))), stringsAsFactors = F)
-      df$biome = r$relationship$biome$data$id
-      df$study = r$relationship$studies$data[[1]]$id
-      df$type = r$type
-      rownames(df)=df$accession
-      df
+      df2 <- mgnify_attr_list_to_df(r, "sample-metadata")
+      df2$biome = r$relationship$biome$data$id
+      df2$study = r$relationship$studies$data$id
+      df2$type = r$type
+      rownames(df2)=df$accession
+      df2
 
     }
     )
@@ -271,6 +266,26 @@ mgnify_get_x_for_y <- function(client, x, typeX, typeY){
   }
 }
 
+
+#helper to convert json list attributes to a one line data.frame
+mgnify_attr_list_to_df <- function (json, metadata_key=NULL ){
+
+  attrlist=names(json$attributes)
+  if (!is.null(metadata_key)){
+    baseattrlist=attrlist[!(attrlist %in% c(metadata_key))]
+    metaattrlist=json$attributes[[metadata_key]]
+    metlist=sapply(metaattrlist, function(x) x$value)
+    names(metlist)=sapply(metaattrlist, function(x) x$key)
+    df = as.data.frame(t(unlist(c(json$attributes[baseattrlist], metlist))), stringsAsFactors = F)
+  }else{
+    df = as.data.frame(t(json$attributes), stringsAsFactors = F)
+  }
+
+  rownames(df)=df$acces
+  df
+}
+
+
 #This does the heavy downloading of BIOM files for conversion into phyloseq.
 #accessions can be either:
 # - unnamed list or vector of run accessions:
@@ -280,10 +295,11 @@ mgnify_get_x_for_y <- function(client, x, typeX, typeY){
 # pipeline_version is an extra filter to ensure only biomes of the same version get munged together
 # otherwise by default the first pipeline version in the first sample/run will be used.
 #
-mgnify_get_runs_as_phyloseq <- function(client=NULL, accessions=NULL, downloadDIR, pipeline_version){
+mgnify_get_runs_as_phyloseq <- function(client=NULL, accessions=NULL, downloadDIR='./tmpdownloads', use_downloads=T, pipeline_version){
   #These must be RUN accessions
+  dir.create(downloadDIR, showWarnings = F)
   grabtype="unk"
-  #At the end of this, we want a list of run accessions to grab
+  #At the end of this, we want a list of run accessions to grab # unimplemented for now... just data.frame works atm
   if (class(accessions) == "list"){
     #Unnamed list
     if(is.null(names(accessions))){
@@ -296,13 +312,15 @@ mgnify_get_runs_as_phyloseq <- function(client=NULL, accessions=NULL, downloadDI
   }else if(class(accessions) =="data.frame"){
     #Same as above, this time using the rownames as accession numbers, and the "type" column to figure out where to go
     grabtype="data.frame"
-    for (cur_line in nrow(accessions)){
+    full_analysis_results <- list()
+    for (cur_line in seq(nrow(accessions))){
       if ("type" %in% colnames(accessions)){
         curtype=accessions[cur_line, "type"]
         curaccess=accessions$accession[cur_line]
       }else{
         #Assume that they're samples
-        curtype = "sample"
+        curtype = "samples"
+        curaccess = accessions$accession[cur_line]
       }
       #We need to get to the "runs" section, and then to the analysis:
       #Each "run" has only one "analyses", so makes sense to go through "runs"
@@ -312,23 +330,56 @@ mgnify_get_runs_as_phyloseq <- function(client=NULL, accessions=NULL, downloadDI
       } else{
         runpath=paste("runs",curaccess)
       }
+
+      cat(runpath)
       #Retrieve the run data
       run_data <- mgnify_query_json(client, runpath)
+      #get the sample and study data as well. This repeats some earlier calls, but makes it easier
+      #to code up:
+      sample_data <- mgnify_query_json(client, paste("samples",run_data[[1]]$relationships$sample$data$id, sep="/"))
+      study_data <- mgnify_query_json(client, paste("studies",run_data[[1]]$relationships$study$data$id, sep="/"))
+
+      samp_attr_df <- mgnify_attr_list_to_df(sample_data, "sample-metadata")
+      study_attr_df <- mgnify_attr_list_to_df(study_data)
+
       #Depending how we got there, run_data might be length > 1, so a quick rename by accession should make
       #it easier later
       names(run_data) <- sapply(run_data, `[`, "id")
-    cat(str(run_data))
+      cat(str(run_data))
       #Each run will have an analysis entry:
       analyses_accessions <- sapply(names(run_data), function(r){
         analyse_path = paste("runs",run_data[[r]]$id,"analyses", sep="/")
         cat(str(analyse_path))
-        analysis_data <- mgnify_get_json_data(client, analyse_path)
-        analysis_data$id
+        analysis_data <- mgnify_query_json(client, analyse_path)
+        #Build up a dataframe of attributes
+        analysis_attr_df <- mgnify_attr_list_to_df(analysis_data[[1]], metadata_key = "analysis-summary")
+        analysis_attr_df
+
+        #Get the download page json
+        analysis_downloads <- mgnify_query_json(cl,
+                                                paste("analyses", analysis_attr_df$accession, "downloads", sep="/"))
+        #find out where our biom file is:
+        biom_url <- analysis_downloads[grepl('JSON Biom', sapply(analysis_downloads, function(x) x$attributes$`file-format`$name))][[1]]$links$self
+        fname=tail(strsplit(biom_url, '/')[[1]], n=1)
+        biom_path = paste(downloadDIR, fname, sep="/")
+        if (! file.exists(biom_path) | !use_downloads ){
+          GET(biom_url, write_disk(biom_path, overwrite = T))
+        }
+        #Load in the phlyloseq object
+        psobj <- import_biom(biom_path)
+        #The biom files have a single column of "sa1". It's rewritten as sample_run_analysis accession, with
+        # the original value stored in the sample_data (just in case it changes between pipelines)
+        orig_samp_name <- sample_names(psobj)[[1]]
+        newsampname <- paste(analysis_attr_df$accession)
+        sample_names(psobj) <- paste(analysis_attr_df$accession, )
+
+
       })
+      full_analysis_results[[curaccess]] <- analyses_accessions
     }
 
   }
-  analyses_accessions
+  full_analysis_results
 
 }
 
