@@ -38,6 +38,53 @@ run_filters=c('accession','experiment_type','biome_name','lineage','species','in
               'include')
 
 
+#helper function for getting relative paths in the API
+#Not everything is implemented here - just what we
+#need to get to the download or run areas
+#Given an accession x, we want to get the link to get the url for the
+#coresponding typeY
+
+mgnify_get_x_for_y <- function(client, x, typeX, typeY){
+
+  #This one's easy - just rearrange the URLs
+  if(typeX=="samples" & typeY %in% c("runs","studies")){
+    paste( typeX,x,typeY, sep="/")
+  }else if(typeX=="runs" & typeY == "analyses"){
+    paste( typeX,x,typeY, sep="/")
+  }
+  else{
+    #Do it the hard way with a callout
+    json_dat = mgnify_query_json(client, paste(typeX, x, sep="/"))
+    json_dat
+    tgt_access = json_dat[[1]]$relationships[[typeY]]$data$id
+    tgt_type = json_dat[[1]]$relationships[[typeY]]$data$type
+    paste(tgt_type,tgt_access,sep="/")
+    #substr(tgt_url, nchar(client@url) + 1, nchar(tgt_url))
+  }
+}
+
+#AAAARRRRGGGH Why are reserved words not more obvious in R!!!!
+
+#helper to convert json list attributes to a one line data.frame
+mgnify_attr_list_to_df <- function (json, metadata_key=NULL ){
+
+  attrlist=names(json$attributes)
+  if (!is.null(metadata_key)){
+    baseattrlist=attrlist[!(attrlist %in% c(metadata_key))]
+    metaattrlist=json$attributes[[metadata_key]]
+    metlist=sapply(metaattrlist, function(x) x$value)
+    names(metlist)=sapply(metaattrlist, function(x) x$key)
+    df = as.data.frame(t(unlist(c(json["attributes"][baseattrlist], metlist))), stringsAsFactors = F)
+  }else{
+    df = as.data.frame(t(unlist(jsonp["attributes"])), stringsAsFactors = F)
+  }
+
+  rownames(df)=df$accession
+  df
+}
+
+
+
 #Base class for retrieving URL queries from MGnify
 #   support for paging
 
@@ -175,11 +222,11 @@ mgnify_query_samples<- function(client, accession=NULL, asDataFrame=F, ...){
     # then using rbind.fill from plyr to combine. For ~most~ use cases the number of empty columns will hopefully
     # be minimal... because who's going to want cross study grabbing (?)
     samplist = lapply(result, function(r){
-      df2 <- mgnify_attr_list_to_df(r, "sample-metadata")
+      df2 <- mgnify_attr_list_to_df(json = r, metadata_key = "sample-metadata")
       df2$biome = r$relationship$biome$data$id
       df2$study = r$relationship$studies$data$id
       df2$type = r$type
-      rownames(df2)=df$accession
+      rownames(df2)=df2$accession
       df2
 
     }
@@ -241,49 +288,6 @@ mgnify_query_studies<- function(client, accession=NULL, asDataFrame=F, ...){
 mgnify_query_runs<- function(client, accession=NULL, asDataFrame=F, ...){}
 
 
-#helper function for getting relative paths in the API
-#Not everything is implemented here - just what we
-#need to get to the download or run areas
-#Given an accession x, we want to get the link to get the url for the
-#coresponding typeY
-
-mgnify_get_x_for_y <- function(client, x, typeX, typeY){
-
-  #This one's easy - just rearrange the URLs
-  if(typeX=="samples" & typeY %in% c("runs","studies")){
-    paste( typeX,x,typeY, sep="/")
-  }else if(typeX=="runs" & typeY == "analyses"){
-    paste( typeX,x,typeY, sep="/")
-  }
-  else{
-    #Do it the hard way with a callout
-    json_dat = mgnify_query_json(client, paste(typeX, x, sep="/"))
-    json_dat
-    tgt_access = json_dat[[1]]$relationships[[typeY]]$data$id
-    tgt_type = json_dat[[1]]$relationships[[typeY]]$data$type
-    paste(tgt_type,tgt_access,sep="/")
-    #substr(tgt_url, nchar(client@url) + 1, nchar(tgt_url))
-  }
-}
-
-
-#helper to convert json list attributes to a one line data.frame
-mgnify_attr_list_to_df <- function (json, metadata_key=NULL ){
-
-  attrlist=names(json$attributes)
-  if (!is.null(metadata_key)){
-    baseattrlist=attrlist[!(attrlist %in% c(metadata_key))]
-    metaattrlist=json$attributes[[metadata_key]]
-    metlist=sapply(metaattrlist, function(x) x$value)
-    names(metlist)=sapply(metaattrlist, function(x) x$key)
-    df = as.data.frame(t(unlist(c(json$attributes[baseattrlist], metlist))), stringsAsFactors = F)
-  }else{
-    df = as.data.frame(t(json$attributes), stringsAsFactors = F)
-  }
-
-  rownames(df)=df$acces
-  df
-}
 
 
 #This does the heavy downloading of BIOM files for conversion into phyloseq.
