@@ -153,6 +153,8 @@ mgnify_query_json <- function(client, path="biomes", qopts=NULL, maxhits=200, ..
 # for most use cases.
 # Attributes and metadata_attributes are expanded as columns in the data.frames.
 
+#Annoyingly this won't work with a list of project accessions (which IMHO it should). thus you need to iterate over a
+#project list externally to get it to work. Which then makes joining the results together a bit awkward. Hey ho.
 mgnify_query_samples<- function(client, accession=NULL, asDataFrame=F, ...){
   #Is there a proper way to do this? F'in lazy evaluation:
   a=accession
@@ -172,7 +174,7 @@ mgnify_query_samples<- function(client, accession=NULL, asDataFrame=F, ...){
     #Because metadata might not match across studies, the full dataframe is built by first building per-sample dataframes,
     # then using rbind.fill from plyr to combine. For ~most~ use cases the number of empty columns will hopefully
     # be minimal... because who's going to want cross study grabbing (?)
-    samplist = sapply(result, function(r){
+    samplist = lapply(result, function(r){
       attrlist=names(r$attributes)
       baseattrlist=attrlist[!(attrlist %in% "sample-metadata")]
       metaattrlist=r$attributes$`sample-metadata`
@@ -181,6 +183,7 @@ mgnify_query_samples<- function(client, accession=NULL, asDataFrame=F, ...){
       df = as.data.frame(t(unlist(c(r$attributes[baseattrlist], metlist))), stringsAsFactors = F)
       df$biome = r$relationship$biome$data$id
       df$study = r$relationship$studies$data[[1]]$id
+      df$type = r$type
       rownames(df)=df$accession
       df
 
@@ -197,43 +200,41 @@ mgnify_query_samples<- function(client, accession=NULL, asDataFrame=F, ...){
 }
 
 
-#Retrieves runs/analyses
+#Retrieves studies - again, only study accessions can be lists.
+
 mgnify_query_studies<- function(client, accession=NULL, asDataFrame=F, ...){
   #Is there a proper way to do this? F'in lazy evaluation:
   a=accession
   arglist =as.list(match.call())
   arglist$accession=a
   #cat(str(names(arglist)))
-  #COnvert the extra arguments into valid MGnify query filter arguments
-  qopts = arglist[names(arglist) %in% sample_filters]
+  #Convert the extra arguments into valid MGnify query filter arguments
+  qopts = arglist[names(arglist) %in% study_filters]
 
 
-  result = mgnify_query_json(client, path="samples", qopts = qopts)
+  result = mgnify_query_json(client, path="studies", qopts = qopts)
 
-  samp_id_list = lapply(result, function(x) x$id)
-  names(result) = samp_id_list
+  study_id_list = lapply(result, function(x) x$id)
+  names(result) = study_id_list
 
   if(asDataFrame){
-    #Because metadata might not match across studies, the full dataframe is built by first building per-sample dataframes,
-    # then using rbind.fill from plyr to combine. For ~most~ use cases the number of empty columns will hopefully
-    # be minimal... because who's going to want cross study grabbing (?)
-    samplist = sapply(result, function(r){
+    #Studies don't have metadata, so we're just returning the list of attributes.
+    studylist = lapply(result, function(r){
       attrlist=names(r$attributes)
-      baseattrlist=attrlist[!(attrlist %in% "sample-metadata")]
-      metaattrlist=r$attributes$`sample-metadata`
-      metlist=sapply(metaattrlist, function(x) x$value)
-      names(metlist)=sapply(metaattrlist, function(x) x$key)
-      df = as.data.frame(t(unlist(c(r$attributes[baseattrlist], metlist))), stringsAsFactors = F)
+      baseattrlist=attrlist
+
+      df = as.data.frame(t(unlist(r$attributes[baseattrlist])), stringsAsFactors = F)
       df$biome = r$relationship$biome$data$id
       df$study = r$relationship$studies$data[[1]]$id
       rownames(df)=df$accession
+      df$type = r$type
       df
 
     }
     )
     tryCatch(
-      plyr::rbind.fill(samplist),
-      error=function(e) samplist
+      plyr::rbind.fill(studylist),
+      error=function(e) studylist
     )
   }else{
     result
@@ -241,16 +242,100 @@ mgnify_query_studies<- function(client, accession=NULL, asDataFrame=F, ...){
 
 }
 
+#Does essentially the same thing as the two other functions above, but for runs instead of
+mgnify_query_runs<- function(client, accession=NULL, asDataFrame=F, ...){}
 
 
+#helper function for getting relative paths in the API
+#Not everything is implemented here - just what we
+#need to get to the download or run areas
+#Given an accession x, we want to get the link to get the url for the
+#coresponding typeY
+
+mgnify_get_x_for_y <- function(client, x, typeX, typeY){
+
+  #This one's easy - just rearrange the URLs
+  if(typeX=="samples" & typeY %in% c("runs","studies")){
+    paste( typeX,x,typeY, sep="/")
+  }else if(typeX=="runs" & typeY == "analyses"){
+    paste( typeX,x,typeY, sep="/")
+  }
+  else{
+    #Do it the hard way with a callout
+    json_dat = mgnify_query_json(client, paste(typeX, x, sep="/"))
+    json_dat
+    tgt_access = json_dat[[1]]$relationships[[typeY]]$data$id
+    tgt_type = json_dat[[1]]$relationships[[typeY]]$data$type
+    paste(tgt_type,tgt_access,sep="/")
+    #substr(tgt_url, nchar(client@url) + 1, nchar(tgt_url))
+  }
+}
+
+#This does the heavy downloading of BIOM files for conversion into phyloseq.
+#accessions can be either:
+# - unnamed list or vector of run accessions:
+# - named list returned from one of the mgnify_query_xxx functions
+# - dataframe (rownames = accession IDs)
+#
+# pipeline_version is an extra filter to ensure only biomes of the same version get munged together
+# otherwise by default the first pipeline version in the first sample/run will be used.
+#
+mgnify_get_runs_as_phyloseq <- function(client=NULL, accessions=NULL, downloadDIR, pipeline_version){
+  #These must be RUN accessions
+  grabtype="unk"
+  #At the end of this, we want a list of run accessions to grab
+  if (class(accessions) == "list"){
+    #Unnamed list
+    if(is.null(names(accessions))){
+      grabtype="raw_run"
+    }
+    else{
+      grabtype="namedlist"
+    }
+
+  }else if(class(accessions) =="data.frame"){
+    #Same as above, this time using the rownames as accession numbers, and the "type" column to figure out where to go
+    grabtype="data.frame"
+    for (cur_line in nrow(accessions)){
+      if ("type" %in% colnames(accessions)){
+        curtype=accessions[cur_line, "type"]
+        curaccess=accessions$accession[cur_line]
+      }else{
+        #Assume that they're samples
+        curtype = "sample"
+      }
+      #We need to get to the "runs" section, and then to the analysis:
+      #Each "run" has only one "analyses", so makes sense to go through "runs"
+      #We might already be there of course...
+      if (curtype != "run"){
+        runpath=mgnify_get_x_for_y(client, curaccess, curtype, "runs" )
+      } else{
+        runpath=paste("runs",curaccess)
+      }
+      #Retrieve the run data
+      run_data <- mgnify_query_json(client, runpath)
+      #Depending how we got there, run_data might be length > 1, so a quick rename by accession should make
+      #it easier later
+      names(run_data) <- sapply(run_data, `[`, "id")
+    cat(str(run_data))
+      #Each run will have an analysis entry:
+      analyses_accessions <- sapply(names(run_data), function(r){
+        analyse_path = paste("runs",run_data[[r]]$id,"analyses", sep="/")
+        cat(str(analyse_path))
+        analysis_data <- mgnify_get_json_data(client, analyse_path)
+        analysis_data$id
+      })
+    }
+
+  }
+  analyses_accessions
+
+}
 
 
-#res=mgnify_query_samples(cl, biome_name="root:Engineered:Wastewater", asDataFrame = T)#
-
-#res2=mgnify_query_samples(cl, accession = res$accession, asDataFrame = T)
-
-#res$accession
+#sample_df <- mgnify_query_samples(cl, study_accession = "MGYS00005120", asDataFrame = T)
+#mgnify_get_runs_as_phyloseq(cl, accessions = sample_df)
 
 
-
+#}
 
