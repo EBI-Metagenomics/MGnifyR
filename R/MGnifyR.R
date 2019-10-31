@@ -13,7 +13,7 @@
 #   Check Package:             'Ctrl + Shift + E'
 #   Test Package:              'Ctrl + Shift + T'
 
-library(httr)
+#library(httr)
 require(httr)
 require(phyloseq)
 require(ape)
@@ -285,6 +285,8 @@ mgnify_query_studies<- function(client, accession=NULL, asDataFrame=F, ...){
 }
 
 #Does essentially the same thing as the two other functions above, but for runs instead of
+#Or at least it will do once it's implemented...
+
 mgnify_query_runs<- function(client, accession=NULL, asDataFrame=F, ...){}
 
 
@@ -388,7 +390,7 @@ mgnify_get_runs_as_phyloseq <- function(client=NULL, accessions=NULL, downloadDI
         psobj
       })
 
-      full_ps_list[[newsampname]] = analyses_phyloseqs
+      full_ps_list[[cur_line]] = analyses_phyloseqs
 
     }
 
@@ -398,7 +400,9 @@ mgnify_get_runs_as_phyloseq <- function(client=NULL, accessions=NULL, downloadDI
   #For some reason merge_phyloseq messes up sample data, so we need to rebuild the data.frame and
   #add it to the phyloseq object:
   sampdatlist <- lapply(unlist(full_ps_list), function(x) as.data.frame(sample_data(x)))
-  sample_data(full_ps) <- do.call(rbind, sampdatlist)
+  full_sample_df <-  do.call(rbind, sampdatlist)
+  rownames(full_sample_df) <- full_sample_df$ANALYSIS_accession
+  sample_data(full_ps) <- full_sample_df
   full_ps
 }
 
