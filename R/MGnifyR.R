@@ -63,7 +63,6 @@ mgnify_get_x_for_y <- function(client, x, typeX, typeY){
   }
 }
 
-#AAAARRRRGGGH Why are reserved words not more obvious in R!!!!
 
 #helper to convert json list attributes to a one line data.frame
 mgnify_attr_list_to_df <- function (json, metadata_key=NULL ){
@@ -76,8 +75,9 @@ mgnify_attr_list_to_df <- function (json, metadata_key=NULL ){
     names(metlist)=sapply(metaattrlist, function(x) x$key)
     df = as.data.frame(t(unlist(c(json["attributes"][baseattrlist], metlist))), stringsAsFactors = F)
   }else{
-    df = as.data.frame(t(unlist(jsonp["attributes"])), stringsAsFactors = F)
+    df = as.data.frame(t(unlist(json["attributes"])), stringsAsFactors = F)
   }
+  df$accession <- json$id
 
   rownames(df)=df$accession
   df
@@ -316,7 +316,7 @@ mgnify_get_runs_as_phyloseq <- function(client=NULL, accessions=NULL, downloadDI
   }else if(class(accessions) =="data.frame"){
     #Same as above, this time using the rownames as accession numbers, and the "type" column to figure out where to go
     grabtype="data.frame"
-    full_analysis_results <- list()
+    full_ps_list <- list()
     for (cur_line in seq(nrow(accessions))){
       if ("type" %in% colnames(accessions)){
         curtype=accessions[cur_line, "type"]
@@ -343,15 +343,15 @@ mgnify_get_runs_as_phyloseq <- function(client=NULL, accessions=NULL, downloadDI
       sample_data <- mgnify_query_json(client, paste("samples",run_data[[1]]$relationships$sample$data$id, sep="/"))
       study_data <- mgnify_query_json(client, paste("studies",run_data[[1]]$relationships$study$data$id, sep="/"))
 
-      samp_attr_df <- mgnify_attr_list_to_df(sample_data, "sample-metadata")
-      study_attr_df <- mgnify_attr_list_to_df(study_data)
+      samp_attr_df <- mgnify_attr_list_to_df(sample_data[[1]], "sample-metadata")
+      study_attr_df <- mgnify_attr_list_to_df(study_data[[1]])
 
       #Depending how we got there, run_data might be length > 1, so a quick rename by accession should make
       #it easier later
       names(run_data) <- sapply(run_data, `[`, "id")
       cat(str(run_data))
       #Each run will have an analysis entry:
-      analyses_accessions <- sapply(names(run_data), function(r){
+      analyses_phyloseqs <- sapply(names(run_data), function(r){
         analyse_path = paste("runs",run_data[[r]]$id,"analyses", sep="/")
         cat(str(analyse_path))
         analysis_data <- mgnify_query_json(client, analyse_path)
@@ -375,16 +375,31 @@ mgnify_get_runs_as_phyloseq <- function(client=NULL, accessions=NULL, downloadDI
         # the original value stored in the sample_data (just in case it changes between pipelines)
         orig_samp_name <- sample_names(psobj)[[1]]
         newsampname <- paste(analysis_attr_df$accession)
-        sample_names(psobj) <- paste(analysis_attr_df$accession, )
+        sample_names(psobj) <- newsampname
 
-
+        #saveRDS(psobj, paste(biom_path,".RDS",sep=""))
+        colnames(samp_attr_df) <- paste("SAMPLE_",colnames(samp_attr_df),sep='')
+        colnames(study_attr_df) <- paste("STUDY_",colnames(study_attr_df),sep='')
+        colnames(analysis_attr_df) <- paste("ANALYSIS_",colnames(analysis_attr_df),sep='')
+        full_samp_data <- cbind(samp_attr_df, study_attr_df, analysis_attr_df)
+        rownames(full_samp_data) <- newsampname
+        sample_data(psobj) <- full_samp_data
+        #saveRDS(psobj, paste(biom_path,".RDS2",sep=""))
+        psobj
       })
-      full_analysis_results[[curaccess]] <- analyses_accessions
+
+      full_ps_list[[newsampname]] = analyses_phyloseqs
+
     }
 
   }
-  full_analysis_results
-
+  names(full_ps_list) <- NULL
+  full_ps <- do.call(merge_phyloseq, unlist(full_ps_list))
+  #For some reason merge_phyloseq messes up sample data, so we need to rebuild the data.frame and
+  #add it to the phyloseq object:
+  sampdatlist <- lapply(unlist(full_ps_list), function(x) as.data.frame(sample_data(x)))
+  sample_data(full_ps) <- do.call(rbind, sampdatlist)
+  full_ps
 }
 
 
