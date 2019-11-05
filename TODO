@@ -1,0 +1,14 @@
+In no particular order:
+
+Do documentation
+Convert to single monolithic mgnify_query function
+Add warnings for multiple runs etc.
+Split phyloseq grab into 2 functions
+   - get metadata DF/list for analysis runs
+   - Do actual grab of biome data
+phyloseq conversion needs to be able to handle a list
+
+Fix query to check if lists ~can~ be lists (i.e. supply multiple elements as filters)
+
+
+
