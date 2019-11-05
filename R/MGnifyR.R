@@ -231,19 +231,31 @@ mgnify_query_json <- function(client, path="biomes", qopts=NULL, maxhits=200, ..
 }
 
 
-
+#'Searching MGnify data in R
+#'
+#'\code{mgnify_query} is a generic search tool to query the MGnify data portal via the JSON API.
+#'
+#'
 #'@export
 mgnify_query <- function(client, qtype="samples", accession=NULL, asDataFrame=F, ...){
   #Need to get around the lazy expansion in R in order to get a list
   a=accession
-  arglist =as.list(match.call())
+  arglist = as.list(match.call())[-1] # drop off the first entry, which is the name of the function
+#  arglist
+
   arglist$accession=a
 
   #Filter the query options such that
   qopts = arglist[names(arglist) %in% query_filters[[qtype]]]
+  non_qopts = arglist[!(names(arglist) %in% c(c("asDataFrame","qtype","client"),query_filters[[qtype]]))]
 
+  cat(str(arglist))
+  all_query_params = unlist(list(c(non_qopts,list(client=client, path=qtype, qopts=qopts))))
+
+  cat(str(all_query_params))
   #Do the query
-  result = mgnify_query_json(client, path=qtype, qopts = qopts)
+  #result = mgnify_query_json(client, path=qtype, qopts = qopts)
+  result = do.call("mgnify_query_json", all_query_params)
 
   #Rename entries by accession
   id_list = lapply(result, function(x) x$id)
