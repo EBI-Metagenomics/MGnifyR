@@ -36,63 +36,35 @@ study_filters = c('accession','biome_name','lineage','centre_name','include')
 run_filters=c('accession','experiment_type','biome_name','lineage','species','instrument_platform','instrument_model',
               # 'metadata_key','metadata_value_gte','metadata_value_lte','metadata_value','sample_accession','study_accession',
               'include')
+analysis_filters = c('')
 
-
-#helper function for getting relative paths in the API
-#Not everything is implemented here - just what we
-#need to get to the download or run areas
-#Given an accession x, we want to get the link to get the url for the
-#coresponding typeY
-
-mgnify_get_x_for_y <- function(client, x, typeX, typeY){
-
-  #This one's easy - just rearrange the URLs
-  if(typeX=="samples" & typeY %in% c("runs","studies")){
-    paste( typeX,x,typeY, sep="/")
-  }else if(typeX=="runs" & typeY == "analyses"){
-    paste( typeX,x,typeY, sep="/")
-  }
-  else{
-    #Do it the hard way with a callout
-    json_dat = mgnify_query_json(client, paste(typeX, x, sep="/"))
-    json_dat
-    tgt_access = json_dat[[1]]$relationships[[typeY]]$data$id
-    tgt_type = json_dat[[1]]$relationships[[typeY]]$data$type
-    paste(tgt_type,tgt_access,sep="/")
-    #substr(tgt_url, nchar(client@url) + 1, nchar(tgt_url))
-  }
-}
-
-
-#helper to convert json list attributes to a one line data.frame
-mgnify_attr_list_to_df <- function (json, metadata_key=NULL ){
-
-  attrlist=names(json$attributes)
-  if (!is.null(metadata_key)){
-    baseattrlist=attrlist[!(attrlist %in% c(metadata_key))]
-    metaattrlist=json$attributes[[metadata_key]]
-    metlist=sapply(metaattrlist, function(x) x$value)
-    names(metlist)=sapply(metaattrlist, function(x) x$key)
-    df = as.data.frame(t(unlist(c(json["attributes"][baseattrlist], metlist))), stringsAsFactors = F)
-  }else{
-    df = as.data.frame(t(unlist(json["attributes"])), stringsAsFactors = F)
-  }
-  df$accession <- json$id
-
-  rownames(df)=df$accession
-  df
-}
+#Combined together into a single queriably list
+query_filters=list(
+  biomes=biome_filters,
+  samples=sample_filters,
+  studies  = study_filters,
+  runs=run_filters
+)
 
 
 
-#Base class for retrieving URL queries from MGnify
-#   support for paging
 
-#Functions:
-#Generic function to retrieve (paginated) data from mgnify API
+
+#**************************************************
 #Classes
 
-setClass("mgnify_client",
+#' MGnify API client object.
+#'
+#' Acts as a simple container encapsulating API info (\code{baseurl}), user parameters (\code{authtok}) and cache
+#' locations (\code{cache_dir})
+#'
+#' @slot baseurl Web address of the MGnify JSON api - including version. Required
+#' @slot authtok The MGnify API supports authentication for users by way of \code{authtoken}. This is that token, althouth it's not used in anger at the moment.
+#' @slot cache_dir To reduce load on the server, and speed up repeated data processing, JSON calls may be cached locally, and
+#' stored in \code{cache_dir}.
+#' @export mgnify_client
+##' @exportClass mgnify_client
+mgnify_client <- setClass("mgnify_client",
          slots=list(url = "character", authtok = "character", cache_dir="character"),
          prototype = list(url=baseurl, authtok=NULL, cache_dir=NULL))
 
@@ -131,16 +103,92 @@ mgnify_client <- function(username=NULL,password=NULL,usecache=F,cachedir=NULL){
 
 }
 
-#Generic function to run a MGNify query and return JSON parsed as a list
-#Requires mgnify_client instance as an argument, with optional parameters for
-#target path, as well as query options (as a named list)
-#Mostly used internally by more specific search code
+
+
+
+
+
+
+
+
+#helper function for getting relative paths in the API
+#Not everything is implemented here - just what we
+#need to get to the download or run areas
+#Given an accession x, we want to get the link to get the url for the
+#coresponding typeY
+
+
+#' \code{JSONAPI} path for child elements
+#'
+#' \code{mgnify_get_x_for_y} determines the location of \code{typeY} child objects of \code{x} (type \code{typeX})
+#'
+#' This helper function, principally intended to be used internally, is used to match up related objects within the path. The inherently
+#' unhierarchical nature of the MGnify API makes it a bit inconsistent. This function acts as a quick way to determine how to get from
+#' one type to another, without having to special case within the code.
+#' @param client MGnifyR client API object
+#' @param x Accession ID \code{char} of parent object
+#' @param typeX Type of accession \code{x}
+#' @param typeY Type of child object to return
+#' @return \code{char} string for the API path of x/typeY
+#' @examples
+#' cl <- new("mgnify_client")
+#' mgnify_get_x_for_y(cl, "MGYS00005126", "studies", "samples")
+#'@export
+mgnify_get_x_for_y <- function(client, x, typeX, typeY){
+  #This one's easy - just rearrange the URLs
+  if(typeX=="samples" & typeY %in% c("runs","studies")){
+    paste( typeX,x,typeY, sep="/")
+  }else if(typeX=="runs" & typeY == "analyses"){
+    paste( typeX,x,typeY, sep="/")
+  }
+  else{
+    #Do it the hard way with a callout
+    json_dat = mgnify_query_json(client, paste(typeX, x, sep="/"))
+    json_dat
+    tgt_access = json_dat[[1]]$relationships[[typeY]]$data$id
+    tgt_type = json_dat[[1]]$relationships[[typeY]]$data$type
+    paste(tgt_type,tgt_access,sep="/")
+    #substr(tgt_url, nchar(client@url) + 1, nchar(tgt_url))
+  }
+}
+
+
+#Not exporting this - if people want to they can use the
+# rjsonapi functionality
+##'Coverting attribute lists to a single data.frame row
+##'
+##'\code{mgnify_attr_list_to_df} extracts the \code{attribute} entry in a JSONAPI result
+##'@param json The \emph{raw} result list
+##'@param metadata_key Optional extra key to parse child entries and include in the output
+##'@return 1xn data.frame
+##'@export
+mgnify_attr_list_to_df <- function (json, metadata_key=NULL ){
+
+  attrlist=names(json$attributes)
+  if (!is.null(metadata_key)){
+    baseattrlist=attrlist[!(attrlist %in% c(metadata_key))]
+    metaattrlist=json$attributes[[metadata_key]]
+    metlist=sapply(metaattrlist, function(x) x$value)
+    names(metlist)=sapply(metaattrlist, function(x) x$key)
+    df = as.data.frame(t(unlist(c(json["attributes"][baseattrlist], metlist))), stringsAsFactors = F)
+  }else{
+    df = as.data.frame(t(unlist(json["attributes"])), stringsAsFactors = F)
+  }
+  df$accession <- json$id
+
+  rownames(df)=df$accession
+  df
+}
+
+
+
 mgnify_query_json <- function(client, path="biomes", qopts=NULL, maxhits=200, ...){
   #Set up the base url
   fullurl = paste(client@url, path, sep="/")
   #cat(fullurl)
 
   #convert to csv if filters are lists.
+  #This doesn't check if they ~can~ be
   tmpqopts = lapply(qopts,function(x) paste(x,collapse = ','))
 
   #Include the json and page position options
@@ -183,6 +231,50 @@ mgnify_query_json <- function(client, path="biomes", qopts=NULL, maxhits=200, ..
 }
 
 
+
+#'@export
+mgnify_query <- function(client, qtype="samples", accession=NULL, asDataFrame=F, ...){
+  #Need to get around the lazy expansion in R in order to get a list
+  a=accession
+  arglist =as.list(match.call())
+  arglist$accession=a
+
+  #Filter the query options such that
+  qopts = arglist[names(arglist) %in% query_filters[[qtype]]]
+
+  #Do the query
+  result = mgnify_query_json(client, path=qtype, qopts = qopts)
+
+  #Rename entries by accession
+  id_list = lapply(result, function(x) x$id)
+  names(result) = id_list
+
+  if(asDataFrame){
+    #Because metadata might not match across studies, the full dataframe is built by first building per-sample dataframes,
+    # then using rbind.fill from plyr to combine. For ~most~ use cases the number of empty columns will hopefully
+    # be minimal... because who's going to want cross study grabbing (?)
+    dflist = lapply(result, function(r){
+      df2 <- mgnify_attr_list_to_df(json = r, metadata_key = "sample-metadata")
+      df2$biome = r$relationship$biome$data$id
+      df2$study = r$relationship$studies$data$id
+      df2$type = r$type
+      rownames(df2)=df2$accession
+      df2
+
+    }
+    )
+    tryCatch(
+      plyr::rbind.fill(dflist),
+      error=function(e) dflist
+    )
+  }else{
+    result
+  }
+
+}
+
+
+
 #Search by "sample":
 #various parameters to search by
 
@@ -202,7 +294,9 @@ mgnify_query_json <- function(client, path="biomes", qopts=NULL, maxhits=200, ..
 
 #Annoyingly this won't work with a list of project accessions (which IMHO it should). thus you need to iterate over a
 #project list externally to get it to work. Which then makes joining the results together a bit awkward. Hey ho.
-mgnify_query_samples<- function(client, accession=NULL, asDataFrame=F, ...){
+#' @export
+mgnify_query_samples <-
+  function(client, accession=NULL, asDataFrame=F, ...){
   #Is there a proper way to do this? F'in lazy evaluation:
   a=accession
   arglist =as.list(match.call())
