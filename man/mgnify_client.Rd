@@ -14,7 +14,7 @@ locations (\code{cache_dir})
 \section{Slots}{
 
 \describe{
-\item{\code{baseurl}}{Web address of the MGnify JSON api - including version}
+\item{\code{baseurl}}{Web address of the MGnify JSON api - including version. Required}
 
 \item{\code{authtok}}{The MGnify API supports authentication for users by way of \code{authtoken}. This is that token, althouth it's not used in anger at the moment.}
 

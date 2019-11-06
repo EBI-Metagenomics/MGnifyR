@@ -9,10 +9,10 @@ mgnify_attr_list_to_df(json, metadata_key = NULL)
 \arguments{
 \item{json}{The \emph{raw} result list}
 
-\item{metadata_key}{Optional extra key to parse child entries and include in the output}
+\item{metadata_key}{Optional extra key to parse subattributes from}
 }
 \value{
-1xn data.frame
+data.frame containing a single row of metadata
 }
 \description{
 \code{mgnify_attr_list_to_df} extracts the \code{attribute} entry in a JSONAPI result

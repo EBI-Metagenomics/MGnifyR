@@ -4,7 +4,7 @@ Do documentation. DONE(ish)
 Convert to single monolithic mgnify_query function DONE
 Add caching functionality. DONE
 Add warnings for multiple runs etc.
-Split phyloseq grab into 2 functions
+Split phyloseq grab into 2 fdevto unctions
    - get metadata DF/list for analysis runs
    - Do actual grab of biome data
 phyloseq conversion needs to be able to handle a list
