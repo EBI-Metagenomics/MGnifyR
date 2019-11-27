@@ -20,6 +20,13 @@ library(plyr)
 
 
 
+##Example accessions:
+# Analysis assembly: MGYA00379728
+# Analysis metagenomic: MGYA00377678
+# Analysis amplicon: MGYA00250889
+
+
+
 baseurl='https://www.ebi.ac.uk/metagenomics/api/v1'
 
 ##Filters possible - this comes from the django source code - would be nice if we could
@@ -156,21 +163,24 @@ mgnify_get_x_for_y <- function(client, x, typeX, typeY){
 # rjsonapi functionality
 #'Coverting attribute lists to a single data.frame row
 #'
-#'\code{mgnify_attr_list_to_df} extracts the \code{attribute} entry in a JSONAPI result
+#'\code{mgnify_attr_list_to_df_row} extracts the \code{attribute} entry in a JSONAPI data result
+#'and converts it to a single row data.frame with columns corresponding to attribute entries
+#'Optionally parses a \code{metadata_key} item for extra metadata items.
 #'@param json The \emph{raw} result list
 #'@param metadata_key Optional extra key to parse subattributes from
 #'@return data.frame containing a single row of metadata
 #'
 #'@export
-mgnify_attr_list_to_df <- function (json, metadata_key=NULL ){
+mgnify_attr_list_to_df_row <- function (json, metadata_key=NULL ){
 
   attrlist=names(json$attributes)
+
   if (!is.null(metadata_key)){
     baseattrlist=attrlist[!(attrlist %in% c(metadata_key))]
     metaattrlist=json$attributes[[metadata_key]]
     metlist=sapply(metaattrlist, function(x) x$value)
     names(metlist)=sapply(metaattrlist, function(x) x$key)
-    df = as.data.frame(t(unlist(c(json["attributes"][baseattrlist], metlist))), stringsAsFactors = F)
+    df = as.data.frame(t(unlist(c(json$attributes[baseattrlist], metlist))), stringsAsFactors = F)
   }else{
     df = as.data.frame(t(unlist(json["attributes"])), stringsAsFactors = F)
   }
@@ -202,9 +212,19 @@ mgnify_attr_list_to_df <- function (json, metadata_key=NULL ){
 #'@param Debug Should we print out lots of information while doing the grabbing?
 #'@return \code{list} of results after pagination is dealt with.
 #'@export
-  mgnify_query_json <- function(client, path="biomes", qopts=NULL, maxhits=200, usecache = F, Debug=F){
+  mgnify_query_json <- function(client, path="biomes", complete_url=NULL, qopts=NULL, maxhits=200, usecache = F, Debug=F){
   #Set up the base url
-  fullurl = paste(client@url, path, sep="/")
+  #Are we using internal paths?
+  if (is.null(complete_url)){
+    fullurl = paste(client@url, path, sep="/")
+  }
+  #Or direct links from e.g. a "related" section
+  else{
+    #Set the full url, but clean off any existing parameters (page, format etc) as they'll be added back later:
+    fullurl = complete_url
+    urltools::parameters(fullurl) <- NULL
+    path = substr(fullurl, nchar(client@url) + 2, nchar(fullurl))
+  }
 
   #convert to csv if filters are lists.
   #This doesn't check if they ~can~ be searched for in the API,
@@ -225,6 +245,10 @@ mgnify_attr_list_to_df <- function (json, metadata_key=NULL ){
     }else{
       res = httr::GET(url=fullurl, config(verbose=Debug), query=full_qopts )
       data <-httr::content(res)
+      #make sure the directory exists first:
+      dir.create(dirname(cache_full_fname), recursive = T)
+
+      #Save it
       saveRDS(data, cache_full_fname)
     }
   }else{
@@ -255,10 +279,10 @@ mgnify_attr_list_to_df <- function (json, metadata_key=NULL ){
         }
       }
     }
-    unlist(datlist, recursive=F)
+    final_data <- unlist(datlist, recursive=F)
   }
   else{
-    datlist
+    final_data <- datlist
   }
 }
 
@@ -319,6 +343,147 @@ mgnify_query <- function(client, qtype="samples", accession=NULL, asDataFrame=F,
   }
 
 }
+
+
+
+
+#Returns a named list with all analysis results for the given accession.
+#Requires that the accession is of type "analyses", and can be either a single string, or
+#a list/vector. If it's a single string, it'll be coerced into a vector anyway
+
+analyses_metadata_headers <- list(sample="sample-metadata", run=NULL, assembly=NULL, study=NULL)
+
+
+#Gets associated analyses for  list/data.frame from previous query.
+mgnify_to_analyses <- function(client=NULL, accessions, accession_type = NULL){}
+
+mgnify_get_single_analysis <- function(client=NULL, accession, usecache=T){
+
+  dat <- mgnify_query_json(client, paste("analyses", accession, sep="/"), usecache = usecache)
+  #There ~should~ be just a single result
+  top_data <- dat[[1]]
+  analysis_metadata <- mgnify_attr_list_to_df(top_data, metadata_key = "analysis-summary")
+  #Build up the metadata dataframe from the analyses_metadata_headers vector:
+  for (v in names(analyses_metadata_headers)){
+    extradat <- mgnify_query_json(client, paste(v,top_data$relationships[v]$data$id, sep="/"),usecache = usecache)
+    #analysis_metadata <- cbind(analysis_metadata, mgnify_attr_list_to_df(top_data$relationships[]))
+    analysis_metadata <- cbind(analysis_metadata, mgnify_attr_list_to_df(extradat, metadata_key = analyses_metadata_headers$v))
+  }
+  analysis_metadata
+}
+
+
+
+
+
+mgnify_get_results <- function(client=NULL, accessions=NULL, downloadDIR='./tmpdownloads', use_downloads=T, pipeline_version, usecache=T ){
+  #These must be RUN accessions
+  dir.create(downloadDIR, showWarnings = F)
+  grabtype="unk"
+  #At the end of this, we want a list of run accessions to grab # unimplemented for now... just data.frame works atm
+  if (class(accessions) == "list"){
+    #Unnamed list
+    if(is.null(names(accessions))){
+      grabtype="raw_run"
+    }
+    else{
+      grabtype="namedlist"
+    }
+
+  }else if(class(accessions) =="data.frame"){
+    #Same as above, this time using the rownames as accession numbers, and the "type" column to figure out where to go
+    grabtype="data.frame"
+    full_ps_list <- list()
+    for (cur_line in seq(nrow(accessions))){
+      if ("type" %in% colnames(accessions)){
+        curtype=accessions[cur_line, "type"]
+        curaccess=accessions$accession[cur_line]
+      }else{
+        #Assume that they're samples
+        curtype = "samples"
+        curaccess = accessions$accession[cur_line]
+      }
+      #We need to get to the "runs" section, and then to the analysis:
+      #Each "run" has only one "analyses", so makes sense to go through "runs"
+      #We might already be there of course...
+      if (curtype != "run"){
+        runpath=mgnify_get_x_for_y(client, curaccess, curtype, "runs" )
+      } else{
+        runpath=paste("runs",curaccess)
+      }
+
+
+      #Retrieve the run data
+      run_data <- mgnify_query_json(client, runpath, usecache = usecache)
+      #get the sample and study data as well. This might repeat some earlier calls, but makes it easier
+      #to code up:
+      sample_data <- mgnify_query_json(client, paste("samples",run_data[[1]]$relationships$sample$data$id, sep="/"),usecache = usecache)
+      study_data <- mgnify_query_json(client, paste("studies",run_data[[1]]$relationships$study$data$id, sep="/"),usecache = usecache)
+
+      samp_attr_df <- mgnify_attr_list_to_df(sample_data[[1]], "sample-metadata")
+      study_attr_df <- mgnify_attr_list_to_df(study_data[[1]])
+
+      #Depending how we got there, run_data might be length > 1, so a quick rename by accession should make
+      #it easier later
+      names(run_data) <- sapply(run_data, `[`, "id")
+
+      #Each run will have an analysis entry:
+      analyses_phyloseqs <- sapply(names(run_data), function(r){
+        analyse_path = paste("runs",run_data[[r]]$id,"analyses", sep="/")
+        cat(str(analyse_path))
+        analysis_data <- mgnify_query_json(client, analyse_path,usecache = usecache)
+        #Build up a dataframe of attributes
+        analysis_attr_df <- mgnify_attr_list_to_df(analysis_data[[1]], metadata_key = "analysis-summary")
+        analysis_attr_df
+
+        #Get the download page json
+        analysis_downloads <- mgnify_query_json(cl, paste("analyses", analysis_attr_df$accession, "downloads", sep="/"),usecache = usecache)
+        #find out where our biom file is:
+        biom_url <- analysis_downloads[grepl('JSON Biom', sapply(analysis_downloads, function(x) x$attributes$`file-format`$name))][[1]]$links$self
+        fname=tail(strsplit(biom_url, '/')[[1]], n=1)
+        biom_path = paste(downloadDIR, fname, sep="/")
+        if (! file.exists(biom_path) | !use_downloads ){
+          httr::GET(biom_url, write_disk(biom_path, overwrite = T))
+        }
+        #Load in the phlyloseq object
+        psobj <- phyloseq::import_biom(biom_path)
+        #The biom files have a single column of "sa1". It's rewritten as sample_run_analysis accession, with
+        # the original value stored in the sample_data (just in case it changes between pipelines)
+        orig_samp_name <- sample_names(psobj)[[1]]
+        newsampname <- paste(analysis_attr_df$accession)
+        sample_names(psobj) <- newsampname
+
+        #saveRDS(psobj, paste(biom_path,".RDS",sep=""))
+        colnames(samp_attr_df) <- paste("SAMPLE_",colnames(samp_attr_df),sep='')
+        colnames(study_attr_df) <- paste("STUDY_",colnames(study_attr_df),sep='')
+        colnames(analysis_attr_df) <- paste("ANALYSIS_",colnames(analysis_attr_df),sep='')
+        full_samp_data <- cbind(samp_attr_df, study_attr_df, analysis_attr_df)
+        rownames(full_samp_data) <- newsampname
+        sample_data(psobj) <- full_samp_data
+        #saveRDS(psobj, paste(biom_path,".RDS2",sep=""))
+        psobj
+      })
+
+      full_ps_list[[cur_line]] = analyses_phyloseqs
+    }
+  }
+  names(full_ps_list) <- NULL
+  full_ps <- do.call(phyloseq::merge_phyloseq, unlist(full_ps_list))
+  #For some reason merge_phyloseq messes up sample data, so we need to rebuild the data.frame and
+  #add it to the phyloseq object:
+  sampdatlist <- lapply(unlist(full_ps_list), function(x) as.data.frame(phyloseq::sample_data(x)))
+  full_sample_df <-  do.call(plyr::rbind, sampdatlist)
+  rownames(full_sample_df) <- full_sample_df$ANALYSIS_accession
+  phyloseq::sample_data(full_ps) <- full_sample_df
+  full_ps
+}
+
+
+
+mgnify_otu_to_phyloseq <- function(client ){
+
+}
+
 
 
 #Using a previously retrieved (and possibly filtered) \code{mgnify_query} result(s), retrieve the corresponding
@@ -396,7 +561,7 @@ mgnify_get_runs_as_phyloseq <- function(client=NULL, accessions=NULL, downloadDI
 
       #Retrieve the run data
       run_data <- mgnify_query_json(client, runpath, usecache = usecache)
-      #get the sample and study data as well. This repeats some earlier calls, but makes it easier
+      #get the sample and study data as well. This might repeat some earlier calls, but makes it easier
       #to code up:
       sample_data <- mgnify_query_json(client, paste("samples",run_data[[1]]$relationships$sample$data$id, sep="/"),usecache = usecache)
       study_data <- mgnify_query_json(client, paste("studies",run_data[[1]]$relationships$study$data$id, sep="/"),usecache = usecache)
