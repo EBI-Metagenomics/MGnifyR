@@ -5,7 +5,6 @@ Version: 0.1.0
 Author: Ben Allen
 Maintainer: Ben Allen <ben.allen@ncl.ac.uk>
 Description: Utility package to facitliate easy interogation and analysis of EBI Mgnify pipeline results in R.
-    
 License: What license is it under? Good question - All mine for now but it'll be GPLish soon enough
 Encoding: UTF-8
 LazyData: true
