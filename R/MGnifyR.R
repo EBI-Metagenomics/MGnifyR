@@ -384,7 +384,7 @@ mgnify_client <- function(username=NULL,password=NULL,usecache=F,cache_dir=NULL)
       for (p in seq(pstart+1,pend)){  # We've already got the first one
 
         full_qopts$page=p
-        curd = httr::content(httr::GET(fullurl, config(verbose=Debug), query=full_qopts ))
+        curd = httr::content(httr::GET(fullurl, httr::config(verbose=Debug), query=full_qopts ))
         datlist[[p]] = curd$data
         #Check to see if we've pulled enough entries
         if(maxhits > 0){
@@ -604,7 +604,7 @@ mgnify_get_analyses_metadata <- function(client, accessions, usecache=T){
 #' object with \code{otu_table}, \code{tax_table} and \code{sample_data} objects.
 #' #'
 #' @param client \code{mgnify_client} instance
-#' @param accessions Single value or list/vector of Anlysis accessions to retrieve data for.
+#' @param accessions Single value or list/vector of Analysis accessions to retrieve data for.
 #' @param usecache Whether to use the disk based cache.
 #' @param returnLists Flag to determine whether to merge a per-analysis \code{phyloseq} objects into one, or
 #' return a list of single-sample objects. Since perculiarities in OTU format may lead to failed merges, returning
