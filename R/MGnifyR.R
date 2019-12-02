@@ -359,7 +359,7 @@ mgnify_client <- function(username=NULL,password=NULL,usecache=F,cache_dir=NULL)
       final_data = readRDS(cache_full_fname)
   }else{
 
-    res = httr::GET(url=fullurl, config(verbose=Debug), query=full_qopts )
+    res = httr::GET(url=fullurl, httr::config(verbose=Debug), query=full_qopts )
     data <-httr::content(res)
 
     #At this point, data$data is either a list of lists or a single named list. If it's a single entry, it needs embedding in
@@ -631,7 +631,7 @@ mgnify_get_analyses_phyloseq <- function(client = NULL, accessions, usecache=T, 
     list(phyloseq_objects=ps_list, sample_metadata = samp_dat)
   }else{
 
-    full_ps <- do.call(merge_phyloseq, ps_list)
+    full_ps <- do.call(phyloseq::merge_phyloseq, ps_list)
     sample_metadata_df <- do.call(dplyr::bind_rows, samp_dat)
     rownames(sample_metadata_df) <- sample_metadata_df$analysis_accession
     sample_data(full_ps) <- sample_metadata_df
