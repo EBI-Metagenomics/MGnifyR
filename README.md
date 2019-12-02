@@ -29,20 +29,20 @@ For more detailed instructions read the associated function help and vignette (`
 library(MGnifyR)
 
 #Set up the MGnify client instance
-mgclnt <- mgnify_client(usecache = T, cachedir = '/tmp/MGnify_cache')
+mgclnt <- mgnify_client(usecache = T, cache_dir = '/tmp/MGnify_cache')
 
 #Retrieve the list of analyses associated with a study
 accession_list <- mgnify_analyses_from_studies(mgclnt, "MGYS00005058", usecache = T)
 
 #Download all associated study/sample and analysis metadata
-meta_dataframe <- mgnify_get_analysis_metadata(mgclnt, accession_list, usecache = T )
+meta_dataframe <- mgnify_get_analyses_metadata(mgclnt, accession_list, usecache = T )
 
 #Convert analyses outputs to a single `phyloseq` object
-psobj <- mgnify_analyses_to_phyloseq(mgclnt, meta_dataframe$analysis_accession, usecache = T)
+psobj <- mgnify_get_analyses_phyloseq(mgclnt, meta_dataframe$analysis_accession, usecache = T)
 psobj
 
 #Retrieve Interpro assignment counts for these analyses
-ip_df <- mgnify_get_analysis_results(mgclnt, meta_dataframe$analysis_accession, retrievelist = c("interpro-identifiers"), usecache = T)
+ip_df <- mgnify_get_analyses_results(mgclnt, meta_dataframe$analysis_accession, retrievelist = c("interpro-identifiers"), usecache = T)
 head(ip_df)
 ```
 
