@@ -10,7 +10,7 @@ mgnify_get_analyses_phyloseq(client = NULL, accessions, usecache = T,
 \arguments{
 \item{client}{\code{mgnify_client} instance}
 
-\item{accessions}{Single value or list/vector of Anlysis accessions to retrieve data for.}
+\item{accessions}{Single value or list/vector of Analysis accessions to retrieve data for.}
 
 \item{usecache}{Whether to use the disk based cache.}
 

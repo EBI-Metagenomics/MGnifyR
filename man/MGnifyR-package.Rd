@@ -4,7 +4,7 @@
 \name{MGnifyR-package}
 \alias{MGnifyR}
 \alias{MGnifyR-package}
-\title{MGnifyR: What the Package Does (Title Case)}
+\title{MGnifyR: R interface to EBI MGnify metagenomics resource}
 \description{
 Utility package to facitliate easy interogation and analysis of EBI Mgnify pipeline results in R.
 }

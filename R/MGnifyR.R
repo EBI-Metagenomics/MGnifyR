@@ -206,8 +206,10 @@ mgnify_get_single_analysis_phyloseq <- function(client=NULL, accession, usecache
   available_biom_files <- analysis_downloads[grepl('JSON Biom', sapply(analysis_downloads, function(x) x$attributes$`file-format`$name))]
   biom_position <- grepl(tax_SU, sapply(available_biom_files, function(x) x$attributes$`group-type`))
   if(sum(biom_position) == 0){
+    if(client@warnings){
     warning("Unable to locate requested taxonomy type ",tax_SU,". This is likely due to the current analysis having been performed on an older version of the MGnify pipeline.
              The available BIOM file will be used instead.")
+    }
     biom_url <- available_biom_files[[1]]$links$self
   }else{
     biom_url <- available_biom_files[biom_position][[1]]$links$self
@@ -216,12 +218,15 @@ mgnify_get_single_analysis_phyloseq <- function(client=NULL, accession, usecache
   #Can specify a seperate dir for saving biom files, otherwise they end up in the client@cachdir folder, under "bioms"
   if (is.null(downloadDIR)){
     downloadDIR=paste(client@cache_dir,"biom_files",sep="/")
-    dir.create(downloadDIR, recursive = T, showWarnings = F)
+    dir.create(downloadDIR, recursive = T, showWarnings = client@warnings)
   }
+  #Clear out any ?params after the main location - don't need them for this
+  urltools::parameters(biom_url) <- NULL
+
   fname=tail(strsplit(biom_url, '/')[[1]], n=1)
   biom_path = paste(downloadDIR, fname, sep="/")
   if (! file.exists(biom_path)){#} | !use_downloads ){
-    httr::GET(biom_url, write_disk(biom_path, overwrite = T))
+    httr::GET(biom_url, httr::write_disk(biom_path, overwrite = T ))
   }
   #Load in the phlyloseq object
   psobj <- phyloseq::import_biom(biom_path)
@@ -260,11 +265,11 @@ mgnify_get_single_analysis_phyloseq <- function(client=NULL, accession, usecache
 #' @export mgnify_client
 ##' @exportClass mgnify_client
 mgnify_client <- setClass("mgnify_client",
-                          slots=list(url = "character", authtok = "character", cache_dir="character"),
+                          slots=list(url = "character", authtok = "character", cache_dir="character", warnings="logical"),
                           prototype = list(url=baseurl, authtok=NULL, cache_dir=NULL))
 
 #Contructor to allow logging in with username/password
-mgnify_client <- function(username=NULL,password=NULL,usecache=F,cache_dir=NULL){
+mgnify_client <- function(username=NULL,password=NULL,usecache=F,cache_dir=NULL, warnings=F){
   url=baseurl
   authtok=NA_character_
 
@@ -294,7 +299,7 @@ mgnify_client <- function(username=NULL,password=NULL,usecache=F,cache_dir=NULL)
   }
 
   #Return the final object
-  new("mgnify_client", url=url, authtok=authtok, cache_dir = cachepath)
+  new("mgnify_client", url=url, authtok=authtok, cache_dir = cachepath, warnings=warnings)
 
 }
 
@@ -405,7 +410,7 @@ mgnify_client <- function(username=NULL,password=NULL,usecache=F,cache_dir=NULL)
     #  final_data <- datlist
     if (usecache && !file.exists(cache_full_fname)){
       #Make sure the directory is created...
-      dir.create(dirname(cache_full_fname), recursive = T)
+    dir.create(dirname(cache_full_fname), recursive = T, showWarnings = client@warnings)
       saveRDS(final_data, file = cache_full_fname)
     }
   }
@@ -446,7 +451,7 @@ mgnify_client <- function(username=NULL,password=NULL,usecache=F,cache_dir=NULL)
 #' @param qtype Type of objects to query. One of \code{studies},\code{samples},\code{runs} or
 #' \code{analyses}
 #' @param accession Either a single known MGnify accession identifier (of type \code{qtype}), or a list/vector
-#' of accessions to query.
+#' of accessions to query. Note that multiple values only work for samples, runs and assemblies ... not sure why.
 #' @param asDataFrame Boolean flag to choose whether to return the results as a data.frame or leave as a nested list. In
 #' most cases, \code{asDataFrame = TRUE} will make the most sense.
 #' @param maxhits determines the maximum number of results to return. The actual number of results will actually be higher than \code{maxhits},
@@ -472,11 +477,10 @@ mgnify_client <- function(username=NULL,password=NULL,usecache=F,cache_dir=NULL)
 #' samps_polar <- rbind(samps_np, samps_sp)
 #'
 #' @export
-mgnify_query <- function(client, qtype="samples", accession=NULL, asDataFrame=T, maxhits=200, ...){
+mgnify_query <- function(client, qtype="samples", accession=NULL, asDataFrame=T, maxhits=200, usecache=F, ...){
   #Need to get around the lazy expansion in R in order to get a list
   a=accession
   arglist = as.list(match.call())[-1] # drop off the first entry, which is the name of the function
-#  arglist
 
   arglist$accession=a
 
@@ -485,8 +489,8 @@ mgnify_query <- function(client, qtype="samples", accession=NULL, asDataFrame=T,
   non_qopts = arglist[!(names(arglist) %in% c(c("asDataFrame","qtype","client", "maxhits"),query_filters[[qtype]]))]
 
   #cat(str(arglist))
-  all_query_params = unlist(list(c(list(client=client, maxhits=maxhits, path=qtype, qopts=qopt_list))), recursive = F)
-  cat(str(all_query_params))
+  all_query_params = unlist(list(c(list(client=client, maxhits=maxhits, path=qtype, usecache=usecache, qopts=qopt_list))), recursive = F)
+  #cat(str(all_query_params))
   #cat(str(all_query_params))
   #Do the query
   #result = mgnify_retrieve_json(client, path=qtype, qopts = qopts)
@@ -502,8 +506,17 @@ mgnify_query <- function(client, qtype="samples", accession=NULL, asDataFrame=T,
     # be minimal... because who's going to want cross study grabbing (?)
     dflist = lapply(result, function(r){
       df2 <- mgnify_attr_list_to_df_row(json = r, metadata_key = "sample-metadata")
-      df2$biome = r$relationship$biome$data$id
-      df2$study = r$relationship$studies$data$id
+
+      #Currently this is a bit hacky - assumes the study only has one biome, and sample only one study etc.
+      for(rn in names(r$relationships)){
+        tryCatch({
+          df2[rn] = as.list(r$relationships[[rn]]$data)[[1]]$id
+        },
+        error=function(x)NULL)
+      }
+
+      #df2$biome = as.list(r$relationship$biome$data)[[1]]$id
+      #df2$study = as.list(r$relationship$studies$data)[[1]]$id
       df2$type = r$type
       rownames(df2)=df2$accession
       df2
@@ -567,10 +580,23 @@ mgnify_analyses_from_studies <- function(client, accession, usecache=T){
 mgnify_analyses_from_samples <- function(client, accession, usecache=T){
   analyses_accessions <- sapply(as.list(accession), function(x){
     accurl <- mgnify_get_x_for_y(client, x, "samples","analyses", usecache = usecache )
-    jsondat <- mgnify_retrieve_json(client, complete_url = accurl, usecache = usecache)
-    #Just need the accession ID
-    lapply(jsondat, function(x) x$id)
-  })
+    #For some reason, it appears you "sometimes" have to go from study to runs to analyses. Need
+    #to query this with the API people...
+    if(is.null(accurl)){
+      runurl <- mgnify_get_x_for_y(client, x, "samples","runs", usecache = usecache )
+      jsondat <- mgnify_retrieve_json(client, complete_url = runurl, usecache = usecache)
+      run_accs <- lapply(jsondat, function(y) y$id)
+      a_access <- sapply(as.list(run_accs), function(z){
+        accurl <- mgnify_get_x_for_y(client, z, "runs","analyses", usecache = usecache )
+        jsondat <- mgnify_retrieve_json(client, complete_url = accurl, usecache = usecache)
+        lapply(jsondat, function(x) x$id)
+      })
+      unlist(a_access)
+    }else{
+      jsondat <- mgnify_retrieve_json(client, complete_url = accurl, usecache = usecache)
+      #Just need the accession ID
+      lapply(jsondat, function(x) x$id)
+    }})
   unlist(analyses_accessions)
 }
 
@@ -620,9 +646,9 @@ mgnify_get_analyses_metadata <- function(client, accessions, usecache=T){
 #' @export
 mgnify_get_analyses_phyloseq <- function(client = NULL, accessions, usecache=T, returnLists=F, tax_SU = "SSU"){
   #Some biom files don't import - so need a try/catch
-  ps_list <- plyr::llply(accessions, function(x) {tryCatch(
-                    mgnify_get_single_analysis_phyloseq(client, x, usecache = usecache, tax_SU = tax_SU), error=function(x) NULL)
-
+  ps_list <- plyr::llply(accessions, function(x) {
+    tryCatch(
+        mgnify_get_single_analysis_phyloseq(client, x, usecache = usecache, tax_SU = tax_SU), error=function(x) NULL)
     }, .progress = "text")
 
   #The sample_data has been corrupted by doing the merge (names get messed up and duplicated), so just regrab it with another lapply/rbind

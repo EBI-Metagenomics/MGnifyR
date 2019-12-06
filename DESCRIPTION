@@ -1,6 +1,6 @@
 Package: MGnifyR
 Type: Package
-Title: What the Package Does (Title Case)
+Title: R interface to EBI MGnify metagenomics resource
 Version: 0.1.0
 Author: Ben Allen
 Maintainer: Ben Allen <ben.allen@ncl.ac.uk>

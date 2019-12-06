@@ -5,7 +5,7 @@
 \title{MGnify API client object.}
 \usage{
 mgnify_client(username = NULL, password = NULL, usecache = F,
-  cache_dir = NULL)
+  cache_dir = NULL, warnings = F)
 }
 \description{
 Acts as a simple container encapsulating API info (\code{baseurl}), user parameters (\code{authtok}) and cache

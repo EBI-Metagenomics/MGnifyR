@@ -5,14 +5,14 @@
 \title{#' Search MGnify database for studies, samples and runs}
 \usage{
 mgnify_query(client, qtype = "samples", accession = NULL,
-  asDataFrame = T, maxhits = 200, ...)
+  asDataFrame = T, maxhits = 200, usecache = F, ...)
 }
 \arguments{
 \item{qtype}{Type of objects to query. One of \code{studies},\code{samples},\code{runs} or
 \code{analyses}}
 
 \item{accession}{Either a single known MGnify accession identifier (of type \code{qtype}), or a list/vector
-of accessions to query.}
+of accessions to query. Note that multiple values only work for samples, runs and assemblies ... not sure why.}
 
 \item{asDataFrame}{Boolean flag to choose whether to return the results as a data.frame or leave as a nested list. In
 most cases, \code{asDataFrame = TRUE} will make the most sense.}
@@ -20,15 +20,15 @@ most cases, \code{asDataFrame = TRUE} will make the most sense.}
 \item{maxhits}{determines the maximum number of results to return. The actual number of results will actually be higher than \code{maxhits},
 as clipping only occurs on pagination page boundaries. To disable the limit, set \code{maxhits} < 0}
 
-\item{...}{Remaining parameter key/value pairs may be supplied to filter the returned values. Available options differ
-between \code{qtypes}.See discussion above for details.}
-
-\item{mgnify_client}{Client instance}
-
 \item{usecache}{Whether to cache the result - and reuse any existing cache entry instead of issuing a
 new callout. In generl the use of caching for queries is discouraged, as new data is being uploaded to MGnify
 all the time, which might potentially be missed. However, for some purposes (such as analysis reproducibility)
 caching makes sense.}
+
+\item{...}{Remaining parameter key/value pairs may be supplied to filter the returned values. Available options differ
+between \code{qtypes}.See discussion above for details.}
+
+\item{mgnify_client}{Client instance}
 }
 \description{
 \code{mgnify_query} is a flexible query function, harnessing the "full" power of the JSONAPI MGnify
