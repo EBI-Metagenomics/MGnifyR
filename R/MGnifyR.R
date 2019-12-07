@@ -231,21 +231,21 @@ mgnify_get_single_analysis_phyloseq <- function(client=NULL, accession, usecache
   #Load in the phlyloseq object
   psobj <- phyloseq::import_biom(biom_path)
   #Need to check if the taxonomy was parsed correctly - depending on the pipeline it may need a bit of help:
-  if (ncol(tax_table(psobj)) == 1){
+  if (ncol(phyloseq::tax_table(psobj)) == 1){
     psobj <- phyloseq::import_biom(biom_path, parseFunction = parse_taxonomy_qiime)
   }
-  if(! "Kingdom" %in% names(tax_table(psobj))){
+  if(! "Kingdom" %in% names(phyloseq::tax_table(psobj))){
     psobj <- phyloseq::import_biom(biom_path, parseFunction = parse_taxonomy_greengenes)
   }
 
   #The biom files have a single column of unknown name - maybe it's the original sample name?.
   # It's rewritten as sample_run_analysis accession, with
   # the original value stored in the sample_data (just in case it's needed later)
-  orig_samp_name <- sample_names(psobj)[[1]]
+  orig_samp_name <- phyloseq::sample_names(psobj)[[1]]
   newsampname <- rownames(metadata_df)[1]
   metadata_df[1,"orig_samp_name"] <- orig_samp_name
-  sample_names(psobj) <- newsampname
-  sample_data(psobj) <- metadata_df
+  phyloseq::sample_names(psobj) <- newsampname
+  phyloseq::sample_data(psobj) <- metadata_df
   psobj
 }
 
@@ -488,12 +488,8 @@ mgnify_query <- function(client, qtype="samples", accession=NULL, asDataFrame=T,
   qopt_list = arglist[names(arglist) %in% query_filters[[qtype]]]
   non_qopts = arglist[!(names(arglist) %in% c(c("asDataFrame","qtype","client", "maxhits"),query_filters[[qtype]]))]
 
-  #cat(str(arglist))
   all_query_params = unlist(list(c(list(client=client, maxhits=maxhits, path=qtype, usecache=usecache, qopts=qopt_list))), recursive = F)
-  #cat(str(all_query_params))
-  #cat(str(all_query_params))
-  #Do the query
-  #result = mgnify_retrieve_json(client, path=qtype, qopts = qopts)
+
   result = do.call("mgnify_retrieve_json", all_query_params)
 
   #Rename entries by accession
@@ -514,9 +510,6 @@ mgnify_query <- function(client, qtype="samples", accession=NULL, asDataFrame=T,
         },
         error=function(x)NULL)
       }
-
-      #df2$biome = as.list(r$relationship$biome$data)[[1]]$id
-      #df2$study = as.list(r$relationship$studies$data)[[1]]$id
       df2$type = r$type
       rownames(df2)=df2$accession
       df2
