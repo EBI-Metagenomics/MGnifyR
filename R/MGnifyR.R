@@ -232,10 +232,10 @@ mgnify_get_single_analysis_phyloseq <- function(client=NULL, accession, usecache
   psobj <- phyloseq::import_biom(biom_path)
   #Need to check if the taxonomy was parsed correctly - depending on the pipeline it may need a bit of help:
   if (ncol(phyloseq::tax_table(psobj)) == 1){
-    psobj <- phyloseq::import_biom(biom_path, parseFunction = parse_taxonomy_qiime)
+    psobj <- phyloseq::import_biom(biom_path, parseFunction = phyloseq::parse_taxonomy_qiime)
   }
   if(! "Kingdom" %in% names(phyloseq::tax_table(psobj))){
-    psobj <- phyloseq::import_biom(biom_path, parseFunction = parse_taxonomy_greengenes)
+    psobj <- phyloseq::import_biom(biom_path, parseFunction = phyloseq::parse_taxonomy_greengenes)
   }
 
   #The biom files have a single column of unknown name - maybe it's the original sample name?.
