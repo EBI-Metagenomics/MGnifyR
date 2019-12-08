@@ -8,7 +8,6 @@
 #   Test Package:              'Ctrl + Shift + T'
 
 
-library(httr)
 library(urltools)
 library(phyloseq)
 library(plyr)
@@ -183,9 +182,13 @@ mgnify_get_single_analysis_results <- function(client=NULL, accession, retrievel
   names(all_results) <- names(analyses_results_type_parsers)
   parsed_results = sapply(names(all_results), function(x){
     all_json <- all_results[[x]]
-    res_df <- do.call(dplyr::bind_rows, lapply(all_json,analyses_results_type_parsers[[x]] ))
-    rownames(res_df) <- res_df$index_id
-    res_df
+    if(! is.null(all_json)){
+      res_df <- do.call(dplyr::bind_rows, lapply(all_json,analyses_results_type_parsers[[x]] ))
+      rownames(res_df) <- res_df$index_id
+      res_df
+    }else{
+      NULL
+    }
   })
   parsed_results
 }
