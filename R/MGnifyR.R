@@ -272,8 +272,11 @@ mgnify_client <- setClass("mgnify_client",
                           prototype = list(url=baseurl, authtok=NULL, cache_dir=NULL))
 
 #Contructor to allow logging in with username/password
-mgnify_client <- function(username=NULL,password=NULL,usecache=F,cache_dir=NULL, warnings=F){
-  url=baseurl
+mgnify_client <- function(url=NULL,username=NULL,password=NULL,usecache=F,cache_dir=NULL, warnings=F){
+  if (is.null(url)){
+    url=baseurl
+  }
+
   authtok=NA_character_
 
   #Check to see if we're goint to try and get an authentication token:
@@ -286,11 +289,11 @@ mgnify_client <- function(username=NULL,password=NULL,usecache=F,cache_dir=NULL,
       authtok = cont$data$token
     }
     else{
-      "Failed to authenticate"
+      stop("Failed to authenticate")
     }
   }
   #Assume we're not using it
-  cachepath=NULL
+  cachepath=NA_character_
   if(usecache){
     if (is.null(cache_dir) ){
       cachepath=paste(getwd(),'.MGnifyR_cache',sep="/")
@@ -367,6 +370,10 @@ mgnify_client <- function(username=NULL,password=NULL,usecache=F,cache_dir=NULL,
       final_data = readRDS(cache_full_fname)
   }else{
 
+    #Authorization: Bearer <your_token>
+    if(!is.null(client@authtok)){
+      httr::add_headers(.headers = c(Authorization = paste("Bearer", client@authtok, sep=" ")))
+    }
     res = httr::GET(url=fullurl, httr::config(verbose=Debug), query=full_qopts )
     data <-httr::content(res)
 
@@ -392,6 +399,9 @@ mgnify_client <- function(username=NULL,password=NULL,usecache=F,cache_dir=NULL,
       for (p in seq(pstart+1,pend)){  # We've already got the first one
 
         full_qopts$page=p
+        if(!is.null(client@authtok)){
+          httr::add_headers(.headers = c(Authorization = paste("Bearer", client@authtok, sep=" ")))
+        }
         curd = httr::content(httr::GET(fullurl, httr::config(verbose=Debug), query=full_qopts ))
         datlist[[p]] = curd$data
         #Check to see if we've pulled enough entries
@@ -547,12 +557,12 @@ mgnify_query <- function(client, qtype="samples", accession=NULL, asDataFrame=T,
 #'
 #' @export
 mgnify_analyses_from_studies <- function(client, accession, usecache=T){
-  analyses_accessions <- sapply(as.list(accession), function(x){
+  analyses_accessions <- plyr::llply(as.list(accession), function(x){
     accurl <- mgnify_get_x_for_y(client, x, "studies","analyses", usecache = usecache )
     jsondat <- mgnify_retrieve_json(client, complete_url = accurl, usecache = usecache, maxhits = -1)
     #Just need the accession ID
     lapply(jsondat, function(x) x$id)
-  })
+  }, .progress="text")
   unlist(analyses_accessions)
 }
 
@@ -574,7 +584,8 @@ mgnify_analyses_from_studies <- function(client, accession, usecache=T){
 #'
 #' @export
 mgnify_analyses_from_samples <- function(client, accession, usecache=T){
-  analyses_accessions <- sapply(as.list(accession), function(x){
+  #analyses_accessions <- sapply(as.list(accession), function(x){
+  analyses_accessions <- plyr::llply(as.list(accession), function(x){
     accurl <- mgnify_get_x_for_y(client, x, "samples","analyses", usecache = usecache )
     #For some reason, it appears you "sometimes" have to go from study to runs to analyses. Need
     #to query this with the API people...
@@ -592,7 +603,7 @@ mgnify_analyses_from_samples <- function(client, accession, usecache=T){
       jsondat <- mgnify_retrieve_json(client, complete_url = accurl, usecache = usecache)
       #Just need the accession ID
       lapply(jsondat, function(x) x$id)
-    }})
+    }}, .progress="text")
   unlist(analyses_accessions)
 }
 
@@ -610,7 +621,8 @@ mgnify_analyses_from_samples <- function(client, accession, usecache=T){
 #' @return \code{data.frame} of metadta for each analysis in the \code{accession} list.
 #' @export
 mgnify_get_analyses_metadata <- function(client, accessions, usecache=T){
-  reslist <- lapply(as.list(accessions), function(x) mgnify_get_single_analysis_metadata(client, x, usecache = T))
+  reslist <- plyr::llply(as.list(accessions), function(x) mgnify_get_single_analysis_metadata(client, x, usecache = T),
+                            .progress = "text")
   df <- do.call(dplyr::bind_rows,reslist)
   rownames(df) <- accessions
   df
@@ -656,7 +668,7 @@ mgnify_get_analyses_phyloseq <- function(client = NULL, accessions, usecache=T, 
     full_ps <- do.call(phyloseq::merge_phyloseq, ps_list)
     sample_metadata_df <- do.call(dplyr::bind_rows, samp_dat)
     rownames(sample_metadata_df) <- sample_metadata_df$analysis_accession
-    sample_data(full_ps) <- sample_metadata_df
+    phyloseq::sample_data(full_ps) <- sample_metadata_df
     full_ps
   }
 }
@@ -667,7 +679,8 @@ mgnify_get_analyses_results <- function(client=NULL, accessions, retrievelist=c(
   if(length(retrievelist) == 1 && retrievelist == "all"){
     retrievelist = names(analyses_results_type_parsers)
   }
-  results_as_lists <- plyr::llply(accessions, function(x) mgnify_get_single_analysis_results(client, x, usecache = usecache, retrievelist = retrievelist),.progress = "text")
+  results_as_lists <- plyr::llply(accessions, function(x) mgnify_get_single_analysis_results(client, x,
+                                                                                             usecache = usecache, retrievelist = retrievelist),.progress = "text")
   names(results_as_lists) <- accessions
 
   if(!compact_results){

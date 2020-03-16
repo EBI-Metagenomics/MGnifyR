@@ -1,0 +1,175 @@
+---
+title: "MGnifyR"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{MGnifyR-usage}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+library(knitr)
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+Ben Allen 
+
+<ben.allen@ncl.ac.uk>
+
+[MGnifyR homepage](http://github.com/beadyallen/MGnifyR)
+
+
+# Introduction
+
+`MGnifyR` is a package designed to ease access to the EBI's [MGnify](https://www.ebi.ac.uk/metagenomics) resource, allowing  easy searching and retrieval of multiple datasets for downstream analysis. While MGnify pipelines are undoubtadly useful, as currently implemented the pipelines produce results on a stricly per-sample basis. While whole study results are available, comparisons across studies are difficult. The MGnifyR package is specifically designed to facilitate cross-study analyses by handling all the per-sample merging details internally, leaving the user free to perform the analysis as they see fit.
+
+## Installation
+
+`MGnifyR` is hosted on github, and may be installed using via `devtools`. As things stand `MGnifyR` has dependencies on `dplyr`, `plyr`, `httr`, `urltools` and `reshape2`, which should be installed automatically if missing. (THIS NEEDS FIUXING - plyt,dplyr and reshape2 all do basically the same thing. Some of these deps are for vignette building...)
+
+```{r, eval=FALSE}
+devtools::install_github("beadyallen/MGnifyR")
+```
+
+Furthermore, `MGnifyR` also currently depends on the [phyloseq](https://joey711.github.io/phyloseq/) package which is available through Bioconductor. In the future this strict dependency may be removed as it's only required for a subset of `MGnifyR`'s functionality, but for the meantime it remains. It's also expected that the conversion of MGnify data to `phyloseq` objects will the most utilized feature anyway.
+
+## Getting started
+Once installed, `MGnifyR` is installed in the usual way.
+```{r setup}
+library(MGnifyR)
+```
+
+All functions in `MGnifyR` make use of a `mgnify_client` object to keep track of the API url, disk cache location and user access tokens. Thus the first thing to do when starting any analysis is to instantiate your object. 
+
+```{r}
+mg <- mgnify_client( usecache=T, cache_dir='/home/ben/.MGnify_cache')
+```
+We recommended that local caching is enabled with `usecache = T`. Queries to the API can be quite slow, particularly retrieving multipage results for many analyses (such as many `Interpro` results). Using a local disk cache can significantly speed up subsequent analysis, bypassing the need to re-query the API. Use of the cache should be entirely transparent, as the caching occurs at the raw data level.
+
+Optionaly a username and password may be specified during client creation, causing MGnifyR to attempt retrieval of an authentication token from the API. Doing so gives access to non-public analysis results. For instance, to access results during the author imposeed embargo period, simply create the client object using
+
+```{r eval=FALSE}
+mg <- mgnify_client(username="Webin-username", password="your-password", usecache = T)
+```
+
+## Searching MGnify
+
+`MGnifyR` gives users access to the complete range of search functionality implemented in the MGnify JSON API. A single function `mgnify_query` is used to do perform this searching, allowing Studies, Samples, Runs and Accession to be interogated from a common interface. As with all MGnifyR functions the first argument `client` must be a valid `mgnify_client` instance. The only remaining **required** parameter is `qtype`, specifying the type of data to be queried, and may be one of `studies`, `samples`, `runs`, `analyses` or `assemblies`. Other general parameters include `usecache` and `maxhits`. Unlike most other `MGnifyR` high level functions, caching is turned off by default for `mgnify_query`. New data and analyses are being added to MGnify all the time, so enabling caching by default may lead to out-of-date search results for long-lived sessions. However, it's easy to switch back on, and may be useful in many cases. Also, given the huge and ever increasing number of datasets available in MGnify, a limit to the number of results returned may be set. By default this is set to 200, which for most exploratory queries should be sufficient. It may be increased or decreased by directly specifying `maxhits`, and disabled completely (no limit) by setting `maxhits=-1`.
+
+In most cases we will want to be more specific about the search, and will also use either an `accession` parameter, or the many filter options available through the API, and discussed below. Specifying an `accession` id, which in the case of `samples`, `runs` and `assemblies` may be a vector of ids, returns a data.frame of metadata with one row per matching accession.
+
+If `accession` is `NULL` (the default) then remaining parameters define the filters applied by the API to the search result. Details of these parameters are given in `help(mgnify_query)`. By way of example though, supposing we are interested in amplicon Illumina samples from the arctic, we might use the following query:
+
+```{r}
+northpolar <- mgnify_query(mg, "samples", latitude_gte=60.0, experiment_type="amplicon", biome_name="Soil", instrument_platform = "Illumina", usecache = F )
+kable(northpolar[1:10,])
+```
+
+specifing an `accession` parameter will restrict results to just those matching that particular entry, be it a study, sample or run. For example, to retrieve information for study "MGYS00003725": 
+
+
+```{r}
+study_samples <- mgnify_query(mg, "samples", study_accession="MGYS00003725", usecache=T)
+kable(study_samples[1:10,])
+```
+
+
+## Finding relevent `analyses` accessions
+All result retrieval functions in `MGnifyR` - `mgnify_get_accession_xxx` take as input a list of `analyses` accession ids. Thus it's necessary to convert the `studies`, `samples` or `runs` accessions identified with `mgnify_query` into corresponding `analyses` for further processing. This is performed with the `mgnify_analyses_from_xxx` functions. Following on from our previous search, we have a list of samples, so to convert to corresponding analyses we use:
+
+```{r}
+#just retrieve 20 hits for demonstration
+analyses_accessions <- mgnify_analyses_from_samples(mg, accession = study_samples$accession[1:20])
+```
+
+A useful side effect of the above call is that some attribute metadata for each sample has now been retrieved and stored in the local cache. Thus subsequent API calls to these same samples (which may occur multiple times in subsequent steps) will be significantly faster. 
+
+It's important to be aware that the results of a `mgnify_analyses_from_xxx` command will not neccesarily be a one-to-one match with the input parameters. `MGnify` analysis runs are sometimes performed multiple times, perhaps using different versions of the pipeline. Thus further filtering of the result list may be required.
+
+## Examining metadata
+
+At this point we have a long list of analysis instances (with potential duplicates) corresponding to the samples previously found. We use the `mgnify_get_analyses_metadata` function to download and combine all associated sample, run and study metadata.
+
+```{r}
+metadata <- mgnify_get_analyses_metadata(mg, analyses_accessions)
+kable(head(metadata))
+```
+
+The resulting data.frame has columns with names prefixed with their source type. For example, "sample_xxx" columns correspond to metadata gleaned from querying the `sample` entry. MGnify allows quite flexible specification of arbitray metadata at submission time, in many cases leading to quite sparse `data.frame` results if accession queries are sourceed from more than one study. For instance, if only one sample contains an entry for "sample_soil_PH", entries for other rows will be filled with `NA`. `MGnifyR` does not automatically clean these missing values - instead opting to allow the the user to choose the a correct action. 
+
+
+## Worked example.
+
+Although the previous queries have been based on the results from `mgnify_query`, from now on we will concentrate on combining and comparing results from three specific studies, associated with three different environments. This is principally due to the rapid increase in MGnify submissions, leading to a lack of consistency between queries. For 
+
+```{r}
+
+soil <- mgnify_analyses_from_studies(mg, "MGYS00001447")[1:10]
+human <- mgnify_analyses_from_studies(mg, "MGYS00001442")[1:10]
+marine <- mgnify_analyses_from_studies(mg, "MGYS00001282")[1:10]
+
+all_accessions <- c(soil,human,marine)
+
+```
+
+```{r}
+
+full_metadata <- mgnify_get_analyses_metadata(mg, all_accessions)
+
+head(full_metadata)
+```
+
+
+## Converting analyses to `phyloseq` objects
+
+Having selected the analyses we wish to examine further, `mgnify_analyses_phyloseq` is used to both download associated OTU tables and taxonomy, and join all results into a single `phyloseq` object. [phyloseq](https://joey711.github.io/phyloseq/) is becoming a defacto standard for taxonomic abundance *munging* in R. `phyloseq` objects integrate abundance, taxonomic, phylogenetic, sample and sequence data into a single object, with powerful facilities for filtering, processing and plotting the results. Although 
+
+To convert the existing list of analysis accessions to a phyloseq object, we simply use the following:
+
+```{r}
+full_phyloseq <- mgnify_get_analyses_phyloseq(mg, full_metadata$analysis_accession)
+full_phyloseq
+```
+
+  once the results are available in phyloseq format, a plethora of analysis options bvecome available. Please refer to the excellent phyloseq documnentation available at [https://joey711.github.io/phyloseq/] for more information. For the purposes this vignette, a couple of diversity plots are suffiencent to demonstrate the functionality.
+  
+```{r}
+library(phyloseq)
+library(ggplot2)
+
+#rarefy the data (~sorry~) for alpha diversity
+normed_ps <- rarefy_even_depth(full_phyloseq, rngseed=1)
+
+class_ps <- tax_glom(normed_ps, "Class")
+plot_bar(class_ps,  fill="Phylum")  + theme(legend.position = "none") + theme_bw()
+```
+
+```{r}
+alphadiversity = estimate_richness(normed_ps)
+
+adf <- cbind.data.frame(phyloseq::sample_data(normed_ps)$study_accession, alphadiversity$InvSimpson)
+colnames(adf) <- c("study","diversity")
+ggplot(adf, aes(x=study, group=study, y=diversity)) + geom_boxplot() + theme_bw()
+```  
+  
+  
+## Retrieving functional analysis results
+
+For shotgun metagenomics samples (as opposed to amplicon based studies), recent pipelines also determine estimates of per-sample gene functionality. Functional counts for GO terms (either the full GO ontology or trimmed down GO-slim annotations), antiSMASH gene clusters, and Pfam protein families are available and queried with `mgnify_get_analyses_results`. In keeping with previous MGNifyR commands, the first argument to `mgnify_get_analyses_results` is a `mgnify` client object, followed by a list of analysis accessions. `retrievelist` requires us to specify which functional estimations we with to examine, and may be one of `go-slim`, `go-terms`, `interpro-identifiers` or `antismash-gene-clusters`. Although not recommended, `retrievelist` may also be `all`, in which case all available functional estimates are retrieved, along with all taxonomic assignments. 
+
+Returning to the three study example used above, `go-slim` annotations are retrieved using the code below, with reults being returned as a named list, even if only a single annotation is requested. 
+```{r}
+
+func_res <- mgnify_get_analyses_results(mg, all_accessions, retrievelist = "go-slim")
+
+goslim <- func_res$`go-slim`
+
+```
+## Functional comparisons between samples
+
+Best practice methods for the analysis of such functional data are still under development, but simple exploratory analysis may reveal interesting insights. 
+
