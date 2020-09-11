@@ -211,7 +211,7 @@ mgnify_get_single_analysis_results <- function(client=NULL, accession, retrievel
   #be faster though, except in pathological cases (e.g. only 1 sample per 1000 sample study required). As with everything
   #else, we make use of local caching to speed things along.
   if(bulk_files){
-    downloadDIR <- paste(mg@cache_dir, "tsv", sep="/")
+    downloadDIR <- paste(client@cache_dir, "tsv", sep="/")
     if(!dir.exists(downloadDIR)){
       dir.create(downloadDIR, recursive = T, showWarnings = mg@warnings)
     }
