@@ -2,7 +2,7 @@
 % Please edit documentation in R/MGnifyR.R
 \name{mgnify_get_download_urls}
 \alias{mgnify_get_download_urls}
-\title{Get a list of files associated with and accession}
+\title{Listing files available for download}
 \usage{
 mgnify_get_download_urls(client, accessions, accession_type,
   usecache = T)

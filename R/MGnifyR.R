@@ -426,26 +426,13 @@ mgnify_get_single_analysis_phyloseq <- function(client=NULL, accession, usecache
 }
 
 
-#**************************************************
-# Exported Classes and Functions
 
-#' MGnify API client object.
-#'
-#' Acts as a simple container encapsulating API info (\code{baseurl}), user parameters (\code{authtok}) and cache
-#' locations (\code{cache_dir})
-#'
-#' @slot baseurl Web address of the MGnify JSON api - including version. Required
-#' @slot authtok The MGnify API supports authentication for users by way of \code{authtoken}. This is that token, althouth it's not used in anger at the moment.
-#' @slot cache_dir To reduce load on the server, and speed up repeated data processing, JSON calls may be cached locally, and
-#' stored in \code{cache_dir}.
-#' @slot result_memcache default TRUE #WRITE SOMETHING HERE!!!
-#' @export mgnify_client
 ##' @exportClass mgnify_client
 mgnify_client <- setClass("mgnify_client",
                           slots=list(url = "character", authtok = "character",
                                      cache_dir="character", warnings="logical",
                                      use_memcache="logical", memcache="list"),
-                          prototype = list(url=baseurl, authtok=NULL, cache_dir=NULL, use_memcache=TRUE, memcache=list()))
+                          prototype = list(url=baseurl, authtok=NULL, cache_dir=NULL, use_memcache=FALSE, memcache=list()))
 
 #Contructor to allow logging in with username/password
 #' Instantiate the MGnifyR client object
@@ -461,10 +448,14 @@ mgnify_client <- setClass("mgnify_client",
 #'  in the current working directory will be used. Note that cached files are persistent, so the cache directory may be reused between sessions,
 #'  taking advantage of previously downloaded results. The directory will be created if it doesn't exist already.
 #' @param warnings debug flag to print extra output during invocation of some MGnifyR functions. Defaults to FALSE.
+#' @param use_memcache flag to indicate whether functional results obtained when \code{bulk_dl} is \code{TRUE} in \code{mgnify_get_analyses_results} should
+#' be stored in an in-memory cache, rather than the cached input being re-read for each accession. this is currently NOT working
+#' properly and should therefore be set \code{FALSE} (the default). It has the potential to speed up searches considerably though, especially
+#' for studies with a large number of samples, so will be implemented properly in the future.
 #' @examples
 #' my_client <- mgnify_client(username="Webin-1122334", password="SecretPassword", usecache=T, cache_dir = "/scratch/MGnify_cache_location")
 #' @export
-mgnify_client <- function(url=NULL,username=NULL,password=NULL,usecache=F,cache_dir=NULL, warnings=F, use_memcache=T){
+mgnify_client <- function(url=NULL,username=NULL,password=NULL,usecache=F,cache_dir=NULL, warnings=F, use_memcache=F){
   if (is.null(url)){
     url=baseurl
   }
@@ -507,10 +498,10 @@ mgnify_client <- function(url=NULL,username=NULL,password=NULL,usecache=F,cache_
 
 #'Low level MGnify API handler
 #'
-#'\code{mgnify_retrieve_json} deals with handles the actual HTTP GET calls for the MGnifyR package, handling both pagination and local reuslt
-#'caching. Although principally intended for internal MGnifyR use , it's exported for direct invocation.
-#'Generally though it's not recommended for use by users. It also handles authentication cookies for access
-#'to restricted datasets.
+#'\code{mgnify_retrieve_json} deals with handles the actual HTTP GET calls for the MGnifyR package, handling API pagination,
+#'local result caching, and  authentication cookies for access
+#'to restricted or pre-release datasets.Although principally intended for internal MGnifyR use , it's exported for direct invocation.
+#'Generally though it's not recommended for use by users.
 #'
 #'@param client MGnifyR client
 #'@param path top level search point for the query. One of \code{biomes}, \code{samples}, \code{runs} etc. Basically includes
@@ -800,6 +791,7 @@ mgnify_download <- function(client, url, target_filename=NULL, read_func=NULL, u
 #' caching makes sense.
 #' @param ... Remaining parameter key/value pairs may be supplied to filter the returned values. Available options differ
 #' between \code{qtypes}.See discussion above for details.
+#' @return  A nested list or data.frame (depending on \code{asDataFrame}) containing the results of the query.
 #' @examples
 #' mg <- mgnify_client(cache_dir="/tmp/mgcache")
 #'
@@ -875,7 +867,6 @@ mgnify_query <- function(client, qtype="samples", accession=NULL, asDataFrame=T,
 #' @param accession Single study accession id, or vector/list of accessions for which to retrieve Analyses ids
 #' @param usecache Flag to determine whether to re-use/store data on disk, rather than query the server.
 #' @return vector of Analysis accession ids
-#'
 #' @examples
 #' #Retrieve all analysis ids from studies MGYS00005058, MGYS00005058 and MGYS00005058
 #' result <- mgnify_analyses_from_studies(myclient, c("MGYS00005058", "MGYS00005058" and "MGYS00005058"))
@@ -902,7 +893,6 @@ mgnify_analyses_from_studies <- function(client, accession, usecache=T){
 #' @param accession Single sample accession id, or vector/list of accessions for which to retrieve Analyses ids
 #' @param usecache Flag to determine whether to re-use/store data on disk, rather than query the server.
 #' @return vector of associated Analysis accession ids
-#'
 #' @examples
 #' #Retrieve all analysis ids from samples
 #' result <- mgnify_analyses_from_samples(myclient, c("SRS4392730", "SRS4392743"))
@@ -944,6 +934,8 @@ mgnify_analyses_from_samples <- function(client, accession, usecache=T){
 #' @param accessions Single value or list/vector of Anlysis accessions to retrieve data for
 #' @param usecache Whether to use the disk based cache.
 #' @return \code{data.frame} of metadta for each analysis in the \code{accession} list.
+#' @examples
+#'
 #' @export
 mgnify_get_analyses_metadata <- function(client, accessions, usecache=T){
   reslist <- plyr::llply(as.list(accessions), function(x) mgnify_get_single_analysis_metadata(client, x, usecache = usecache),
@@ -979,6 +971,9 @@ mgnify_get_analyses_metadata <- function(client, accessions, usecache=T){
 #' the trees available are specific to each accession, holding only a subset of the leaves and branches of the full canonical tree used for the pipeline. This means that
 #' \code{phyloseq} is unable to merge the trees, and therefore fails to build a final combined object. Setting \code{returnLists} to TRUE allows the results to be returned successfully,
 #' albeit not in a single object.
+#' @return
+#' @examples
+#'
 #'
 #' @export
 mgnify_get_analyses_phyloseq <- function(client = NULL, accessions, usecache=T,
@@ -1048,9 +1043,10 @@ mgnify_get_analyses_phyloseq <- function(client = NULL, accessions, usecache=T,
 #' the JSONAPI interface. When getting results where multiple accessions share the same study, this option may result in significantly faster processing. However, there
 #' appear to be (quite a few) cases in the database where the TSV result columns do NOT match the expected accession names. This will hopefully be fixed in the future, but for
 #' now \code{bulk_dl} defaults to FALSE. When it does work, it can be orders of magnitude more efficient.
-#'
+#' @return
 #' @examples
 #'
+#'@export
 mgnify_get_analyses_results <- function(client=NULL, accessions, retrievelist=c(), compact_results=T, usecache = T, bulk_dl = F){
   if(length(retrievelist) == 1 && retrievelist == "all"){
     retrievelist = names(analyses_results_type_parsers)

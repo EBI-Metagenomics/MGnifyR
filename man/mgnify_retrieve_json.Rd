@@ -30,8 +30,8 @@ a sensible thing to do, but it remains as an option. It probably makes sense for
 \code{list} of results after pagination is dealt with.
 }
 \description{
-\code{mgnify_retrieve_json} deals with handles the actual HTTP GET calls for the MGnifyR package, handling both pagination and local reuslt
-caching. Although principally intended for internal MGnifyR use , it's exported for direct invocation.
-Generally though it's not recommended for use by users. In the future it'll also implement the authentication
-procedures - but that doesn't seem to be working yet server-side.
+\code{mgnify_retrieve_json} deals with handles the actual HTTP GET calls for the MGnifyR package, handling API pagination,
+local result caching, and  authentication cookies for access
+to restricted or pre-release datasets.Although principally intended for internal MGnifyR use , it's exported for direct invocation.
+Generally though it's not recommended for use by users.
 }

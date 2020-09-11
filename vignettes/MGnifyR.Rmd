@@ -49,9 +49,9 @@ All functions in `MGnifyR` make use of a `mgnify_client` object to keep track of
 ```{r, echo=TRUE, results='hide', fig.keep='all', message = FALSE}
 mg <- mgnify_client( usecache=T, cache_dir='/home/ben/.MGnify_cache')
 ```
-It's recommended that local caching is enabled with `usecache = T`. Queries to the API can be quite slow, particularly retrieving multipage results for many analyses (such as many `Interpro` results). Using a local disk cache can significantly speed up subsequent work, bypassing the need to re-query the API. Use of the cache should be entirely transparent, as the caching occurs at the raw data level.
+It's recommended that local caching is enabled with `usecache = T`. Queries to the API can be quite slow, particularly retrieving multipage results for many analyses (such as many `Interpro` results). Using a local disk cache can significantly speed up subsequent work, bypassing the need to re-query the API. Use of the cache should be entirely transparent, as the caching occurs at the raw data level. The cache can persist across `MGnifyR` sessions, and can even be used for multiple sessions simultaneously - provided that different sets of accessions are queried at once.
 
-Optionaly a username and password may be specified during client creation, causing MGnifyR to attempt retrieval of an authentication token from the API. Doing so gives access to non-public results. For instance, to access results during the author imposed embargo period, simply create the client object using:
+Optionaly a username and password may be specified during client creation, causing MGnifyR to attempt retrieval of an authentication token from the API. Doing so gives access to non-public results. For instance, to access results during an author imposed embargo period, simply create the client object using:
 
 ```{r, eval=FALSE}
 mg <- mgnify_client(username="Webin-username", password="your-password", usecache = T)
@@ -67,7 +67,8 @@ If `accession` is `NULL` (the default) then remaining parameters define the filt
 
 ```{r, search_studies, echo=FALSE, results='hide', fig.keep='all', message = FALSE}
 northpolar <- mgnify_query(mg, "samples", latitude_gte=60.0, experiment_type="amplicon", biome_name="Soil", instrument_platform = "Illumina", usecache = F )
-kable(northpolar[1:10,])
+#kable(northpolar[1:10,])
+northpolar[1:10,]
 ```
 
 specifing an `accession` parameter will restrict results to just those matching that particular entry, be it a study, sample or run. For example, to retrieve information for study "MGYS00003725":
@@ -75,7 +76,8 @@ specifing an `accession` parameter will restrict results to just those matching 
 
 ```{r, search_studies_accession, echo=FALSE, results='hide', fig.keep='all', message = FALSE}
 study_samples <- mgnify_query(mg, "samples", study_accession="MGYS00003725", usecache=T)
-kable(study_samples[1:10,])
+#kable(study_samples[1:10,])
+study_samples[1:10,]
 ```
 
 
@@ -175,20 +177,27 @@ knitr::opts_current$get(c(
 
 ## Retrieving functional analysis results
 
-For shotgun metagenomics samples (as opposed to amplicon based studies), recent pipelines also determine estimates of per-sample gene functionality. Functional counts for GO terms (either the full GO ontology or trimmed down GO-slim annotations), antiSMASH gene clusters, and Pfam protein families are available and queried with `mgnify_get_analyses_results`. In keeping with previous MGNifyR commands, the first argument to `mgnify_get_analyses_results` is a `mgnify` client object, followed by a list of analysis accessions. `retrievelist` requires us to specify which functional estimations we with to examine, and may be one of `go-slim`, `go-terms`, `interpro-identifiers` or `antismash-gene-clusters`. Although not recommended, `retrievelist` may also be `all`, in which case all available functional determinations are retrieved, along with all taxonomic assignments.
+For shotgun metagenomics samples (as opposed to amplicon based studies), recent pipelines also determine estimates of per-sample gene functionality. Functional counts for GO terms (either the full GO ontology or trimmed down GO-slim annotations), antiSMASH gene clusters, and Pfam protein families are available with `mgnify_get_analyses_results`. In keeping with previous MGNifyR commands, the first argument to `mgnify_get_analyses_results` is a `mgnify_client` object, followed by a list of analysis accessions. `retrievelist` requires us to specify which functional estimations we wish to examine, and may be one or more of `go-slim`, `go-terms`, `interpro-identifiers` or `antismash-gene-clusters`. `retrievelist` may also be `all`, in which case all available results are retrieved, along with all taxonomic assignments.
 
-Returning to the three study example used above, `go-slim` annotations are retrieved using the code below, with results being returned as a named list, even if only a single annotation is requested.
+Returning to the three study example used above, `go-slim` annotations are retrieved using the code below, with results being returned as a named list with entries for all types in `retrievelist`. If a particular result set is not available, the corresponding entry in the returned list will be `NULL`
+
 ```{r, get_functions, cache=TRUE, echo=TRUE, results='hide', fig.keep='all', message = FALSE}
 
-func_res <- mgnify_get_analyses_results(mg, full_metadata$analysis_accession, retrievelist = "go-slim")
+func_res <- mgnify_get_analyses_results(mg, full_metadata$analysis_accession, retrievelist = "go-slim", bulk_dl = T)
 
 goslim <- func_res$`go-slim`
 head(goslim)
 
 ```
+Each named entry in the results is a single data.frame, with the first 2 or 3 (depending on the result type) columns being descriptors, with remaining columns containing corresponding counts for each sample. Perhaps confusingly the `accession` column refers to the functional accession rather than a particular MGnify accession. In this case it contains the GO term accessions, but might equally contain Interpro identifiers or AntiSMASH ids. 
+
+The above call to `mgnify_get_analyses_results` included `bulk_dl=TRUE` which has the potential to significantly speed up data retrieval. MGnify makes its functional results available in two seperate ways, either on a per-analysis basis through the web api, or at the whole study level as large files, tab seperated (TSV), and with columns representing the results for each analysis. When `bulk_dl` is `FALSE`, `MGnifyR` queries the web api to get results which (given some functional analyses results may consist of thousands of entries) may take significant time. Setting `bulk_dl` to `TRUE` causes `MGnifyR` to determine the source study associated with a particular `analysis` and to instead download and parse its corresponding results file. Since this result file contains entries for all analyses associated with the study, by taking advantage of `MGnifyR`'s local caching this single download provides results for many future analyses. In some cases this affords several orders of magnitude speedup over the api query case. 
+
+Unfortunately, column entries in the per-study results files do not always directly correspond to those from a particular analysis run, causing the retrieval to fail. The principal cause of this is believed to be the running of multiple analyses jobs on the same sample. Thus for reliability, `bulk_dl` is `FALSE` by default. As a general recommendation though, you should try setting it `TRUE` the first time `mgnify_get_analyses_results` is used on a set of accessions. If this fails, setting `bulk_dl` to `FALSE` will enable the more robust approach allowing the analysis to continue. It might take a while though. Hopefully in the future the sample/analysis correspondence mismatches will be fixed and the default `bulk_dl` will be switch to `TRUE`.
+
 
 ## Functional comparisons between samples
-Best practice methods for the analysis of such functional data are still under development, but simple exploratory analysis may reveal interesting insights. For instance, the code below performs a simple "read depth" normalization, followed by an NMDS dimensional reduction.
+Best practice methods for the analysis of such functional data are still under development, but simple exploratory analysis may reveal interesting insights. For instance, the code below performs a simple "read depth" normalization on the returned `go-slim` dataset, followed by NMDS dimensional reduction and plotting. Rather than acting as any sort of recommended analysis, the intention is to simply demonstrate the ease with which the MGnify data is manipulizable ...??...
 
 ```{r, nmds_function, results='hide', fig.keep='all', message = FALSE, fig.align="center", fig.height=4, fig.width=6}
 library(vegan)
@@ -198,38 +207,48 @@ seqvect <- as.numeric(full_metadata[,"analysis_Nucleotide sequences after format
 
 #scale factors for normalizing the go term results
 scale_factors = 1/(seqvect/median(seqvect))
+#scale_factors = 1
 
 normalized= goslim[,-c(1,2,3)] * scale_factors
 
+
+
 #Drop sample MGYA00096988 due to very poor coverage - skews resulting NMDS
-normalized <- subset(normalized, select = -c(MGYA00096988))
+#normalized <- subset(normalized, select = -c(MGYA00096988))
 nmds_res = vegan::metaMDS(t(normalized))
 
-results_df <-  merge(nmds_res$points, full_metadata[,c("analysis_accession","sample_environment-feature")], by.x="row.names", by.y="analysis_accession")
-ggplot(results_df, aes(x=MDS1, y=MDS2)) + geom_point(aes_string(color="`sample_environment-feature`")) + theme_bw()
-  #scale_x_continuous(limits=c(0,100)) + scale_y_continuous(limits=c(-0.15,0.15)) + theme_bw()
+
+
+results_df <-  merge(nmds_res$points, 
+                     full_metadata[,c("analysis_accession","sample_environment-feature")], 
+                     by.x="row.names", by.y="analysis_accession")
+
+ggplot(results_df, aes(x=MDS1, y=MDS2)) + geom_point(aes_string(color="`sample_environment-feature`")) + theme_bw() +
+  scale_x_continuous(limits=c(-0.1,0.1)) + scale_y_continuous(limits=c(-0.1,0.1)) + theme_bw()
 
 ```
-
+From the ordination plot, we see a clear delineation between the gut and marine samples which, while unsurprising, is reassuring. Taking the analysis further we might be interested in finding out if any particular GO terms are over or under represented between biome types or studies. Since we are essentially working with count data, 
 Furthermore, we can extract different stuff about many things to find out information about gubbins.
 
 ```{r, differential_taxa}
 library(reshape2)
 library(dplyr)
+library(MASS)
 remerged <- cbind(goslim[,c(1,2,3)], as.data.frame(normalized))
 
 longform <- melt(remerged, id.vars=c("accession", "description", "lineage"), variable.name="sample", value.name="abund")
 
 longform <- merge(longform, full_metadata[,c("analysis_accession","sample_environment-feature")], by.x="sample", by.y="analysis_accession")
 
-r = longform %>%
-  filter(`sample_environment-feature` %in% c("hydrothermal vent", "sea shore")) %>%
-  mutate(transformed_abund = log2(abund+0.01)) %>%
-  group_by(accession) %>%
-  do(
-    broom::tidy(lm(log2(abund +0.01)~ `sample_environment-feature`, .))
-    ) %>%
-  filter(term == '`sample_environment-feature`sea shore')
+#r <- longform  %>%
+#  filter(`sample_environment-feature` %in% c("hydrothermal vent", "sea shore")) %>%
+#  mutate(transformed_abund = abund+1) %>%
+#  group_by(accession) %>%
+#  do(
+#    broom::tidy(glm.nb(transformed_abund ~ `sample_environment-feature`, .))
+#    ) 
+
+
 
 ```
 
@@ -256,9 +275,20 @@ urls <- dl_urls[dl_urls$attributes.description.label == "InterPro matches",]
 ```{r, analyse_downloads}
 
 
+library(Biostrings)
+library(data.table)
+#do the download
 
+#Simple function definition
+getAntiMicroSeqs <- function(fname){
+  sequences <- readAAStringSet(fname)
+  antimicro <- grepl("PF04896", names(sequences))
+  as.data.frame(as.list(table(as.character(sequences[antimicro]))))
+}
 
+#Just download a single accession for demonstration, specifying a read_func
+antimicro_seq_counts <- mgnify_download(mg, urls$download_urls , read_func = getAntiMicroSeqs)
 
-
+antimicro_seq_counts %>% head
 
 ```

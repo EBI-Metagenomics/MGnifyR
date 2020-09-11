@@ -34,7 +34,7 @@ will be returned.
 caching and authentication. By default, \code{mgnify_download}
 }
 \examples{
-#Make a client ibject
+#Make a client object
 mg <- mgnify_client(cache_dir="/tmp/mgcache")
 #create a vector of accession ids - these happen to be \\code{analysis} accessions
 accession_vect <- c("MGYA00563876", "MGYA00563877", "MGYA00563878", "MGYA00563879", "MGYA00563880" )

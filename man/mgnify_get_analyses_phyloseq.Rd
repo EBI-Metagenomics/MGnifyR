@@ -5,7 +5,7 @@
 \title{Retrieve OTU tables for all specified accessions and build a\code{phyloseq} object}
 \usage{
 mgnify_get_analyses_phyloseq(client = NULL, accessions, usecache = T,
-  returnLists = F, tax_SU = "SSU")
+  returnLists = F, tax_SU = "SSU", get_tree = FALSE)
 }
 \arguments{
 \item{client}{\code{mgnify_client} instance}
@@ -25,10 +25,19 @@ pipelines checking both the SSU and LSU portions of the rRNA sequence. \code{tax
 selection of either the Small subunit (SSU) or Large subunit results in the final \code{phyloseq} object.
 Older pipeline versions do not report results for both subunits,
 and thus for some accessions this value will have no effect.}
+
+\item{get_tree}{Flag to control whether to include available phylogenetic trees in the phyloseq object. At present this option is of limited use as
+the trees available are specific to each accession, holding only a subset of the leaves and branches of the full canonical tree used for the pipeline. This means that
+\code{phyloseq} is unable to merge the trees, and therefore fails to build a final combined object. Setting \code{returnLists} to TRUE allows the results to be returned successfully,
+albeit not in a single object.}
 }
 \description{
 \code{mgnify_get_analyses_phyloseq} retrieves all associated Study, Sample and Analysis metadata attributes,
 along with all OTU tables (of a given taxonomic type), and merges them together to build a \code{phyloseq}
 object with \code{otu_table}, \code{tax_table} and \code{sample_data} objects.
 #'
+}
+\examples{
+
+
 }

@@ -30,6 +30,9 @@ between \code{qtypes}.See discussion above for details.}
 
 \item{mgnify_client}{Client instance}
 }
+\value{
+A nested list or data.frame (depending on \code{asDataFrame}) containing the results of the query.
+}
 \description{
 \code{mgnify_query} is a flexible query function, harnessing the "full" power of the JSONAPI MGnify
 search filters. Search results may be filtered by metadata value, associated study/sample/analyese etc. Details
