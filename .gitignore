@@ -6,3 +6,8 @@
 .MGnify_cache
 inst/doc
 NOTES
+*.RDS
+Testing
+.gitignore
+tmp
+.RDataTmp

@@ -12,8 +12,12 @@ library(knitr)
 knitr::opts_chunk$set(
   collapse = TRUE,
 <<<<<<< HEAD
+<<<<<<< HEAD
   comment = "#>",
   cache = TRUE
+=======
+  comment = "#>"
+>>>>>>> 7005e0518f24d23768d0802bacbd8c9348f80973
 =======
   comment = "#>"
 >>>>>>> 7005e0518f24d23768d0802bacbd8c9348f80973
@@ -22,7 +26,11 @@ knitr::opts_chunk$set(
 
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 Ben Allen
+=======
+Ben Allen 
+>>>>>>> 7005e0518f24d23768d0802bacbd8c9348f80973
 =======
 Ben Allen 
 >>>>>>> 7005e0518f24d23768d0802bacbd8c9348f80973
@@ -47,6 +55,7 @@ devtools::install_github("beadyallen/MGnifyR")
 Furthermore, `MGnifyR` also currently depends on the [phyloseq](https://joey711.github.io/phyloseq/) package which is available through Bioconductor. In the future this strict dependency may be removed as it's only required for a subset of `MGnifyR`'s functionality, but for the meantime it remains. It's also expected that the conversion of MGnify data to `phyloseq` objects will the most utilized feature anyway.
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 ## Getting started - creating the client
 Once installed, `MGnifyR` is made available in the usual way.
 ```{r, setup}
@@ -64,6 +73,8 @@ Optionaly a username and password may be specified during client creation, causi
 
 ```{r, eval=FALSE}
 =======
+=======
+>>>>>>> 7005e0518f24d23768d0802bacbd8c9348f80973
 ## Getting started
 Once installed, `MGnifyR` is installed in the usual way.
 ```{r setup}
@@ -80,6 +91,9 @@ We recommended that local caching is enabled with `usecache = T`. Queries to the
 Optionaly a username and password may be specified during client creation, causing MGnifyR to attempt retrieval of an authentication token from the API. Doing so gives access to non-public analysis results. For instance, to access results during the author imposeed embargo period, simply create the client object using
 
 ```{r eval=FALSE}
+<<<<<<< HEAD
+>>>>>>> 7005e0518f24d23768d0802bacbd8c9348f80973
+=======
 >>>>>>> 7005e0518f24d23768d0802bacbd8c9348f80973
 mg <- mgnify_client(username="Webin-username", password="your-password", usecache = T)
 ```
@@ -91,9 +105,15 @@ mg <- mgnify_client(username="Webin-username", password="your-password", usecach
 In most cases we will want to be more specific about the search, and will also use either an `accession` parameter, or the many filter options available through the API, and discussed below. Specifying an `accession` id, which in the case of `samples`, `runs` and `assemblies` may be a vector of ids, returns a data.frame of metadata with one row per matching accession.
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 If `accession` is `NULL` (the default) then remaining parameters define the filters applied by the API to the search result. Details of these parameters are given in `help(mgnify_query)`. By way of example though, supposing we are interested in amplicon Illumina samples from the arctic, we might try the following query:
 
 ```{r, search_studies, echo=FALSE, results='hide', fig.keep='all', message = FALSE}
+=======
+If `accession` is `NULL` (the default) then remaining parameters define the filters applied by the API to the search result. Details of these parameters are given in `help(mgnify_query)`. By way of example though, supposing we are interested in amplicon Illumina samples from the arctic, we might use the following query:
+
+```{r}
+>>>>>>> 7005e0518f24d23768d0802bacbd8c9348f80973
 =======
 If `accession` is `NULL` (the default) then remaining parameters define the filters applied by the API to the search result. Details of these parameters are given in `help(mgnify_query)`. By way of example though, supposing we are interested in amplicon Illumina samples from the arctic, we might use the following query:
 
@@ -104,15 +124,21 @@ kable(northpolar[1:10,])
 ```
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 specifing an `accession` parameter will restrict results to just those matching that particular entry, be it a study, sample or run. For example, to retrieve information for study "MGYS00003725":
 
 
 ```{r, search_studies_accession, echo=FALSE, results='hide', fig.keep='all', message = FALSE}
 =======
+=======
+>>>>>>> 7005e0518f24d23768d0802bacbd8c9348f80973
 specifing an `accession` parameter will restrict results to just those matching that particular entry, be it a study, sample or run. For example, to retrieve information for study "MGYS00003725": 
 
 
 ```{r}
+<<<<<<< HEAD
+>>>>>>> 7005e0518f24d23768d0802bacbd8c9348f80973
+=======
 >>>>>>> 7005e0518f24d23768d0802bacbd8c9348f80973
 study_samples <- mgnify_query(mg, "samples", study_accession="MGYS00003725", usecache=T)
 kable(study_samples[1:10,])
@@ -121,9 +147,15 @@ kable(study_samples[1:10,])
 
 ## Finding relevent `analyses` accessions
 <<<<<<< HEAD
+<<<<<<< HEAD
 All result retrieval functions in `MGnifyR` - `mgnify_get_accession_xxx` take as input a list of `analyses` accession ids. Thus it's necessary to convert the `studies`, `samples` or `runs` accessions identified with `mgnify_query` into corresponding `analyses` for further processing. This is performed with the `mgnify_analyses_from_xxx` functions. Following on from our previous search, we have a list of \code{sample} accessions, so to convert to corresponding analyses we use:
 
 ```{r ,convert_to_analyses, echo=FALSE, results='hide', fig.keep='all', message = FALSE}
+=======
+All result retrieval functions in `MGnifyR` - `mgnify_get_accession_xxx` take as input a list of `analyses` accession ids. Thus it's necessary to convert the `studies`, `samples` or `runs` accessions identified with `mgnify_query` into corresponding `analyses` for further processing. This is performed with the `mgnify_analyses_from_xxx` functions. Following on from our previous search, we have a list of samples, so to convert to corresponding analyses we use:
+
+```{r}
+>>>>>>> 7005e0518f24d23768d0802bacbd8c9348f80973
 =======
 All result retrieval functions in `MGnifyR` - `mgnify_get_accession_xxx` take as input a list of `analyses` accession ids. Thus it's necessary to convert the `studies`, `samples` or `runs` accessions identified with `mgnify_query` into corresponding `analyses` for further processing. This is performed with the `mgnify_analyses_from_xxx` functions. Following on from our previous search, we have a list of samples, so to convert to corresponding analyses we use:
 
@@ -134,9 +166,15 @@ analyses_accessions <- mgnify_analyses_from_samples(mg, accession = study_sample
 ```
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 A useful side effect of the above call is that some attribute metadata for each sample has now been retrieved and stored in the local cache. Thus subsequent API calls for these samples (which will occur multiple times in later steps) will be significantly faster.
 
 It's important to be aware that the results of a `mgnify_analyses_from_xxx` command will not neccesarily be a one-to-one match with the input parameters. `MGnify` analysis runs are sometimes performed multiple times, perhaps using different versions of the pipeline. Thus further filtering of the result list may be required - see the next section.
+=======
+A useful side effect of the above call is that some attribute metadata for each sample has now been retrieved and stored in the local cache. Thus subsequent API calls to these same samples (which may occur multiple times in subsequent steps) will be significantly faster. 
+
+It's important to be aware that the results of a `mgnify_analyses_from_xxx` command will not neccesarily be a one-to-one match with the input parameters. `MGnify` analysis runs are sometimes performed multiple times, perhaps using different versions of the pipeline. Thus further filtering of the result list may be required.
+>>>>>>> 7005e0518f24d23768d0802bacbd8c9348f80973
 =======
 A useful side effect of the above call is that some attribute metadata for each sample has now been retrieved and stored in the local cache. Thus subsequent API calls to these same samples (which may occur multiple times in subsequent steps) will be significantly faster. 
 
@@ -148,7 +186,11 @@ It's important to be aware that the results of a `mgnify_analyses_from_xxx` comm
 At this point we have a long list of analysis instances (with potential duplicates) corresponding to the samples previously found. We use the `mgnify_get_analyses_metadata` function to download and combine all associated sample, run and study metadata.
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 ```{r ,get_metadata, echo=FALSE, results='hide', fig.keep='all', message = FALSE}
+=======
+```{r}
+>>>>>>> 7005e0518f24d23768d0802bacbd8c9348f80973
 =======
 ```{r}
 >>>>>>> 7005e0518f24d23768d0802bacbd8c9348f80973
@@ -157,7 +199,11 @@ kable(head(metadata))
 ```
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 The resulting data.frame has columns with names prefixed with their source type. For example, "sample_xxx" columns correspond to metadata gleaned from querying an accession's `sample` entry. MGnify allows quite flexible specification of arbitray metadata at submission time, in many cases leading to quite sparse `data.frame` results if accession queries are sourceed from more than one study. For instance, if only one sample contains an entry for "sample_soil_PH", entries for other rows will be filled with `NA`. `MGnifyR` does not automatically clean these missing values - instead opting to allow the the user to choose the a correct action.
+=======
+The resulting data.frame has columns with names prefixed with their source type. For example, "sample_xxx" columns correspond to metadata gleaned from querying the `sample` entry. MGnify allows quite flexible specification of arbitray metadata at submission time, in many cases leading to quite sparse `data.frame` results if accession queries are sourceed from more than one study. For instance, if only one sample contains an entry for "sample_soil_PH", entries for other rows will be filled with `NA`. `MGnifyR` does not automatically clean these missing values - instead opting to allow the the user to choose the a correct action. 
+>>>>>>> 7005e0518f24d23768d0802bacbd8c9348f80973
 =======
 The resulting data.frame has columns with names prefixed with their source type. For example, "sample_xxx" columns correspond to metadata gleaned from querying the `sample` entry. MGnify allows quite flexible specification of arbitray metadata at submission time, in many cases leading to quite sparse `data.frame` results if accession queries are sourceed from more than one study. For instance, if only one sample contains an entry for "sample_soil_PH", entries for other rows will be filled with `NA`. `MGnifyR` does not automatically clean these missing values - instead opting to allow the the user to choose the a correct action. 
 >>>>>>> 7005e0518f24d23768d0802bacbd8c9348f80973
@@ -165,6 +211,7 @@ The resulting data.frame has columns with names prefixed with their source type.
 
 ## Worked example.
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 Although the previous queries have been based on the results from `mgnify_query`, from now on we will concentrate on combining and comparing results from specific studies.  Since newly performed analyses are retrieved first in the `mgnify_query` call, it's likely that by the time this vignette is read, the query results will be different.  This is principally due to the rapid increase in MGnify submissions, leading to a potential lack of consistency between even closely spaced queries. As mentioned previously, it may be best to use `usecache=FALSE` for `mgnify_query` calls, to ensure queries are actually returning the latest data. *** REWRITE THIS BIT***.
 
@@ -176,6 +223,8 @@ soil <- mgnify_analyses_from_studies(mg, "MGYS00001447")[1:20]
 human <- mgnify_analyses_from_studies(mg, "MGYS00001442")[1:20]
 marine <- mgnify_analyses_from_studies(mg, "MGYS00001282")[1:20]
 =======
+=======
+>>>>>>> 7005e0518f24d23768d0802bacbd8c9348f80973
 Although the previous queries have been based on the results from `mgnify_query`, from now on we will concentrate on combining and comparing results from three specific studies, associated with three different environments. This is principally due to the rapid increase in MGnify submissions, leading to a lack of consistency between queries. For 
 
 ```{r}
@@ -183,6 +232,9 @@ Although the previous queries have been based on the results from `mgnify_query`
 soil <- mgnify_analyses_from_studies(mg, "MGYS00001447")[1:10]
 human <- mgnify_analyses_from_studies(mg, "MGYS00001442")[1:10]
 marine <- mgnify_analyses_from_studies(mg, "MGYS00001282")[1:10]
+<<<<<<< HEAD
+>>>>>>> 7005e0518f24d23768d0802bacbd8c9348f80973
+=======
 >>>>>>> 7005e0518f24d23768d0802bacbd8c9348f80973
 
 all_accessions <- c(soil,human,marine)
@@ -190,7 +242,11 @@ all_accessions <- c(soil,human,marine)
 ```
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 ```{r, get__new_metadata, echo=FALSE, results='hide', fig.keep='all', message = FALSE}
+=======
+```{r}
+>>>>>>> 7005e0518f24d23768d0802bacbd8c9348f80973
 =======
 ```{r}
 >>>>>>> 7005e0518f24d23768d0802bacbd8c9348f80973
@@ -204,26 +260,38 @@ head(full_metadata)
 ## Converting analyses to `phyloseq` objects
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 Having selected the analyses we wish to examine further, `mgnify_analyses_phyloseq` is used to both download associated OTU tables and taxonomy, and join all results into a single `phyloseq` object. [phyloseq](https://joey711.github.io/phyloseq/) is becoming a defacto standard for taxonomic abundance *munging* in R. `phyloseq` objects integrate abundance, taxonomic, phylogenetic, sample and sequence data into a single object, with powerful facilities for filtering, processing and plotting the results. Although
 
 To convert the existing list of analysis accessions to a phyloseq object, we simply use the following:
 
 ```{r, get_phyloseq, echo=TRUE, cache=TRUE, results='hide', fig.keep='all', message = FALSE}
 =======
+=======
+>>>>>>> 7005e0518f24d23768d0802bacbd8c9348f80973
 Having selected the analyses we wish to examine further, `mgnify_analyses_phyloseq` is used to both download associated OTU tables and taxonomy, and join all results into a single `phyloseq` object. [phyloseq](https://joey711.github.io/phyloseq/) is becoming a defacto standard for taxonomic abundance *munging* in R. `phyloseq` objects integrate abundance, taxonomic, phylogenetic, sample and sequence data into a single object, with powerful facilities for filtering, processing and plotting the results. Although 
 
 To convert the existing list of analysis accessions to a phyloseq object, we simply use the following:
 
 ```{r}
+<<<<<<< HEAD
+>>>>>>> 7005e0518f24d23768d0802bacbd8c9348f80973
+=======
 >>>>>>> 7005e0518f24d23768d0802bacbd8c9348f80973
 full_phyloseq <- mgnify_get_analyses_phyloseq(mg, full_metadata$analysis_accession)
 full_phyloseq
 ```
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   once the results are available in phyloseq format, a plethora of analysis options become available. Please refer to the excellent phyloseq documnentation available at [https://joey711.github.io/phyloseq/] for more information. For the purposes this vignette, a couple of diversity plots are sufficiencent to demonstrate the functionality.
 
 ```{r, plot_taxa, echo=TRUE, fig.align="center", fig.height=4, fig.width=6, results='hide', fig.keep='all', message = FALSE}
+=======
+  once the results are available in phyloseq format, a plethora of analysis options bvecome available. Please refer to the excellent phyloseq documnentation available at [https://joey711.github.io/phyloseq/] for more information. For the purposes this vignette, a couple of diversity plots are suffiencent to demonstrate the functionality.
+  
+```{r}
+>>>>>>> 7005e0518f24d23768d0802bacbd8c9348f80973
 =======
   once the results are available in phyloseq format, a plethora of analysis options bvecome available. Please refer to the excellent phyloseq documnentation available at [https://joey711.github.io/phyloseq/] for more information. For the purposes this vignette, a couple of diversity plots are suffiencent to demonstrate the functionality.
   
@@ -236,6 +304,7 @@ library(ggplot2)
 normed_ps <- rarefy_even_depth(full_phyloseq, rngseed=1)
 
 class_ps <- tax_glom(normed_ps, "Class")
+<<<<<<< HEAD
 <<<<<<< HEAD
 plot_bar(class_ps,  fill="Phylum")  + theme_bw() + theme(legend.position = "none")
 ```
@@ -370,6 +439,8 @@ apply(results > 1, 2, sum)
 
 ```
 =======
+=======
+>>>>>>> 7005e0518f24d23768d0802bacbd8c9348f80973
 plot_bar(class_ps,  fill="Phylum")  + theme(legend.position = "none") + theme_bw()
 ```
 
@@ -398,4 +469,7 @@ goslim <- func_res$`go-slim`
 
 Best practice methods for the analysis of such functional data are still under development, but simple exploratory analysis may reveal interesting insights. 
 
+<<<<<<< HEAD
+>>>>>>> 7005e0518f24d23768d0802bacbd8c9348f80973
+=======
 >>>>>>> 7005e0518f24d23768d0802bacbd8c9348f80973
