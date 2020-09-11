@@ -13,6 +13,7 @@ library(phyloseq)
 library(plyr)
 library(reshape2)
 library(dplyr)
+library(ape)
 
 
 
@@ -49,6 +50,10 @@ query_filters=list(
   runs=run_filters
 )
 
+
+### Result table caching
+
+mgnify_memory_cache=list()
 
 
 #helper function for getting relative paths in the API
@@ -142,7 +147,26 @@ mgnify_get_single_analysis_metadata <- function(client=NULL, accession, usecache
 
   rownames(sample_df) <- rownames(analysis_df)
   rownames(study_df) <- rownames(analysis_df)
-  cbind(analysis_df, study_df, sample_df)
+  full_df <- cbind(analysis_df, study_df, sample_df)
+
+  #extras - include some more metadata from various places
+  #assembly accesion
+  if("id" %in% names(top_data$relationships$assembly$data)){
+    full_df$assembly_accession <- top_data$relationships$assembly$data$id
+  }
+  #run accession
+  if("id" %in% names(top_data$relationships$run$data)){
+    full_df$run_accession <- top_data$relationships$run$data$id
+  }
+
+  #biom (from the sample metadata)
+  tryCatch({
+    full_df$biome_string <- sample_met[[1]]$relationships$biome$data$id
+  },
+    error=function(x) warning("Error finding biome entry")
+  )
+
+  full_df
 }
 
 
@@ -167,37 +191,167 @@ analyses_results_type_parsers <- list(taxonomy=mgnify_parse_tax,`taxonomy-itsone
                                       `go-terms`=mgnify_parse_func, `interpro-identifiers`=mgnify_parse_func)
 
 
+#this maps the json attribute name for retrievelist to the "description -> label" attribute in the study downloads section
+analyses_results_bulk_file_names <- list(
+                                    #taxonomy="Taxonomic assignments SSU",
+                                    `taxonomy-itsonedb` = "Taxonomic assignments ITS",
+                                    `go-slim`="GO slim annotation",
+                                    `taxonomy-itsunite`="Taxonomic assignments Unite", `taxonomy-ssu`="Taxonomic assignments SSU",
+                                    `taxonomy-lsu`="Taxonomic assignments LSU",`antismash-gene-clusters`=mgnify_parse_func,
+                                    `go-terms`="Complete GO annotation", `interpro-identifiers`="InterPro matches",
+                                    `phylo-tax-ssu`="Phylum level taxonomies SSU",`phylo-tax-lsu`="Phylum level taxonomies LSU" )
+
+
 #Retrieves combined study/sample/analysis metadata - not exported
-mgnify_get_single_analysis_results <- function(client=NULL, accession, retrievelist=c(), usecache=T, maxhits=-1){
+mgnify_get_single_analysis_results <- function(client=NULL, accession, retrievelist=c(), usecache=T, maxhits=-1, bulk_files=F){
   metadata_df <- mgnify_get_single_analysis_metadata(client, accession, usecache=usecache, maxhits = maxhits)
-  #Now (re)load the analysis data:
-  analysis_data <- mgnify_retrieve_json(client, paste("analyses",accession,sep="/"), usecache = usecache, maxhits = maxhits)
-  #For now try and grab them all - just return the list - don't do any processing...
-  all_results <- lapply(names(analyses_results_type_parsers), function(r) {
-    if(r %in% retrievelist){
-      tmp <- mgnify_retrieve_json(client, complete_url = analysis_data[[1]]$relationships[[r]]$links$related, usecache = usecache, maxhits=maxhits)
-      tmp
+
+  #Should we try and grab the study's full TSV download rather than parse through the JSON API? Doing
+  #so has the potential to use a LOT more disk space, along with potentially increased data download. It should
+  #be faster though, except in pathological cases (e.g. only 1 sample per 1000 sample study required). As with everything
+  #else, we make use of local caching to speed things along.
+  if(bulk_files){
+    downloadDIR <- paste(mg@cache_dir, "tsv", sep="/")
+    if(!dir.exists(downloadDIR)){
+      dir.create(downloadDIR, recursive = T, showWarnings = mg@warnings)
     }
-  })
-  names(all_results) <- names(analyses_results_type_parsers)
-  parsed_results = sapply(names(all_results), function(x){
-    all_json <- all_results[[x]]
-    if(! is.null(all_json)){
-      res_df <- do.call(dplyr::bind_rows, lapply(all_json,analyses_results_type_parsers[[x]] ))
-      rownames(res_df) <- res_df$index_id
-      res_df
-    }else{
-      NULL
-    }
-  })
+
+    available_downloads_json <- mgnify_retrieve_json(client, path=paste("studies",metadata_df$study_accession,"downloads", sep="/"), usecache = usecache)
+    #cat(str(dput(available_downloads_json)))
+    parsed_results <- lapply(available_downloads_json, function(r) {
+      #Figure out the label mapping
+      cur_lab <- r$attributes$description$label
+
+      cur_pipeversion <- r$relationships$pipeline$data$id
+
+      #There MUST be a better way to do the line below...
+      cur_type <- names(analyses_results_bulk_file_names[is.finite(match(analyses_results_bulk_file_names, cur_lab))])
+
+      if (!identical(cur_type, character(0))){
+
+        #Check the pipeline versions match
+        if (cur_pipeversion == metadata_df$`analysis_pipeline-version`){
+          if( cur_type %in% retrievelist) {
+
+          #Get the url
+          data_url <- r$links$self
+
+          #Clear off extraneous gubbins
+          urltools::parameters(data_url) <- NULL
+
+          #build the cache filename
+          fname=tail(strsplit(data_url, '/')[[1]], n=1)
+
+          #At this point we might have alread got the data we want loaded. Check the memory cache object
+
+          if(client@use_memcache & (cur_type %in% names(mgnify_memory_cache)) & (mgnify_memory_cache[cur_type]["fname"] == fname)){
+            tmp_df <- mgnify_memory_cache[cur_type][["data"]]
+          }else{
+            #Nope - gonna have to load it up from disk or grab it from t'interweb
+            data_path = paste(downloadDIR, fname, sep="/")
+            if (! file.exists(data_path)){#} | !use_downloads ){
+              httr::GET(data_url, httr::write_disk(data_path, overwrite = T ))
+            }
+
+            #Load the file (might be big so save it in the 1 deep cache)
+            tmp_df <- read.csv2(data_path, sep="\t", header = T, stringsAsFactors = F)
+          }
+          #Save it in memory using "super assignment" - which I'm not really sure about but it seems to work... thing'd be
+          # much easier if R passed objects by reference.
+          if(client@use_memcache){
+            mgnify_memory_cache[[cur_type]] <<- list(data=tmp_df, fname=fname)
+          }
+
+          #Because there seem to be "mismatches" between the JSON and downloadable files, and maybe some issues with missing
+          #downloads, we have to check if we actually got a valid file:
+          if(ncol(tmp_df) <3){
+
+            warning(paste("Invalid download for", accession, sep=" "))
+            return(NULL)
+          }
+
+          #Need to figure out how many columns to keep - the first one is always an ID, but need to keep some others as well...
+          i=1
+          #tmp_df <- read.csv('~/.MGnify_cache/tsv/ERP108138_IPR_abundances_v4.1.tsv', sep="\t", header = T, stringsAsFactors = F)
+          while(any(is.na(suppressWarnings(as.numeric(tmp_df[,i] ))))){
+            i=i+1
+          }
+          i=i-1
+
+          #also need the column name for this particular analysis... As far as I can see they could be either assembly IDs or run ids. FFS.
+          #Assuming that both assembly and run won't be present...:
+          if("assembly_accession" %in% colnames(metadata_df)){
+            accession=metadata_df$assembly_accession[[1]]
+          }else if("run_accession" %in% colnames(metadata_df)){
+            accession=metadata_df$run_accession[[1]]
+          }
+        #cat(accession)
+        #  cat(str(head(tmp_df[1:5,1:5])))
+          #Break up the dataframe, only keeping the bits we need.
+
+          #so at this point we learn that some of the "download" files don't match the assembly/run IDs given in the JSON.
+          #For now, do a try/catch, chuck a warning, and then optionally go off and try again - this time from the JSON.
+          #No doubt this'll be fixed at some point in the future...
+
+          column_position <- match(accession, colnames(tmp_df))
+          if (is.na(column_position)){
+            warning(paste("Failed to find column",accession, sep=" "))
+            return(NULL)
+          }
+          keeper_columns <- c(seq(1,i), column_position)
+
+          #cat(keeper_columns)
+          tmp_df2 <- tmp_df[,keeper_columns]
+
+          tmp_colnames <- colnames(tmp_df2)
+          tmp_colnames[1] <- "accession"
+          tmp_colnames[length(tmp_colnames)] <- "count"
+
+          colnames(tmp_df2) <- tmp_colnames
+
+          tmp_df2$index_id <- tmp_df2$accession
+          rownames(tmp_df2) <- tmp_df2$accession
+          tmp_df2
+          }
+        }
+      }
+    })
+    #R is sometimes a bit ~awkward~
+    names(parsed_results) <-  names(analyses_results_bulk_file_names)[match(unlist(lapply(available_downloads_json,
+                                                                                          function(x) x$attributes$description$label)),
+                                                                            analyses_results_bulk_file_names)]
+
+
+  }else{
+    #Now (re)load the analysis data:
+    analysis_data <- mgnify_retrieve_json(client, paste("analyses",accession,sep="/"), usecache = usecache, maxhits = maxhits)
+    #For now try and grab them all - just return the list - don't do any processing...
+    all_results <- lapply(names(analyses_results_type_parsers), function(r) {
+      if(r %in% retrievelist){
+        tmp <- mgnify_retrieve_json(client, complete_url = analysis_data[[1]]$relationships[[r]]$links$related, usecache = usecache, maxhits=maxhits)
+        tmp
+      }
+    })
+    names(all_results) <- names(analyses_results_type_parsers)
+    parsed_results = sapply(names(all_results), function(x){
+      all_json <- all_results[[x]]
+      if(! is.null(all_json)){
+        res_df <- do.call(dplyr::bind_rows, lapply(all_json,analyses_results_type_parsers[[x]] ))
+        rownames(res_df) <- res_df$index_id
+        res_df
+      }else{
+        NULL
+      }
+    })
+  }
+  #Return the results...
   parsed_results
 }
 
 
-
-
+#UPDATE ME SO THAT TREES (if available) GET GRABBED AS WELL!!!
 # Not exported - get a single biom file and convert it to a phyloseq object.
-mgnify_get_single_analysis_phyloseq <- function(client=NULL, accession, usecache=T, downloadDIR=NULL, tax_SU="SSU"){
+mgnify_get_single_analysis_phyloseq <- function(client=NULL, accession, usecache=T, downloadDIR=NULL, tax_SU="SSU", get_tree=FALSE){
   metadata_df <- mgnify_get_single_analysis_metadata(client, accession, usecache=usecache)
 
   analysis_data <-  mgnify_retrieve_json(client, paste("analyses",accession,sep="/"), usecache = usecache)
@@ -229,7 +383,7 @@ mgnify_get_single_analysis_phyloseq <- function(client=NULL, accession, usecache
   fname=tail(strsplit(biom_url, '/')[[1]], n=1)
   biom_path = paste(downloadDIR, fname, sep="/")
   if (! file.exists(biom_path)){#} | !use_downloads ){
-    httr::GET(biom_url, httr::write_disk(biom_path, overwrite = T ))
+    httr::GET(biom_url, httr::write_disk(biom_path, overwrite = T))
   }
   #Load in the phlyloseq object
   psobj <- phyloseq::import_biom(biom_path)
@@ -249,6 +403,25 @@ mgnify_get_single_analysis_phyloseq <- function(client=NULL, accession, usecache
   metadata_df[1,"orig_samp_name"] <- orig_samp_name
   phyloseq::sample_names(psobj) <- newsampname
   phyloseq::sample_data(psobj) <- metadata_df
+
+  #Finally, do we want to the phylogenetic tree? If so, is it there?
+  if(get_tree){
+    #is there a tree?
+    tvec = grepl('Phylogenetic tree', sapply(analysis_downloads, function(x) x$attributes$`description`$label))
+    if(any(tvec)){
+      tree_url = analysis_downloads[tvec][[1]]$links$self
+      #Clear out any ?params after the main location - don't need them for this
+      urltools::parameters(tree_url) <- NULL
+
+      fname=tail(strsplit(tree_url, '/')[[1]], n=1)
+      tree_path = paste(downloadDIR, fname, sep="/")
+      if (! file.exists(tree_path)){#} | !use_downloads ){
+        httr::GET(tree_url, httr::write_disk(tree_path, overwrite = T ))
+      }
+    }
+    phylo_tree = ape::read.tree(tree_path)
+    phyloseq::phy_tree(psobj) <- phylo_tree
+  }
   psobj
 }
 
@@ -265,15 +438,37 @@ mgnify_get_single_analysis_phyloseq <- function(client=NULL, accession, usecache
 #' @slot authtok The MGnify API supports authentication for users by way of \code{authtoken}. This is that token, althouth it's not used in anger at the moment.
 #' @slot cache_dir To reduce load on the server, and speed up repeated data processing, JSON calls may be cached locally, and
 #' stored in \code{cache_dir}.
+#' @slot result_memcache default TRUE #WRITE SOMETHING HERE!!!
 #' @export mgnify_client
 ##' @exportClass mgnify_client
 mgnify_client <- setClass("mgnify_client",
-                          slots=list(url = "character", authtok = "character", cache_dir="character", warnings="logical"),
-                          prototype = list(url=baseurl, authtok=NULL, cache_dir=NULL))
+                          slots=list(url = "character", authtok = "character",
+                                     cache_dir="character", warnings="logical",
+                                     use_memcache="logical", memcache="list"),
+                          prototype = list(url=baseurl, authtok=NULL, cache_dir=NULL, use_memcache=TRUE, memcache=list()))
 
 #Contructor to allow logging in with username/password
-mgnify_client <- function(username=NULL,password=NULL,usecache=F,cache_dir=NULL, warnings=F){
-  url=baseurl
+#' Instantiate the MGnifyR client object
+#'
+#' All functions in the MGnifyR package take a \code{mgnify_client} object as their first argument. While not essential
+#' to querying the raw MGnify API (which is exposed as relative standard JSONAPI), the object allows the simple handling of both
+#' user authentication and access to private data, and local on-disk caching of results.
+#'
+#' @param username optional username to authenticate.
+#' @param password optional password for authentication.
+#' @param usecache whether to enable on-disk caching of results during this session. In most use cases should be TRUE.
+#' @param cache_dir specifies a folder to contain the local cache. If NULL, and usecache is TRUE, the new subdirectory \code{.MGnifyR_cache}
+#'  in the current working directory will be used. Note that cached files are persistent, so the cache directory may be reused between sessions,
+#'  taking advantage of previously downloaded results. The directory will be created if it doesn't exist already.
+#' @param warnings debug flag to print extra output during invocation of some MGnifyR functions. Defaults to FALSE.
+#' @examples
+#' my_client <- mgnify_client(username="Webin-1122334", password="SecretPassword", usecache=T, cache_dir = "/scratch/MGnify_cache_location")
+#' @export
+mgnify_client <- function(url=NULL,username=NULL,password=NULL,usecache=F,cache_dir=NULL, warnings=F, use_memcache=T){
+  if (is.null(url)){
+    url=baseurl
+  }
+
   authtok=NA_character_
 
   #Check to see if we're goint to try and get an authentication token:
@@ -286,11 +481,11 @@ mgnify_client <- function(username=NULL,password=NULL,usecache=F,cache_dir=NULL,
       authtok = cont$data$token
     }
     else{
-      "Failed to authenticate"
+      stop("Failed to authenticate")
     }
   }
   #Assume we're not using it
-  cachepath=NULL
+  cachepath=NA_character_
   if(usecache){
     if (is.null(cache_dir) ){
       cachepath=paste(getwd(),'.MGnifyR_cache',sep="/")
@@ -302,8 +497,7 @@ mgnify_client <- function(username=NULL,password=NULL,usecache=F,cache_dir=NULL,
   }
 
   #Return the final object
-  new("mgnify_client", url=url, authtok=authtok, cache_dir = cachepath, warnings=warnings)
-
+  new("mgnify_client", url=url, authtok=authtok, cache_dir = cachepath, warnings=warnings, memcache=list(), use_memcache=use_memcache)
 }
 
 
@@ -315,8 +509,8 @@ mgnify_client <- function(username=NULL,password=NULL,usecache=F,cache_dir=NULL,
 #'
 #'\code{mgnify_retrieve_json} deals with handles the actual HTTP GET calls for the MGnifyR package, handling both pagination and local reuslt
 #'caching. Although principally intended for internal MGnifyR use , it's exported for direct invocation.
-#'Generally though it's not recommended for use by users. In the future it'll also implement the authentication
-#'procedures - but that doesn't seem to be working yet server-side.
+#'Generally though it's not recommended for use by users. It also handles authentication cookies for access
+#'to restricted datasets.
 #'
 #'@param client MGnifyR client
 #'@param path top level search point for the query. One of \code{biomes}, \code{samples}, \code{runs} etc. Basically includes
@@ -367,6 +561,10 @@ mgnify_client <- function(username=NULL,password=NULL,usecache=F,cache_dir=NULL,
       final_data = readRDS(cache_full_fname)
   }else{
 
+    #Authorization: Bearer <your_token>
+    if(!is.null(client@authtok)){
+      httr::add_headers(.headers = c(Authorization = paste("Bearer", client@authtok, sep=" ")))
+    }
     res = httr::GET(url=fullurl, httr::config(verbose=Debug), query=full_qopts )
     data <-httr::content(res)
 
@@ -392,6 +590,9 @@ mgnify_client <- function(username=NULL,password=NULL,usecache=F,cache_dir=NULL,
       for (p in seq(pstart+1,pend)){  # We've already got the first one
 
         full_qopts$page=p
+        if(!is.null(client@authtok)){
+          httr::add_headers(.headers = c(Authorization = paste("Bearer", client@authtok, sep=" ")))
+        }
         curd = httr::content(httr::GET(fullurl, httr::config(verbose=Debug), query=full_qopts ))
         datlist[[p]] = curd$data
         #Check to see if we've pulled enough entries
@@ -419,6 +620,141 @@ mgnify_client <- function(username=NULL,password=NULL,usecache=F,cache_dir=NULL,
   }
   final_data
 }
+
+
+#' Listing files available for download
+#'
+#' \code{mgnify_get_downloads} is a wrapper function allowing easy enumeration of downloads available for a given
+#' accession (or list thereof). Returns a single data.frame containing all available downloads and associated metadata,
+#' including the url location and description. This can then be filtered to extract the urls of interest, before actually
+#' retrieving the files using \code{mgnify_download}
+#'
+#'@param client valid MGnify client object
+#'@param accessions list of accessions to query
+#'@param accession_type one of \code{analysis},\code{samples},\code{studies},\code{assembly},\code{genome} or \code{run}
+#'@param usecache whether to use the on-disk cache to speed up queries (default T)
+#'@return \code{data.frame} containing all discovered downloads. If multiple \code{accessions} are queried, the \code{accessions} column
+#' may to filter the results - since rownames are not set (and wouldn;'t make sense as each query will return multiple items)
+
+#'@examples
+#' #Make a client ibject
+#' mg <- mgnify_client(cache_dir="/tmp/mgcache")
+#' #create a vector of accession ids - these happen to be \code{analysis} accessions
+#' accession_vect <- c("MGYA00563876", "MGYA00563877", "MGYA00563878", "MGYA00563879", "MGYA00563880" )
+#' downloads <- mgnify_get_downloads(mg, accession_vect, "analyses")
+#'@export
+
+mgnify_get_download_urls <- function(client, accessions, accession_type, usecache=T){
+  results <- plyr::llply(accessions, function(x){
+    download_list  <- mgnify_retrieve_json(client, paste(accession_type,x,"downloads", sep="/"), usecache = usecache)
+    df <- do.call(rbind.fill,lapply(download_list, function(x) as.data.frame(x,stringsAsFactors=F)))
+    df$accession <- x
+    df$accession_type <- accession_type
+    #for convenience, rename the "self" column to "download_url" - which is what it actually is...
+    colnames(df)[colnames(df) == 'self'] <- 'download_url'
+    #finally, strip off any options from the url - they sometimes seem to get format=json stuck on the end
+    urls <- df$download_url
+    urltools::parameters(urls) <- NULL
+    df$download_url <- urls
+    df
+  }, .progress="text")
+  do.call(rbind.fill, results)
+}
+
+
+#' Download arbitray files from MGnify, including processed reads and identified protein sequences.
+#'
+#' \code{mgnify_download} is a convenient wrapper round generic the url downloading functionality in R, taking care of things like local
+#' caching and authentication. By default, \code{mgnify_download}
+#' @param client MGnify client object
+#' @param url The url of the file we wish to download
+#' @param target_filename An optional local filename to use for saving the file. If NULL (default), MGNify local cache settings will be used.
+#' If the file is intended to be processed in a seperate program, it may be sensible to provide a meaningful \code{target_filename}, rather than having to hunt
+#' through the cache folders. If \code{target_filename} is NULL \emph{and} \code{usecache} is \code{FALSE}, the \code{read_func} parameter must be supplied or the file
+#' will be downloaded and then deleted.
+#' @param read_func An optional function name to process the downloaded file and return the results, rather than relying on post processing. The primary use=case for
+#'this parameter is when local disk space is limited and downloaded files can be quickly processed and discarded. The function should take a single parameter,
+#'the downloaded filename, and may return any valid R object.
+#' @param usecache whether to enable the default MGnifyR caching mechanism. File locations are overridden if \code{target_filename} is supplied.
+#' @param Debug whether to enable debug output of the HTTP call - only useful for development.
+#' @return Either the local filename of the downloaded file, be it either the location in the MGNifyR cache, or target_filename. If \code{read_func} is used, its result
+#' will be returned.
+#' @examples
+#' #Make a client ibject
+#' mg <- mgnify_client(cache_dir="/tmp/mgcache")
+#' #create a vector of accession ids - these happen to be \code{analysis} accessions
+#' accession_vect <- c("MGYA00563876", "MGYA00563877", "MGYA00563878", "MGYA00563879", "MGYA00563880" )
+#' downloads <- mgnify_get_downloads(mg, accession_vect, "analyses")
+#'
+#' #Filter to find the urls of 16S encoding sequences
+#' url_list <- downloads[downloads$attributes.description.label == "Contigs encoding SSU rRNA","download_url"]
+#'
+#' #Example 1:
+#' #Download the first file
+#' supplied_filename = mgnify_download(mg, url_list[[1]], target_filename="SSU_file.fasta.gz")
+#'
+#'
+#' #Example 2:
+#' #Just use local caching
+#' cached_filename = mgnify_download(mg, url_list[[2]])
+#'
+#' #Example 3:
+#' #Using read_func to open the reads with readDNAStringSet from \code{biostrings}. Without retaining on disk
+#' dna_seqs <- mgnify_download(mg, url_list[[3]], read_func=readDNAStringSet, usecache=F)
+#'
+#' @export
+
+mgnify_download <- function(client, url, target_filename=NULL, read_func=NULL, usecache=TRUE, Debug=FALSE){
+  #Set up filenames for storing the data
+  ftgt=NULL
+  if (! is.null(target_filename)){
+    file_tgt = target_filename
+  }else if(usecache == TRUE){
+    #Build a filename out of the url, including the full paths. Annoying, but some downloads (e.g. genome results) are just names like
+    # core_genes.fa , which would break the caching.
+    cachetgt = gsub(paste(client@url,'/',sep=""), '', url)
+    #Make sure the direcory exists
+
+    cache_full_name = paste(client@cache_dir, cachetgt, sep="/")
+    dir.create(dirname(cache_full_name), recursive = T, showWarnings = client@warnings)
+
+
+    file_tgt = cache_full_name
+  } else{
+    file_tgt = tempfile()[[1]]
+  }
+
+  #Only get the data if it's not already on disk
+  if(!(usecache & file.exists(file_tgt))){
+
+    if(!is.null(client@authtok)){
+      httr::add_headers(.headers = c(Authorization = paste("Bearer", client@authtok, sep=" ")))
+    }
+    #If there's an error we need to make sure the cache file isn't written - by default it seems it is.
+    tryCatch(
+    curd = httr::content(httr::GET(url, httr::write_disk(file_tgt, overwrite = T)))
+    , error=function(x){
+      unlink(file_tgt)
+      print(paste("Error retrieving file",file_tgt))
+      print(paste("Error:",x))
+      stop()
+    })
+  }
+
+  if (is.null(read_func)){
+    result = file_tgt
+  } else{
+    result = read_func(file_tgt)
+  }
+
+  if (is.null(target_filename) & !usecache){
+    #Need to clear out the temporary file
+    unlink(file_tgt)
+  }
+  result
+}
+
+
 
 
 #'#' Search MGnify database for studies, samples and runs
@@ -547,12 +883,12 @@ mgnify_query <- function(client, qtype="samples", accession=NULL, asDataFrame=T,
 #'
 #' @export
 mgnify_analyses_from_studies <- function(client, accession, usecache=T){
-  analyses_accessions <- sapply(as.list(accession), function(x){
+  analyses_accessions <- plyr::llply(as.list(accession), function(x){
     accurl <- mgnify_get_x_for_y(client, x, "studies","analyses", usecache = usecache )
     jsondat <- mgnify_retrieve_json(client, complete_url = accurl, usecache = usecache, maxhits = -1)
     #Just need the accession ID
     lapply(jsondat, function(x) x$id)
-  })
+  }, .progress="text")
   unlist(analyses_accessions)
 }
 
@@ -574,7 +910,8 @@ mgnify_analyses_from_studies <- function(client, accession, usecache=T){
 #'
 #' @export
 mgnify_analyses_from_samples <- function(client, accession, usecache=T){
-  analyses_accessions <- sapply(as.list(accession), function(x){
+  #analyses_accessions <- sapply(as.list(accession), function(x){
+  analyses_accessions <- plyr::llply(as.list(accession), function(x){
     accurl <- mgnify_get_x_for_y(client, x, "samples","analyses", usecache = usecache )
     #For some reason, it appears you "sometimes" have to go from study to runs to analyses. Need
     #to query this with the API people...
@@ -592,7 +929,7 @@ mgnify_analyses_from_samples <- function(client, accession, usecache=T){
       jsondat <- mgnify_retrieve_json(client, complete_url = accurl, usecache = usecache)
       #Just need the accession ID
       lapply(jsondat, function(x) x$id)
-    }})
+    }}, .progress="text")
   unlist(analyses_accessions)
 }
 
@@ -610,7 +947,8 @@ mgnify_analyses_from_samples <- function(client, accession, usecache=T){
 #' @return \code{data.frame} of metadta for each analysis in the \code{accession} list.
 #' @export
 mgnify_get_analyses_metadata <- function(client, accessions, usecache=T){
-  reslist <- lapply(as.list(accessions), function(x) mgnify_get_single_analysis_metadata(client, x, usecache = T))
+  reslist <- plyr::llply(as.list(accessions), function(x) mgnify_get_single_analysis_metadata(client, x, usecache = usecache),
+                            .progress = "text")
   df <- do.call(dplyr::bind_rows,reslist)
   rownames(df) <- accessions
   df
@@ -638,13 +976,19 @@ mgnify_get_analyses_metadata <- function(client, accessions, usecache=T){
 #' selection of either the Small subunit (SSU) or Large subunit results in the final \code{phyloseq} object.
 #' Older pipeline versions do not report results for both subunits,
 #' and thus for some accessions this value will have no effect.
+#' @param get_tree Flag to control whether to include available phylogenetic trees in the phyloseq object. At present this option is of limited use as
+#' the trees available are specific to each accession, holding only a subset of the leaves and branches of the full canonical tree used for the pipeline. This means that
+#' \code{phyloseq} is unable to merge the trees, and therefore fails to build a final combined object. Setting \code{returnLists} to TRUE allows the results to be returned successfully,
+#' albeit not in a single object.
 #'
 #' @export
-mgnify_get_analyses_phyloseq <- function(client = NULL, accessions, usecache=T, returnLists=F, tax_SU = "SSU"){
+mgnify_get_analyses_phyloseq <- function(client = NULL, accessions, usecache=T,
+                                         returnLists=F, tax_SU = "SSU",
+                                         get_tree=FALSE){
   #Some biom files don't import - so need a try/catch
   ps_list <- plyr::llply(accessions, function(x) {
     tryCatch(
-        mgnify_get_single_analysis_phyloseq(client, x, usecache = usecache, tax_SU = tax_SU), error=function(x) NULL)
+        mgnify_get_single_analysis_phyloseq(client, x, usecache = usecache, tax_SU = tax_SU, get_tree = get_tree), error=function(x) NULL)
     }, .progress = "text")
 
   #The sample_data has been corrupted by doing the merge (names get messed up and duplicated), so just regrab it with another lapply/rbind
@@ -653,21 +997,71 @@ mgnify_get_analyses_phyloseq <- function(client = NULL, accessions, usecache=T, 
     list(phyloseq_objects=ps_list, sample_metadata = samp_dat)
   }else{
 
-    full_ps <- do.call(phyloseq::merge_phyloseq, ps_list)
+    #first of all, check to see that if we wanted them, we got trees for ALL the phyloseq objects.
+    #If trees are present in any of the phyloseq objects during merging, then any OTUs not in a tree
+    #(e.g. if any phyloseq objects do NOT contain a tree) will not be included in the merged output.
+
+    if(get_tree){
+      if (any(is.na(lapply(ps_list, function(x) x@phy_tree)))){
+      warning("Phylogenetic tree retrieval was requested but some of the analyses do not include phylogenetic trees. Results should be used with caution.")
+      }
+    }
+
+    #This is too slow for large datasets
+    #full_ps <- do.call(phyloseq::merge_phyloseq, ps_list)
+    #so:
+    #a divide-and-conquer approach to merge_phyloseq seems to work best, hence the following
+    #code which splits the full list into sublists and merges them seperately, then repeats until all are joined.
+    curlist=ps_list
+    while(length(curlist) > 1){
+      #Lists of length 10 seem to work well
+      sublist=split(curlist, seq_along(curlist) %/% 10)
+      curlist <- lapply(sublist, function(x){
+        do.call(phyloseq::merge_phyloseq,x)
+      })
+    }
+    #By this point curlist isn't a list, it's a phyloseq object...
+    full_ps <- curlist[[1]]
+
     sample_metadata_df <- do.call(dplyr::bind_rows, samp_dat)
     rownames(sample_metadata_df) <- sample_metadata_df$analysis_accession
-    sample_data(full_ps) <- sample_metadata_df
+    phyloseq::sample_data(full_ps) <- sample_metadata_df
     full_ps
   }
 }
 
 
-
-mgnify_get_analyses_results <- function(client=NULL, accessions, retrievelist=c(), compact_results=T, usecache = T){
+#' Get functional and taxonomic information for a list of accessions
+#'
+#' Given a set of analysis accessions and collection of annotation types, \code{mgnify_get_analyses_results} queries the MGNify API
+#' and returns the results, by default merging the results into multi-accession data.frames
+#'
+#' @param client a valid \code{mgnify_client} object
+#' @param accessions list or vector of accessions to return results for
+#' @param retrievelist list or vector of functional analysis types to retrieve, or "all" to get all available results. The current list of available
+#' types can be found using \code{ names(MGnifyR::analyses_results_type_parsers)}. Note that not depending on the particular analysis type, puipeline
+#' version etc., not all functional results will be available.
+#' @param compact_results optional parameter to return a named list (one entry per element in \code{retrievelist}) of data.frames, with each data.frame
+#' containing results for all requested accessions. If \code{FALSE}, \code{mgnify_get_analyses_results} returns a lists of lists, each element consiting of
+#' results for a single accession.
+#' @param usecache Whether to use the MGnify local caching system to speed up searching. It is highly recommended that this be enabled (default=TRUE)
+#' @param bulk_dl should MGnifyR attempt to speed things up by downloading relevant studies TSV results and only extracting the required columns, rather than using
+#' the JSONAPI interface. When getting results where multiple accessions share the same study, this option may result in significantly faster processing. However, there
+#' appear to be (quite a few) cases in the database where the TSV result columns do NOT match the expected accession names. This will hopefully be fixed in the future, but for
+#' now \code{bulk_dl} defaults to FALSE. When it does work, it can be orders of magnitude more efficient.
+#'
+#' @examples
+#'
+mgnify_get_analyses_results <- function(client=NULL, accessions, retrievelist=c(), compact_results=T, usecache = T, bulk_dl = F){
   if(length(retrievelist) == 1 && retrievelist == "all"){
     retrievelist = names(analyses_results_type_parsers)
   }
-  results_as_lists <- plyr::llply(accessions, function(x) mgnify_get_single_analysis_results(client, x, usecache = usecache, retrievelist = retrievelist),.progress = "text")
+  results_as_lists <- plyr::llply(accessions,
+                                  function(x) mgnify_get_single_analysis_results(
+                                    client, x,
+                                    usecache = usecache,
+                                    retrievelist = retrievelist, bulk_files = bulk_dl),
+                                  .progress = "text")
   names(results_as_lists) <- accessions
 
   if(!compact_results){
