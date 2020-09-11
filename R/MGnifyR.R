@@ -448,6 +448,7 @@ mgnify_client <- setClass("mgnify_client",
                           prototype = list(url=baseurl, authtok=NULL, cache_dir=NULL, use_memcache=TRUE, memcache=list()))
 
 #Contructor to allow logging in with username/password
+<<<<<<< HEAD
 #' Instantiate the MGnifyR client object
 #'
 #' All functions in the MGnifyR package take a \code{mgnify_client} object as their first argument. While not essential
@@ -465,6 +466,9 @@ mgnify_client <- setClass("mgnify_client",
 #' my_client <- mgnify_client(username="Webin-1122334", password="SecretPassword", usecache=T, cache_dir = "/scratch/MGnify_cache_location")
 #' @export
 mgnify_client <- function(url=NULL,username=NULL,password=NULL,usecache=F,cache_dir=NULL, warnings=F, use_memcache=T){
+=======
+mgnify_client <- function(url=NULL,username=NULL,password=NULL,usecache=F,cache_dir=NULL, warnings=F){
+>>>>>>> 7005e0518f24d23768d0802bacbd8c9348f80973
   if (is.null(url)){
     url=baseurl
   }
@@ -947,7 +951,11 @@ mgnify_analyses_from_samples <- function(client, accession, usecache=T){
 #' @return \code{data.frame} of metadta for each analysis in the \code{accession} list.
 #' @export
 mgnify_get_analyses_metadata <- function(client, accessions, usecache=T){
+<<<<<<< HEAD
   reslist <- plyr::llply(as.list(accessions), function(x) mgnify_get_single_analysis_metadata(client, x, usecache = usecache),
+=======
+  reslist <- plyr::llply(as.list(accessions), function(x) mgnify_get_single_analysis_metadata(client, x, usecache = T),
+>>>>>>> 7005e0518f24d23768d0802bacbd8c9348f80973
                             .progress = "text")
   df <- do.call(dplyr::bind_rows,reslist)
   rownames(df) <- accessions
@@ -1056,12 +1064,17 @@ mgnify_get_analyses_results <- function(client=NULL, accessions, retrievelist=c(
   if(length(retrievelist) == 1 && retrievelist == "all"){
     retrievelist = names(analyses_results_type_parsers)
   }
+<<<<<<< HEAD
   results_as_lists <- plyr::llply(accessions,
                                   function(x) mgnify_get_single_analysis_results(
                                     client, x,
                                     usecache = usecache,
                                     retrievelist = retrievelist, bulk_files = bulk_dl),
                                   .progress = "text")
+=======
+  results_as_lists <- plyr::llply(accessions, function(x) mgnify_get_single_analysis_results(client, x,
+                                                                                             usecache = usecache, retrievelist = retrievelist),.progress = "text")
+>>>>>>> 7005e0518f24d23768d0802bacbd8c9348f80973
   names(results_as_lists) <- accessions
 
   if(!compact_results){

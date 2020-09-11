@@ -18,5 +18,6 @@ Imports:
   urltools
 Suggests: 
     knitr,
-    rmarkdown
+    rmarkdown,
+    ggplot2
 VignetteBuilder: knitr
