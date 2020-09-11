@@ -213,7 +213,7 @@ mgnify_get_single_analysis_results <- function(client=NULL, accession, retrievel
   if(bulk_files){
     downloadDIR <- paste(client@cache_dir, "tsv", sep="/")
     if(!dir.exists(downloadDIR)){
-      dir.create(downloadDIR, recursive = T, showWarnings = mg@warnings)
+      dir.create(downloadDIR, recursive = T, showWarnings = client@warnings)
     }
 
     available_downloads_json <- mgnify_retrieve_json(client, path=paste("studies",metadata_df$study_accession,"downloads", sep="/"), usecache = usecache)
