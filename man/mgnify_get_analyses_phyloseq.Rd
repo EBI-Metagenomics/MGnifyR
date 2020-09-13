@@ -31,6 +31,9 @@ the trees available are specific to each accession, holding only a subset of the
 \code{phyloseq} is unable to merge the trees, and therefore fails to build a final combined object. Setting \code{returnLists} to TRUE allows the results to be returned successfully,
 albeit not in a single object.}
 }
+\value{
+Combined phyloseq object with \code{otu_table}, \code{sample_data} and \code{tax_table} entries for all accessions.
+}
 \description{
 \code{mgnify_get_analyses_phyloseq} retrieves all associated Study, Sample and Analysis metadata attributes,
 along with all OTU tables (of a given taxonomic type), and merges them together to build a \code{phyloseq}

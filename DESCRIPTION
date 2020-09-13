@@ -15,7 +15,8 @@ Imports:
   dplyr,
   reshape2,
   httr,
-  urltools
+  urltools,
+  ape
 Suggests: 
     knitr,
     rmarkdown,

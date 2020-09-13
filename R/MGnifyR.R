@@ -638,7 +638,7 @@ mgnify_client <- function(url=NULL,username=NULL,password=NULL,usecache=F,cache_
 mgnify_get_download_urls <- function(client, accessions, accession_type, usecache=T){
   results <- plyr::llply(accessions, function(x){
     download_list  <- mgnify_retrieve_json(client, paste(accession_type,x,"downloads", sep="/"), usecache = usecache)
-    df <- do.call(rbind.fill,lapply(download_list, function(x) as.data.frame(x,stringsAsFactors=F)))
+    df <- do.call(plyr::rbind.fill,lapply(download_list, function(x) as.data.frame(x,stringsAsFactors=F)))
     df$accession <- x
     df$accession_type <- accession_type
     #for convenience, rename the "self" column to "download_url" - which is what it actually is...
@@ -649,7 +649,7 @@ mgnify_get_download_urls <- function(client, accessions, accession_type, usecach
     df$download_url <- urls
     df
   }, .progress="text")
-  do.call(rbind.fill, results)
+  do.call(plyr::rbind.fill, results)
 }
 
 
@@ -721,9 +721,9 @@ mgnify_download <- function(client, url, target_filename=NULL, read_func=NULL, u
       httr::add_headers(.headers = c(Authorization = paste("Bearer", client@authtok, sep=" ")))
     }
     #If there's an error we need to make sure the cache file isn't written - by default it seems it is.
-    tryCatch(
-    curd = httr::content(httr::GET(url, httr::write_disk(file_tgt, overwrite = T)))
-    , error=function(x){
+    tryCatch(expr = {
+      curd = httr::content(httr::GET(url, httr::write_disk(file_tgt, overwrite = T)))
+    }, error=function(x){
       unlink(file_tgt)
       print(paste("Error retrieving file",file_tgt))
       print(paste("Error:",x))
@@ -971,7 +971,7 @@ mgnify_get_analyses_metadata <- function(client, accessions, usecache=T){
 #' the trees available are specific to each accession, holding only a subset of the leaves and branches of the full canonical tree used for the pipeline. This means that
 #' \code{phyloseq} is unable to merge the trees, and therefore fails to build a final combined object. Setting \code{returnLists} to TRUE allows the results to be returned successfully,
 #' albeit not in a single object.
-#' @return
+#' @return Combined phyloseq object with \code{otu_table}, \code{sample_data} and \code{tax_table} entries for all accessions.
 #' @examples
 #'
 #'
@@ -1025,7 +1025,7 @@ mgnify_get_analyses_phyloseq <- function(client = NULL, accessions, usecache=T,
 }
 
 
-#' Get functional and taxonomic information for a list of accessions
+#' Get functional and/or taxonomic information for a list of accessions
 #'
 #' Given a set of analysis accessions and collection of annotation types, \code{mgnify_get_analyses_results} queries the MGNify API
 #' and returns the results, by default merging the results into multi-accession data.frames
@@ -1043,7 +1043,7 @@ mgnify_get_analyses_phyloseq <- function(client = NULL, accessions, usecache=T,
 #' the JSONAPI interface. When getting results where multiple accessions share the same study, this option may result in significantly faster processing. However, there
 #' appear to be (quite a few) cases in the database where the TSV result columns do NOT match the expected accession names. This will hopefully be fixed in the future, but for
 #' now \code{bulk_dl} defaults to FALSE. When it does work, it can be orders of magnitude more efficient.
-#' @return
+#' @return Named list of \code{data.frames}, corresponding to the requested analysis types in \code{retrievelist}
 #' @examples
 #'
 #'@export

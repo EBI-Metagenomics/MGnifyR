@@ -15,6 +15,15 @@ knitr::opts_chunk$set(
   cache = TRUE
 )
 ```
+<!-- #```{r, cache=TRUE} -->
+<!-- #knitr::opts_current$get(c( -->
+<!-- #  "cache", -->
+<!-- #  "cache.path", -->
+<!-- #  "cache.rebuild", -->
+<!-- #  "dependson", -->
+<!-- #  "autodep" -->
+<!-- #)) -->
+<!-- #``` -->
 
 
 Ben Allen
@@ -32,7 +41,7 @@ Ben Allen
 
 `MGnifyR` is hosted on github, and may be installed using via `devtools`. As things stand `MGnifyR` has dependencies on `dplyr`, `plyr`, `httr`, `urltools` and `reshape2`, which should be installed automatically if missing. (THIS NEEDS FIUXING - plyt,dplyr and reshape2 all do basically the same thing. Some of these deps are for vignette building...)
 
-```{r, eval=FALSE}
+```{r, devtools_install, eval=FALSE}
 devtools::install_github("beadyallen/MGnifyR")
 ```
 
@@ -40,20 +49,20 @@ Furthermore, `MGnifyR` also currently depends on the [phyloseq](https://joey711.
 
 ## Getting started - creating the client
 Once installed, `MGnifyR` is made available in the usual way.
-```{r, setup}
+```{r, load_package}
 library(MGnifyR)
 ```
 
 All functions in `MGnifyR` make use of a `mgnify_client` object to keep track of the JSONAPI url, disk cache location and user access tokens. Thus the first thing to do when starting any analysis is to instantiate this object.
 
-```{r, echo=TRUE, results='hide', fig.keep='all', message = FALSE}
+```{r, create_client, echo=TRUE, fig.keep='all', message = FALSE}
 mg <- mgnify_client( usecache=T, cache_dir='/home/ben/.MGnify_cache')
 ```
 It's recommended that local caching is enabled with `usecache = T`. Queries to the API can be quite slow, particularly retrieving multipage results for many analyses (such as many `Interpro` results). Using a local disk cache can significantly speed up subsequent work, bypassing the need to re-query the API. Use of the cache should be entirely transparent, as the caching occurs at the raw data level. The cache can persist across `MGnifyR` sessions, and can even be used for multiple sessions simultaneously - provided that different sets of accessions are queried at once.
 
 Optionaly a username and password may be specified during client creation, causing MGnifyR to attempt retrieval of an authentication token from the API. Doing so gives access to non-public results. For instance, to access results during an author imposed embargo period, simply create the client object using:
 
-```{r, eval=FALSE}
+```{r, create_client_passwd, eval=FALSE}
 mg <- mgnify_client(username="Webin-username", password="your-password", usecache = T)
 ```
 
@@ -65,28 +74,30 @@ In most cases we will want to be more specific about the search, and will also u
 
 If `accession` is `NULL` (the default) then remaining parameters define the filters applied by the API to the search result. Details of these parameters are given in `help(mgnify_query)`. By way of example though, supposing we are interested in amplicon Illumina samples from the arctic, we might try the following query:
 
-```{r, search_studies, echo=FALSE, results='hide', fig.keep='all', message = FALSE}
+```{r, search_studies, fig.keep='all', message = FALSE}
 northpolar <- mgnify_query(mg, "samples", latitude_gte=60.0, experiment_type="amplicon", biome_name="Soil", instrument_platform = "Illumina", usecache = F )
-#kable(northpolar[1:10,])
-northpolar[1:10,]
+northpolar[1:5,]
 ```
 
 specifing an `accession` parameter will restrict results to just those matching that particular entry, be it a study, sample or run. For example, to retrieve information for study "MGYS00003725":
 
 
-```{r, search_studies_accession, echo=FALSE, results='hide', fig.keep='all', message = FALSE}
+```{r, search_studies_accession, message = FALSE}
 study_samples <- mgnify_query(mg, "samples", study_accession="MGYS00003725", usecache=T)
 #kable(study_samples[1:10,])
-study_samples[1:10,]
+study_samples[1:5,]
 ```
 
 
 ## Finding relevent `analyses` accessions
 All result retrieval functions in `MGnifyR` - `mgnify_get_accession_xxx` take as input a list of `analyses` accession ids. Thus it's necessary to convert the `studies`, `samples` or `runs` accessions identified with `mgnify_query` into corresponding `analyses` for further processing. This is performed with the `mgnify_analyses_from_xxx` functions. Following on from our previous search, we have a list of \code{sample} accessions, so to convert to corresponding analyses we use:
 
-```{r ,convert_to_analyses, echo=FALSE, results='hide', fig.keep='all', message = FALSE}
+```{r ,convert_to_analyses, fig.keep='all', results='hide', message = FALSE}
 #just retrieve 20 hits for demonstration
 analyses_accessions <- mgnify_analyses_from_samples(mg, accession = study_samples$accession[1:20])
+```
+```{r, show_accessions}
+analyses_accessions
 ```
 
 A useful side effect of the above call is that some attribute metadata for each sample has now been retrieved and stored in the local cache. Thus subsequent API calls for these samples (which will occur multiple times in later steps) will be significantly faster.
@@ -97,9 +108,11 @@ It's important to be aware that the results of a `mgnify_analyses_from_xxx` comm
 
 At this point we have a long list of analysis instances (with potential duplicates) corresponding to the samples previously found. We use the `mgnify_get_analyses_metadata` function to download and combine all associated sample, run and study metadata.
 
-```{r ,get_metadata, echo=FALSE, results='hide', fig.keep='all', message = FALSE}
+```{r ,get_metadata, fig.keep='all', results='hide', message = FALSE}
 metadata <- mgnify_get_analyses_metadata(mg, analyses_accessions)
-kable(head(metadata))
+```
+```{r show_metadata}
+head(metadata)
 ```
 
 The resulting data.frame has columns with names prefixed with their source type. For example, "sample_xxx" columns correspond to metadata gleaned from querying an accession's `sample` entry. MGnify allows quite flexible specification of arbitray metadata at submission time, in many cases leading to quite sparse `data.frame` results if accession queries are sourceed from more than one study. For instance, if only one sample contains an entry for "sample_soil_PH", entries for other rows will be filled with `NA`. `MGnifyR` does not automatically clean these missing values - instead opting to allow the the user to choose the a correct action.
@@ -111,7 +124,7 @@ Although the previous queries have been based on the results from `mgnify_query`
 
 For the remainder of this vignette however, we'll be comapring 3 ostensibly different studies. A study of saltmarsh soils from York University, human faecal samples from a survey of healthy Sardinians, and 
 
-```{r, get_analyses, echo=FALSE, results='hide', fig.keep='all', message = FALSE}
+```{r, get_analyses, results='hide', fig.keep='all', message = FALSE}
 
 soil <- mgnify_analyses_from_studies(mg, "MGYS00001447")[1:20]
 human <- mgnify_analyses_from_studies(mg, "MGYS00001442")[1:20]
@@ -122,9 +135,9 @@ all_accessions <- c(soil,human,marine)
 ```
 
 ```{r, get__new_metadata, echo=FALSE, results='hide', fig.keep='all', message = FALSE}
-
 full_metadata <- mgnify_get_analyses_metadata(mg, all_accessions)
-
+```
+```{r, show_new_metadata}
 head(full_metadata)
 ```
 
@@ -135,12 +148,14 @@ Having selected the analyses we wish to examine further, `mgnify_analyses_phylos
 
 To convert the existing list of analysis accessions to a phyloseq object, we simply use the following:
 
-```{r, get_phyloseq, echo=TRUE, cache=TRUE, results='hide', fig.keep='all', message = FALSE}
+```{r, get_phyloseq, echo=TRUE, results='hide', fig.keep='all', message = FALSE}
 full_phyloseq <- mgnify_get_analyses_phyloseq(mg, full_metadata$analysis_accession)
+```
+```{r, show_phyloseq}
 full_phyloseq
 ```
 
-  once the results are available in phyloseq format, a plethora of analysis options become available. Please refer to the excellent phyloseq documnentation available at [https://joey711.github.io/phyloseq/] for more information. For the purposes this vignette, a couple of diversity plots are sufficiencent to demonstrate the functionality.
+  Once the results are available in phyloseq format, a plethora of analysis options become available. Please refer to the excellent phyloseq documnentation available at [https://joey711.github.io/phyloseq/] for more information. For the purposes this vignette, a couple of diversity plots are sufficiencent to demonstrate the functionality.
 
 ```{r, plot_taxa, echo=TRUE, fig.align="center", fig.height=4, fig.width=6, results='hide', fig.keep='all', message = FALSE}
 library(phyloseq)
@@ -153,7 +168,7 @@ class_ps <- tax_glom(normed_ps, "Class")
 plot_bar(class_ps,  fill="Phylum")  + theme_bw() + theme(legend.position = "none")
 ```
 
-```{r ,plot_diversity, echo=TRUE, results='hide', fig.keep='all', message = FALSE, fig.align="center", fig.height=4, fig.width=6}
+```{r ,plot_diversity, fig.keep='all', message = FALSE, fig.align="center", fig.height=4, fig.width=6}
 alphadiversity = estimate_richness(normed_ps)
 
 adf <- cbind.data.frame(phyloseq::sample_data(normed_ps)$`sample_environment.biome`, alphadiversity$InvSimpson)
@@ -162,15 +177,7 @@ ggplot(adf, aes(x=study, group=study, y=diversity)) + geom_boxplot() + theme_bw(
 ```
 
 
-```{r, cache=TRUE}
-knitr::opts_current$get(c(
-  "cache",
-  "cache.path",
-  "cache.rebuild",
-  "dependson",
-  "autodep"
-))
-```
+
 
 
 
@@ -186,10 +193,12 @@ Returning to the three study example used above, `go-slim` annotations are retri
 func_res <- mgnify_get_analyses_results(mg, full_metadata$analysis_accession, retrievelist = "go-slim", bulk_dl = T)
 
 goslim <- func_res$`go-slim`
+```
+```{r,show_goslim}
 head(goslim)
 
 ```
-Each named entry in the results is a single data.frame, with the first 2 or 3 (depending on the result type) columns being descriptors, with remaining columns containing corresponding counts for each sample. Perhaps confusingly the `accession` column refers to the functional accession rather than a particular MGnify accession. In this case it contains the GO term accessions, but might equally contain Interpro identifiers or AntiSMASH ids. 
+Each named entry in the results is a single data.frame, with the first 2 or 3 (depending on the result type) columns being descriptors, and remaining columns containing corresponding counts for each sample. Perhaps confusingly the `accession` column refers to the functional accession rather than a particular MGnify accession. In this case it contains the GO term accessions, but might equally contain Interpro identifiers or AntiSMASH ids. 
 
 The above call to `mgnify_get_analyses_results` included `bulk_dl=TRUE` which has the potential to significantly speed up data retrieval. MGnify makes its functional results available in two seperate ways, either on a per-analysis basis through the web api, or at the whole study level as large files, tab seperated (TSV), and with columns representing the results for each analysis. When `bulk_dl` is `FALSE`, `MGnifyR` queries the web api to get results which (given some functional analyses results may consist of thousands of entries) may take significant time. Setting `bulk_dl` to `TRUE` causes `MGnifyR` to determine the source study associated with a particular `analysis` and to instead download and parse its corresponding results file. Since this result file contains entries for all analyses associated with the study, by taking advantage of `MGnifyR`'s local caching this single download provides results for many future analyses. In some cases this affords several orders of magnitude speedup over the api query case. 
 
@@ -197,13 +206,13 @@ Unfortunately, column entries in the per-study results files do not always direc
 
 
 ## Functional comparisons between samples
-Best practice methods for the analysis of such functional data are still under development, but simple exploratory analysis may reveal interesting insights. For instance, the code below performs a simple "read depth" normalization on the returned `go-slim` dataset, followed by NMDS dimensional reduction and plotting. Rather than acting as any sort of recommended analysis, the intention is to simply demonstrate the ease with which the MGnify data is manipulizable ...??...
+Best practice methods for the analysis of such functional data are still under development, but simple exploratory analysis may reveal interesting insights. For instance, the code below performs a simple "read depth" normalization on the returned `go-slim` dataset, followed by NMDS dimensional reduction and plotting. 
 
 ```{r, nmds_function, results='hide', fig.keep='all', message = FALSE, fig.align="center", fig.height=4, fig.width=6}
 library(vegan)
 
 #Find the per-sample raw read count for each sample
-seqvect <- as.numeric(full_metadata[,"analysis_Nucleotide sequences after format-specific filtering"])
+seqvect <- as.numeric(full_metadata[colnames(goslim)[-c(1,2,3)],"analysis_Nucleotide sequences after format-specific filtering"])
 
 #scale factors for normalizing the go term results
 scale_factors = 1/(seqvect/median(seqvect))
@@ -227,7 +236,8 @@ ggplot(results_df, aes(x=MDS1, y=MDS2)) + geom_point(aes_string(color="`sample_e
   scale_x_continuous(limits=c(-0.1,0.1)) + scale_y_continuous(limits=c(-0.1,0.1)) + theme_bw()
 
 ```
-From the ordination plot, we see a clear delineation between the gut and marine samples which, while unsurprising, is reassuring. Taking the analysis further we might be interested in finding out if any particular GO terms are over or under represented between biome types or studies. Since we are essentially working with count data, 
+
+The ordination plot shows a clear delineation between the gut and marine samples which is both unsurprising (given the two marine habitats) and reassuring (human guts are not similar to the sea)(REWRITE!!!). Taking the analysis further we might be interested in finding out if any particular GO terms are over or under represented between biome types or studies. Since we are essentially working with count data, a testing 
 Furthermore, we can extract different stuff about many things to find out information about gubbins.
 
 ```{r, differential_taxa}
@@ -236,7 +246,7 @@ library(dplyr)
 library(MASS)
 remerged <- cbind(goslim[,c(1,2,3)], as.data.frame(normalized))
 
-longform <- melt(remerged, id.vars=c("accession", "description", "lineage"), variable.name="sample", value.name="abund")
+longform <- melt(remerged, id.vars=c("accession", "description", "category"), variable.name="sample", value.name="abund")
 
 longform <- merge(longform, full_metadata[,c("analysis_accession","sample_environment-feature")], by.x="sample", by.y="analysis_accession")
 
@@ -254,41 +264,64 @@ longform <- merge(longform, full_metadata[,c("analysis_accession","sample_enviro
 
 
 ## Downloading sequence files
-Finally, we can use `mgnify_download` to retrieve other MGnify pipeline outputs, such as merged sequence reads, assembled contigs, and details of the functional analyses. While it's possible to use the generic \code{mgnify_retrieve_json} function to find the urls, parsing the nested lists it returns can be a little cumbersome. Instead, we can call \code{mgnify_get_downloads} with a list of accessions, to find the urls of the files we're after. In most cases we'll want to filter the returned list down to only the files of interest. to demonstrate the process, we'll be searching 
+Finally, we can use `mgnify_download` to retrieve other MGnify pipeline outputs such as merged sequence reads, assembled contigs, and details of the functional analyses. While it's possible to use the generic \code{mgnify_retrieve_json} function to find the urls, parsing the nested lists it returns can be a little cumbersome. \code{mgnify_get_downloads} is a simple wrapper function whcih, when supplied a list of accessions, finds the urls of the files we're after. In most cases we'll want to filter the returned list down to only the files of interest, which is easily done on the resulting data.frame object. In addition to the actual download location (the `download_url` column), extra columns include file type, contents and compression. It's recommended that the `colnames` of the `data.frame` be examined to get a grasp on the available metadata. To demonstrate the process, the code below retrieves a data.frame containing all available downloads for each accession we've been examining previously. It then filters this to retain only those files corresponding retain the annotated amino acid sequence files.
 
-
-```{r, get_download_urls}
+```{r, get_download_urls, message=FALSE}
+#Find list of available downloads, and filter for 
 dl_urls <- mgnify_get_download_urls(mg, full_metadata$analysis_accession, accession_type = "analyses")
-table(dl_urls$attributes.description.description)
+
+target_urls <- dl_urls[dl_urls$attributes.description.label == "Predicted CDS with annotation",]
+target_urls
+```
+To list the types of available files, and guide the filtering, something like the following might be useful. 
+```{r, list_descriptions}
+table(dl_urls$attributes.description.label)
 ```
 
-```{r, filter_dl_urls}
+Unlike other `MGnifyR` functions, `mgnify_get_downloads` is not limited to `analyses`, and by specifying `accession_type` other results types may be found. For instance, while general `genome` functionality is not yet integrated into `MGnifyR`, we can retrieve associated files for a particular `genome` accession with the following:
 
-urls <- dl_urls[dl_urls$attributes.description.label == "InterPro matches",]
+```{r,get_genome_urls}
+genome_urls <- mgnify_get_download_urls(mg, "MGYG-HGUT-04644", accession_type = "genomes")
+genome_urls[c("id","attributes.file.format.name","download_url")]
+```
+Having found the a set of target urls, the final step is to use `mgnify_download` to actually retrieve the file. Unlike other functions, this only works with a single url location at once, so each entry in `target_urls` from above must be downloaded individually - easily done by either looping or `apply`ing over the list.
 
+If the files are intended to be used with external programs, it might be easiest to provide a `target_filename` parameter to the function call, which specifies a local filename for writing the file. By default `MGnifyR` will use the local cache, which can make getting to the file afterwards more awkward. Regardless, the default befahiour of `mgnify_download` is to retrive the file specified in the parameter `url`, save it to disk, and return the filepath it was saved to. 
+
+
+```{r, filter_dl_urls, echo=T, message=FALSE}
+#Default behaviour - use local cache.
+cached_location = mgnify_download(mg, target_urls$download_url[[21]])
+
+#Specifying a target_filename
+specified_location = mgnify_download(mg, target_urls$download_url[[21]], target_filename = "Coding_Sequences_1.fasta.gz")
+
+#Where are the files?
+c(cached_location,specified_location)
 ```
 
-```{r, do_download}
+While the code above is useful, a second download method can be used. If we know ahead of time what processing will be performed on the downloaded file, it may be possible to integrate it into a function, pass this function to `mgnify_download`, and the results of which will be returned 
 
-```
-
-```{r, analyse_downloads}
-
-
+```{r, simple_parse_function}
 library(Biostrings)
-library(data.table)
-#do the download
 
-#Simple function definition
-getAntiMicroSeqs <- function(fname){
+#Simple function to a count of unique sequences matching PFAM amoC/mmoC motif
+getAmoCseqs <- function(fname){
   sequences <- readAAStringSet(fname)
-  antimicro <- grepl("PF04896", names(sequences))
-  as.data.frame(as.list(table(as.character(sequences[antimicro]))))
+  tgtvec <- grepl("PF04896", names(sequences))
+  as.data.frame(as.list(table(as.character(sequences[tgtvec]))))
 }
+```
 
-#Just download a single accession for demonstration, specifying a read_func
-antimicro_seq_counts <- mgnify_download(mg, urls$download_urls , read_func = getAntiMicroSeqs)
+```{r,do_download_with_read}
 
-antimicro_seq_counts %>% head
+#Just download a single accession for demonstration, specifying a read_function
+amoC_seq_counts <- mgnify_download(mg, target_urls$download_url[[21]] , read_func = getAmoCseqs)
+
+amoC_seq_counts %>% t  
 
 ```
+So that's it - I need to write something here.
+
+
+

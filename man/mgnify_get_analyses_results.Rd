@@ -2,7 +2,7 @@
 % Please edit documentation in R/MGnifyR.R
 \name{mgnify_get_analyses_results}
 \alias{mgnify_get_analyses_results}
-\title{Get functional and taxonomic information for a list of accessions}
+\title{Get functional and/or taxonomic information for a list of accessions}
 \usage{
 mgnify_get_analyses_results(client = NULL, accessions,
   retrievelist = c(), compact_results = T, usecache = T,
@@ -27,6 +27,9 @@ results for a single accession.}
 the JSONAPI interface. When getting results where multiple accessions share the same study, this option may result in significantly faster processing. However, there
 appear to be (quite a few) cases in the database where the TSV result columns do NOT match the expected accession names. This will hopefully be fixed in the future, but for
 now \code{bulk_dl} defaults to FALSE. When it does work, it can be orders of magnitude more efficient.}
+}
+\value{
+Named list of \code{data.frames}, corresponding to the requested analysis types in \code{retrievelist}
 }
 \description{
 Given a set of analysis accessions and collection of annotation types, \code{mgnify_get_analyses_results} queries the MGNify API
