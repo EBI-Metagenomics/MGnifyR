@@ -249,6 +249,12 @@ mgnify_get_single_analysis_results <- function(client=NULL, accession, retrievel
           }else{
             #Nope - gonna have to load it up from disk or grab it from t'interweb
             data_path = paste(downloadDIR, fname, sep="/")
+
+            if(usecache & client@clear_cache){
+              print(paste("clear_cache is TRUE: deleting ", data_path, sep=""))
+              tryCatch(unlink(data_path), error=warning)
+            }
+
             if (! file.exists(data_path)){#} | !use_downloads ){
               httr::GET(data_url, httr::write_disk(data_path, overwrite = T ))
             }
@@ -382,6 +388,14 @@ mgnify_get_single_analysis_phyloseq <- function(client=NULL, accession, usecache
 
   fname=tail(strsplit(biom_url, '/')[[1]], n=1)
   biom_path = paste(downloadDIR, fname, sep="/")
+
+  ## Quick check to see if we should clear the disk cache ~for this specific call~ - used for debugging
+  # and when MGnify breaks
+  if(usecache & client@clear_cache){
+    print(paste("clear_cache is TRUE: deleting ",biom_path, sep=""))
+    tryCatch(unlink(biom_path), error=warning)
+  }
+
   if (! file.exists(biom_path)){#} | !use_downloads ){
     httr::GET(biom_url, httr::write_disk(biom_path, overwrite = T))
   }
@@ -415,6 +429,14 @@ mgnify_get_single_analysis_phyloseq <- function(client=NULL, accession, usecache
 
       fname=tail(strsplit(tree_url, '/')[[1]], n=1)
       tree_path = paste(downloadDIR, fname, sep="/")
+
+      ## Quick check to see if we should clear the disk cache ~for this specific call~ - used for debugging
+      # and when MGnify breaks
+      if(usecache & client@clear_cache){
+        print(paste("clear_cache is TRUE: deleting ",tree_path, sep=""))
+        tryCatch(unlink(tree_path), error=warning)
+      }
+
       if (! file.exists(tree_path)){#} | !use_downloads ){
         httr::GET(tree_url, httr::write_disk(tree_path, overwrite = T ))
       }
@@ -431,8 +453,9 @@ mgnify_get_single_analysis_phyloseq <- function(client=NULL, accession, usecache
 mgnify_client <- setClass("mgnify_client",
                           slots=list(url = "character", authtok = "character",
                                      cache_dir="character", warnings="logical",
-                                     use_memcache="logical", memcache="list"),
-                          prototype = list(url=baseurl, authtok=NULL, cache_dir=NULL, use_memcache=FALSE, memcache=list()))
+                                     use_memcache="logical", memcache="list",
+                                     clear_cache="logical"),
+                          prototype = list(url=baseurl, authtok=NULL, cache_dir=NULL, use_memcache=FALSE, memcache=list(),clear_cache=FALSE))
 
 #Contructor to allow logging in with username/password
 #' Instantiate the MGnifyR client object
@@ -518,6 +541,13 @@ mgnify_client <- function(url=NULL,username=NULL,password=NULL,usecache=F,cache_
 #'@export
   mgnify_retrieve_json <- function(client, path="biomes", complete_url=NULL, qopts=NULL,
                                    maxhits=200, usecache = F, Debug=F){
+
+
+  #client@warnings turns on debugging too:
+
+  if(client@warnings){
+    Debug=T
+  }
   #Set up the base url
   #Are we using internal paths?
   if (is.null(complete_url)){
@@ -546,6 +576,14 @@ mgnify_client <- function(url=NULL,username=NULL,password=NULL,usecache=F,cache_
   fname_list = c(path, names(unlist(full_qopts)), unlist(full_qopts))
   cache_fname = paste(fname_list,collapse = "_")
   cache_full_fname = paste(client@cache_dir, '/', cache_fname, '.RDS', sep="")
+
+
+  ## Quick check to see if we should clear the disk cache ~for this specific call~ - used for debugging
+  # and when MGnify breaks
+  if(usecache & client@clear_cache){
+    print(paste("clear_cache is TRUE: deleting ", cache_full_fname, sep=""))
+    tryCatch(unlink(cache_full_fname), error=warning)
+  }
 
   # Do we want to try and use a cache to speed things up?
   if(usecache & file.exists(cache_full_fname)){
@@ -597,12 +635,7 @@ mgnify_client <- function(url=NULL,username=NULL,password=NULL,usecache=F,cache_
     }
     #if(length(datlist) > 1){
     final_data <- unlist(datlist, recursive=F)
-    #}else{
-    #  final_data <- datlist
-    #}
-    #}
-    #else{
-    #  final_data <- datlist
+
     if (usecache && !file.exists(cache_full_fname)){
       #Make sure the directory is created...
     dir.create(dirname(cache_full_fname), recursive = T, showWarnings = client@warnings)
@@ -714,6 +747,11 @@ mgnify_download <- function(client, url, target_filename=NULL, read_func=NULL, u
     file_tgt = tempfile()[[1]]
   }
 
+  if(usecache & client@clear_cache){
+    print(paste("clear_cache is TRUE: deleting ", file_tgt, sep=""))
+    tryCatch(unlink(file_tgt), error=warning)
+  }
+
   #Only get the data if it's not already on disk
   if(!(usecache & file.exists(file_tgt))){
 
@@ -747,7 +785,7 @@ mgnify_download <- function(client, url, target_filename=NULL, read_func=NULL, u
 
 
 
-#'#' Search MGnify database for studies, samples and runs
+#' Search MGnify database for studies, samples and runs
 #'
 #' \code{mgnify_query} is a flexible query function, harnessing the "full" power of the JSONAPI MGnify
 #' search filters. Search results may be filtered by metadata value, associated study/sample/analyese etc. Details
