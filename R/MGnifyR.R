@@ -405,7 +405,7 @@ mgnify_get_single_analysis_phyloseq <- function(client=NULL, accession, usecache
   if (ncol(phyloseq::tax_table(psobj)) == 1){
     psobj <- phyloseq::import_biom(biom_path, parseFunction = phyloseq::parse_taxonomy_qiime)
   }
-  if(! "Kingdom" %in% names(phyloseq::tax_table(psobj))){
+  if(! "Kingdom" %in% colnames(phyloseq::tax_table(psobj))){
     psobj <- phyloseq::import_biom(biom_path, parseFunction = phyloseq::parse_taxonomy_greengenes)
   }
 
