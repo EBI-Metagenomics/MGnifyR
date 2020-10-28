@@ -139,7 +139,12 @@ mgnify_get_single_analysis_metadata <- function(client=NULL, accession, usecache
   study_met <- mgnify_retrieve_json(client, complete_url = top_data$relationships$study$links$related, usecache = usecache)
 
   sample_df <- mgnify_attr_list_to_df_row(sample_met[[1]], metadata_key = "sample-metadata")
-  study_df <- mgnify_attr_list_to_df_row(study_met[[1]])
+  #It turns out that a sample might not be part of a study - if it's been harvested...
+  #So tryCatch it and return an empy df row if things go south.
+  study_df <- tryCatch(mgnify_attr_list_to_df_row(study_met[[1]]), error=function(X) {
+    warning(paste("Failed to find study metadata for ", accession, sep=""))
+    data.frame(accession=NA)
+  })
 
   colnames(sample_df) <- paste("sample",colnames(sample_df), sep="_")
   colnames(study_df) <- paste("study",colnames(study_df), sep="_")
@@ -686,24 +691,24 @@ mgnify_get_download_urls <- function(client, accessions, accession_type, usecach
 }
 
 
-#' Download arbitray files from MGnify, including processed reads and identified protein sequences.
+#'Download arbitray files from MGnify, including processed reads and identified protein sequences.
 #'
-#' \code{mgnify_download} is a convenient wrapper round generic the url downloading functionality in R, taking care of things like local
-#' caching and authentication. By default, \code{mgnify_download}
-#' @param client MGnify client object
-#' @param url The url of the file we wish to download
-#' @param target_filename An optional local filename to use for saving the file. If NULL (default), MGNify local cache settings will be used.
-#' If the file is intended to be processed in a seperate program, it may be sensible to provide a meaningful \code{target_filename}, rather than having to hunt
-#' through the cache folders. If \code{target_filename} is NULL \emph{and} \code{usecache} is \code{FALSE}, the \code{read_func} parameter must be supplied or the file
-#' will be downloaded and then deleted.
-#' @param read_func An optional function name to process the downloaded file and return the results, rather than relying on post processing. The primary use=case for
-#'this parameter is when local disk space is limited and downloaded files can be quickly processed and discarded. The function should take a single parameter,
-#'the downloaded filename, and may return any valid R object.
-#' @param usecache whether to enable the default MGnifyR caching mechanism. File locations are overridden if \code{target_filename} is supplied.
-#' @param Debug whether to enable debug output of the HTTP call - only useful for development.
-#' @return Either the local filename of the downloaded file, be it either the location in the MGNifyR cache, or target_filename. If \code{read_func} is used, its result
+#'\code{mgnify_download} is a convenient wrapper round generic the url downloading functionality in R, taking care of things like local
+#'caching and authentication. By default, \code{mgnify_download}
+#'@param client MGnify client object
+#'@param url The url of the file we wish to download
+#'@param target_filename An optional local filename to use for saving the file. If NULL (default), MGNify local cache settings will be used.
+#'If the file is intended to be processed in a seperate program, it may be sensible to provide a meaningful \code{target_filename}, rather than having to hunt
+#'through the cache folders. If \code{target_filename} is NULL \emph{and} \code{usecache} is \code{FALSE}, the \code{read_func} parameter must be supplied or the file
+#'will be downloaded and then deleted.
+#'@param read_func An optional function name to process the downloaded file and return the results, rather than relying on post processing. The primary use=case for
+#' this parameter is when local disk space is limited and downloaded files can be quickly processed and discarded. The function should take a single parameter,
+#' the downloaded filename, and may return any valid R object.
+#'@param usecache whether to enable the default MGnifyR caching mechanism. File locations are overridden if \code{target_filename} is supplied.
+#'@param Debug whether to enable debug output of the HTTP call - only useful for development.
+#'@return Either the local filename of the downloaded file, be it either the location in the MGNifyR cache, or target_filename. If \code{read_func} is used, its result
 #' will be returned.
-#' @examples
+#'@examples
 #' #Make a client object
 #' mg <- mgnify_client(cache_dir="/tmp/mgcache")
 #' #create a vector of accession ids - these happen to be \code{analysis} accessions
@@ -785,7 +790,7 @@ mgnify_download <- function(client, url, target_filename=NULL, read_func=NULL, u
 
 
 
-#' Search MGnify database for studies, samples and runs
+#'Search MGnify database for studies, samples and runs
 #'
 #' \code{mgnify_query} is a flexible query function, harnessing the "full" power of the JSONAPI MGnify
 #' search filters. Search results may be filtered by metadata value, associated study/sample/analyese etc. Details
@@ -851,9 +856,12 @@ mgnify_query <- function(client, qtype="samples", accession=NULL, asDataFrame=T,
   arglist = as.list(match.call())[-1] # drop off the first entry, which is the name of the function
 
   arglist$accession=a
-
+  #Force evaluation of arguments to prevent things getting messed up with x and y and z and ....
+  ##arglist = lapply(arglist, eval)
   #Filter the query options such that
-  qopt_list = arglist[names(arglist) %in% query_filters[[qtype]]]
+  #qopt_list = arglist[names(arglist) %in% query_filters[[qtype]]]
+  qopt_list = c(list(...), accession=accession)
+  #qopt_list = lapply(qopt_list, force)
   non_qopts = arglist[!(names(arglist) %in% c(c("asDataFrame","qtype","client", "maxhits"),query_filters[[qtype]]))]
 
   all_query_params = unlist(list(c(list(client=client, maxhits=maxhits, path=qtype, usecache=usecache, qopts=qopt_list))), recursive = F)
@@ -949,6 +957,22 @@ mgnify_analyses_from_samples <- function(client, accession, usecache=T){
       a_access <- sapply(as.list(run_accs), function(z){
         accurl <- mgnify_get_x_for_y(client, z, "runs","analyses", usecache = usecache )
         jsondat <- mgnify_retrieve_json(client, complete_url = accurl, usecache = usecache)
+        # Now... if jsondat is empty, it means we couldn't find an analysis for this run. This is known to occur when
+        # an assembly has been harvested (or something like that). There may be other cases as well. Anyway, what we'll do is
+        # go try and look for an assembly->analysis entry instead.
+        if(length(jsondat) == 0){
+          assemurl <- mgnify_get_x_for_y(client, z, "runs","assemblies", usecache = usecache )
+          jsondat <- mgnify_retrieve_json(client, complete_url = assemurl, usecache = usecache)
+          assemids <- lapply(jsondat, function(x) x$id)
+          if(length(assemids) >0){
+            #Assumes that there's only one assembly ID per run... I hope that's okay.
+            accurl <- mgnify_get_x_for_y(client, assemids[[1]], "assemblies","analyses", usecache = usecache )
+            jsondat <- mgnify_retrieve_json(client, complete_url = accurl, usecache = usecache)
+          }else{
+            #If we've got to this point, I give up - jsut return an empty list...
+            warning(paste("Failed to find an analysis for sample", accession))
+          }
+        }
         lapply(jsondat, function(x) x$id)
       })
       unlist(a_access)
