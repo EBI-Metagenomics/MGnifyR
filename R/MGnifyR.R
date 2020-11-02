@@ -190,6 +190,7 @@ mgnify_parse_func <- function(json){
 }
 
 #Which parser do you use for which type of output?
+#' @export
 analyses_results_type_parsers <- list(taxonomy=mgnify_parse_tax,`taxonomy-itsonedb` = mgnify_parse_tax, `go-slim`=mgnify_parse_func,
                                       `taxonomy-itsunite`=mgnify_parse_tax, `taxonomy-ssu`=mgnify_parse_tax,
                                       `taxonomy-lsu`=mgnify_parse_tax,`antismash-gene-clusters`=mgnify_parse_func,
@@ -806,11 +807,11 @@ mgnify_download <- function(client, url, target_filename=NULL, read_func=NULL, u
 #'    \item{\strong{Runs} accession, experiment_type, biome_name, lineage, species,
 #'      instrument_platform, instrument_model}
 #'    }
-#'    Unfortunately (from testing) it appears that some of these filters don't work as expected, so it is important
+#'    Unfortunately it appears that in some cases, some of these filters don't work as expected, so it is important
 #'    to check the results returned match up with what's expected. Even more unfortunately if there's an error in the
 #'    parameter specification, the query will run as if no filter parameters were present at all. Thus the
-#'    result will appear superficially correct but will infact correspond to something completely different. This beahviour
-#'    will hopefully be fixed in future incarnations of the API, but for now users should double check returned
+#'    result will appear superficially correct but will infact correspond to something completely different. This behaviour
+#'    will hopefully be fixed in future incarnations of the MGnifyR or JSONAPI, but for now users should double check returned
 #'    values.
 #'
 #'    It is currently not possible to combine queries of the same type in a single call (for example to search for samples
@@ -882,14 +883,15 @@ mgnify_query <- function(client, qtype="samples", accession=NULL, asDataFrame=T,
       #Currently this is a bit hacky - assumes the study only has one biome, and sample only one study etc.
       for(rn in names(r$relationships)){
         tryCatch({
-          df2[rn] = as.list(r$relationships[[rn]]$data)[[1]]$id
+          #I truely appologise for the following line of code. It's AWFUL! But it handles
+          #the case where data is both a list or a list of lists... I think.
+          df2[rn] = unlist(list(a=list(r$relationships[[rn]]$data),b=list()), recursive = F, use.names = F)[[1]]$id
         },
-        error=function(x)NULL)
+        error=function(x)warning(paste("Failed to add entry for ", rn, " to ", df2$accession[[1]], sep="")))
       }
       df2$type = r$type
       rownames(df2)=df2$accession
       df2
-
     }
     )
     tryCatch(
