@@ -1,6 +1,6 @@
 # Metagenomics workshop MGnifyR session details.
 
-## Introduction
+# Introduction
 
 Most of the exercises here don't require a particularly high level of proficiency in R, but you will need to understand basic R concepts such as calling functions with parameters, and basic data.frame manipulation to complete the steps. It might help to review a tutorial like http://www.r-tutor.com/r-introduction/data-frame before you start. That said, the intention is not to make all students experts with R and `MGnifyR` by the end of the session, not least because the package still in development and is liable to change. Instead, this is an opportunity for non-developer users to have a go with `MGnifyR` and provide feedback about what works and what doesn't. What features do you like? What would you like to see in the future?.
 
@@ -20,7 +20,7 @@ The following list of key functions should give a starting point for finding rel
  
 
 
-## Exercises:
+# Exercises:
 
 ### Basics
  - Start up an R session in whatever tool you feel most comfortable with. Both RStudio and command line are available on the virtual machine image.
@@ -69,28 +69,11 @@ The following list of key functions should give a starting point for finding rel
       - Try downloading a file of your choice from those available. Try navigating to it afterwards in the file explorer. 
       
    - For a final, advanced exercise, download both the protein sequence FASTA file and Interpro annotations for analysis MGYA00510855. Find the complete set of unique protein sequences annotated with interpro id IPR036388 (the most abundant protein). The last section of the vignette will probably prove useful to perform this task. 
-      - How many unique sequences are there? Does it match what we found earlier from the Interpro results table
-     
+      - How many unique sequences are there? Does it match what we found earlier from the Interpro results?
    
    
    
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
- ## Exercise hints - have a look if you're getting stuck.
+ # Exercise hints - have a look if you're getting stuck.
  
    - Use `colnames` to list data.frame columns. MGnifyR results can be quite unwieldy to view all at once, so subsetting only those columns of interest can be useful.
  
