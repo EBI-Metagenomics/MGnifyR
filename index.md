@@ -73,16 +73,16 @@ The following list of key functions should give a starting point for finding rel
    
    
    
- # Exercise hints - have a look if you're getting stuck.
+# Exercise hints - have a look if you're getting stuck.
  
    - Use `colnames` to list data.frame columns. MGnifyR results can be quite unwieldy to view all at once, so subsetting only those columns of interest can be useful.
  
- ### Searching:
+### Searching:
    - The `biome_name` to search for is `root:Environmental:Aquatic:Lentic`.
    - You might use the R `table` command to count up unique occurrences in a column or vector.
    - **ALL** metadata columns are "characters" by default. If you was to do numeric comparisons, you'll have to convert to numbers. Use `as.numeric`.
    
- ### Phyloseq data
+### Phyloseq data
    - The terminology can get a little mixed up. `samples` in phyloseq really correspond to `analyses` in MGnifyR. 
    - Use `mgnify_analyses_from_studies` to get an accession list, then `mgnify_get_analysis_metadata` to retrieve the metadata.
    - This section might be a bit daunting, and will be unfamiliar if you've not got much R experience. Don't worry - retrieving the phyloseq object is the main objective. Once you have it in this format, there's loads of tutorials and walkthroughs available on the internet. The [phyloseq](https://joey711.github.io/phyloseq/)  website is a great place to start.
@@ -90,7 +90,7 @@ The following list of key functions should give a starting point for finding rel
    - There's many approaches to cross sample normalization, but although it's frowned upon by some, `phyloseq`'s `rarefy_even_depth` will work fine in this case - provided low abundance samples are removed.
    - Useful `phyloseq` functions include `sample_sums` (total abundance per-sample) and `subset_samples` (remove samples from the `phyloseq` object based on a logical vector). The OTU abundance table is accessed with `otu_table()`,  and the taxonomy assignment table can be extracted from the phyloseq object with `tax_table`.
  
- ### Functional results
+### Functional results
    - Convert to an `analysis` accession list with `mgnify_analyses_from_studies`. then use `mgnify_get_analyses_metadata`.
    - The first few questions really only concern the metadata. 
    - Don't assume all the rows are unique - this will only be true for the `analysis` accession column.
