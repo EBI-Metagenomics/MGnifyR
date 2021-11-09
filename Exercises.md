@@ -27,7 +27,7 @@ The following list of key functions should give a starting point for finding rel
  
  - Using Devtools and `install_github("beadyallen/MGnifyR")` command, update the version MGnifyR package installed on your VM. Installation and updating use exactly the same commands. Since the image was created, numerous bugs have been identified so it's worth doing the update before we begin. No other packages will require updating, when asked you may safely decline updating the other packages. 
  
- - After installation, load the library into your session: `library(MGnfifyR)`
+ - After installation, load the library into your session: `library(MGnifyR)`
  
  - Create your session `mgnify_client` object, you'll need it for the other exercises.
      - Try enabling the caching features. Where will the files be stored? Open up a file browser and check to see the directory has been created properly.
