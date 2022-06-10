@@ -1,5 +1,17 @@
-devtools::load_all()
+---
+title: "Example_TSE_format"
+author: "Kévin GATEL"
+date: "10/06/2022"
+output: html_document
+---
 
+Load every single function in R/Mgnify.R
+
+```{r}
+devtools::load_all()
+```
+
+```{r}
 library(MGnifyR)
 
 # Set up the MGnify client instance
@@ -14,14 +26,8 @@ accession_list <- mgnify_analyses_from_studies(mgclnt, "MGYS00005058", usecache 
 
 meta_dataframe <- mgnify_get_analyses_metadata(mgclnt, accession_list, usecache = T )
 
-# Convert analyses outputs to a single `phyloseq` object
-
-psobj <- mgnify_get_analyses_phyloseq(mgclnt, meta_dataframe$analysis_accession, usecache = T)
-
-######################## kev part #####################################
-tse <- mgnify_get_analyses_treese(mgclnt, meta_dataframe$analysis_accession, usecache = T)
-tse
-###################### end kev part ###################################
+# Convert analyses outputs to a single `TreeSummarizedExperiment` object
+tse <- mgnify_get_analyses_tse(mgclnt, meta_dataframe$analysis_accession, usecache = T)
 
 # retrievelist requires us to specify which functional estimations we
 
@@ -38,7 +44,6 @@ tse
 #ip_df <- mgnify_get_analyses_results(mgclnt, meta_dataframe$analysis_accession, retrievelist = c("interpro-identifiers"), usecache = T)
 
 dli <- mgnify_get_analyses_results(mgclnt, meta_dataframe$analysis_accession, retrievelist = "all", usecache = T)
-length(dli)
 
 # Seems that taxonomy-ssu corresponds to the phyloseq object
 
@@ -56,3 +61,4 @@ length(dli)
 
 # 5. MGnifyR to CRAN (joint project?)
 
+```
