@@ -27,7 +27,7 @@ accession_list <- mgnify_analyses_from_studies(mgclnt, "MGYS00005058", usecache 
 meta_dataframe <- mgnify_get_analyses_metadata(mgclnt, accession_list, usecache = T )
 
 # Convert analyses outputs to a single `TreeSummarizedExperiment` object
-tse <- mgnify_get_analyses_tse(mgclnt, meta_dataframe$analysis_accession, usecache = T)
+tse <- mgnify_get_analyses_treese(mgclnt, meta_dataframe$analysis_accession, usecache = T)
 
 # retrievelist requires us to specify which functional estimations we
 
