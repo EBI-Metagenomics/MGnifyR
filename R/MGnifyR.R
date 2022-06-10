@@ -1134,10 +1134,26 @@ mgnify_get_analyses_tse <- function(client = NULL, accessions, usecache=T,
     rownames(sample_metadata_df) <- sample_metadata_df$analysis_accession
     phyloseq::sample_data(full_ps) <- sample_metadata_df
     #    full_ps
-    assay_data <- sample_metadata_df
+    assay_data <- sample_data(full_ps)
+    row_data <- NULL
+    col_data <- NULL
+    # line 1135 makes sample_data(full_ps) equals to sample_metadata_df (==> nb of row in colData != nb of col in assay_data)
+    ### col_data <- sample_metadata_df
     row_tree <- NULL
     col_tree <- NULL
-    tse <- TreeSummarizedExperiment(assays=list(Count=assay_data),rowTree=row_tree,colTree=col_tree)
+    tse <-TreeSummarizedExperiment(assays=list(abundance=assay_data))
+    if (!is.null(row_tree)){
+    	rowTree(tse) <- row_tree
+    }
+    if (!is.null(col_tree)){
+    	colTree(tse) <- col_tree
+    }
+    if (!is.null(row_data)){
+    	rowData(tse) <- row_data
+    }
+    if (!is.null(col_data)){
+    	colData(tse) <- col_data
+    }
     tse
   }
 }
