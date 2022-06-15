@@ -14,7 +14,6 @@ library(plyr)
 library(reshape2)
 library(dplyr)
 library(ape)
-library(TreeSummarizedExperiment)
 
 
 
@@ -1086,75 +1085,6 @@ mgnify_get_analyses_phyloseq <- function(client = NULL, accessions, usecache=T,
     rownames(sample_metadata_df) <- sample_metadata_df$analysis_accession
     phyloseq::sample_data(full_ps) <- sample_metadata_df
     full_ps
-  }
-}
-
-mgnify_get_analyses_treese <- function(client = NULL, accessions, usecache=T,
-                                    returnLists=F, tax_SU = "SSU",
-                                    get_tree=FALSE){
-  #Some biom files don't import - so need a try/catch
-  ps_list <- plyr::llply(accessions, function(x) {
-    tryCatch(
-      mgnify_get_single_analysis_phyloseq(client, x, usecache = usecache, tax_SU = tax_SU, get_tree = get_tree), error=function(x) NULL)
-  }, .progress = "text")
-
-  #The sample_data has been corrupted by doing the merge (names get messed up and duplicated), so just regrab it with another lapply/rbind
-  samp_dat <- lapply(accessions, function(x) mgnify_get_single_analysis_metadata(client, x, usecache = usecache ))
-  if (returnLists){
-    list(phyloseq_objects=ps_list, sample_metadata = samp_dat)
-  }else{
-
-    #first of all, check to see that if we wanted them, we got trees for ALL the phyloseq objects.
-    #If trees are present in any of the phyloseq objects during merging, then any OTUs not in a tree
-    #(e.g. if any phyloseq objects do NOT contain a tree) will not be included in the merged output.
-
-    if(get_tree){
-      if (any(is.na(lapply(ps_list, function(x) x@phy_tree)))){
-        warning("Phylogenetic tree retrieval was requested but some of the analyses do not include phylogenetic trees. Results should be used with caution.")
-      }
-    }
-
-    #This is too slow for large datasets
-    #full_ps <- do.call(phyloseq::merge_phyloseq, ps_list)
-    #so:
-    #a divide-and-conquer approach to merge_phyloseq seems to work best, hence the following
-    #code which splits the full list into sublists and merges them seperately, then repeats until all are joined.
-    curlist=ps_list
-    while(length(curlist) > 1){
-      #Lists of length 10 seem to work well
-      sublist=split(curlist, seq_along(curlist) %/% 10)
-      curlist <- lapply(sublist, function(x){
-        do.call(phyloseq::merge_phyloseq,x)
-      })
-    }
-    #By this point curlist isn't a list, it's a phyloseq object...
-    full_ps <- curlist[[1]]
-
-    sample_metadata_df <- do.call(dplyr::bind_rows, samp_dat)
-    rownames(sample_metadata_df) <- sample_metadata_df$analysis_accession
-    phyloseq::sample_data(full_ps) <- sample_metadata_df
-    #    full_ps
-    assay_data <- sample_data(full_ps)
-    row_data <- NULL
-    col_data <- NULL
-    # line 1135 makes sample_data(full_ps) equals to sample_metadata_df (==> nb of row in colData != nb of col in assay_data)
-    ### col_data <- sample_metadata_df
-    row_tree <- NULL
-    col_tree <- NULL
-    tse <-TreeSummarizedExperiment(assays=list(abundance=assay_data))
-    if (!is.null(row_tree)){
-    	rowTree(tse) <- row_tree
-    }
-    if (!is.null(col_tree)){
-    	colTree(tse) <- col_tree
-    }
-    if (!is.null(row_data)){
-    	rowData(tse) <- row_data
-    }
-    if (!is.null(col_data)){
-    	colData(tse) <- col_data
-    }
-    tse
   }
 }
 

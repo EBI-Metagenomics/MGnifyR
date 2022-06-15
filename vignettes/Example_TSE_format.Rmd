@@ -29,18 +29,6 @@ meta_dataframe <- mgnify_get_analyses_metadata(mgclnt, accession_list, usecache 
 # Convert analyses outputs to a single `TreeSummarizedExperiment` object
 tse <- mgnify_get_analyses_treese(mgclnt, meta_dataframe$analysis_accession, usecache = T)
 
-# retrievelist requires us to specify which functional estimations we
-
-# wish to examine, and may be one or more of go-slim, go-terms,
-
-# interpro-identifiers or antismash-gene-clusters. retrievelist may
-
-# also be all, in which case all available results are retrieved,
-
-# along with all taxonomic assignments.
-
-# Retrieve assignment counts for these analyses as a data list
-
 #ip_df <- mgnify_get_analyses_results(mgclnt, meta_dataframe$analysis_accession, retrievelist = c("interpro-identifiers"), usecache = T)
 
 dli <- mgnify_get_analyses_results(mgclnt, meta_dataframe$analysis_accession, retrievelist = "all", usecache = T)
