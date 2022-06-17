@@ -52,3 +52,16 @@ meta_dataframe <- mgnify_get_analyses_metadata(mgclnt, accession_list, usecache 
 ```{r}
 tse <- mgnify_get_analyses_treese(mgclnt, meta_dataframe$analysis_accession, usecache = T)
 ```
+
+# Coerce a phyloseq object to a TreeSummarizedExperiment
+
+```{r}
+psobj <- mgnify_get_analyses_phyloseq(mgclnt, meta_dataframe$analysis_accession, usecache = T)
+tse0<-mia::makeTreeSummarizedExperimentFromPhyloseq(psobj)
+```
+
+# Both should be equal
+```{r}
+tse
+tse0
+```
