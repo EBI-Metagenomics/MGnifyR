@@ -1,8 +1,8 @@
 ---
 title: "Putting data in a TreeSummarizedExperiment format"
 author: "Kévin GATEL"
-date: "15/06/2022"
-package: TreeSummarizedExperiment
+date: "`r Sys.Date()`"
+package: MGnifyR
 output:
     BiocStyle::html_document:
         fig_height: 7
@@ -11,7 +11,7 @@ output:
         toc_depth: 2
         number_sections: true
 vignette: >
-    %\VignetteIndexEntry{mia}
+    %\VignetteIndexEntry{treese}
     %\VignetteEngine{knitr::rmarkdown}
     %\VignetteEncoding{UTF-8}
 bibliography: references.bib
@@ -40,11 +40,13 @@ mgclnt <- mgnify_client(usecache = T, cache_dir = '/tmp/MGnify_cache')
 ```{r}
 accession_list <- mgnify_analyses_from_studies(mgclnt, "MGYS00005058", usecache = T)
 ```
+
 # Download all associated study/sample and analysis metadata
 
 ```{r}
 meta_dataframe <- mgnify_get_analyses_metadata(mgclnt, accession_list, usecache = T )
 ```
+
 # Convert analyses outputs to a single `TreeSummarizedExperiment` object
 
 ```{r}
