@@ -1,3 +1,76 @@
+loadTreeseFromBiom <- function (BIOMfilename, treefilename = NULL, refseqfilename = NULL,
+          refseqFunction = readDNAStringSet, refseqArgs = NULL, parseFunction = parse_taxonomy_default,
+          parallel = FALSE, version = 1, ...)
+{
+  argumentlist <- list()
+  if (class(BIOMfilename) == "character") {
+    x = biomformat::read_biom(biom_file = BIOMfilename)
+  }
+  else{
+    if (class(BIOMfilename) == "biom") {
+     x = BIOMfilename
+    } else {
+       stop("import_biom requires a 'character' string to a biom file or a 'biom-class' object")
+    }
+  }
+
+  otutab = otu_table(as(biomformat::biom_data(x), "matrix"), taxa_are_rows = TRUE)
+  argumentlist <- c(argumentlist, list(otutab))
+  if (all(sapply(sapply(x$rows, function(i) {
+    i$metadata
+  }), is.null))) {
+    taxtab <- NULL
+  }
+  else {
+    taxlist = lapply(x$rows, function(i) {
+      parseFunction(i$metadata$taxonomy)
+    })
+    names(taxlist) = sapply(x$rows, function(i) {
+      i$id
+    })
+    taxtab = build_tax_table(taxlist)
+  }
+  argumentlist <- c(argumentlist, list(taxtab))
+  if (is.null(biomformat::sample_metadata(x))) {
+    samdata <- NULL
+  }
+  else {
+    samdata = sample_data(biomformat::sample_metadata(x))
+  }
+  argumentlist <- c(argumentlist, list(samdata))
+  tree <- NULL
+  if (!is.null(treefilename)) {
+    if (inherits(treefilename, "phylo")) {
+      tree = treefilename
+    }
+    else {
+      tree <- read_tree(treefilename, ...)
+    }
+    if (is.null(tree)) {
+      warning("treefilename failed import. It not included.")
+    }
+    else {
+      argumentlist <- c(argumentlist, list(tree))
+    }
+  }
+
+  assay_data <- otutab
+  row_data <- taxtab
+  col_data <- samdata
+  row_tree <- tree
+  tse <-TreeSummarizedExperiment(assays=list(abundance=assay_data))
+  if (!is.null(row_tree)){
+    rowTree(tse) <- row_tree
+  }
+  if (!is.null(row_data)){
+    rowData(tse) <- row_data
+  }
+  if (!is.null(col_data)){
+    colData(tse) <- DataFrame(as.matrix(col_data))
+  }
+  tse
+}
+
 mgnify_get_single_analysis_treese <- function(client=NULL, accession, usecache=T, downloadDIR=NULL, tax_SU="SSU", get_tree=FALSE){
 
   metadata_df <- mgnify_get_single_analysis_metadata(client, accession, usecache=usecache)
@@ -41,20 +114,11 @@ mgnify_get_single_analysis_treese <- function(client=NULL, accession, usecache=T
     httr::GET(biom_url, httr::write_disk(biom_path, overwrite = T))
   }
 
-  #Load in a SummarizedExperiment object
-  tse <- mia::loadFromBiom(biom_path)
+  #Load in a TreeSummarizedExperiment object
+  tse <- loadTreeseFromBiom(biom_path)
+
   #Need to check if the taxonomy was parsed correctly - depending on the pipeline it may need a bit of help:
   mia::checkTaxonomy(tse)
-
-  #Turn the SummarizedExperiment object into a TreeSummarizedExperiment object
-  tse <- as(se, "TreeSummarizedExperiment")
-
-  #The biom files have a single column of unknown name - maybe it's the original sample name?.
-  # It's rewritten as sample_run_analysis accession, with
-  # the original value stored in the sample_data (just in case it's needed later)
-  orig_samp_name <- colnames(tse)
-  metadata_df[1,"orig_samp_name"] <- orig_samp_name
-  colData(tse) <- metadata_df
 
   if(get_tree){
     #is there a tree?
@@ -97,58 +161,23 @@ mgnify_get_analyses_treese <- function(client = NULL, accessions, usecache=T,
   #The sample_data has been corrupted by doing the merge (names get messed up and duplicated), so just regrab it with another lapply/rbind
   samp_dat <- lapply(accessions, function(x) mgnify_get_single_analysis_metadata(client, x, usecache = usecache ))
   if (returnLists){
-    list(phyloseq_objects=ps_list, sample_metadata = samp_dat)
-  }else{}
+    list(tse_objects=ps_list, sample_metadata = samp_dat)
+  }else{
 
-  #   #first of all, check to see that if we wanted them, we got trees for ALL the phyloseq objects.
-  #   #If trees are present in any of the phyloseq objects during merging, then any OTUs not in a tree
-  #   #(e.g. if any phyloseq objects do NOT contain a tree) will not be included in the merged output.
-  #
-  #   if(get_tree){
-  #     if (any(is.na(lapply(ps_list, function(x) x@phy_tree)))){
-  #       warning("Phylogenetic tree retrieval was requested but some of the analyses do not include phylogenetic trees. Results should be used with caution.")
-  #     }
-  #   }
-  #
-  #   #This is too slow for large datasets
-  #   #full_ps <- do.call(phyloseq::merge_phyloseq, ps_list)
-  #   #so:
-  #   #a divide-and-conquer approach to merge_phyloseq seems to work best, hence the following
-  #   #code which splits the full list into sublists and merges them seperately, then repeats until all are joined.
-  #   curlist=ps_list
-  #   while(length(curlist) > 1){
-  #     #Lists of length 10 seem to work well
-  #     sublist=split(curlist, seq_along(curlist) %/% 10)
-  #     curlist <- lapply(sublist, function(x){
-  #     do.call(phyloseq::merge_phyloseq,x)
-  #     })
-  #   }
-  #
-  #   #By this point curlist isn't a list, it's a phyloseq object...
-  #   full_ps <- curlist[[1]]
-  #   sample_metadata_df <- do.call(dplyr::bind_rows, samp_dat)
-  #   rownames(sample_metadata_df) <- sample_metadata_df$analysis_accession
-  #   phyloseq::sample_data(full_ps) <- sample_metadata_df
-  #
-  #   # col_data <- sample_data(full_ps)
-  #   assay_data <- otu_table(full_ps)
-  #   row_data <- tax_table(full_ps)
-  #   col_data <- sample_data(full_ps)
-  #   row_tree <- NULL
-  #   col_tree <- NULL
-  #   tse <-TreeSummarizedExperiment(assays=list(abundance=assay_data))
-  #   if (!is.null(row_tree)){
-  #   	rowTree(tse) <- row_tree
-  #   }
-  #   if (!is.null(col_tree)){
-  #   	colTree(tse) <- col_tree
-  #   }
-  #   if (!is.null(row_data)){
-  #   	rowData(tse) <- row_data
-  #   }
-  #   if (!is.null(col_data)){
-  #     colData(tse) <- DataFrame(as.matrix(col_data))
-  #   }
-  #   tse
-  # }
+    #first of all, check to see that if we wanted them, we got trees for ALL the phyloseq objects.
+    #If trees are present in any of the phyloseq objects during merging, then any OTUs not in a tree
+    #(e.g. if any phyloseq objects do NOT contain a tree) will not be included in the merged output.
+
+    if(get_tree){
+      if (any(is.na(lapply(ps_list, function(x) x@rowTree)))){
+        warning("Phylogenetic tree retrieval was requested but some of the analyses do not include phylogenetic trees. Results should be used with caution.")
+      }
+    }
+
+    tse_list <- lapply(ps_list, FUN = function(x) x[1:10, ])
+    full_tse <- do.call(TreeSummarizedExperiment::cbind, tse_list)
+    # this line returns a list, cbind has to be fixed...
+    full_tse
+
+  }
 }
