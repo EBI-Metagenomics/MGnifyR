@@ -153,7 +153,7 @@ mgnify_get_analyses_treese <- function(client = NULL, accessions, usecache=T,
                                     returnLists=F, tax_SU = "SSU",
                                     get_tree=FALSE){
   #Some biom files don't import - so need a try/catch
-  ps_list <- plyr::llply(accessions, function(x) {
+  tse_list <- plyr::llply(accessions, function(x) {
     tryCatch(
       mgnify_get_single_analysis_treese(client, x, usecache = usecache, tax_SU = tax_SU, get_tree = get_tree), error=function(x) NULL)
   }, .progress = "text")
@@ -161,12 +161,8 @@ mgnify_get_analyses_treese <- function(client = NULL, accessions, usecache=T,
   #The sample_data has been corrupted by doing the merge (names get messed up and duplicated), so just regrab it with another lapply/rbind
   samp_dat <- lapply(accessions, function(x) mgnify_get_single_analysis_metadata(client, x, usecache = usecache ))
   if (returnLists){
-    list(tse_objects=ps_list, sample_metadata = samp_dat)
+    list(tse_objects=tse_list, sample_metadata = samp_dat)
   }else{
-
-    #first of all, check to see that if we wanted them, we got trees for ALL the phyloseq objects.
-    #If trees are present in any of the phyloseq objects during merging, then any OTUs not in a tree
-    #(e.g. if any phyloseq objects do NOT contain a tree) will not be included in the merged output.
 
     if(get_tree){
       if (any(is.na(lapply(ps_list, function(x) x@rowTree)))){
@@ -174,9 +170,7 @@ mgnify_get_analyses_treese <- function(client = NULL, accessions, usecache=T,
       }
     }
 
-    tse_list <- lapply(ps_list, FUN = function(x) x[1:10, ])
-    full_tse <- do.call(TreeSummarizedExperiment::cbind, tse_list)
-    # this line returns a list, cbind has to be fixed...
+    full_tse <-mia::mergeSEs(tse_list, assay_name = "abundance", missing_values = 0)
     full_tse
 
   }
