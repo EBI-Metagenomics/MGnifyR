@@ -1,8 +1,8 @@
 Package: MGnifyR
 Type: Package
-Version: 0.1.0
+Version: 0.2.1
 Authors@R:
-    c(person(given = "Ben", family = "Allen", role = c("aut"),
+    c(person(given = "Ben", family = "Allen", role = c("aut","cre"),
              email = "ben.allen@ncl.ac.uk")
       person(given = "Leo", family = "Lahti", role = c("ctb"),
              email = "leo.lahti@iki.fi"),
@@ -11,10 +11,15 @@ Authors@R:
 Title: R interface to EBI MGnify metagenomics resource
 Description: 
     Utility package to facitliate easy interogation and analysis of EBI Mgnify pipeline results in R.
-License: What license is it under? Good question - All mine for now but it'll be GPLish soon enough
+License: Artistic-2.0 | file LICENSE
 Encoding: UTF-8
 LazyData: true
 Imports:
+  R (>= 4.0),
+  SummarizedExperiment,
+  SingleCellExperiment,
+  TreeSummarizedExperiment,
+  MultiAssayExperiment
   phyloseq,
   plyr,
   dplyr,
@@ -22,9 +27,12 @@ Imports:
   httr,
   urltools,
   ape
-Suggests: 
+Suggests:
+    testthat
     knitr,
     rmarkdown,
     ggplot2
-RoxygenNote: 6.1.1
+URL : https://github.com/beadyallen/MGnifyR
+BugReports: https://github.com/beadyallen/MGnifyR/issues
+RoxygenNote: list(markdown = TRUE)
 VignetteBuilder: knitr
