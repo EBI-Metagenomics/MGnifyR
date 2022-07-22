@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #' Retrieve OTU tables for all specified accessions and build a\code{TreeSummarizedExperiment} object
 #'
 #' \code{mgnify_get_analyses_treese} retrieves all associated Study, Sample and Analysis metadata attributes,
@@ -26,6 +27,8 @@
 #'
 #'
 #' @export
+=======
+>>>>>>> kg_branch
 mgnify_get_analyses_treese <- function(client = NULL, accessions, usecache=T,
                                     returnLists=F, tax_SU = "SSU",
                                     get_tree=FALSE){
