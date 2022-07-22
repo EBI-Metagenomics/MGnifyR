@@ -14,7 +14,7 @@ Authors@R:
              comment = c(ORCID = "0000-0002-8563-8884")))
 Title: R interface to EBI MGnify metagenomics resource
 Description: 
-    Utility package to facitliate easy interogation and analysis of EBI Mgnify pipeline results in R.
+    Utility package to facilitate easy integration and analysis of EBI Mgnify pipeline results in R.
 License: Artistic-2.0 | file LICENSE
 Encoding: UTF-8
 LazyData: true
