@@ -1,15 +1,29 @@
 Package: MGnifyR
 Type: Package
+Version: 0.2.1
+Authors@R:
+    c(person(given = "Ben", family = "Allen", role = c("aut","cre"),
+             email = "ben.allen@ncl.ac.uk"),
+      person(given = "Leo", family = "Lahti", role = c("aut"),
+             email = "leo.lahti@iki.fi",
+             comment = c(ORCID = "0000-0001-5537-637X")),
+      person(given = "Kévin", family = "Gatel", role = c("aut"),
+             email = "kevin.gatel@insa-rouen.fr"),
+      person(given = "Tuomas", family = "Borman", role = c("ctb"),
+             email = "tuomas.v.borman@utu.fi",
+             comment = c(ORCID = "0000-0002-8563-8884")))
 Title: R interface to EBI MGnify metagenomics resource
-Version: 0.1.0
-Author: Ben Allen
-Maintainer: Ben Allen <ben.allen@ncl.ac.uk>
-Description: Utility package to facitliate easy interogation and analysis of EBI Mgnify pipeline results in R.
-License: What license is it under? Good question - All mine for now but it'll be GPLish soon enough
+Description: 
+    Utility package to facilitate easy integration and analysis of EBI Mgnify pipeline results in R.
+License: Artistic-2.0 | file LICENSE
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.1.1
 Imports:
+  R (>= 4.0),
+  SummarizedExperiment,
+  SingleCellExperiment,
+  TreeSummarizedExperiment,
+  MultiAssayExperiment
   phyloseq,
   plyr,
   dplyr,
@@ -17,8 +31,12 @@ Imports:
   httr,
   urltools,
   ape
-Suggests: 
+Suggests:
+    testthat
     knitr,
     rmarkdown,
     ggplot2
+URL : https://github.com/beadyallen/MGnifyR
+BugReports: https://github.com/beadyallen/MGnifyR/issues
 VignetteBuilder: knitr
+RoxygenNote: 7.2.0
