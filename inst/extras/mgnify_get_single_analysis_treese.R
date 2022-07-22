@@ -1,3 +1,4 @@
+# get a single biom file and convert it to a TreeSummarizedExperiment object
 mgnify_get_single_analysis_treese <- function(client=NULL, accession, usecache=T, downloadDIR=NULL, tax_SU="SSU", get_tree=FALSE){
 
   metadata_df <- mgnify_get_single_analysis_metadata(client, accession, usecache=usecache)
@@ -41,7 +42,7 @@ mgnify_get_single_analysis_treese <- function(client=NULL, accession, usecache=T
     httr::GET(biom_url, httr::write_disk(biom_path, overwrite = T))
   }
 
-  #Load in a TreeSummarizedExperiment object
+  #Load in the TreeSummarizedExperiment object
   tse <- loadTreeseFromBiom(biom_path)
 
   #Need to check if the taxonomy was parsed correctly - depending on the pipeline it may need a bit of help:
