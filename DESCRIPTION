@@ -23,7 +23,7 @@ Imports:
   SummarizedExperiment,
   SingleCellExperiment,
   TreeSummarizedExperiment,
-  MultiAssayExperiment
+  MultiAssayExperiment,
   phyloseq,
   plyr,
   dplyr,
@@ -32,7 +32,7 @@ Imports:
   urltools,
   ape
 Suggests:
-    testthat
+    testthat,
     knitr,
     rmarkdown,
     ggplot2
