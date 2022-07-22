@@ -12,8 +12,7 @@ mgnify_get_single_analysis_treese <- function(client=NULL, accession, usecache=T
   biom_position <- grepl(tax_SU, sapply(available_biom_files, function(x) x$attributes$`group-type`))
   if(sum(biom_position) == 0){
     if(client@warnings){
-    warning("Unable to locate requested taxonomy type ",tax_SU,". This is likely due to the current analysis having been performed on an older version of the MGnify pipeline.
-             The available BIOM file will be used instead.")
+    warning("Unable to locate requested taxonomy type ",tax_SU,". This is likely due to the current analysis having been performed on an older version of the MGnify pipeline. The available BIOM file will be used instead.")
     }
     biom_url <- available_biom_files[[1]]$links$self
   }else{
