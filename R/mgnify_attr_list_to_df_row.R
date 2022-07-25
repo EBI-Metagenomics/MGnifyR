@@ -18,6 +18,6 @@ mgnify_attr_list_to_df_row <- function (json, metadata_key=NULL ){
   df$accession <- json$id
   df$acc_type <- json$type
 
-  rownames(df)=df$accession
+  rownames(df) <- df$accession
   df
 }

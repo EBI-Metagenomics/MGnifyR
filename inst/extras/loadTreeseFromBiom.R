@@ -4,18 +4,18 @@ loadTreeseFromBiom <- function (BIOMfilename, treefilename = NULL, refseqfilenam
           parallel = FALSE, version = 1, ...)
 {
   argumentlist <- list()
-  if (class(BIOMfilename) == "character") {
+  if is(BIOMfilename, "character") {
     x = biomformat::read_biom(biom_file = BIOMfilename)
   }
   else{
-    if (class(BIOMfilename) == "biom") {
+    if is(BIOMfilename, "biom") {
      x = BIOMfilename
     } else {
        stop("import_biom requires a 'character' string to a biom file or a 'biom-class' object")
     }
   }
 
-  otutab = otu_table(as(biomformat::biom_data(x), "matrix"), taxa_are_rows = TRUE)
+  otutab <- otu_table(as(biomformat::biom_data(x), "matrix"), taxa_are_rows = TRUE)
   argumentlist <- c(argumentlist, list(otutab))
   if (all(sapply(sapply(x$rows, function(i) {
     i$metadata

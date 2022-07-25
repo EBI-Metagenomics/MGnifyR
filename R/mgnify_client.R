@@ -1,4 +1,4 @@
-#Contructor to allow logging in with username/password
+# Contructor to allow logging in with username/password
 #' Instantiate the MGnifyR client object
 #'
 #' All functions in the MGnifyR package take a \code{mgnify_client} object as their first argument. While not essential
