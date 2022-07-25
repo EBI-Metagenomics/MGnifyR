@@ -57,6 +57,7 @@ mgnify_memory_cache=list()
 
 
 
+
 #Internal functions to parse the attributes/hierarchy list into a data.frame
 mgnify_parse_tax <- function(json){
   df <- as.data.frame(c(json$attributes["count"], unlist(json$attributes$hierarchy)), stringsAsFactors = F)
@@ -87,3 +88,14 @@ analyses_results_bulk_file_names <- list(
                                     `taxonomy-lsu`="Taxonomic assignments LSU",`antismash-gene-clusters`=mgnify_parse_func,
                                     `go-terms`="Complete GO annotation", `interpro-identifiers`="InterPro matches",
                                     `phylo-tax-ssu`="Phylum level taxonomies SSU",`phylo-tax-lsu`="Phylum level taxonomies LSU" )
+
+
+
+##' @exportClass mgnify_client
+mgnify_client <- setClass("mgnify_client",
+                          slots=list(url = "character", authtok = "character",
+                                     cache_dir="character", warnings="logical",
+                                     use_memcache="logical", memcache="list",
+                                     clear_cache="logical"),
+                          prototype = list(url=baseurl, authtok=NULL, cache_dir=NULL, use_memcache=FALSE, memcache=list(),clear_cache=FALSE))
+
