@@ -2,7 +2,7 @@
 title: "MGnifyR"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{MGnifyR-usage}
+  %\VignetteIndexEntry{MGnifyR}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -315,10 +315,12 @@ table(dl_urls$attributes.description.label)
 
 Unlike other `MGnifyR` functions, `mgnify_get_downloads` is not limited to `analyses`, and by specifying `accession_type` other results types may be found. For instance, while general `genome` functionality is not yet integrated into `MGnifyR`, we can retrieve associated files for a particular `genome` accession with the following:
 
-```{r,get_genome_urls, results='hide'}
+```{r get_genome_urls, results='hide', eval=FALSE}
+# FIXME
 genome_urls <- mgnify_get_download_urls(mg, "MGYG-HGUT-04644", accession_type = "genomes")
 ```
-```{r show_genome_urls}
+
+```{r show_genome_urls, eval=FALSE}
 genome_urls[c("id","attributes.file.format.name","download_url")]
 ```
 Having found the a set of target urls, the final step is to use `mgnify_download` to actually retrieve the file. Unlike other functions, this only works with a single url location at once, so each entry in `target_urls` from above must be downloaded individually - easily done by either looping or `apply`ing over the list.

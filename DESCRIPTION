@@ -23,7 +23,7 @@ Depends:
   SummarizedExperiment,
   SingleCellExperiment,
   TreeSummarizedExperiment,
-  MultiAssayExperiment
+  MultiAssayExperiment,
   phyloseq,
   plyr,
   dplyr,
