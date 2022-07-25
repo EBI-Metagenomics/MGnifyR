@@ -1,0 +1,67 @@
+---
+title: "Putting data in a TreeSummarizedExperiment format"
+author: "Kévin GATEL"
+date: "`r Sys.Date()`"
+package: MGnifyR
+output:
+    BiocStyle::html_document:
+        fig_height: 7
+        fig_width: 10
+        toc: yes
+        toc_depth: 2
+        number_sections: true
+vignette: >
+    %\VignetteIndexEntry{treese}
+    %\VignetteEngine{knitr::rmarkdown}
+    %\VignetteEncoding{UTF-8}
+bibliography: references.bib
+---
+
+# Load every single function in other files
+
+```{r}
+devtools::load_all()
+```
+
+# Load *MgnifyR*
+
+```{r}
+library(MGnifyR)
+```
+
+# Set up the MGnify client instance
+
+```{r}
+mgclnt <- mgnify_client(usecache = T, cache_dir = '/tmp/MGnify_cache')
+```
+
+# Retrieve the list of analyses associated with a study
+
+```{r}
+accession_list <- mgnify_analyses_from_studies(mgclnt, "MGYS00005058", usecache = T)
+```
+
+# Download all associated study/sample and analysis metadata
+
+```{r}
+meta_dataframe <- mgnify_get_analyses_metadata(mgclnt, accession_list, usecache = T )
+```
+
+# Convert analyses outputs to a single `TreeSummarizedExperiment` object
+
+```{r}
+tse <- mgnify_get_analyses_treese(mgclnt, meta_dataframe$analysis_accession, usecache = T)
+```
+
+# Coerce a phyloseq object to a TreeSummarizedExperiment
+
+```{r}
+psobj <- mgnify_get_analyses_phyloseq(mgclnt, meta_dataframe$analysis_accession, usecache = T)
+tse0<-mia::makeTreeSummarizedExperimentFromPhyloseq(psobj)
+```
+
+# Both should be equal
+```{r}
+tse
+tse0
+```
