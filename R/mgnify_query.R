@@ -1,4 +1,4 @@
-#'Search MGnify database for studies, samples and runs
+#' Search MGnify database for studies, samples and runs
 #'
 #' \code{mgnify_query} is a flexible query function, harnessing the "full" power of the JSONAPI MGnify
 #' search filters. Search results may be filtered by metadata value, associated study/sample/analyese etc. Details
@@ -65,7 +65,7 @@ mgnify_query <- function(client, qtype="samples", accession=NULL, asDataFrame=T,
 
   arglist$accession=a
   #Force evaluation of arguments to prevent things getting messed up with x and y and z and ....
-  ##arglist = lapply(arglist, eval)
+  ## arglist = lapply(arglist, eval)
   #Filter the query options such that
   #qopt_list = arglist[names(arglist) %in% query_filters[[qtype]]]
   qopt_list = c(list(...), accession=accession)
@@ -82,8 +82,8 @@ mgnify_query <- function(client, qtype="samples", accession=NULL, asDataFrame=T,
 
   if(asDataFrame){
     #Because metadata might not match across studies, the full dataframe is built by first building per-sample dataframes,
-    # then using rbind.fill from plyr to combine. For ~most~ use cases the number of empty columns will hopefully
-    # be minimal... because who's going to want cross study grabbing (?)
+    #then using rbind.fill from plyr to combine. For ~most~ use cases the number of empty columns will hopefully
+    #be minimal... because who's going to want cross study grabbing (?)
     dflist = lapply(result, function(r){
       df2 <- mgnify_attr_list_to_df_row(json = r, metadata_key = "sample-metadata")
 

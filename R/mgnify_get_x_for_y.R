@@ -1,8 +1,8 @@
-#helper function for getting relative paths in the API
-#Not everything is implemented here - just what we
-#need to get to the download or run areas
-#Given an accession x, we want to get the link to get the url for the
-#coresponding typeY
+# helper function for getting relative paths in the API
+# Not everything is implemented here - just what we
+# need to get to the download or run areas
+# Given an accession x, we want to get the link to get the url for the
+# corresponding typeY
 #' \code{JSONAPI} path for child elements
 #'
 #' \code{mgnify_get_x_for_y} determines the location of \code{typeY} child objects of \code{x} (type \code{typeX})
