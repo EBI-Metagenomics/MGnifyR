@@ -18,12 +18,13 @@ Description:
 License: Artistic-2.0 | file LICENSE
 Encoding: UTF-8
 LazyData: true
+Depends:
+  R (>= 4.0)
 Imports:
-  R (>= 4.0),
   SummarizedExperiment,
   SingleCellExperiment,
   TreeSummarizedExperiment,
-  MultiAssayExperiment
+  MultiAssayExperiment,
   phyloseq,
   plyr,
   dplyr,
@@ -32,7 +33,7 @@ Imports:
   urltools,
   ape
 Suggests:
-    testthat
+    testthat,
     knitr,
     rmarkdown,
     ggplot2
