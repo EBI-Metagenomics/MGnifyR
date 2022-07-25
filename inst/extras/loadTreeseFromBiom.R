@@ -1,3 +1,4 @@
+# get a biom file name and convert it to a TreeSummarizedExperiment object
 loadTreeseFromBiom <- function (BIOMfilename, treefilename = NULL, refseqfilename = NULL,
           refseqFunction = readDNAStringSet, refseqArgs = NULL, parseFunction = parse_taxonomy_default,
           parallel = FALSE, version = 1, ...)

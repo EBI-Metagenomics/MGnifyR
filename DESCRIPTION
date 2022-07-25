@@ -13,18 +13,17 @@ Authors@R:
              email = "tuomas.v.borman@utu.fi",
              comment = c(ORCID = "0000-0002-8563-8884")))
 Title: R interface to EBI MGnify metagenomics resource
-Description: 
+Description:
     Utility package to facilitate easy integration and analysis of EBI Mgnify pipeline results in R.
 License: Artistic-2.0 | file LICENSE
 Encoding: UTF-8
 LazyData: true
 Depends:
   R (>= 4.0)
-Imports:
   SummarizedExperiment,
   SingleCellExperiment,
   TreeSummarizedExperiment,
-  MultiAssayExperiment,
+  MultiAssayExperiment
   phyloseq,
   plyr,
   dplyr,

@@ -1,3 +1,4 @@
+# get a single biom file and convert it to a TreeSummarizedExperiment object
 mgnify_get_single_analysis_treese <- function(client=NULL, accession, usecache=T, downloadDIR=NULL, tax_SU="SSU", get_tree=FALSE){
 
   metadata_df <- mgnify_get_single_analysis_metadata(client, accession, usecache=usecache)
@@ -11,8 +12,7 @@ mgnify_get_single_analysis_treese <- function(client=NULL, accession, usecache=T
   biom_position <- grepl(tax_SU, sapply(available_biom_files, function(x) x$attributes$`group-type`))
   if(sum(biom_position) == 0){
     if(client@warnings){
-    warning("Unable to locate requested taxonomy type ",tax_SU,". This is likely due to the current analysis having been performed on an older version of the MGnify pipeline.
-             The available BIOM file will be used instead.")
+    warning("Unable to locate requested taxonomy type ",tax_SU,". This is likely due to the current analysis having been performed on an older version of the MGnify pipeline. The available BIOM file will be used instead.")
     }
     biom_url <- available_biom_files[[1]]$links$self
   }else{
@@ -41,7 +41,7 @@ mgnify_get_single_analysis_treese <- function(client=NULL, accession, usecache=T
     httr::GET(biom_url, httr::write_disk(biom_path, overwrite = T))
   }
 
-  #Load in a TreeSummarizedExperiment object
+  #Load in the TreeSummarizedExperiment object
   tse <- loadTreeseFromBiom(biom_path)
 
   #Need to check if the taxonomy was parsed correctly - depending on the pipeline it may need a bit of help:
