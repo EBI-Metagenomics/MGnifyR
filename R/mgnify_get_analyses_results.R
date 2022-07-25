@@ -21,34 +21,34 @@
 #'
 #'@export
 mgnify_get_analyses_results <- function(client=NULL, accessions, retrievelist=c(), compact_results=T, usecache = T, bulk_dl = F){
-  if(length(retrievelist) == 1 && retrievelist == "all"){
-    retrievelist = names(analyses_results_type_parsers)
-  }
-  results_as_lists <- plyr::llply(accessions,
-                                  function(x) mgnify_get_single_analysis_results(
-                                    client, x,
-                                    usecache = usecache,
-                                    retrievelist = retrievelist, bulk_files = bulk_dl),
-                                  .progress = "text")
-  names(results_as_lists) <- accessions
+    if(length(retrievelist) == 1 && retrievelist == "all"){
+        retrievelist = names(analyses_results_type_parsers)
+    }
+    results_as_lists <- plyr::llply(accessions,
+                                                                    function(x) mgnify_get_single_analysis_results(
+                                                                        client, x,
+                                                                        usecache = usecache,
+                                                                        retrievelist = retrievelist, bulk_files = bulk_dl),
+                                                                    .progress = "text")
+    names(results_as_lists) <- accessions
 
-  if(!compact_results){
-    results_as_lists
-  }else{
-    #Compact the result type dataframes into a single instance. Per accession counts in each column.
-    all_results <- plyr::llply(retrievelist, function(y){
-      tryCatch({
-        r = lapply(results_as_lists, function(x){
-          df <- as.data.frame(x[[y]])
-          df
+    if(!compact_results){
+        results_as_lists
+    }else{
+        #Compact the result type dataframes into a single instance. Per accession counts in each column.
+        all_results <- plyr::llply(retrievelist, function(y){
+            tryCatch({
+                r = lapply(results_as_lists, function(x){
+                    df <- as.data.frame(x[[y]])
+                    df
+                })
+                longform <- dplyr::bind_rows(r, .id = "analysis")
+                cn <- colnames(longform)
+                extras <- cn[!(cn %in% c("count","index_id", "analysis"))]
+                final_df <- reshape2::dcast(longform, as.formula(paste(paste(extras,collapse = " + "), " ~ analysis")), value.var = "count", fun.aggregate = sum)
+                final_df}, error=function(x) NULL)
         })
-        longform <- dplyr::bind_rows(r, .id = "analysis")
-        cn <- colnames(longform)
-        extras <- cn[!(cn %in% c("count","index_id", "analysis"))]
-        final_df <- reshape2::dcast(longform, as.formula(paste(paste(extras,  collapse = " + "), " ~ analysis")), value.var = "count", fun.aggregate = sum)
-        final_df}, error=function(x) NULL)
-    })
-  }
-  names(all_results) <- retrievelist
-  all_results
+    }
+    names(all_results) <- retrievelist
+    all_results
 }

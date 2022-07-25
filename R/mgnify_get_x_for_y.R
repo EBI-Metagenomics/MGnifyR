@@ -20,20 +20,20 @@
 #' mgnify_get_x_for_y(cl, "MGYS00005126", "studies", "samples")
 ## @export
 mgnify_get_x_for_y <- function(client, x, typeX, typeY, usecache=F){
-  #This one's easy - just rearrange the URLs
-  #if(typeX=="samples" & typeY %in% c("runs","studies")){
-  #  paste( typeX,x,typeY, sep="/")
-  #}else if(typeX=="runs" & typeY == "analyses"){
-  #  paste( typeX,x,typeY, sep="/")
-  #}
-  #else{
-    #Do it the hard way with a callout
-    json_dat = mgnify_retrieve_json(client, paste(typeX, x, sep="/"), usecache = usecache)
-    #cat(str(json_dat))
-    #tgt_access = json_dat[[1]]$relationships[[typeY]]$data$id
-    #tgt_type = json_dat[[1]]$relationships[[typeY]]$data$type
-    #paste(tgt_type,tgt_access,sep="/")
-    json_dat[[1]]$relationships[[typeY]]$links$related
-    #substr(tgt_url, nchar(client@url) + 1, nchar(tgt_url))
-  #}
+    #This one's easy - just rearrange the URLs
+    #if(typeX=="samples" & typeY %in% c("runs","studies")){
+    #    paste( typeX,x,typeY, sep="/")
+    #}else if(typeX=="runs" & typeY == "analyses"){
+    #    paste( typeX,x,typeY, sep="/")
+    #}
+    #else{
+        #Do it the hard way with a callout
+        json_dat = mgnify_retrieve_json(client, paste(typeX, x, sep="/"), usecache = usecache)
+        #cat(str(json_dat))
+        #tgt_access = json_dat[[1]]$relationships[[typeY]]$data$id
+        #tgt_type = json_dat[[1]]$relationships[[typeY]]$data$type
+        #paste(tgt_type,tgt_access,sep="/")
+        json_dat[[1]]$relationships[[typeY]]$links$related
+        #substr(tgt_url, nchar(client@url) + 1, nchar(tgt_url))
+    #}
 }

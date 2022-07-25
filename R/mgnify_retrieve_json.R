@@ -5,7 +5,7 @@
 #' Low level MGnify API handler
 #'
 #' \code{mgnify_retrieve_json} deals with handles the actual HTTP GET calls for the MGnifyR package, handling API pagination,
-#' local result caching, and  authentication cookies for access
+#' local result caching, and authentication cookies for access
 #' to restricted or pre-release datasets.Although principally intended for internal MGnifyR use , it's exported for direct invocation.
 #' Generally though it's not recommended for use by users.
 #'
@@ -22,108 +22,107 @@
 #' @param Debug Should we print out lots of information while doing the grabbing?
 #' @return \code{list} of results after pagination is dealt with.
 #' @export
-  mgnify_retrieve_json <- function(client, path="biomes", complete_url=NULL, qopts=NULL,
-                                   maxhits=200, usecache = F, Debug=F){
+mgnify_retrieve_json <- function(client, path="biomes", complete_url=NULL, qopts=NULL,maxhits=200, usecache = F, Debug=F){
 
 
-  #client@warnings turns on debugging too:
+    #client@warnings turns on debugging too:
 
-  if(client@warnings){
-    Debug=T
-  }
-  # Set up the base url
-  # Are we using internal paths?
-  if (is.null(complete_url)){
-    fullurl = paste(client@url, path, sep="/")
-  }
-  #Or direct links from e.g. a "related" section
-  else{
-    #Set the full url, but clean off any existing parameters (page, format etc) as they'll be added back later:
-    fullurl = complete_url
-    urltools::parameters(fullurl) <- NULL
-    path = substr(fullurl, nchar(client@url) + 2, nchar(fullurl))
-  }
-
-  #cat(fullurl)
-
-  #convert to csv if filters are lists.
-  #This doesn't check if they ~can~ be searched for in the API,
-  #which is an issue since no error is returned by the JSON if the search
-  #is invalid - we only get a result as if no query was present...
-  tmpqopts = lapply(qopts,function(x) paste(x,collapse = ','))
-
-  #Include the json and page position options
-  #full_qopts = as.list(c(format="json", tmpqopts, page=1))
-  full_qopts = as.list(c(format="json", tmpqopts))
-  #Build up the cache name anyway - even if it's not ultimately used:
-  fname_list = c(path, names(unlist(full_qopts)), unlist(full_qopts))
-  cache_fname = paste(fname_list,collapse = "_")
-  cache_full_fname = paste(client@cache_dir, '/', cache_fname, '.RDS', sep="")
-
-
-  ## Quick check to see if we should clear the disk cache ~for this specific call~ - used for debugging
-  # and when MGnify breaks
-  if(usecache & client@clear_cache){
-    print(paste("clear_cache is TRUE: deleting ", cache_full_fname, sep=""))
-    tryCatch(unlink(cache_full_fname), error=warning)
-  }
-
-  # Do we want to try and use a cache to speed things up?
-  if(usecache & file.exists(cache_full_fname)){
-      final_data = readRDS(cache_full_fname)
-  }else{
-
-    #Authorization: Bearer <your_token>
-    if(!is.null(client@authtok)){
-      httr::add_headers(.headers = c(Authorization = paste("Bearer", client@authtok, sep=" ")))
+    if(client@warnings){
+        Debug=T
     }
-    res = httr::GET(url=fullurl, httr::config(verbose=Debug), query=full_qopts )
-    data <-httr::content(res)
+    # Set up the base url
+    # Are we using internal paths?
+    if (is.null(complete_url)){
+        fullurl = paste(client@url, path, sep="/")
+    }
+    #Or direct links from e.g. a "related" section
+    else{
+        #Set the full url, but clean off any existing parameters (page, format etc) as they'll be added back later:
+        fullurl = complete_url
+        urltools::parameters(fullurl) <- NULL
+        path = substr(fullurl, nchar(client@url) + 2, nchar(fullurl))
+    }
 
-    #At this point, data$data is either a list of lists or a single named list. If it's a single entry, it needs embedding in
-    #a list for consistency downstream
-    #datlist is built up as a list of pages, where each entry must be another list. Thus, on the first page,
-    #
-    datlist=list()
-    if (!is.null(names(data$data))){
-    #Create something to store the returned data
+    #cat(fullurl)
 
-      datlist[[1]] = list(data$data)
+    #convert to csv if filters are lists.
+    #This doesn't check if they ~can~ be searched for in the API,
+    #which is an issue since no error is returned by the JSON if the search
+    #is invalid - we only get a result as if no query was present...
+    tmpqopts = lapply(qopts,function(x) paste(x,collapse = ','))
+
+    #Include the json and page position options
+    #full_qopts = as.list(c(format="json", tmpqopts, page=1))
+    full_qopts = as.list(c(format="json", tmpqopts))
+    #Build up the cache name anyway - even if it's not ultimately used:
+    fname_list = c(path, names(unlist(full_qopts)), unlist(full_qopts))
+    cache_fname = paste(fname_list,collapse = "_")
+    cache_full_fname = paste(client@cache_dir, '/', cache_fname, '.RDS', sep="")
+
+
+    ## Quick check to see if we should clear the disk cache ~for this specific call~ - used for debugging
+    # and when MGnify breaks
+    if(usecache & client@clear_cache){
+        print(paste("clear_cache is TRUE: deleting ", cache_full_fname, sep=""))
+        tryCatch(unlink(cache_full_fname), error=warning)
+    }
+
+    # Do we want to try and use a cache to speed things up?
+    if(usecache & file.exists(cache_full_fname)){
+            final_data = readRDS(cache_full_fname)
     }else{
-      datlist[[1]] = data$data
-    }
-      #cat(str(data))
-    # Check to see if there's pagination required
-    if ("meta" %in% names(data)){
-      #Yes, paginate
-      pstart = as.numeric(data$meta$pagination$page)
-      pend   = as.numeric(data$meta$pagination$pages)
 
-      for (p in seq(pstart+1,pend)){  # We've already got the first one
-
-        full_qopts$page=p
+        #Authorization: Bearer <your_token>
         if(!is.null(client@authtok)){
-          httr::add_headers(.headers = c(Authorization = paste("Bearer", client@authtok, sep=" ")))
+            httr::add_headers(.headers = c(Authorization = paste("Bearer", client@authtok, sep=" ")))
         }
-        curd = httr::content(httr::GET(fullurl, httr::config(verbose=Debug), query=full_qopts ))
-        datlist[[p]] = curd$data
-        #Check to see if we've pulled enough entries
-        if(maxhits > 0){
-          curlen=sum(sapply(datlist, length))
-          if (curlen > maxhits){
-            break
-          }
-        }
-      }
-    }
-    #if(length(datlist) > 1){
-    final_data <- unlist(datlist, recursive=F)
+        res = httr::GET(url=fullurl, httr::config(verbose=Debug), query=full_qopts )
+        data <-httr::content(res)
 
-    if (usecache && !file.exists(cache_full_fname)){
-      #Make sure the directory is created...
-    dir.create(dirname(cache_full_fname), recursive = T, showWarnings = client@warnings)
-      saveRDS(final_data, file = cache_full_fname)
+        #At this point, data$data is either a list of lists or a single named list. If it's a single entry, it needs embedding in
+        #a list for consistency downstream
+        #datlist is built up as a list of pages, where each entry must be another list. Thus, on the first page,
+        #
+        datlist=list()
+        if (!is.null(names(data$data))){
+        #Create something to store the returned data
+
+            datlist[[1]] = list(data$data)
+        }else{
+            datlist[[1]] = data$data
+        }
+            #cat(str(data))
+        # Check to see if there's pagination required
+        if ("meta" %in% names(data)){
+            #Yes, paginate
+            pstart = as.numeric(data$meta$pagination$page)
+            pend = as.numeric(data$meta$pagination$pages)
+
+            for (p in seq(pstart+1,pend)){    # We've already got the first one
+
+                full_qopts$page=p
+                if(!is.null(client@authtok)){
+                    httr::add_headers(.headers = c(Authorization = paste("Bearer", client@authtok, sep=" ")))
+                }
+                curd = httr::content(httr::GET(fullurl, httr::config(verbose=Debug), query=full_qopts ))
+                datlist[[p]] = curd$data
+                #Check to see if we've pulled enough entries
+                if(maxhits > 0){
+                    curlen=sum(sapply(datlist, length))
+                    if (curlen > maxhits){
+                        break
+                    }
+                }
+            }
+        }
+        #if(length(datlist) > 1){
+        final_data <- unlist(datlist, recursive=F)
+
+        if (usecache && !file.exists(cache_full_fname)){
+            #Make sure the directory is created...
+        dir.create(dirname(cache_full_fname), recursive = T, showWarnings = client@warnings)
+            saveRDS(final_data, file = cache_full_fname)
+        }
     }
-  }
-  final_data
+    final_data
 }

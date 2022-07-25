@@ -40,56 +40,56 @@
 #'
 #' @export
 mgnify_download <- function(client, url, target_filename=NULL, read_func=NULL, usecache=TRUE, Debug=FALSE){
-  #Set up filenames for storing the data
-  ftgt=NULL
-  if (! is.null(target_filename)){
-    file_tgt = target_filename
-  }else if(usecache == TRUE){
-    #Build a filename out of the url, including the full paths. Annoying, but some downloads (e.g. genome results) are just names like
-    # core_genes.fa , which would break the caching.
-    cachetgt = gsub(paste(client@url,'/',sep=""), '', url)
-    #Make sure the direcory exists
+    #Set up filenames for storing the data
+    ftgt=NULL
+    if (! is.null(target_filename)){
+        file_tgt = target_filename
+    }else if(usecache == TRUE){
+        #Build a filename out of the url, including the full paths. Annoying, but some downloads (e.g. genome results) are just names like
+        # core_genes.fa , which would break the caching.
+        cachetgt = gsub(paste(client@url,'/',sep=""), '', url)
+        #Make sure the direcory exists
 
-    cache_full_name = paste(client@cache_dir, cachetgt, sep="/")
-    dir.create(dirname(cache_full_name), recursive = T, showWarnings = client@warnings)
+        cache_full_name = paste(client@cache_dir, cachetgt, sep="/")
+        dir.create(dirname(cache_full_name), recursive = T, showWarnings = client@warnings)
 
 
-    file_tgt = cache_full_name
-  } else{
-    file_tgt = tempfile()[[1]]
-  }
-
-  if(usecache & client@clear_cache){
-    print(paste("clear_cache is TRUE: deleting ", file_tgt, sep=""))
-    tryCatch(unlink(file_tgt), error=warning)
-  }
-
-  #Only get the data if it's not already on disk
-  if(!(usecache & file.exists(file_tgt))){
-
-    if(!is.null(client@authtok)){
-      httr::add_headers(.headers = c(Authorization = paste("Bearer", client@authtok, sep=" ")))
+        file_tgt = cache_full_name
+    } else{
+        file_tgt = tempfile()[[1]]
     }
-    #If there's an error we need to make sure the cache file isn't written - by default it seems it is.
-    tryCatch(expr = {
-      curd = httr::content(httr::GET(url, httr::write_disk(file_tgt, overwrite = T)))
-    }, error=function(x){
-      unlink(file_tgt)
-      print(paste("Error retrieving file",file_tgt))
-      print(paste("Error:",x))
-      stop()
-    })
-  }
 
-  if (is.null(read_func)){
-    result = file_tgt
-  } else{
-    result = read_func(file_tgt)
-  }
+    if(usecache & client@clear_cache){
+        print(paste("clear_cache is TRUE: deleting ", file_tgt, sep=""))
+        tryCatch(unlink(file_tgt), error=warning)
+    }
 
-  if (is.null(target_filename) & !usecache){
-    #Need to clear out the temporary file
-    unlink(file_tgt)
-  }
-  result
+    #Only get the data if it's not already on disk
+    if(!(usecache & file.exists(file_tgt))){
+
+        if(!is.null(client@authtok)){
+            httr::add_headers(.headers = c(Authorization = paste("Bearer", client@authtok, sep=" ")))
+        }
+        #If there's an error we need to make sure the cache file isn't written - by default it seems it is.
+        tryCatch(expr = {
+            curd = httr::content(httr::GET(url, httr::write_disk(file_tgt, overwrite = T)))
+        }, error=function(x){
+            unlink(file_tgt)
+            print(paste("Error retrieving file",file_tgt))
+            print(paste("Error:",x))
+            stop()
+        })
+    }
+
+    if (is.null(read_func)){
+        result = file_tgt
+    } else{
+        result = read_func(file_tgt)
+    }
+
+    if (is.null(target_filename) & !usecache){
+        #Need to clear out the temporary file
+        unlink(file_tgt)
+    }
+    result
 }

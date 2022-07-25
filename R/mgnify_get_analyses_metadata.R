@@ -11,9 +11,9 @@
 #'
 #' @export
 mgnify_get_analyses_metadata <- function(client, accessions, usecache=T){
-  reslist <- plyr::llply(as.list(accessions), function(x) mgnify_get_single_analysis_metadata(client, x, usecache = usecache),
-                            .progress = "text")
-  df <- do.call(dplyr::bind_rows,reslist)
-  rownames(df) <- accessions
-  df
+    reslist <- plyr::llply(as.list(accessions), function(x) mgnify_get_single_analysis_metadata(client, x, usecache = usecache),
+                                                        .progress = "text")
+    df <- do.call(dplyr::bind_rows,reslist)
+    rownames(df) <- accessions
+    df
 }

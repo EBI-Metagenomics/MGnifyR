@@ -14,11 +14,11 @@
 #'
 #' @export
 mgnify_analyses_from_studies <- function(client, accession, usecache=T){
-  analyses_accessions <- plyr::llply(as.list(accession), function(x){
-    accurl <- mgnify_get_x_for_y(client, x, "studies","analyses", usecache = usecache )
-    jsondat <- mgnify_retrieve_json(client, complete_url = accurl, usecache = usecache, maxhits = -1)
-    #Just need the accession ID
-    lapply(jsondat, function(x) x$id)
-  }, .progress="text")
-  unlist(analyses_accessions)
+    analyses_accessions <- plyr::llply(as.list(accession), function(x){
+        accurl <- mgnify_get_x_for_y(client, x, "studies","analyses", usecache = usecache )
+        jsondat <- mgnify_retrieve_json(client, complete_url = accurl, usecache = usecache, maxhits = -1)
+        #Just need the accession ID
+        lapply(jsondat, function(x) x$id)
+    }, .progress="text")
+    unlist(analyses_accessions)
 }
