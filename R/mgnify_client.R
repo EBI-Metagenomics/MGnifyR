@@ -24,7 +24,7 @@
 #' @export
 mgnify_client <- function(url=NULL,username=NULL,password=NULL,usecache=F,cache_dir=NULL, warnings=F, use_memcache=F){
     if (is.null(url)){
-        url=baseurl
+        url <- baseurl
     }
 
     authtok <- NA_character_
@@ -36,19 +36,19 @@ mgnify_client <- function(url=NULL,username=NULL,password=NULL,usecache=F,cache_
                                      encode="json")
         cont <- httr::content(r)
         if ("data" %in% names(cont)){
-            authtok = cont$data$token
+            authtok <- cont$data$token
         }
         else{
             stop("Failed to authenticate")
         }
     }
     #Assume we're not using it
-    cachepath=NA_character_
+    cachepath <- NA_character_
     if(usecache){
         if (is.null(cache_dir) ){
-            cachepath=paste(getwd(),'.MGnifyR_cache',sep="/")
+            cachepath <- paste(getwd(),'.MGnifyR_cache',sep="/")
         }else{
-            cachepath=cache_dir
+            cachepath <- cache_dir
         }
         #Make it if needed - assume the user is sensible and the path will work...
         dir.create(cachepath,showWarnings = F)

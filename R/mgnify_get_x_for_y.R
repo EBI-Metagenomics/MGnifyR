@@ -28,7 +28,7 @@ mgnify_get_x_for_y <- function(client, x, typeX, typeY, usecache=F){
     #}
     #else{
         #Do it the hard way with a callout
-        json_dat = mgnify_retrieve_json(client, paste(typeX, x, sep="/"), usecache = usecache)
+        json_dat <- mgnify_retrieve_json(client, paste(typeX, x, sep="/"), usecache = usecache)
         #cat(str(json_dat))
         #tgt_access = json_dat[[1]]$relationships[[typeY]]$data$id
         #tgt_type = json_dat[[1]]$relationships[[typeY]]$data$type

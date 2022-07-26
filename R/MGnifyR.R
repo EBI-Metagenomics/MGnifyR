@@ -24,36 +24,36 @@ library(ape)
 
 
 
-baseurl='https://www.ebi.ac.uk/metagenomics/api/v1'
+baseurl <- 'https://www.ebi.ac.uk/metagenomics/api/v1'
 
 ##Filters possible - this comes from the django source code - would be nice if we could
 # look it up.
 # These DON'T seem to include all possible attributes ....
 # And only some
-sample_filters = c('accession','experiment_type','biome_name','lineage','geo_loc_name','latitude_gte','latitude_lte',
+sample_filters <- c('accession','experiment_type','biome_name','lineage','geo_loc_name','latitude_gte','latitude_lte',
                                      'longitude_gte','longitude_lte','species','instrument_model','instrument_platform','metadata_key',
                                      'metadata_value_gte','metadata_value_lte','metadata_value','environment_material','environment_feature',
                                      'study_accession','include')
-biome_filters = c('depth_gte','depth_lte')
-study_filters = c('accession','biome_name','lineage','centre_name','include')
-run_filters=c('accession','experiment_type','biome_name','lineage','species','instrument_platform','instrument_model',
+biome_filters <- c('depth_gte','depth_lte')
+study_filters <- c('accession','biome_name','lineage','centre_name','include')
+run_filters <- c('accession','experiment_type','biome_name','lineage','species','instrument_platform','instrument_model',
                             # 'metadata_key','metadata_value_gte','metadata_value_lte','metadata_value','sample_accession','study_accession',
                             'include')
-analysis_filters = c('biome_name', 'lineage', 'experiment_type', 'species', 'sample_accession', 'pipeline_version')
+analysis_filters <- c('biome_name', 'lineage', 'experiment_type', 'species', 'sample_accession', 'pipeline_version')
 
 
 #Combined together into a single queriably list
-query_filters=list(
-    biomes=biome_filters,
-    samples=sample_filters,
-    studies=study_filters,
-    runs=run_filters
+query_filters <- list(
+    biomes <- biome_filters,
+    samples <- sample_filters,
+    studies <- study_filters,
+    runs <- run_filters
 )
 
 
 ### Result table caching
 
-mgnify_memory_cache=list()
+mgnify_memory_cache <- list()
 
 
 

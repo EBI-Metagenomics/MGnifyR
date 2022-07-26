@@ -32,36 +32,36 @@
 #'
 #' #Example 1:
 #' #Download the first file
-#' supplied_filename = mgnify_download(mg, url_list[[1]], target_filename="SSU_file.fasta.gz")
+#' supplied_filename <- mgnify_download(mg, url_list[[1]], target_filename="SSU_file.fasta.gz")
 #'
 #'
 #' #Example 2:
 #' #Just use local caching
-#' cached_filename = mgnify_download(mg, url_list[[2]])
+#' cached_filename <- mgnify_download(mg, url_list[[2]])
 #'
 #' #Example 3:
 #' #Using read_func to open the reads with readDNAStringSet from \code{biostrings}. Without retaining on disk
-#' dna_seqs <- mgnify_download(mg, url_list[[3]], read_func=readDNAStringSet, usecache=F)
+#' dna_seqs <- mgnify_download(mg, url_list[[3]], read_func <- readDNAStringSet, usecache=F)
 #'
 #' @export
 mgnify_download <- function(client, url, target_filename=NULL, read_func=NULL, usecache=TRUE, Debug=FALSE){
     #Set up filenames for storing the data
-    ftgt=NULL
+    ftgt <- NULL
     if (! is.null(target_filename)){
-        file_tgt = target_filename
+        file_tgt <- target_filename
     }else if(usecache == TRUE){
         #Build a filename out of the url, including the full paths. Annoying, but some downloads (e.g. genome results) are just names like
         # core_genes.fa , which would break the caching.
-        cachetgt = gsub(paste(client@url,'/',sep=""), '', url)
+        cachetgt <- gsub(paste(client@url,'/',sep=""), '', url)
         #Make sure the direcory exists
 
-        cache_full_name = paste(client@cache_dir, cachetgt, sep="/")
+        cache_full_name <- paste(client@cache_dir, cachetgt, sep="/")
         dir.create(dirname(cache_full_name), recursive = T, showWarnings = client@warnings)
 
 
-        file_tgt = cache_full_name
+        file_tgt <- cache_full_name
     } else{
-        file_tgt = tempfile()[[1]]
+        file_tgt <- tempfile()[[1]]
     }
 
     if(usecache & client@clear_cache){
@@ -77,7 +77,7 @@ mgnify_download <- function(client, url, target_filename=NULL, read_func=NULL, u
         }
         #If there's an error we need to make sure the cache file isn't written - by default it seems it is.
         tryCatch(expr = {
-            curd = httr::content(httr::GET(url, httr::write_disk(file_tgt, overwrite = T)))
+            curd <- httr::content(httr::GET(url, httr::write_disk(file_tgt, overwrite = T)))
         }, error=function(x){
             unlink(file_tgt)
             message(paste("Error retrieving file",file_tgt))
@@ -87,9 +87,9 @@ mgnify_download <- function(client, url, target_filename=NULL, read_func=NULL, u
     }
 
     if (is.null(read_func)){
-        result = file_tgt
+        result <- file_tgt
     } else{
-        result = read_func(file_tgt)
+        result <- read_func(file_tgt)
     }
 
     if (is.null(target_filename) & !usecache){

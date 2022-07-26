@@ -26,7 +26,7 @@
 #'@export
 mgnify_get_analyses_results <- function(client=NULL, accessions, retrievelist=c(), compact_results=T, usecache = T, bulk_dl = F){
     if(length(retrievelist) == 1 && retrievelist == "all"){
-        retrievelist = names(analyses_results_type_parsers)
+        retrievelist <- names(analyses_results_type_parsers)
     }
     results_as_lists <- plyr::llply(accessions,
                                                                     function(x) mgnify_get_single_analysis_results(
@@ -42,7 +42,7 @@ mgnify_get_analyses_results <- function(client=NULL, accessions, retrievelist=c(
         #Compact the result type dataframes into a single instance. Per accession counts in each column.
         all_results <- plyr::llply(retrievelist, function(y){
             tryCatch({
-                r = lapply(results_as_lists, function(x){
+                r <- lapply(results_as_lists, function(x){
                     df <- as.data.frame(x[[y]])
                     df
                 })

@@ -41,7 +41,7 @@ mgnify_get_single_analysis_results <- function(client=NULL, accession, retrievel
                     urltools::parameters(data_url) <- NULL
 
                     #build the cache filename
-                    fname=tail(strsplit(data_url, '/')[[1]], n=1)
+                    fname <- tail(strsplit(data_url, '/')[[1]], n=1)
 
                     #At this point we might have alread got the data we want loaded. Check the memory cache object
 
@@ -49,7 +49,7 @@ mgnify_get_single_analysis_results <- function(client=NULL, accession, retrievel
                         tmp_df <- mgnify_memory_cache[cur_type][["data"]]
                     }else{
                         #Nope - gonna have to load it up from disk or grab it from t'interweb
-                        data_path = paste(downloadDIR, fname, sep="/")
+                        data_path <- paste(downloadDIR, fname, sep="/")
 
                         if(usecache & client@clear_cache){
                             message(paste("clear_cache is TRUE: deleting ", data_path, sep=""))
@@ -78,19 +78,19 @@ mgnify_get_single_analysis_results <- function(client=NULL, accession, retrievel
                     }
 
                     #Need to figure out how many columns to keep - the first one is always an ID, but need to keep some others as well...
-                    i=1
+                    i <- 1
                     #tmp_df <- read.csv('~/.MGnify_cache/tsv/ERP108138_IPR_abundances_v4.1.tsv', sep="\t", header = T, stringsAsFactors = F)
                     while(any(is.na(suppressWarnings(as.numeric(tmp_df[,i] ))))){
-                        i=i+1
+                        i <- i+1
                     }
-                    i=i-1
+                    i <- i-1
 
                     #also need the column name for this particular analysis... As far as I can see they could be either assembly IDs or run ids. FFS.
                     #Assuming that both assembly and run won't be present...:
                     if("assembly_accession" %in% colnames(metadata_df)){
-                        accession=metadata_df$assembly_accession[[1]]
+                        accession <- metadata_df$assembly_accession[[1]]
                     }else if("run_accession" %in% colnames(metadata_df)){
-                        accession=metadata_df$run_accession[[1]]
+                        accession <- metadata_df$run_accession[[1]]
                     }
                 #cat(accession)
                 #    cat(str(head(tmp_df[1:5,1:5])))
@@ -140,7 +140,7 @@ mgnify_get_single_analysis_results <- function(client=NULL, accession, retrievel
             }
         })
         names(all_results) <- names(analyses_results_type_parsers)
-        parsed_results = sapply(names(all_results), function(x){
+        parsed_results <- sapply(names(all_results), function(x){
             all_json <- all_results[[x]]
             if(! is.null(all_json)){
                 res_df <- do.call(dplyr::bind_rows, lapply(all_json,analyses_results_type_parsers[[x]] ))

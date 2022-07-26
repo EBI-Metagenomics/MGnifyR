@@ -61,10 +61,10 @@ mgnify_get_analyses_phyloseq <- function(client = NULL, accessions, usecache=T,
         #so:
         #a divide-and-conquer approach to merge_phyloseq seems to work best, hence the following
         #code which splits the full list into sublists and merges them seperately, then repeats until all are joined.
-        curlist=ps_list
+        curlist <- ps_list
         while(length(curlist) > 1){
             #Lists of length 10 seem to work well
-            sublist=split(curlist, seq_along(curlist) %/% 10)
+            sublist <- split(curlist, seq_along(curlist) %/% 10)
             curlist <- lapply(sublist, function(x){
                 do.call(phyloseq::merge_phyloseq,x)
             })
