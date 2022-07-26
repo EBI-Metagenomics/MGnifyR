@@ -28,6 +28,7 @@
 #' @export
 mgnify_get_analyses_treese <- function(client = NULL, accessions, usecache=T, returnLists=F, tax_SU = "SSU", get_tree=FALSE){
     #Some biom files don't import - so need a try/catch
+    # @importFrom plyr llply
     tse_list <- plyr::llply(accessions, function(x) {
         tryCatch(
             mgnify_get_single_analysis_treese(client, x, usecache = usecache, tax_SU = tax_SU, get_tree = get_tree), error=function(x) NULL)

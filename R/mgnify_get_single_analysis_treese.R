@@ -39,11 +39,13 @@ mgnify_get_single_analysis_treese <- function(client=NULL, accession, usecache=T
     }
 
     if (! file.exists(biom_path)){#} | !use_downloads ){
+        # @importFrom httr GET
+        # @importFrom httr write_disk
         httr::GET(biom_url, httr::write_disk(biom_path, overwrite = T))
     }
 
     #Load in the TreeSummarizedExperiment object
-    #Add @importFrom mia loadFromBiom
+    # @importFrom mia loadFromBiom
     tse <- mia::loadFromBiom(biom_path)
 
     #Need to check if the taxonomy was parsed correctly - depending on the pipeline it may need a bit of help:
@@ -70,6 +72,8 @@ mgnify_get_single_analysis_treese <- function(client=NULL, accession, usecache=T
             }
 
             if (! file.exists(tree_path)){#} | !use_downloads ){
+                # @importFrom httr GET
+                # @importFrom httr write_disk
                 httr::GET(tree_url, httr::write_disk(tree_path, overwrite = T ))
             }
         }

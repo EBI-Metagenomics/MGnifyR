@@ -68,10 +68,13 @@ mgnify_download <- function(client, url, target_filename=NULL, read_func=NULL, u
     if(!(usecache & file.exists(file_tgt))){
 
         if(!is.null(client@authtok)){
+            # @importFrom httr add_headers
             httr::add_headers(.headers = c(Authorization = paste("Bearer", client@authtok, sep=" ")))
         }
         #If there's an error we need to make sure the cache file isn't written - by default it seems it is.
         tryCatch(expr = {
+            # @importFrom httr content
+            # @importFrom httr write_disk
             curd = httr::content(httr::GET(url, httr::write_disk(file_tgt, overwrite = T)))
         }, error=function(x){
             unlink(file_tgt)

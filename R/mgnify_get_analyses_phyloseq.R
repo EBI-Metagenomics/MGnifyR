@@ -30,6 +30,7 @@ mgnify_get_analyses_phyloseq <- function(client = NULL, accessions, usecache=T,
                                                                                  returnLists=F, tax_SU = "SSU",
                                                                                  get_tree=FALSE){
     #Some biom files don't import - so need a try/catch
+    # @importFrom plyr llply
     ps_list <- plyr::llply(accessions, function(x) {
         tryCatch(
                 mgnify_get_single_analysis_phyloseq(client, x, usecache = usecache, tax_SU = tax_SU, get_tree = get_tree), error=function(x) NULL)
@@ -61,14 +62,16 @@ mgnify_get_analyses_phyloseq <- function(client = NULL, accessions, usecache=T,
             #Lists of length 10 seem to work well
             sublist=split(curlist, seq_along(curlist) %/% 10)
             curlist <- lapply(sublist, function(x){
+                # @importFrom phyloseq merge_phyloseq
                 do.call(phyloseq::merge_phyloseq,x)
             })
         }
         #By this point curlist isn't a list, it's a phyloseq object...
         full_ps <- curlist[[1]]
-
+        # @importFrom dplyr bind_rows
         sample_metadata_df <- do.call(dplyr::bind_rows, samp_dat)
         rownames(sample_metadata_df) <- sample_metadata_df$analysis_accession
+        # @importFrom phyloseq sample_data
         phyloseq::sample_data(full_ps) <- sample_metadata_df
         full_ps
     }

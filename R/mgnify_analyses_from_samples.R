@@ -15,6 +15,7 @@
 #' @export
 mgnify_analyses_from_samples <- function(client, accession, usecache=T){
     #analyses_accessions <- sapply(as.list(accession), function(x){
+    # @importFrom plyr llply
     analyses_accessions <- plyr::llply(as.list(accession), function(x){
         accurl <- mgnify_get_x_for_y(client, x, "samples","analyses", usecache = usecache )
         #For some reason, it appears you "sometimes" have to go from study to runs to analyses. Need

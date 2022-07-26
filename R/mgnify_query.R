@@ -102,6 +102,7 @@ mgnify_query <- function(client, qtype="samples", accession=NULL, asDataFrame=T,
         }
         )
         tryCatch(
+            # @importFrom dplyr bind_rows
             dplyr::bind_rows(dflist),
             error=function(e) dflist
         )

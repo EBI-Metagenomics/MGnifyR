@@ -24,6 +24,7 @@ mgnify_get_analyses_results <- function(client=NULL, accessions, retrievelist=c(
     if(length(retrievelist) == 1 && retrievelist == "all"){
         retrievelist = names(analyses_results_type_parsers)
     }
+    # @importFrom plyr llply
     results_as_lists <- plyr::llply(accessions,
                                                                     function(x) mgnify_get_single_analysis_results(
                                                                         client, x,
@@ -36,15 +37,18 @@ mgnify_get_analyses_results <- function(client=NULL, accessions, retrievelist=c(
         results_as_lists
     }else{
         #Compact the result type dataframes into a single instance. Per accession counts in each column.
+        # @importFrom plyr llply
         all_results <- plyr::llply(retrievelist, function(y){
             tryCatch({
                 r = lapply(results_as_lists, function(x){
                     df <- as.data.frame(x[[y]])
                     df
                 })
+                # @importFrom dplyr bind_rows
                 longform <- dplyr::bind_rows(r, .id = "analysis")
                 cn <- colnames(longform)
                 extras <- cn[!(cn %in% c("count","index_id", "analysis"))]
+                # @importFrom reshape2 dcast
                 final_df <- reshape2::dcast(longform, as.formula(paste(paste(extras,collapse = " + "), " ~ analysis")), value.var = "count", fun.aggregate = sum)
                 final_df}, error=function(x) NULL)
         })
