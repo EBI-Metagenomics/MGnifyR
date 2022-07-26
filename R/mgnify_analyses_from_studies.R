@@ -4,6 +4,8 @@
 #'
 #' Helper function to get all analyses associated with the given studies.
 #'
+#' @importFrom plyr llply
+#'
 #' @param client \code{mgnify_client} instance
 #' @param accession Single study accession id, or vector/list of accessions for which to retrieve Analyses ids
 #' @param usecache Flag to determine whether to re-use/store data on disk, rather than query the server.
@@ -14,7 +16,6 @@
 #'
 #' @export
 mgnify_analyses_from_studies <- function(client, accession, usecache=T){
-    # @importFrom plyr llply
     analyses_accessions <- plyr::llply(as.list(accession), function(x){
         accurl <- mgnify_get_x_for_y(client, x, "studies","analyses", usecache = usecache )
         jsondat <- mgnify_retrieve_json(client, complete_url = accurl, usecache = usecache, maxhits = -1)

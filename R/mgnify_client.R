@@ -5,6 +5,9 @@
 #' to querying the raw MGnify API (which is exposed as relative standard JSONAPI), the object allows the simple handling of both
 #' user authentication and access to private data, and local on-disk caching of results.
 #'
+#' @importFrom httr POST
+#' @importFrom httr content
+#'
 #' @param username optional username to authenticate.
 #' @param password optional password for authentication.
 #' @param usecache whether to enable on-disk caching of results during this session. In most use cases should be TRUE.
@@ -24,16 +27,14 @@ mgnify_client <- function(url=NULL,username=NULL,password=NULL,usecache=F,cache_
         url=baseurl
     }
 
-    authtok=NA_character_
+    authtok <- NA_character_
 
     #Check to see if we're goint to try and get an authentication token:
-    if (!is.null(username) & !is.null(password)){
-        # @importFrom httr POST
-        r = httr::POST(paste(url, "utils/token/obtain", sep="/"),
+    if (!is.null(username) && !is.null(password)){
+        r <- httr::POST(paste(url, "utils/token/obtain", sep="/"),
                                      body=list(username=username, password=password),
                                      encode="json")
-        # @importFrom httr content
-        cont = httr::content(r)
+        cont <- httr::content(r)
         if ("data" %in% names(cont)){
             authtok = cont$data$token
         }

@@ -3,6 +3,10 @@
 #' Given a set of analysis accessions and collection of annotation types, \code{mgnify_get_analyses_results} queries the MGNify API
 #' and returns the results, by default merging the results into multi-accession data.frames
 #'
+#' @importFrom plyr llply
+#' @importFrom dplyr bind_rows
+#' @importFrom reshape2 dcast
+#'
 #' @param client a valid \code{mgnify_client} object
 #' @param accessions list or vector of accessions to return results for
 #' @param retrievelist list or vector of functional analysis types to retrieve, or "all" to get all available results. The current list of available
@@ -24,7 +28,6 @@ mgnify_get_analyses_results <- function(client=NULL, accessions, retrievelist=c(
     if(length(retrievelist) == 1 && retrievelist == "all"){
         retrievelist = names(analyses_results_type_parsers)
     }
-    # @importFrom plyr llply
     results_as_lists <- plyr::llply(accessions,
                                                                     function(x) mgnify_get_single_analysis_results(
                                                                         client, x,
@@ -37,18 +40,15 @@ mgnify_get_analyses_results <- function(client=NULL, accessions, retrievelist=c(
         results_as_lists
     }else{
         #Compact the result type dataframes into a single instance. Per accession counts in each column.
-        # @importFrom plyr llply
         all_results <- plyr::llply(retrievelist, function(y){
             tryCatch({
                 r = lapply(results_as_lists, function(x){
                     df <- as.data.frame(x[[y]])
                     df
                 })
-                # @importFrom dplyr bind_rows
                 longform <- dplyr::bind_rows(r, .id = "analysis")
                 cn <- colnames(longform)
                 extras <- cn[!(cn %in% c("count","index_id", "analysis"))]
-                # @importFrom reshape2 dcast
                 final_df <- reshape2::dcast(longform, as.formula(paste(paste(extras,collapse = " + "), " ~ analysis")), value.var = "count", fun.aggregate = sum)
                 final_df}, error=function(x) NULL)
         })

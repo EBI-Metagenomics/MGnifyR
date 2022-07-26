@@ -3,7 +3,10 @@
 #' \code{mgnify_get_analyses_treese} retrieves all associated Study, Sample and Analysis metadata attributes,
 #' along with all OTU tables (of a given taxonomic type), and merges them together to build a \code{TreeSummarizedExperiment}
 #' object with \code{otu_table}, \code{tax_table} and \code{sample_data} objects.
-#' #'
+#'
+#' @importFrom plyr llply
+#' @importFrom mia mergeSEs
+#'
 #' @param client \code{mgnify_client} instance
 #' @param accessions Single value or list/vector of Analysis accessions to retrieve data for.
 #' @param usecache Whether to use the disk based cache.
@@ -28,7 +31,6 @@
 #' @export
 mgnify_get_analyses_treese <- function(client = NULL, accessions, usecache=T, returnLists=F, tax_SU = "SSU", get_tree=FALSE){
     #Some biom files don't import - so need a try/catch
-    # @importFrom plyr llply
     tse_list <- plyr::llply(accessions, function(x) {
         tryCatch(
             mgnify_get_single_analysis_treese(client, x, usecache = usecache, tax_SU = tax_SU, get_tree = get_tree), error=function(x) NULL)
@@ -46,7 +48,6 @@ mgnify_get_analyses_treese <- function(client = NULL, accessions, usecache=T, re
         }
         
         #Merging every TSE object in the list into a single one***
-        # @importFrom mia mergeSEs
         full_tse <- mia::mergeSEs(tse_list, assay_name = "counts", missing_values = 0)
         full_tse
     }

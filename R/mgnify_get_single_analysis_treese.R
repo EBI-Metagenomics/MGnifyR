@@ -1,3 +1,10 @@
+#' @importFrom mia loadFromBiom
+#' @importFrom urltools parameters
+#' @importFrom httr GET
+#' @importFrom httr write_disk
+#' @importFrom mia checkTaxonomy
+#' @importFrom ape read.tree
+
 # get a single biom file and convert it to a TreeSummarizedExperiment object
 mgnify_get_single_analysis_treese <- function(client=NULL, accession, usecache=T, downloadDIR=NULL, tax_SU="SSU", get_tree=FALSE){
 
@@ -25,7 +32,6 @@ mgnify_get_single_analysis_treese <- function(client=NULL, accession, usecache=T
         dir.create(downloadDIR, recursive = T, showWarnings = client@warnings)
     }
     #Clear out any ?params after the main location - don't need them for this
-    # @importFrom urltools parameters
     urltools::parameters(biom_url) <- NULL
 
     fname <- tail(strsplit(biom_url, '/')[[1]], n=1)
@@ -39,17 +45,13 @@ mgnify_get_single_analysis_treese <- function(client=NULL, accession, usecache=T
     }
 
     if (! file.exists(biom_path)){#} | !use_downloads ){
-        # @importFrom httr GET
-        # @importFrom httr write_disk
         httr::GET(biom_url, httr::write_disk(biom_path, overwrite = T))
     }
 
     #Load in the TreeSummarizedExperiment object
-    # @importFrom mia loadFromBiom
     tse <- mia::loadFromBiom(biom_path)
 
     #Need to check if the taxonomy was parsed correctly - depending on the pipeline it may need a bit of help:
-    # @importFrom mia checkTaxonomy
     mia::checkTaxonomy(tse)
 
     if(get_tree){
@@ -58,7 +60,6 @@ mgnify_get_single_analysis_treese <- function(client=NULL, accession, usecache=T
         if(any(tvec)){
             tree_url <- analysis_downloads[tvec][[1]]$links$self
             #Clear out any ?params after the main location - don't need them for this
-            # @importFrom urltools parameters
             urltools::parameters(tree_url) <- NULL
 
             fname <- tail(strsplit(tree_url, '/')[[1]], n=1)
@@ -72,13 +73,10 @@ mgnify_get_single_analysis_treese <- function(client=NULL, accession, usecache=T
             }
 
             if (! file.exists(tree_path)){#} | !use_downloads ){
-                # @importFrom httr GET
-                # @importFrom httr write_disk
                 httr::GET(tree_url, httr::write_disk(tree_path, overwrite = T ))
             }
         }
-        
-        # @importFrom ape read.tree
+
         row_tree <- ape::read.tree(tree_path)
         rowTree(tse) <- row_tree
     }

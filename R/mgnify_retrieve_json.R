@@ -9,6 +9,12 @@
 #' to restricted or pre-release datasets.Although principally intended for internal MGnifyR use , it's exported for direct invocation.
 #' Generally though it's not recommended for use by users.
 #'
+#' @importFrom urltools parameters
+#' @importFrom httr add_headers
+#' @importFrom httr GET
+#' @importFrom httr config
+#' @importFrom httr content
+#'
 #' @param client MGnifyR client
 #' @param path top level search point for the query. One of \code{biomes}, \code{samples}, \code{runs} etc. Basically includes
 #' all parts of the URL between the base API url and the parameter specifications
@@ -39,7 +45,6 @@ mgnify_retrieve_json <- function(client, path="biomes", complete_url=NULL, qopts
     else{
         #Set the full url, but clean off any existing parameters (page, format etc) as they'll be added back later:
         fullurl = complete_url
-        # @importFrom urltools parameters
         urltools::parameters(fullurl) <- NULL
         path = substr(fullurl, nchar(client@url) + 2, nchar(fullurl))
     }
@@ -75,13 +80,9 @@ mgnify_retrieve_json <- function(client, path="biomes", complete_url=NULL, qopts
 
         #Authorization: Bearer <your_token>
         if(!is.null(client@authtok)){
-            # @importFrom httr add_headers
             httr::add_headers(.headers = c(Authorization = paste("Bearer", client@authtok, sep=" ")))
         }
-        # @importFrom httr GET
-        # @importFrom httr config
         res = httr::GET(url=fullurl, httr::config(verbose=Debug), query=full_qopts )
-        # @importFrom httr content
         data <-httr::content(res)
 
         #At this point, data$data is either a list of lists or a single named list. If it's a single entry, it needs embedding in
@@ -107,12 +108,8 @@ mgnify_retrieve_json <- function(client, path="biomes", complete_url=NULL, qopts
 
                 full_qopts$page=p
                 if(!is.null(client@authtok)){
-                    # @importFrom httr add_headers
                     httr::add_headers(.headers = c(Authorization = paste("Bearer", client@authtok, sep=" ")))
                 }
-                # @importFrom httr content
-                # @importFrom httr GET
-                # @importFrom httr config
                 curd = httr::content(httr::GET(fullurl, httr::config(verbose=Debug), query=full_qopts ))
                 datlist[[p]] = curd$data
                 #Check to see if we've pulled enough entries

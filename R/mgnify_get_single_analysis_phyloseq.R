@@ -1,3 +1,14 @@
+#' @importFrom urltools parameters
+#' @importFrom httr GET
+#' @importFrom httr write_disk
+#' @importFrom phyloseq import_biom
+#' @importFrom phyloseq tax_table
+#' @importFrom phyloseq parse_taxonomy_greengenes
+#' @importFrom phyloseq sample_names
+#' @importFrom phyloseq sample_data
+#' @importFrom phyloseq phy_tree
+#' @importFrom ape read.tree
+
 #UPDATE ME SO THAT TREES (if available) GET GRABBED AS WELL!!!
 # Not exported - get a single biom file and convert it to a phyloseq object.
 mgnify_get_single_analysis_phyloseq <- function(client=NULL, accession, usecache=T, downloadDIR=NULL, tax_SU="SSU", get_tree=FALSE){
@@ -27,7 +38,6 @@ mgnify_get_single_analysis_phyloseq <- function(client=NULL, accession, usecache
         dir.create(downloadDIR, recursive = T, showWarnings = client@warnings)
     }
     #Clear out any ?params after the main location - don't need them for this
-    # @importFrom urltools parameters
     urltools::parameters(biom_url) <- NULL
 
     fname=tail(strsplit(biom_url, '/')[[1]], n=1)
@@ -41,35 +51,25 @@ mgnify_get_single_analysis_phyloseq <- function(client=NULL, accession, usecache
     }
 
     if (! file.exists(biom_path)){#} | !use_downloads ){
-        # @importFrom httr GET
-        # @importFrom httr write_disk
         httr::GET(biom_url, httr::write_disk(biom_path, overwrite = T))
     }
     #Load in the phlyloseq object
-    # @importFrom phyloseq import_biom
     psobj <- phyloseq::import_biom(biom_path)
     #Need to check if the taxonomy was parsed correctly - depending on the pipeline it may need a bit of help:
-    # @importFrom phyloseq tax_table
     if (ncol(phyloseq::tax_table(psobj)) == 1){
-        # @importFrom phyloseq import_biom
         psobj <- phyloseq::import_biom(biom_path, parseFunction = phyloseq::parse_taxonomy_qiime)
     }
     if(! "Kingdom" %in% colnames(phyloseq::tax_table(psobj))){
-        # @importFrom phyloseq import_biom
-        # @importFrom phyloseq parse_taxonomy_greengenes
         psobj <- phyloseq::import_biom(biom_path, parseFunction = phyloseq::parse_taxonomy_greengenes)
     }
 
     #The biom files have a single column of unknown name - maybe it's the original sample name?.
     # It's rewritten as sample_run_analysis accession, with
     # the original value stored in the sample_data (just in case it's needed later)
-    # @importFrom phyloseq sample_names
     orig_samp_name <- phyloseq::sample_names(psobj)[[1]]
     newsampname <- rownames(metadata_df)[1]
     metadata_df[1,"orig_samp_name"] <- orig_samp_name
-    # @importFrom phyloseq sample_names
     phyloseq::sample_names(psobj) <- newsampname
-    # @importFrom phyloseq sample_data
     phyloseq::sample_data(psobj) <- metadata_df
 
     #Finally, do we want to the phylogenetic tree? If so, is it there?
@@ -79,7 +79,6 @@ mgnify_get_single_analysis_phyloseq <- function(client=NULL, accession, usecache
         if(any(tvec)){
             tree_url = analysis_downloads[tvec][[1]]$links$self
             #Clear out any ?params after the main location - don't need them for this
-            # @importFrom urltools parameters
             urltools::parameters(tree_url) <- NULL
 
             fname=tail(strsplit(tree_url, '/')[[1]], n=1)
@@ -93,14 +92,10 @@ mgnify_get_single_analysis_phyloseq <- function(client=NULL, accession, usecache
             }
 
             if (! file.exists(tree_path)){#} | !use_downloads ){
-                # @importFrom httr GET
-                # @importFrom httr write_disk
                 httr::GET(tree_url, httr::write_disk(tree_path, overwrite = T ))
             }
         }
-        # @importFrom ape read.tree
         phylo_tree = ape::read.tree(tree_path)
-        # @importFrom phyloseq phy_tree
         phyloseq::phy_tree(psobj) <- phylo_tree
     }
     psobj

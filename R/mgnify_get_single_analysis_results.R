@@ -1,3 +1,8 @@
+#' @importFrom urltools parameters
+#' @importFrom httr GET
+#' @importFrom httr write_disk
+#' @importFrom dplyr bind_rows
+
 #Retrieves combined study/sample/analysis metadata - not exported
 mgnify_get_single_analysis_results <- function(client=NULL, accession, retrievelist=c(), usecache=T, maxhits=-1, bulk_files=F){
     metadata_df <- mgnify_get_single_analysis_metadata(client, accession, usecache=usecache, maxhits = maxhits)
@@ -33,7 +38,6 @@ mgnify_get_single_analysis_results <- function(client=NULL, accession, retrievel
                     data_url <- r$links$self
 
                     #Clear off extraneous gubbins
-                    # @importFrom urltools parameters
                     urltools::parameters(data_url) <- NULL
 
                     #build the cache filename
@@ -53,8 +57,6 @@ mgnify_get_single_analysis_results <- function(client=NULL, accession, retrievel
                         }
 
                         if (! file.exists(data_path)){#} | !use_downloads ){
-                            # @importFrom httr GET
-                            # @importFrom httr write_disk
                             httr::GET(data_url, httr::write_disk(data_path, overwrite = T ))
                         }
 
@@ -141,7 +143,6 @@ mgnify_get_single_analysis_results <- function(client=NULL, accession, retrievel
         parsed_results = sapply(names(all_results), function(x){
             all_json <- all_results[[x]]
             if(! is.null(all_json)){
-                # @importFrom dplyr bind_rows
                 res_df <- do.call(dplyr::bind_rows, lapply(all_json,analyses_results_type_parsers[[x]] ))
                 rownames(res_df) <- res_df$index_id
                 res_df
