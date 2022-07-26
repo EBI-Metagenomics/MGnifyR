@@ -21,15 +21,15 @@ mgnify_get_single_analysis_treese <- function(client=NULL, accession, usecache=T
 
     #Can specify a seperate dir for saving biom files, otherwise they end up in the client@cachdir folder, under "bioms"
     if (is.null(downloadDIR)){
-        downloadDIR=paste(client@cache_dir,"biom_files",sep="/")
+        downloadDIR <- paste(client@cache_dir,"biom_files",sep="/")
         dir.create(downloadDIR, recursive = T, showWarnings = client@warnings)
     }
     #Clear out any ?params after the main location - don't need them for this
     #@importFrom urltools parameters
     urltools::parameters(biom_url) <- NULL
 
-    fname=tail(strsplit(biom_url, '/')[[1]], n=1)
-    biom_path = paste(downloadDIR, fname, sep="/")
+    fname <- tail(strsplit(biom_url, '/')[[1]], n=1)
+    biom_path <- paste(downloadDIR, fname, sep="/")
 
     ## Quick check to see if we should clear the disk cache ~for this specific call~ - used for debugging
     # and when MGnify breaks
@@ -51,14 +51,15 @@ mgnify_get_single_analysis_treese <- function(client=NULL, accession, usecache=T
 
     if(get_tree){
         #is there a tree?
-        tvec = grepl('Phylogenetic tree', sapply(analysis_downloads, function(x) x$attributes$`description`$label))
+        tvec <- grepl('Phylogenetic tree', sapply(analysis_downloads, function(x) x$attributes$`description`$label))
         if(any(tvec)){
-            tree_url = analysis_downloads[tvec][[1]]$links$self
+            tree_url <- analysis_downloads[tvec][[1]]$links$self
             #Clear out any ?params after the main location - don't need them for this
+            #@importFrom urltools parameters
             urltools::parameters(tree_url) <- NULL
 
-            fname=tail(strsplit(tree_url, '/')[[1]], n=1)
-            tree_path = paste(downloadDIR, fname, sep="/")
+            fname <- tail(strsplit(tree_url, '/')[[1]], n=1)
+            tree_path <- paste(downloadDIR, fname, sep="/")
 
             ## Quick check to see if we should clear the disk cache ~for this specific call~ - used for debugging
             # and when MGnify breaks
@@ -71,7 +72,7 @@ mgnify_get_single_analysis_treese <- function(client=NULL, accession, usecache=T
                 httr::GET(tree_url, httr::write_disk(tree_path, overwrite = T ))
             }
         }
-        row_tree = ape::read.tree(tree_path)
+        row_tree <- ape::read.tree(tree_path)
         rowTree(tse) <- row_tree
     }
     tse
