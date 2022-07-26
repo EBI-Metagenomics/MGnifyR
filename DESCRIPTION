@@ -23,12 +23,12 @@ Depends:
     urltools,
     ape
 Imports:
-    TreeSummarizedExperiment,
-    MultiAssayExperiment,
     phyloseq,
     dplyr,
     reshape2
 Suggests:
+    TreeSummarizedExperiment,
+    MultiAssayExperiment,
     testthat,
     knitr,
     rmarkdown,
