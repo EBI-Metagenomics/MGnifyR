@@ -5,6 +5,7 @@
 #' to querying the raw MGnify API (which is exposed as relative standard JSONAPI), the object allows the simple handling of both
 #' user authentication and access to private data, and local on-disk caching of results.
 #'
+#' @param url (To be described)
 #' @param username optional username to authenticate.
 #' @param password optional password for authentication.
 #' @param usecache whether to enable on-disk caching of results during this session. In most use cases should be TRUE.

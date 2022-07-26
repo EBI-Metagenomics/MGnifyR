@@ -17,26 +17,26 @@ Description:
     Utility package to facilitate easy integration and analysis of EBI Mgnify pipeline results in R.
 License: Artistic-2.0 | file LICENSE
 Encoding: UTF-8
-LazyData: true
 Depends:
-  R(>= 4.0),
-  SummarizedExperiment,
-  SingleCellExperiment,
-  TreeSummarizedExperiment,
-  MultiAssayExperiment,
-  phyloseq,
-  plyr,
-  dplyr,
-  reshape2,
-  httr,
-  urltools,
-  ape
+    R(>= 4.0),
+    httr,
+    urltools,
+    ape
+Imports:
+    TreeSummarizedExperiment,
+    MultiAssayExperiment,
+    phyloseq,
+    dplyr,
+    reshape2
 Suggests:
     testthat,
     knitr,
     rmarkdown,
-    ggplot2
+    ggplot2,
+    plyr,
+    broom,
+    vegan
 URL : https://github.com/beadyallen/MGnifyR
 BugReports: https://github.com/beadyallen/MGnifyR/issues
 VignetteBuilder: knitr
-RoxygenNote: 7.2.0
+RoxygenNote: 7.2.1

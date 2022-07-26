@@ -14,6 +14,7 @@
 #' @param x Accession ID \code{char} of parent object
 #' @param typeX Type of accession \code{x}
 #' @param typeY Type of child object to return
+#' @param usecache (To be described)
 #' @return \code{char} complete url to access the result. Note this query is not run from here - just the URL is returned
 #' @examples
 #' cl <- new("mgnify_client")
