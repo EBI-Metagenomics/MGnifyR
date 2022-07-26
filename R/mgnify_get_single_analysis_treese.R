@@ -43,10 +43,11 @@ mgnify_get_single_analysis_treese <- function(client=NULL, accession, usecache=T
     }
 
     #Load in the TreeSummarizedExperiment object
-    # tse <- mia::loadFromBiom(biom_path)
-    tse <- loadTreeSEFromBiom(biom_path)
+    #Add @importFrom mia loadFromBiom
+    tse <- mia::loadFromBiom(biom_path)
 
     #Need to check if the taxonomy was parsed correctly - depending on the pipeline it may need a bit of help:
+    #@importFrom miacheckTaxonomy
     mia::checkTaxonomy(tse)
 
     if(get_tree){
