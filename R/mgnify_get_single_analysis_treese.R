@@ -12,7 +12,7 @@ mgnify_get_single_analysis_treese <- function(client=NULL, accession, usecache=T
     biom_position <- grepl(tax_SU, sapply(available_biom_files, function(x) x$attributes$`group-type`))
     if(sum(biom_position) == 0){
         if(client@warnings){
-        warning("Unable to locate requested taxonomy type ",tax_SU,". This is likely due to the current analysis having been performed on an older version of the MGnify pipeline. The available BIOM file will be used instead.")
+            warning("Unable to locate requested taxonomy type ",tax_SU,". This is likely due to the current analysis having been performed on an older version of the MGnify pipeline. The available BIOM file will be used instead.")
         }
         biom_url <- available_biom_files[[1]]$links$self
     }else{
@@ -25,7 +25,7 @@ mgnify_get_single_analysis_treese <- function(client=NULL, accession, usecache=T
         dir.create(downloadDIR, recursive = T, showWarnings = client@warnings)
     }
     #Clear out any ?params after the main location - don't need them for this
-    #@importFrom urltools parameters
+    # @importFrom urltools parameters
     urltools::parameters(biom_url) <- NULL
 
     fname <- tail(strsplit(biom_url, '/')[[1]], n=1)
@@ -33,7 +33,7 @@ mgnify_get_single_analysis_treese <- function(client=NULL, accession, usecache=T
 
     ## Quick check to see if we should clear the disk cache ~for this specific call~ - used for debugging
     # and when MGnify breaks
-    if(usecache & client@clear_cache){
+    if(usecache && client@clear_cache){
         message(paste("clear_cache is TRUE: deleting ",biom_path, sep=""))
         tryCatch(unlink(biom_path), error=warning)
     }
@@ -47,7 +47,7 @@ mgnify_get_single_analysis_treese <- function(client=NULL, accession, usecache=T
     tse <- mia::loadFromBiom(biom_path)
 
     #Need to check if the taxonomy was parsed correctly - depending on the pipeline it may need a bit of help:
-    #@importFrom miacheckTaxonomy
+    # @importFrom mia checkTaxonomy
     mia::checkTaxonomy(tse)
 
     if(get_tree){
@@ -56,7 +56,7 @@ mgnify_get_single_analysis_treese <- function(client=NULL, accession, usecache=T
         if(any(tvec)){
             tree_url <- analysis_downloads[tvec][[1]]$links$self
             #Clear out any ?params after the main location - don't need them for this
-            #@importFrom urltools parameters
+            # @importFrom urltools parameters
             urltools::parameters(tree_url) <- NULL
 
             fname <- tail(strsplit(tree_url, '/')[[1]], n=1)
@@ -64,7 +64,7 @@ mgnify_get_single_analysis_treese <- function(client=NULL, accession, usecache=T
 
             ## Quick check to see if we should clear the disk cache ~for this specific call~ - used for debugging
             # and when MGnify breaks
-            if(usecache & client@clear_cache){
+            if(usecache && client@clear_cache){
                 message(paste("clear_cache is TRUE: deleting ",tree_path, sep=""))
                 tryCatch(unlink(tree_path), error=warning)
             }
@@ -73,6 +73,8 @@ mgnify_get_single_analysis_treese <- function(client=NULL, accession, usecache=T
                 httr::GET(tree_url, httr::write_disk(tree_path, overwrite = T ))
             }
         }
+        
+        # @importFrom ape read.tree
         row_tree <- ape::read.tree(tree_path)
         rowTree(tse) <- row_tree
     }
