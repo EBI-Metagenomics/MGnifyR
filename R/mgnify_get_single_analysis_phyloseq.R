@@ -35,7 +35,7 @@ mgnify_get_single_analysis_phyloseq <- function(client=NULL, accession, usecache
     ## Quick check to see if we should clear the disk cache ~for this specific call~ - used for debugging
     # and when MGnify breaks
     if(usecache & client@clear_cache){
-        print(paste("clear_cache is TRUE: deleting ",biom_path, sep=""))
+        message(paste("clear_cache is TRUE: deleting ",biom_path, sep=""))
         tryCatch(unlink(biom_path), error=warning)
     }
 
@@ -76,7 +76,7 @@ mgnify_get_single_analysis_phyloseq <- function(client=NULL, accession, usecache
             ## Quick check to see if we should clear the disk cache ~for this specific call~ - used for debugging
             # and when MGnify breaks
             if(usecache & client@clear_cache){
-                print(paste("clear_cache is TRUE: deleting ",tree_path, sep=""))
+                message(paste("clear_cache is TRUE: deleting ",tree_path, sep=""))
                 tryCatch(unlink(tree_path), error=warning)
             }
 

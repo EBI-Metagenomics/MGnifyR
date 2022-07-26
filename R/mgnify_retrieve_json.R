@@ -63,7 +63,7 @@ mgnify_retrieve_json <- function(client, path="biomes", complete_url=NULL, qopts
     ## Quick check to see if we should clear the disk cache ~for this specific call~ - used for debugging
     # and when MGnify breaks
     if(usecache & client@clear_cache){
-        print(paste("clear_cache is TRUE: deleting ", cache_full_fname, sep=""))
+        message(paste("clear_cache is TRUE: deleting ", cache_full_fname, sep=""))
         tryCatch(unlink(cache_full_fname), error=warning)
     }
 

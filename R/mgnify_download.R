@@ -60,7 +60,7 @@ mgnify_download <- function(client, url, target_filename=NULL, read_func=NULL, u
     }
 
     if(usecache & client@clear_cache){
-        print(paste("clear_cache is TRUE: deleting ", file_tgt, sep=""))
+        message(paste("clear_cache is TRUE: deleting ", file_tgt, sep=""))
         tryCatch(unlink(file_tgt), error=warning)
     }
 
@@ -75,8 +75,8 @@ mgnify_download <- function(client, url, target_filename=NULL, read_func=NULL, u
             curd = httr::content(httr::GET(url, httr::write_disk(file_tgt, overwrite = T)))
         }, error=function(x){
             unlink(file_tgt)
-            print(paste("Error retrieving file",file_tgt))
-            print(paste("Error:",x))
+            message(paste("Error retrieving file",file_tgt))
+            message(paste("Error:",x))
             stop()
         })
     }

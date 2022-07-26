@@ -47,7 +47,7 @@ mgnify_get_single_analysis_results <- function(client=NULL, accession, retrievel
                         data_path = paste(downloadDIR, fname, sep="/")
 
                         if(usecache & client@clear_cache){
-                            print(paste("clear_cache is TRUE: deleting ", data_path, sep=""))
+                            message(paste("clear_cache is TRUE: deleting ", data_path, sep=""))
                             tryCatch(unlink(data_path), error=warning)
                         }
 
