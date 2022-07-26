@@ -45,6 +45,7 @@ mgnify_get_analyses_results <- function(client=NULL, accessions, retrievelist=c(
                 longform <- dplyr::bind_rows(r, .id = "analysis")
                 cn <- colnames(longform)
                 extras <- cn[!(cn %in% c("count","index_id", "analysis"))]
+                #@importFrom stats as.formula
                 final_df <- reshape2::dcast(longform, as.formula(paste(paste(extras,collapse = " + "), " ~ analysis")), value.var = "count", fun.aggregate = sum)
                 final_df}, error=function(x) NULL)
         })

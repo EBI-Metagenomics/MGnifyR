@@ -36,6 +36,7 @@ mgnify_get_single_analysis_results <- function(client=NULL, accession, retrievel
                     urltools::parameters(data_url) <- NULL
 
                     #build the cache filename
+                    #@importFrom utils tail
                     fname=tail(strsplit(data_url, '/')[[1]], n=1)
 
                     #At this point we might have alread got the data we want loaded. Check the memory cache object
@@ -56,6 +57,7 @@ mgnify_get_single_analysis_results <- function(client=NULL, accession, retrievel
                         }
 
                         #Load the file (might be big so save it in the 1 deep cache)
+                        #@importFrom utils read.csv2
                         tmp_df <- read.csv2(data_path, sep="\t", header = T, stringsAsFactors = F)
                     }
                     #Save it in memory using "super assignment" - which I'm not really sure about but it seems to work... thing'd be
