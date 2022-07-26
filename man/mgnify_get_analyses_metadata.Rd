@@ -20,6 +20,3 @@ mgnify_get_analyses_metadata(client, accessions, usecache = T)
 \code{mgnify_get_analyses_metadata} retrieves all associated Study, Sample and Analysis metadata attributes
 a list of Analyses accessions (determined from \code{mgnify_analyses_from_x})
 }
-\examples{
-
-}

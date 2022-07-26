@@ -35,6 +35,3 @@ Named list of \code{data.frames}, corresponding to the requested analysis types 
 Given a set of analysis accessions and collection of annotation types, \code{mgnify_get_analyses_results} queries the MGNify API
 and returns the results, by default merging the results into multi-accession data.frames
 }
-\examples{
-
-}

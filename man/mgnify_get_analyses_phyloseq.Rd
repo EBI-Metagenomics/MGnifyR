@@ -40,7 +40,3 @@ along with all OTU tables (of a given taxonomic type), and merges them together 
 object with \code{otu_table}, \code{tax_table} and \code{sample_data} objects.
 #'
 }
-\examples{
-
-
-}
