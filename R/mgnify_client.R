@@ -8,6 +8,7 @@
 #' @importFrom httr POST
 #' @importFrom httr content
 #'
+#' @param url (To be described)
 #' @param username optional username to authenticate.
 #' @param password optional password for authentication.
 #' @param usecache whether to enable on-disk caching of results during this session. In most use cases should be TRUE.
