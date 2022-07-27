@@ -53,5 +53,6 @@ mgnify_client <- function(url=NULL,username=NULL,password=NULL,usecache=F,cache_
     }
 
     #Return the final object
+    #@importFrom methods new
     new("mgnify_client", url=url, authtok=authtok, cache_dir = cachepath, warnings=warnings, memcache=list(), use_memcache=use_memcache)
 }
