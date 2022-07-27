@@ -70,7 +70,7 @@ mgnify_download <- function(client, url, target_filename=NULL, read_func=NULL, u
     }
 
     #Only get the data if it's not already on disk
-    if(!(usecache & file.exists(file_tgt))){
+    if(!(usecache && file.exists(file_tgt))){
 
         if(!is.null(client@authtok)){
             httr::add_headers(.headers = c(Authorization = paste("Bearer", client@authtok, sep=" ")))
