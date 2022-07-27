@@ -45,8 +45,23 @@ mgnify_get_analyses_treese <- function(client = NULL, accessions, usecache=T, re
         list(tse_objects=tse_list, sample_metadata = samp_dat)
     }else{
         if(get_tree){
-            if (any(is.na(lapply(tse_list, function(x) x@rowTree)))){
-                warning("Phylogenetic tree retrieval was requested but some of the analyses do not include phylogenetic trees. Results should be used with caution.")
+            for (i in seq_along(length(tse_list))){
+                if (is.na(tse_list[i]@rowTree)){
+                    if (i==1){
+                        accession_number="1st"
+                    }else{
+                        if (i==2){
+                            accession_number="2nd"
+                        }else{
+                            if (i==3){
+                                accession_number="3rd"
+                            }else{
+                                accession_number=paste(toString(i),"th")
+                            }
+                        }
+                    }
+                    warning(paste("Phylogenetic tree retrieval was requested but the ",accession_number," accession analyse do not include phylogenetic trees. Results should be used with caution."))
+                }
             }
         }
         
