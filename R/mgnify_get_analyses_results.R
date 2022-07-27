@@ -10,10 +10,10 @@
 #' @param client a valid \code{mgnify_client} object
 #' @param accessions list or vector of accessions to return results for
 #' @param retrievelist list or vector of functional analysis types to retrieve, or "all" to get all available results. The current list of available
-#' types can be found using \code{ names(MGnifyR::analyses_results_type_parsers)}. Note that not depending on the particular analysis type, puipeline
+#' types can be found using \code{ names(MGnifyR::analyses_results_type_parsers)}. Note that not depending on the particular analysis type, pipeline
 #' version etc., not all functional results will be available.
 #' @param compact_results optional parameter to return a named list (one entry per element in \code{retrievelist}) of data.frames, with each data.frame
-#' containing results for all requested accessions. If \code{FALSE}, \code{mgnify_get_analyses_results} returns a lists of lists, each element consiting of
+#' containing results for all requested accessions. If \code{FALSE}, \code{mgnify_get_analyses_results} returns a list of lists, each element consiting of
 #' results for a single accession.
 #' @param usecache Whether to use the MGnify local caching system to speed up searching. It is highly recommended that this be enabled (default=TRUE)
 #' @param bulk_dl should MGnifyR attempt to speed things up by downloading relevant studies TSV results and only extracting the required columns, rather than using

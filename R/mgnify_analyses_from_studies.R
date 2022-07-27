@@ -12,7 +12,7 @@
 #' @return vector of Analysis accession ids
 #' @examples
 #' #Retrieve all analysis ids from studies MGYS00005058, MGYS00005058 and MGYS00005058
-#' result <- mgnify_analyses_from_studies(myclient, c("MGYS00005058", "MGYS00005058" and "MGYS00005058"))
+#' result <- mgnify_analyses_from_studies(myclient, c("MGYS00005058"))
 #'
 #' @export
 mgnify_analyses_from_studies <- function(client, accession, usecache=T){

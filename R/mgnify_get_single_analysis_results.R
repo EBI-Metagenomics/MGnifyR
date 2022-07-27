@@ -3,6 +3,8 @@
 #' @importFrom httr write_disk
 #' @importFrom dplyr bind_rows
 
+#' types can be found using \code{ names(MGnifyR::analyses_results_type_parsers)}. Note that not depending on the particular analysis type, pipeline
+
 #Retrieves combined study/sample/analysis metadata - not exported
 mgnify_get_single_analysis_results <- function(client=NULL, accession, retrievelist=c(), usecache=T, maxhits=-1, bulk_files=F){
     metadata_df <- mgnify_get_single_analysis_metadata(client, accession, usecache=usecache, maxhits = maxhits)
