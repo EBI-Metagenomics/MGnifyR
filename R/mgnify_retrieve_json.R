@@ -45,7 +45,7 @@ mgnify_retrieve_json <- function(client, path="biomes", complete_url=NULL, qopts
     else{
         #Set the full url, but clean off any existing parameters (page, format etc) as they'll be added back later:
         fullurl <- complete_url
-        urltools::parameters(fullurl) <- NULL
+        parameters(fullurl) <- NULL
         path <- substr(fullurl, nchar(client@url) + 2, nchar(fullurl))
     }
 
@@ -80,10 +80,10 @@ mgnify_retrieve_json <- function(client, path="biomes", complete_url=NULL, qopts
 
         #Authorization: Bearer <your_token>
         if(!is.null(client@authtok)){
-            httr::add_headers(.headers = c(Authorization = paste("Bearer", client@authtok, sep=" ")))
+            add_headers(.headers = c(Authorization = paste("Bearer", client@authtok, sep=" ")))
         }
-        res <- httr::GET(url=fullurl, httr::config(verbose=Debug), query=full_qopts )
-        data <- httr::content(res)
+        res <- GET(url=fullurl, config(verbose=Debug), query=full_qopts )
+        data <- content(res)
 
         #At this point, data$data is either a list of lists or a single named list. If it's a single entry, it needs embedding in
         #a list for consistency downstream
@@ -108,9 +108,9 @@ mgnify_retrieve_json <- function(client, path="biomes", complete_url=NULL, qopts
 
                 full_qopts$page <- p
                 if(!is.null(client@authtok)){
-                    httr::add_headers(.headers = c(Authorization = paste("Bearer", client@authtok, sep=" ")))
+                    add_headers(.headers = c(Authorization = paste("Bearer", client@authtok, sep=" ")))
                 }
-                curd <- httr::content(httr::GET(fullurl, httr::config(verbose=Debug), query=full_qopts ))
+                curd <- content(GET(fullurl, config(verbose=Debug), query=full_qopts ))
                 datlist[[p]] <- curd$data
                 #Check to see if we've pulled enough entries
                 if(maxhits > 0){

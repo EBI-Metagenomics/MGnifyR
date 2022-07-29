@@ -1,12 +1,12 @@
 #' Get a single biom file and convert it to TreeSummarizedExperiment format
 #'
 #' @importFrom mia loadFromBiom
+#' @importFrom mia checkTaxonomy
 #' @importFrom urltools parameters
 #' @importFrom httr GET
 #' @importFrom httr write_disk
-#' @importFrom mia checkTaxonomy
 #' @importFrom ape read.tree
-#' @importFrom TreeSummarizedExperiment rowTree<-
+#' @importFrom TreeSummarizedExperiment rowTree
 mgnify_get_single_analysis_treese <- function(client=NULL, accession, usecache=T, downloadDIR=NULL, tax_SU="SSU", get_tree=FALSE){
 
     metadata_df <- mgnify_get_single_analysis_metadata(client, accession, usecache=usecache)
@@ -33,7 +33,7 @@ mgnify_get_single_analysis_treese <- function(client=NULL, accession, usecache=T
         dir.create(downloadDIR, recursive = T, showWarnings = client@warnings)
     }
     #Clear out any ?params after the main location - don't need them for this
-    urltools::parameters(biom_url) <- NULL
+    parameters(biom_url) <- NULL
 
     fname <- tail(strsplit(biom_url, '/')[[1]], n=1)
     biom_path <- paste(downloadDIR, fname, sep="/")
@@ -46,14 +46,14 @@ mgnify_get_single_analysis_treese <- function(client=NULL, accession, usecache=T
     }
 
     if (! file.exists(biom_path)){#} | !use_downloads ){
-        httr::GET(biom_url, httr::write_disk(biom_path, overwrite = T))
+        GET(biom_url, write_disk(biom_path, overwrite = T))
     }
 
     #Load in the TreeSummarizedExperiment object
-    tse <- mia::loadFromBiom(biom_path)
+    tse <- loadFromBiom(biom_path)
 
     #Need to check if the taxonomy was parsed correctly - depending on the pipeline it may need a bit of help:
-    mia::checkTaxonomy(tse)
+    checkTaxonomy(tse)
 
     if(get_tree){
         #is there a tree?
@@ -61,7 +61,7 @@ mgnify_get_single_analysis_treese <- function(client=NULL, accession, usecache=T
         if(any(tvec)){
             tree_url <- analysis_downloads[tvec][[1]]$links$self
             #Clear out any ?params after the main location - don't need them for this
-            urltools::parameters(tree_url) <- NULL
+            parameters(tree_url) <- NULL
 
             fname <- tail(strsplit(tree_url, '/')[[1]], n=1)
             tree_path <- paste(downloadDIR, fname, sep="/")
@@ -74,11 +74,11 @@ mgnify_get_single_analysis_treese <- function(client=NULL, accession, usecache=T
             }
 
             if (! file.exists(tree_path)){#} | !use_downloads ){
-                httr::GET(tree_url, httr::write_disk(tree_path, overwrite = T ))
+                GET(tree_url, write_disk(tree_path, overwrite = T ))
             }
         }
 
-        row_tree <- ape::read.tree(tree_path)
+        row_tree <- read.tree(tree_path)
         rowTree(tse) <- row_tree
     }
     tse

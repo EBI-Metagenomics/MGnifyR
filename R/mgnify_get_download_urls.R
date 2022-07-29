@@ -25,18 +25,18 @@
 #'@export
 
 mgnify_get_download_urls <- function(client, accessions, accession_type, usecache=T){
-    results <- plyr::llply(accessions, function(x){
+    results <- llply(accessions, function(x){
         download_list <- mgnify_retrieve_json(client, paste(accession_type,x,"downloads", sep="/"), usecache = usecache)
-        df <- do.call(plyr::rbind.fill,lapply(download_list, function(x) as.data.frame(x,stringsAsFactors=F)))
+        df <- do.call(rbind.fill,lapply(download_list, function(x) as.data.frame(x,stringsAsFactors=F)))
         df$accession <- x
         df$accession_type <- accession_type
         #for convenience, rename the "self" column to "download_url" - which is what it actually is...
         colnames(df)[colnames(df) == 'self'] <- 'download_url'
         #finally, strip off any options from the url - they sometimes seem to get format=json stuck on the end
         urls <- df$download_url
-        urltools::parameters(urls) <- NULL
+        parameters(urls) <- NULL
         df$download_url <- urls
         df
     }, .progress="text")
-    do.call(plyr::rbind.fill, results)
+    do.call(rbind.fill, results)
 }

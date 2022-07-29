@@ -39,7 +39,7 @@ mgnify_get_single_analysis_phyloseq <- function(client=NULL, accession, usecache
         dir.create(downloadDIR, recursive = T, showWarnings = client@warnings)
     }
     #Clear out any ?params after the main location - don't need them for this
-    urltools::parameters(biom_url) <- NULL
+    parameters(biom_url) <- NULL
 
     fname <- tail(strsplit(biom_url, '/')[[1]], n=1)
     biom_path <- paste(downloadDIR, fname, sep="/")
@@ -52,26 +52,26 @@ mgnify_get_single_analysis_phyloseq <- function(client=NULL, accession, usecache
     }
 
     if (! file.exists(biom_path)){#} | !use_downloads ){
-        httr::GET(biom_url, httr::write_disk(biom_path, overwrite = T))
+        GET(biom_url, write_disk(biom_path, overwrite = T))
     }
     #Load in the phlyloseq object
-    psobj <- phyloseq::import_biom(biom_path)
+    psobj <- import_biom(biom_path)
     #Need to check if the taxonomy was parsed correctly - depending on the pipeline it may need a bit of help:
-    if (ncol(phyloseq::tax_table(psobj)) == 1){
-        psobj <- phyloseq::import_biom(biom_path, parseFunction = phyloseq::parse_taxonomy_qiime)
+    if (ncol(tax_table(psobj)) == 1){
+        psobj <- import_biom(biom_path, parseFunction = parse_taxonomy_qiime)
     }
-    if(! "Kingdom" %in% colnames(phyloseq::tax_table(psobj))){
-        psobj <- phyloseq::import_biom(biom_path, parseFunction = phyloseq::parse_taxonomy_greengenes)
+    if(! "Kingdom" %in% colnames(tax_table(psobj))){
+        psobj <- import_biom(biom_path, parseFunction = parse_taxonomy_greengenes)
     }
 
     #The biom files have a single column of unknown name - maybe it's the original sample name?.
     # It's rewritten as sample_run_analysis accession, with
     # the original value stored in the sample_data (just in case it's needed later)
-    orig_samp_name <- phyloseq::sample_names(psobj)[[1]]
+    orig_samp_name <- sample_names(psobj)[[1]]
     newsampname <- rownames(metadata_df)[1]
     metadata_df[1,"orig_samp_name"] <- orig_samp_name
-    phyloseq::sample_names(psobj) <- newsampname
-    phyloseq::sample_data(psobj) <- metadata_df
+    sample_names(psobj) <- newsampname
+    sample_data(psobj) <- metadata_df
 
     #Finally, do we want to the phylogenetic tree? If so, is it there?
     if(get_tree){
@@ -80,7 +80,7 @@ mgnify_get_single_analysis_phyloseq <- function(client=NULL, accession, usecache
         if(any(tvec)){
             tree_url <- analysis_downloads[tvec][[1]]$links$self
             #Clear out any ?params after the main location - don't need them for this
-            urltools::parameters(tree_url) <- NULL
+            parameters(tree_url) <- NULL
             
             fname <- tail(strsplit(tree_url, '/')[[1]], n=1)
             tree_path <- paste(downloadDIR, fname, sep="/")
@@ -93,11 +93,11 @@ mgnify_get_single_analysis_phyloseq <- function(client=NULL, accession, usecache
             }
 
             if (! file.exists(tree_path)){#} | !use_downloads ){
-                httr::GET(tree_url, httr::write_disk(tree_path, overwrite = T ))
+                GET(tree_url, write_disk(tree_path, overwrite = T ))
             }
         }
-        phylo_tree <- ape::read.tree(tree_path)
-        phyloseq::phy_tree(psobj) <- phylo_tree
+        phylo_tree <- read.tree(tree_path)
+        phy_tree(psobj) <- phylo_tree
     }
     psobj
 }

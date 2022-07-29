@@ -41,7 +41,7 @@ mgnify_get_single_analysis_results <- function(client=NULL, accession, retrievel
                     data_url <- r$links$self
 
                     #Clear off extraneous gubbins
-                    urltools::parameters(data_url) <- NULL
+                    parameters(data_url) <- NULL
 
                     #build the cache filename
                     fname <- tail(strsplit(data_url, '/')[[1]], n=1)
@@ -60,7 +60,7 @@ mgnify_get_single_analysis_results <- function(client=NULL, accession, retrievel
                         }
 
                         if (! file.exists(data_path)){#} | !use_downloads ){
-                            httr::GET(data_url, httr::write_disk(data_path, overwrite = T ))
+                            GET(data_url, write_disk(data_path, overwrite = T ))
                         }
 
                         #Load the file (might be big so save it in the 1 deep cache)
@@ -147,7 +147,7 @@ mgnify_get_single_analysis_results <- function(client=NULL, accession, retrievel
         parsed_results <- sapply(names(all_results), function(x){
             all_json <- all_results[[x]]
             if(! is.null(all_json)){
-                res_df <- do.call(dplyr::bind_rows, lapply(all_json,analyses_results_type_parsers[[x]] ))
+                res_df <- do.call(bind_rows, lapply(all_json,analyses_results_type_parsers[[x]] ))
                 rownames(res_df) <- res_df$index_id
                 res_df
             }else{

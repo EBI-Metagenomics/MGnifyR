@@ -103,7 +103,7 @@ mgnify_query <- function(client, qtype="samples", accession=NULL, asDataFrame=T,
         }
         )
         tryCatch(
-            dplyr::bind_rows(dflist),
+            bind_rows(dflist),
             error <- function(e) dflist
         )
     }else{

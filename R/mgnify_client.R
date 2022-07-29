@@ -32,10 +32,10 @@ mgnify_client <- function(url=NULL,username=NULL,password=NULL,usecache=F,cache_
 
     #Check to see if we're goint to try and get an authentication token:
     if (!is.null(username) && !is.null(password)){
-        r <- httr::POST(paste(url, "utils/token/obtain", sep="/"),
+        r <- POST(paste(url, "utils/token/obtain", sep="/"),
                                      body=list(username=username, password=password),
                                      encode="json")
-        cont <- httr::content(r)
+        cont <- content(r)
         if ("data" %in% names(cont)){
             authtok <- cont$data$token
         }
