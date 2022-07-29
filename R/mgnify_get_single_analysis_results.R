@@ -43,8 +43,7 @@ mgnify_get_single_analysis_results <- function(client=NULL, accession, retrievel
                     urltools::parameters(data_url) <- NULL
 
                     #build the cache filename
-                    
-                    fname=tail(strsplit(data_url, '/')[[1]], n=1)
+                    fname <- tail(strsplit(data_url, '/')[[1]], n=1)
 
                     #At this point we might have alread got the data we want loaded. Check the memory cache object
 
