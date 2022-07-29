@@ -5,6 +5,9 @@
 #' to querying the raw MGnify API (which is exposed as relative standard JSONAPI), the object allows the simple handling of both
 #' user authentication and access to private data, and local on-disk caching of results.
 #'
+#' @importFrom httr POST
+#' @importFrom httr content
+#'
 #' @param url (To be described)
 #' @param username optional username to authenticate.
 #' @param password optional password for authentication.
@@ -22,17 +25,17 @@
 #' @export
 mgnify_client <- function(url=NULL,username=NULL,password=NULL,usecache=F,cache_dir=NULL, warnings=F, use_memcache=F){
     if (is.null(url)){
-        url=baseurl
+        url <- baseurl
     }
 
-    authtok=NA_character_
+    authtok <- NA_character_
 
     #Check to see if we're goint to try and get an authentication token:
     if (!is.null(username) & !is.null(password)){
-        r = httr::POST(paste(url, "utils/token/obtain", sep="/"),
+        r <- httr::POST(paste(url, "utils/token/obtain", sep="/"),
                                      body=list(username=username, password=password),
                                      encode="json")
-        cont = httr::content(r)
+        cont <- httr::content(r)
         if ("data" %in% names(cont)){
             authtok = cont$data$token
         }
@@ -41,12 +44,12 @@ mgnify_client <- function(url=NULL,username=NULL,password=NULL,usecache=F,cache_
         }
     }
     #Assume we're not using it
-    cachepath=NA_character_
+    cachepath <- NA_character_
     if(usecache){
         if (is.null(cache_dir) ){
-            cachepath=paste(getwd(),'.MGnifyR_cache',sep="/")
+            cachepath <- paste(getwd(),'.MGnifyR_cache',sep="/")
         }else{
-            cachepath=cache_dir
+            cachepath <- cache_dir
         }
         #Make it if needed - assume the user is sensible and the path will work...
         dir.create(cachepath,showWarnings = F)
