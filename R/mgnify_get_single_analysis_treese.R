@@ -1,11 +1,12 @@
+#' Get a single biom file and convert it to TreeSummarizedExperiment format
+#'
 #' @importFrom mia loadFromBiom
 #' @importFrom urltools parameters
 #' @importFrom httr GET
 #' @importFrom httr write_disk
 #' @importFrom mia checkTaxonomy
 #' @importFrom ape read.tree
-
-# get a single biom file and convert it to a TreeSummarizedExperiment object
+#' @importFrom TreeSummarizedExperiment rowTree<-
 mgnify_get_single_analysis_treese <- function(client=NULL, accession, usecache=T, downloadDIR=NULL, tax_SU="SSU", get_tree=FALSE){
 
     metadata_df <- mgnify_get_single_analysis_metadata(client, accession, usecache=usecache)

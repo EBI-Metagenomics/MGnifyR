@@ -1,3 +1,6 @@
+*_cache
+inst/extras/
+*~
 .Rproj.user
 .Rhistory
 .RData

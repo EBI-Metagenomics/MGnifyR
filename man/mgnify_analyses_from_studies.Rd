@@ -24,6 +24,6 @@ Helper function to get all analyses associated with the given studies.
 }
 \examples{
 #Retrieve all analysis ids from studies MGYS00005058, MGYS00005058 and MGYS00005058
-result <- mgnify_analyses_from_studies(myclient, c("MGYS00005058", "MGYS00005058" and "MGYS00005058"))
+result <- mgnify_analyses_from_studies(myclient, c("MGYS00005058"))
 
 }
