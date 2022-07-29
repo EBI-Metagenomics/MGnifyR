@@ -70,6 +70,7 @@ mgnify_get_single_analysis_phyloseq <- function(client=NULL, accession, usecache
             #Clear out any ?params after the main location - don't need them for this
             urltools::parameters(tree_url) <- NULL
 
+            #@importFrom utils tail
             fname=tail(strsplit(tree_url, '/')[[1]], n=1)
             tree_path = paste(downloadDIR, fname, sep="/")
 
