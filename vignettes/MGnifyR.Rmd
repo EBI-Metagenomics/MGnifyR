@@ -11,6 +11,7 @@ vignette: >
 library(knitr)
 knitr::opts_chunk$set(
   collapse = TRUE,
+  eval =FALSE,
   comment = "#>",
   cache = TRUE
 )
@@ -78,7 +79,7 @@ In most cases we will want to be more specific about the search, and will also u
 
 If `accession` is `NULL` (the default) then remaining parameters define the filters applied by the API to the search result. Details of these parameters are given in `help(mgnify_query)`. By way of example though, supposing we are interested in amplicon Illumina samples from the arctic, we might try the following query:
 
-```{r search_studies, fig.keep='all', message = FALSE}
+```{r search_studies, fig.keep='all', message = FALSE, eval=FALSE}
 northpolar <- mgnify_query(mg, "samples", latitude_gte=60.0, experiment_type="amplicon", biome_name="Soil", instrument_platform = "Illumina", usecache = F )
 northpolar[1:5,]
 ```
@@ -86,7 +87,7 @@ northpolar[1:5,]
 specifing an `accession` parameter will restrict results to just those matching that particular entry, be it a study, sample or run. For example, to retrieve information for study "MGYS00003725":
 
 
-```{r search_studies_accession, message = FALSE}
+```{r search_studies_accession, message = FALSE, eval = FALSE}
 study_samples <- mgnify_query(mg, "samples", study_accession="MGYS00003725", usecache=T)
 #kable(study_samples[1:10,])
 study_samples[1:5,]
@@ -98,11 +99,11 @@ Having obtained a particular set of search hits, it's now time to retrieve the a
 
 `MGnifyR` therefore provides a few helper functions to handle this conversion - `mgnify_analyses_from_xxx`. Following on from our previous search, we have a list of `sample` accessions, so to convert to corresponding `analyses` we use:
 
-```{r convert_to_analyses, fig.keep='all', results='hide', message = FALSE}
+```{r convert_to_analyses, fig.keep='all', results='hide', message = FALSE, eval = FALSE}
 
 analyses_accessions <- mgnify_analyses_from_samples(mg, accession = study_samples$accession)
 ```
-```{r show_accessions}
+```{r show_accessions, eval = FALSE}
 analyses_accessions[1:20]
 ```
 

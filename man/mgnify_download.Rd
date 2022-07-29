@@ -51,15 +51,15 @@ url_list <- downloads[downloads$attributes.description.label == "Contigs encodin
 
 #Example 1:
 #Download the first file
-supplied_filename = mgnify_download(mg, url_list[[1]], target_filename="SSU_file.fasta.gz")
+supplied_filename <- mgnify_download(mg, url_list[[1]], target_filename="SSU_file.fasta.gz")
 
 
 #Example 2:
 #Just use local caching
-cached_filename = mgnify_download(mg, url_list[[2]])
+cached_filename <- mgnify_download(mg, url_list[[2]])
 
 #Example 3:
 #Using read_func to open the reads with readDNAStringSet from \code{biostrings}. Without retaining on disk
-dna_seqs <- mgnify_download(mg, url_list[[3]], read_func=readDNAStringSet, usecache=F)
+dna_seqs <- mgnify_download(mg, url_list[[3]], read_func <- readDNAStringSet, usecache=F)
 
 }

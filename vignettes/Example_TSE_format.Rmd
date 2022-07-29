@@ -43,12 +43,12 @@ accession_list <- mgnify_analyses_from_studies(mgclnt, "MGYS00005058", usecache 
 
 # Download all associated study/sample and analysis metadata
 
-```{r}
+```{r, eval=FALSE}
 meta_dataframe <- mgnify_get_analyses_metadata(mgclnt, accession_list, usecache = T )
 ```
 
 # Convert analyses outputs to a single `TreeSummarizedExperiment` object
 
-```{r}
+```{r, eval=FALSE}
 tse <- mgnify_get_analyses_treese(mgclnt, meta_dataframe$analysis_accession, usecache = T)
 ```
