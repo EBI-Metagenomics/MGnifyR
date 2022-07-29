@@ -6,10 +6,32 @@
 \alias{MGnifyR-package}
 \title{MGnifyR: R interface to EBI MGnify metagenomics resource}
 \description{
-Utility package to facitliate easy interogation and analysis of EBI Mgnify pipeline results in R.
+Utility package to facilitate easy integration and analysis of EBI Mgnify pipeline results in R.
 }
 \details{
 See the vignette (in progress) for a general introduction to this package, [About MGnify](https://www.ebi.ac.uk/metagenomics/about) for general MGnify information, and
 [API documentation](https://emg-docs.readthedocs.io/en/latest/api.html) for details about the JSONAPI implementation,
+}
+\seealso{
+Useful links:
+\itemize{
+  \item Report bugs at \url{https://github.com/beadyallen/MGnifyR/issues}
+}
+
+}
+\author{
+\strong{Maintainer}: Ben Allen \email{ben.allen@ncl.ac.uk}
+
+Authors:
+\itemize{
+  \item Leo Lahti \email{leo.lahti@iki.fi} (\href{https://orcid.org/0000-0001-5537-637X}{ORCID})
+  \item Kévin Gatel \email{kevin.gatel@insa-rouen.fr}
+}
+
+Other contributors:
+\itemize{
+  \item Tuomas Borman \email{tuomas.v.borman@utu.fi} (\href{https://orcid.org/0000-0002-8563-8884}{ORCID}) [contributor]
+}
+
 }
 \keyword{internal}

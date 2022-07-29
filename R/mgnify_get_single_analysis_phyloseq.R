@@ -8,6 +8,7 @@
 #' @importFrom phyloseq sample_data
 #' @importFrom phyloseq phy_tree
 #' @importFrom ape read.tree
+#' @importFrom utils tail
 
 #UPDATE ME SO THAT TREES (if available) GET GRABBED AS WELL!!!
 # Not exported - get a single biom file and convert it to a phyloseq object.
@@ -80,7 +81,7 @@ mgnify_get_single_analysis_phyloseq <- function(client=NULL, accession, usecache
             tree_url <- analysis_downloads[tvec][[1]]$links$self
             #Clear out any ?params after the main location - don't need them for this
             urltools::parameters(tree_url) <- NULL
-
+            
             fname <- tail(strsplit(tree_url, '/')[[1]], n=1)
             tree_path <- paste(downloadDIR, fname, sep="/")
 

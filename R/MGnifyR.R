@@ -6,6 +6,18 @@
 #     Install Package: 'Ctrl + Shift + B'
 #     Check Package: 'Ctrl + Shift + E'
 #     Test Package: 'Ctrl + Shift + T'
+#
+# @import ape
+# @import dplyr
+# @import httr
+# @import MultiAssayExperiment
+# @import phyloseq
+# @import plyr
+# @import reshape2
+# @import SingleCellExperiment
+# @import SummarizedExperiment
+# @import TreeSummarizedExperiment
+# @import urltools
 
 
 library(urltools)

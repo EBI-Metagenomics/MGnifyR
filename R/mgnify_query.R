@@ -28,7 +28,7 @@
 #'
 #' @importFrom dplyr bind_rows
 #'
-#' @param mgnify_client Client instance
+#' @param client (To be described)
 #' @param qtype Type of objects to query. One of \code{studies},\code{samples},\code{runs} or
 #' \code{analyses}
 #' @param accession Either a single known MGnify accession identifier (of type \code{qtype}), or a list/vector

@@ -5,6 +5,9 @@
 #' to querying the raw MGnify API (which is exposed as relative standard JSONAPI), the object allows the simple handling of both
 #' user authentication and access to private data, and local on-disk caching of results.
 #'
+#' @importFrom httr POST
+#' @importFrom httr content
+#'
 #' @param url (To be described)
 #' @param username optional username to authenticate.
 #' @param password optional password for authentication.
@@ -53,5 +56,6 @@ mgnify_client <- function(url=NULL,username=NULL,password=NULL,usecache=F,cache_
     }
 
     #Return the final object
+    #@importFrom methods new
     new("mgnify_client", url=url, authtok=authtok, cache_dir = cachepath, warnings=warnings, memcache=list(), use_memcache=use_memcache)
 }
