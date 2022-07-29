@@ -1,14 +1,3 @@
-#' @importFrom urltools parameters
-#' @importFrom httr GET
-#' @importFrom httr write_disk
-#' @importFrom phyloseq import_biom
-#' @importFrom phyloseq tax_table
-#' @importFrom phyloseq parse_taxonomy_greengenes
-#' @importFrom phyloseq sample_names
-#' @importFrom phyloseq sample_data
-#' @importFrom phyloseq phy_tree
-#' @importFrom ape read.tree
-
 #UPDATE ME SO THAT TREES (if available) GET GRABBED AS WELL!!!
 # Not exported - get a single biom file and convert it to a phyloseq object.
 mgnify_get_single_analysis_phyloseq <- function(client=NULL, accession, usecache=T, downloadDIR=NULL, tax_SU="SSU", get_tree=FALSE){
@@ -34,19 +23,19 @@ mgnify_get_single_analysis_phyloseq <- function(client=NULL, accession, usecache
 
     #Can specify a seperate dir for saving biom files, otherwise they end up in the client@cachdir folder, under "bioms"
     if (is.null(downloadDIR)){
-        downloadDIR <- paste(client@cache_dir,"biom_files",sep="/")
+        downloadDIR=paste(client@cache_dir,"biom_files",sep="/")
         dir.create(downloadDIR, recursive = T, showWarnings = client@warnings)
     }
     #Clear out any ?params after the main location - don't need them for this
     urltools::parameters(biom_url) <- NULL
 
-    fname <- tail(strsplit(biom_url, '/')[[1]], n=1)
-    biom_path <- paste(downloadDIR, fname, sep="/")
+    fname=tail(strsplit(biom_url, '/')[[1]], n=1)
+    biom_path = paste(downloadDIR, fname, sep="/")
 
     ## Quick check to see if we should clear the disk cache ~for this specific call~ - used for debugging
     # and when MGnify breaks
     if(usecache & client@clear_cache){
-        message(paste("clear_cache is TRUE: deleting ",biom_path, sep=""))
+        print(paste("clear_cache is TRUE: deleting ",biom_path, sep=""))
         tryCatch(unlink(biom_path), error=warning)
     }
 
@@ -75,25 +64,19 @@ mgnify_get_single_analysis_phyloseq <- function(client=NULL, accession, usecache
     #Finally, do we want to the phylogenetic tree? If so, is it there?
     if(get_tree){
         #is there a tree?
-        tvec <- grepl('Phylogenetic tree', sapply(analysis_downloads, function(x) x$attributes$`description`$label))
+        tvec = grepl('Phylogenetic tree', sapply(analysis_downloads, function(x) x$attributes$`description`$label))
         if(any(tvec)){
-            tree_url <- analysis_downloads[tvec][[1]]$links$self
+            tree_url = analysis_downloads[tvec][[1]]$links$self
             #Clear out any ?params after the main location - don't need them for this
             urltools::parameters(tree_url) <- NULL
-<<<<<<< kg_branch_2
 
-            fname <- tail(strsplit(tree_url, '/')[[1]], n=1)
-            tree_path <- paste(downloadDIR, fname, sep="/")
-=======
-            #@importFrom utils tail
             fname=tail(strsplit(tree_url, '/')[[1]], n=1)
             tree_path = paste(downloadDIR, fname, sep="/")
->>>>>>> master
 
             ## Quick check to see if we should clear the disk cache ~for this specific call~ - used for debugging
             # and when MGnify breaks
             if(usecache & client@clear_cache){
-                message(paste("clear_cache is TRUE: deleting ",tree_path, sep=""))
+                print(paste("clear_cache is TRUE: deleting ",tree_path, sep=""))
                 tryCatch(unlink(tree_path), error=warning)
             }
 
@@ -101,7 +84,7 @@ mgnify_get_single_analysis_phyloseq <- function(client=NULL, accession, usecache
                 httr::GET(tree_url, httr::write_disk(tree_path, overwrite = T ))
             }
         }
-        phylo_tree <- ape::read.tree(tree_path)
+        phylo_tree = ape::read.tree(tree_path)
         phyloseq::phy_tree(psobj) <- phylo_tree
     }
     psobj
