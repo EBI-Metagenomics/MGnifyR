@@ -3,6 +3,7 @@
 #' @importFrom httr write_disk
 #' @importFrom dplyr bind_rows
 #' @importFrom utils tail
+#' @importFrom utils read.csv2
 
 #' types can be found using \code{ names(MGnifyR::analyses_results_type_parsers)}. Note that not depending on the particular analysis type, pipeline
 
@@ -64,7 +65,6 @@ mgnify_get_single_analysis_results <- function(client=NULL, accession, retrievel
                         }
 
                         #Load the file (might be big so save it in the 1 deep cache)
-                        #@importFrom utils read.csv2
                         tmp_df <- read.csv2(data_path, sep="\t", header = T, stringsAsFactors = F)
                     }
                     #Save it in memory using "super assignment" - which I'm not really sure about but it seems to work... thing'd be

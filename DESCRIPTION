@@ -26,6 +26,8 @@ Imports:
     phyloseq,
     dplyr,
     reshape2,
+    stats,
+    utils,
     methods
 Suggests:
     TreeSummarizedExperiment,
