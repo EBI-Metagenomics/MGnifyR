@@ -3,7 +3,12 @@
 #' \code{mgnify_get_analyses_phyloseq} retrieves all associated Study, Sample and Analysis metadata attributes,
 #' along with all OTU tables (of a given taxonomic type), and merges them together to build a \code{phyloseq}
 #' object with \code{otu_table}, \code{tax_table} and \code{sample_data} objects.
-#' #'
+#'
+#' @importFrom plyr llply
+#' @importFrom phyloseq merge_phyloseq
+#' @importFrom phyloseq sample_data
+#' @importFrom dplyr bind_rows
+#'
 #' @param client \code{mgnify_client} instance
 #' @param accessions Single value or list/vector of Analysis accessions to retrieve data for.
 #' @param usecache Whether to use the disk based cache.
@@ -56,17 +61,16 @@ mgnify_get_analyses_phyloseq <- function(client = NULL, accessions, usecache=T,
         #so:
         #a divide-and-conquer approach to merge_phyloseq seems to work best, hence the following
         #code which splits the full list into sublists and merges them seperately, then repeats until all are joined.
-        curlist=ps_list
+        curlist <- ps_list
         while(length(curlist) > 1){
             #Lists of length 10 seem to work well
-            sublist=split(curlist, seq_along(curlist) %/% 10)
+            sublist <- split(curlist, seq_along(curlist) %/% 10)
             curlist <- lapply(sublist, function(x){
                 do.call(phyloseq::merge_phyloseq,x)
             })
         }
         #By this point curlist isn't a list, it's a phyloseq object...
         full_ps <- curlist[[1]]
-
         sample_metadata_df <- do.call(dplyr::bind_rows, samp_dat)
         rownames(sample_metadata_df) <- sample_metadata_df$analysis_accession
         phyloseq::sample_data(full_ps) <- sample_metadata_df

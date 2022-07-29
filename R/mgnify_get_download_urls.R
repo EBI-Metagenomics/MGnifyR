@@ -5,6 +5,10 @@
 #' including the url location and description. This can then be filtered to extract the urls of interest, before actually
 #' retrieving the files using \code{mgnify_download}
 #'
+#' @importFrom plyr llply
+#' @importFrom plyr rbind.fill
+#' @importFrom urltools parameters
+#'
 #'@param client valid MGnify client object
 #'@param accessions list of accessions to query
 #'@param accession_type one of \code{analysis},\code{samples},\code{studies},\code{assembly},\code{genome} or \code{run}

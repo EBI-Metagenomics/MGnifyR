@@ -4,6 +4,8 @@
 #'
 #' Helper function to get all analyses associated with the given samples.
 #'
+#' @importFrom plyr llply
+#'
 #' @param client \code{mgnify_client} instance
 #' @param accession Single sample accession id, or vector/list of accessions for which to retrieve Analyses ids
 #' @param usecache Flag to determine whether to re-use/store data on disk, rather than query the server.

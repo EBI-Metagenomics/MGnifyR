@@ -41,7 +41,7 @@ mgnify_get_single_analysis_metadata <- function(client=NULL, accession, usecache
     tryCatch({
         full_df$biome_string <- sample_met[[1]]$relationships$biome$data$id
     },
-        error=function(x) warning("Error finding biome entry")
+        error <- function(x) warning("Error finding biome entry")
     )
 
     full_df

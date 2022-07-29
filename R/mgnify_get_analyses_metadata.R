@@ -3,6 +3,9 @@
 #' \code{mgnify_get_analyses_metadata} retrieves all associated Study, Sample and Analysis metadata attributes
 #' a list of Analyses accessions (determined from \code{mgnify_analyses_from_x})
 #'
+#' @importFrom plyr llply
+#' @importFrom dplyr bind_rows
+#'
 #' @param client \code{mgnify_client} instance
 #' @param accessions Single value or list/vector of Anlysis accessions to retrieve data for
 #' @param usecache Whether to use the disk based cache.
@@ -11,8 +14,7 @@
 #'
 #' @export
 mgnify_get_analyses_metadata <- function(client, accessions, usecache=T){
-    reslist <- plyr::llply(as.list(accessions), function(x) mgnify_get_single_analysis_metadata(client, x, usecache = usecache),
-                                                        .progress = "text")
+    reslist <- plyr::llply(as.list(accessions), function(x) mgnify_get_single_analysis_metadata(client, x, usecache = usecache), .progress = "text")
     df <- do.call(dplyr::bind_rows,reslist)
     rownames(df) <- accessions
     df
