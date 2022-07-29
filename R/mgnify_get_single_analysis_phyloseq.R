@@ -1,3 +1,14 @@
+#' @importFrom urltools parameters
+#' @importFrom httr GET
+#' @importFrom httr write_disk
+#' @importFrom phyloseq import_biom
+#' @importFrom phyloseq tax_table
+#' @importFrom phyloseq parse_taxonomy_greengenes
+#' @importFrom phyloseq sample_names
+#' @importFrom phyloseq sample_data
+#' @importFrom phyloseq phy_tree
+#' @importFrom ape read.tree
+
 #UPDATE ME SO THAT TREES (if available) GET GRABBED AS WELL!!!
 # Not exported - get a single biom file and convert it to a phyloseq object.
 mgnify_get_single_analysis_phyloseq <- function(client=NULL, accession, usecache=T, downloadDIR=NULL, tax_SU="SSU", get_tree=FALSE){
