@@ -11,7 +11,9 @@
 #' @param usecache Whether to use the disk based cache.
 #' @return \code{data.frame} of metadta for each analysis in the \code{accession} list.
 #' @examples
-#'
+#' # Download all associated study/sample and analysis metadata
+#' meta_dataframe <- mgnify_get_analyses_metadata(mgclnt, accession_list, usecache = T )
+#' 
 #' @export
 mgnify_get_analyses_metadata <- function(client, accessions, usecache=T){
     reslist <- llply(as.list(accessions), function(x) mgnify_get_single_analysis_metadata(client, x, usecache = usecache), .progress = "text")

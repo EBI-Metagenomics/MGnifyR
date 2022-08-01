@@ -26,7 +26,8 @@
 #' albeit not in a single object.
 #' @return Combined TreeSummarizedExperiment object with \code{row_data}, \code{col_data} and \code{assays} entries for all accessions.
 #' @examples
-#'
+#' #Convert analyses outputs to a single `TreeSummarizedExperiment` object
+#' tse <- mgnify_get_analyses_treese(mgclnt, meta_dataframe$analysis_accession, usecache = T)
 #'
 #' @export
 mgnify_get_analyses_treese <- function(client = NULL, accessions, usecache=T, returnLists=F, tax_SU = "SSU", get_tree=FALSE){

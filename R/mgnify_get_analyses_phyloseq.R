@@ -28,7 +28,8 @@
 #' albeit not in a single object.
 #' @return Combined phyloseq object with \code{otu_table}, \code{sample_data} and \code{tax_table} entries for all accessions.
 #' @examples
-#'
+#' #Convert analyses outputs to a single `phyloseq` object
+#' psobj <- mgnify_get_analyses_phyloseq(mgclnt, meta_dataframe$analysis_accession, usecache = T)
 #'
 #' @export
 mgnify_get_analyses_phyloseq <- function(client = NULL, accessions, usecache=T,

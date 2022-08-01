@@ -24,6 +24,7 @@
 #' @param analyses_results_type_parsers (To be described)
 #' @return Named list of \code{data.frames}, corresponding to the requested analysis types in \code{retrievelist}
 #' @examples
+#' analyses_res <- mgnify_get_analyses_results(mgclnt, accession_list, compact_results=T, usecache = T, bulk_dl = F)
 #'
 #'@export
 mgnify_get_analyses_results <- function(client=NULL, accessions, retrievelist=c(), compact_results=T, usecache = T, bulk_dl = F){
