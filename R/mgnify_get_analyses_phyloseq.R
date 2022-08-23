@@ -28,14 +28,15 @@
 #' albeit not in a single object.
 #' @return Combined phyloseq object with \code{otu_table}, \code{sample_data} and \code{tax_table} entries for all accessions.
 #' @examples
-#'
+#' #Convert analyses outputs to a single `phyloseq` object
+#' psobj <- mgnify_get_analyses_phyloseq(mgclnt, meta_dataframe$analysis_accession, usecache = T)
 #'
 #' @export
 mgnify_get_analyses_phyloseq <- function(client = NULL, accessions, usecache=T,
                                                                                  returnLists=F, tax_SU = "SSU",
                                                                                  get_tree=FALSE){
     #Some biom files don't import - so need a try/catch
-    ps_list <- plyr::llply(accessions, function(x) {
+    ps_list <- llply(accessions, function(x) {
         tryCatch(
                 mgnify_get_single_analysis_phyloseq(client, x, usecache = usecache, tax_SU = tax_SU, get_tree = get_tree), error=function(x) NULL)
         }, .progress = "text")
@@ -57,7 +58,7 @@ mgnify_get_analyses_phyloseq <- function(client = NULL, accessions, usecache=T,
         }
 
         #This is too slow for large datasets
-        #full_ps <- do.call(phyloseq::merge_phyloseq, ps_list)
+        #full_ps <- do.call(merge_phyloseq, ps_list)
         #so:
         #a divide-and-conquer approach to merge_phyloseq seems to work best, hence the following
         #code which splits the full list into sublists and merges them seperately, then repeats until all are joined.
@@ -66,14 +67,14 @@ mgnify_get_analyses_phyloseq <- function(client = NULL, accessions, usecache=T,
             #Lists of length 10 seem to work well
             sublist <- split(curlist, seq_along(curlist) %/% 10)
             curlist <- lapply(sublist, function(x){
-                do.call(phyloseq::merge_phyloseq,x)
+                do.call(merge_phyloseq,x)
             })
         }
         #By this point curlist isn't a list, it's a phyloseq object...
         full_ps <- curlist[[1]]
-        sample_metadata_df <- do.call(dplyr::bind_rows, samp_dat)
+        sample_metadata_df <- do.call(bind_rows, samp_dat)
         rownames(sample_metadata_df) <- sample_metadata_df$analysis_accession
-        phyloseq::sample_data(full_ps) <- sample_metadata_df
+        sample_data(full_ps) <- sample_metadata_df
         full_ps
     }
 }

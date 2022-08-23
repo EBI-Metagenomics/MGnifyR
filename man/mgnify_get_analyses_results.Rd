@@ -32,6 +32,8 @@ results for a single accession.}
 the JSONAPI interface. When getting results where multiple accessions share the same study, this option may result in significantly faster processing. However, there
 appear to be (quite a few) cases in the database where the TSV result columns do NOT match the expected accession names. This will hopefully be fixed in the future, but for
 now \code{bulk_dl} defaults to FALSE. When it does work, it can be orders of magnitude more efficient.}
+
+\item{analyses_results_type_parsers}{(To be described)}
 }
 \value{
 Named list of \code{data.frames}, corresponding to the requested analysis types in \code{retrievelist}

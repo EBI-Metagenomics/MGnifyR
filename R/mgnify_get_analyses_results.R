@@ -6,6 +6,7 @@
 #' @importFrom plyr llply
 #' @importFrom dplyr bind_rows
 #' @importFrom reshape2 dcast
+#' @importFrom stats as.formula
 #'
 #' @param client a valid \code{mgnify_client} object
 #' @param accessions list or vector of accessions to return results for
@@ -20,15 +21,17 @@
 #' the JSONAPI interface. When getting results where multiple accessions share the same study, this option may result in significantly faster processing. However, there
 #' appear to be (quite a few) cases in the database where the TSV result columns do NOT match the expected accession names. This will hopefully be fixed in the future, but for
 #' now \code{bulk_dl} defaults to FALSE. When it does work, it can be orders of magnitude more efficient.
+#' @param analyses_results_type_parsers (To be described)
 #' @return Named list of \code{data.frames}, corresponding to the requested analysis types in \code{retrievelist}
 #' @examples
+#' analyses_res <- mgnify_get_analyses_results(mgclnt, accession_list, compact_results=T, usecache = T, bulk_dl = F)
 #'
 #'@export
 mgnify_get_analyses_results <- function(client=NULL, accessions, retrievelist=c(), compact_results=T, usecache = T, bulk_dl = F){
     if(length(retrievelist) == 1 && retrievelist == "all"){
         retrievelist <- names(analyses_results_type_parsers)
     }
-    results_as_lists <- plyr::llply(accessions,
+    results_as_lists <- llply(accessions,
                                                                     function(x) mgnify_get_single_analysis_results(
                                                                         client, x,
                                                                         usecache = usecache,
@@ -40,17 +43,16 @@ mgnify_get_analyses_results <- function(client=NULL, accessions, retrievelist=c(
         results_as_lists
     }else{
         #Compact the result type dataframes into a single instance. Per accession counts in each column.
-        all_results <- plyr::llply(retrievelist, function(y){
+        all_results <- llply(retrievelist, function(y){
             tryCatch({
                 r <- lapply(results_as_lists, function(x){
                     df <- as.data.frame(x[[y]])
                     df
                 })
-                longform <- dplyr::bind_rows(r, .id = "analysis")
+                longform <- bind_rows(r, .id = "analysis")
                 cn <- colnames(longform)
                 extras <- cn[!(cn %in% c("count","index_id", "analysis"))]
-                #@importFrom stats as.formula
-                final_df <- reshape2::dcast(longform, as.formula(paste(paste(extras,collapse = " + "), " ~ analysis")), value.var = "count", fun.aggregate = sum)
+                final_df <- dcast(longform, as.formula(paste(paste(extras,collapse = " + "), " ~ analysis")), value.var = "count", fun.aggregate = sum)
                 final_df}, error=function(x) NULL)
         })
     }

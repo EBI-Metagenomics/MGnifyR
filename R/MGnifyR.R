@@ -11,14 +11,6 @@
 # @import urltools
 
 
-library(urltools)
-library(phyloseq)
-library(plyr)
-library(reshape2)
-library(dplyr)
-library(ape)
-
-
 
 ##Example accessions:
 # Analysis assembly: MGYA00379728
