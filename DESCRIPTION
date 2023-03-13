@@ -19,27 +19,37 @@ License: Artistic-2.0 | file LICENSE
 Encoding: UTF-8
 Depends:
     R(>= 4.0),
+    mia,
+    TreeSummarizedExperiment (>= 1.99.3),
+    MultiAssayExperiment
+Imports:
     httr,
     urltools,
-    ape
-Imports:
-    phyloseq,
+    ape,
+    S4Vectors,
     dplyr,
+    plyr,
     reshape2,
     stats,
-    utils,
     methods
 Suggests:
-    TreeSummarizedExperiment,
-    MultiAssayExperiment,
     testthat,
     knitr,
     rmarkdown,
     ggplot2,
-    plyr,
     broom,
     vegan
 URL : https://github.com/beadyallen/MGnifyR
 BugReports: https://github.com/beadyallen/MGnifyR/issues
 VignetteBuilder: knitr
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3
+Collate: 
+    'MGnifyR.R'
+    'MgnifyClient.R'
+    'deprecate.R'
+    'doQuery.R'
+    'getAnalysisAccessions.R'
+    'getFile.R'
+    'getMetadata.R'
+    'utils.R'
+    'getResults.R'

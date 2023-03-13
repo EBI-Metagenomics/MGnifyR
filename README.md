@@ -29,7 +29,7 @@ For more detailed instructions read the associated function help and vignette (`
 library(MGnifyR)
 
 #Set up the MGnify client instance
-mgclnt <- mgnify_client(usecache = T, cache_dir = '/tmp/MGnify_cache')
+mgclnt <- MgnifyClient(usecache = T, cache_dir = '/tmp/MGnify_cache')
 
 #Retrieve the list of analyses associated with a study
 accession_list <- mgnify_analyses_from_studies(mgclnt, "MGYS00005058", usecache = T)

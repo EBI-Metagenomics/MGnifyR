@@ -26,7 +26,6 @@ knitr::opts_chunk$set(
 <!-- #)) -->
 <!-- #``` -->
 
-
 Ben Allen
 
 <ben.allen@ncl.ac.uk>
@@ -55,10 +54,10 @@ Once installed, `MGnifyR` is made available in the usual way.
 library(MGnifyR)
 ```
 
-All functions in `MGnifyR` make use of a `mgnify_client` object to keep track of the JSONAPI url, disk cache location and user access tokens. Thus the first thing to do when starting any analysis is to instantiate this object. The following snippet creates this.
+All functions in `MGnifyR` make use of a `MgnifyClient` object to keep track of the JSONAPI url, disk cache location and user access tokens. Thus the first thing to do when starting any analysis is to instantiate this object. The following snippet creates this.
 
 ```{r create_client, echo=TRUE, fig.keep='all', message = FALSE}
-mg <- mgnify_client( usecache=T, cache_dir='~/.MGnify_cache')
+mg <- MgnifyClient( usecache=T, cache_dir='~/.MGnify_cache')
 ```
 
 It's recommended that local caching is enabled with `usecache = T`. Queries to the MGnify API can be quite slow, particularly when retrieving multipage results for many analyses (such as many `Interpro` results). Using a local disk cache can significantly speed up subsequent work, bypassing the need to re-query the API. Use of the cache should be entirely transparent, as the caching occurs at the raw data level. The cache can persist across `MGnifyR` sessions, and can even be used for multiple sessions simultaneously - provided that different sets of accessions are queried at once.
@@ -66,21 +65,21 @@ It's recommended that local caching is enabled with `usecache = T`. Queries to t
 Optionaly a username and password may be specified during client creation, causing `MGnifyR` to attempt retrieval of an authentication token from the API. Doing so gives access to non-public results, such as those currently under an author imposed embargo period.
 
 ```{r create_client_passwd, eval=FALSE}
-mg <- mgnify_client(username="Webin-username", password="your-password", usecache = T)
+mg <- MgnifyClient(username="Webin-username", password="your-password", usecache = T)
 ```
 
 ## Searching MGnify
 
-`MGnifyR` gives users access to the complete range of search functionality implemented in the MGnify JSON API. A single function `mgnify_query` is used to do perform this searching, allowing Studies, Samples, Runs and Accession to be interogated from a common interface. As with all MGnifyR functions the first argument `client` must be a valid `mgnify_client` instance. The only remaining **required** parameter is `qtype`, specifying the type of data to be queried, and may be one of `studies`, `samples`, `runs`, `analyses` or `assemblies`. Other general parameters include `usecache` and `maxhits`. 
+`MGnifyR` gives users access to the complete range of search functionality implemented in the MGnify JSON API. A single function `doQuery` is used to do perform this searching, allowing Studies, Samples, Runs and Accession to be interogated from a common interface. As with all MGnifyR functions the first argument `client` must be a valid `MgnifyClient` instance. The only remaining **required** parameter is `qtype`, specifying the type of data to be queried, and may be one of `studies`, `samples`, `runs`, `analyses` or `assemblies`. Other general parameters include `usecache` and `max.hits`. 
 
-Unlike most other `MGnifyR` high level functions, caching is turned off by default for `mgnify_query`. New data and analyses are being added to MGnify all the time, so enabling caching by default may lead to out-of-date search results for long-lived sessions. However, it's easy to switch back on, and may be useful in many cases. Also, given the huge and ever increasing number of datasets available in MGnify, a limit to the number of results returned may be set using `maxhits`. By default this is set to 200, which for most exploratory queries should be sufficient. It may be increased or decreased by directly specifying `maxhits`, and disabled completely (no limit) by setting `maxhits=-1`.
+Unlike most other `MGnifyR` high level functions, caching is turned off by default for `doQuery`. New data and analyses are being added to MGnify all the time, so enabling caching by default may lead to out-of-date search results for long-lived sessions. However, it's easy to switch back on, and may be useful in many cases. Also, given the huge and ever increasing number of datasets available in MGnify, a limit to the number of results returned may be set using `max.hits`. By default this is set to 200, which for most exploratory queries should be sufficient. It may be increased or decreased by directly specifying `max.hits`, and disabled completely (no limit) by setting `max.hits=-1`.
 
 In most cases we will want to be more specific about the search, and will also use either an `accession` parameter, or the many filter options available through the API, and discussed below. Specifying an `accession` id, which in the case of `samples`, `runs` and `assemblies` may be a vector of ids, returns a data.frame of metadata with one row per matching accession.
 
-If `accession` is `NULL` (the default) then remaining parameters define the filters applied by the API to the search result. Details of these parameters are given in `help(mgnify_query)`. By way of example though, supposing we are interested in amplicon Illumina samples from the arctic, we might try the following query:
+If `accession` is `NULL` (the default) then remaining parameters define the filters applied by the API to the search result. Details of these parameters are given in `help(doQuery)`. By way of example though, supposing we are interested in amplicon Illumina samples from the arctic, we might try the following query:
 
 ```{r search_studies, fig.keep='all', message = FALSE, eval=FALSE}
-northpolar <- mgnify_query(mg, "samples", latitude_gte=60.0, experiment_type="amplicon", biome_name="Soil", instrument_platform = "Illumina", usecache = F )
+northpolar <- doQuery(mg, "samples", latitude_gte=60.0, experiment_type="amplicon", biome_name="Soil", instrument_platform = "Illumina", usecache = F )
 northpolar[1:5,]
 ```
 
@@ -88,7 +87,7 @@ specifing an `accession` parameter will restrict results to just those matching 
 
 
 ```{r search_studies_accession, message = FALSE, eval = FALSE}
-study_samples <- mgnify_query(mg, "samples", study_accession="MGYS00003725", usecache=T)
+study_samples <- doQuery(mg, "samples", study_accession="MGYS00003725", usecache=TRUE)
 #kable(study_samples[1:10,])
 study_samples[1:5,]
 ```
@@ -100,9 +99,9 @@ Having obtained a particular set of search hits, it's now time to retrieve the a
 `MGnifyR` therefore provides a few helper functions to handle this conversion - `mgnify_analyses_from_xxx`. Following on from our previous search, we have a list of `sample` accessions, so to convert to corresponding `analyses` we use:
 
 ```{r convert_to_analyses, fig.keep='all', results='hide', message = FALSE, eval = FALSE}
-
 analyses_accessions <- mgnify_analyses_from_samples(mg, accession = study_samples$accession)
 ```
+
 ```{r show_accessions, eval = FALSE}
 analyses_accessions[1:20]
 ```
@@ -111,7 +110,7 @@ A useful side effect of the above call is that some attribute metadata for each 
 
 It's important to be aware that the results of a `mgnify_analyses_from_xxx` command will not neccesarily be a one-to-one match with the input accessions. `MGnify` analysis runs are sometimes performed multiple times, perhaps using different versions of the pipeline. Thus further filtering of the result list may be required, but is easily performed and is illustrated in the next section.
 
-<!-- `mgnify_get_accession_xxx` set of functions take as input a list of `analyses` accession ids. Thus it's necessary to convert the `studies`, `samples` or `runs` accessions identified with `mgnify_query` into corresponding `analyses` for further processing. This is performed with the -->
+<!-- `mgnify_get_accession_xxx` set of functions take as input a list of `analyses` accession ids. Thus it's necessary to convert the `studies`, `samples` or `runs` accessions identified with `doQuery` into corresponding `analyses` for further processing. This is performed with the -->
 
 ## Examining metadata
 
@@ -135,24 +134,24 @@ dim(known_depths)
 
 ## Worked example.
 
-Although the previous queries have been based on the results from `mgnify_query`, from now on we will concentrate on combining and comparing results from specific studies.  Since newly performed analyses are retrieved first in the `mgnify_query` call, it's likely that by the time this vignette is read, the query results will be different.  This is principally due to the rapid increase in MGnify submissions, leading to a potential lack of consistency between even closely spaced queries. As mentioned previously, it may be best to use `usecache=FALSE` for `mgnify_query` calls, to ensure queries are actually returning the latest data. *** REWRITE THIS BIT***.
+Although the previous queries have been based on the results from `doQuery`, from now on we will concentrate on combining and comparing results from specific studies.  Since newly performed analyses are retrieved first in the `doQuery` call, it's likely that by the time this vignette is read, the query results will be different.  This is principally due to the rapid increase in MGnify submissions, leading to a potential lack of consistency between even closely spaced queries. As mentioned previously, it may be best to use `usecache=FALSE` for `doQuery` calls, to ensure queries are actually returning the latest data. *** REWRITE THIS BIT***.
 
 For the remainder of this vignette however, we'll be comparing 3 ostensibly different studies. A study of saltmarsh soils from York University, human faecal samples from a survey of healthy Sardinians, and a set of samples from hydrothermal vents in the Mid-Cayman rise in the Carribbean Sea. To simplify things, only the first 20 samples from each study will be used. Furthermore, the intention is only to demonstrate the functionality of the MGnifyR package, rather than produce scientifically rigorous results.
 
 ```{r get_analyses, results='hide', fig.keep='all', message = FALSE}
 
-soil <- mgnify_analyses_from_studies(mg, "MGYS00001447")[1:20]
+soil <- getAnalysisAccessions(mg, "study", "MGYS00001447")[1:20]
 human <- mgnify_analyses_from_studies(mg, "MGYS00001442")[1:20]
 marine <- mgnify_analyses_from_studies(mg, "MGYS00001282")[1:20]
 
 all_accessions <- c(soil,human,marine)
-
+all_accessions <- c(soil)
 ```
 
-The first step with this new accession list is, as previously, to retrieve the associated metadata using `mgnify_get_analyses_metadata`, and as seen with the `mgnify_query` results, the returned `data.frame` contains a large number of columns. Being autogenerated and flexible, the column names can be a little difficult to predict, but examining `colnames(full_metadata)` should make things clearer.
+The first step with this new accession list is, as previously, to retrieve the associated metadata using `mgnify_get_analyses_metadata`, and as seen with the `doQuery` results, the returned `data.frame` contains a large number of columns. Being autogenerated and flexible, the column names can be a little difficult to predict, but examining `colnames(full_metadata)` should make things clearer.
 
 ```{r get__new_metadata, echo=TRUE, results='hide', fig.keep='all', message = FALSE}
-full_metadata <- mgnify_get_analyses_metadata(mg, all_accessions)
+full_metadata <- getMetadata(mg, all_accessions)
 ```
 ```{r show_new_metadata}
 colnames(full_metadata)
@@ -216,7 +215,7 @@ ggplot(adf, aes(x=study, group=study, y=diversity)) + geom_boxplot() + theme_bw(
 
 ## Retrieving functional analysis results
 
-For shotgun metagenomics samples (as opposed to amplicon based studies), recent pipelines also determine estimates of per-sample gene functionality. Functional counts for GO terms (either the full GO ontology or trimmed down GO-slim annotations), antiSMASH gene clusters, and Pfam protein families are available with `mgnify_get_analyses_results`. In keeping with previous MGNifyR commands, the first argument to `mgnify_get_analyses_results` is a `mgnify_client` object, followed by a list of analysis accessions. `retrievelist` requires us to specify which functional estimations we wish to examine, and may be one or more of `go-slim`, `go-terms`, `interpro-identifiers` or `antismash-gene-clusters`. `retrievelist` may also be `all`, in which case all available results are retrieved, along with all taxonomic assignments.
+For shotgun metagenomics samples (as opposed to amplicon based studies), recent pipelines also determine estimates of per-sample gene functionality. Functional counts for GO terms (either the full GO ontology or trimmed down GO-slim annotations), antiSMASH gene clusters, and Pfam protein families are available with `mgnify_get_analyses_results`. In keeping with previous MGNifyR commands, the first argument to `mgnify_get_analyses_results` is a `MgnifyClient` object, followed by a list of analysis accessions. `retrievelist` requires us to specify which functional estimations we wish to examine, and may be one or more of `go-slim`, `go-terms`, `interpro-identifiers` or `antismash-gene-clusters`. `retrievelist` may also be `all`, in which case all available results are retrieved, along with all taxonomic assignments.
 
 Returning to the three study example used above, `go-slim` annotations are retrieved using the code below, with results being returned as a named list with entries for all types in `retrievelist`. If a particular result set is not available, the corresponding entry in the returned list will be `NULL`
 
@@ -299,7 +298,7 @@ while undoubtedly crude, the GO-terms for photosynthesis and bioluminescence app
 
 
 ## Downloading sequence files
-Finally, we can use `mgnify_download` to retrieve other MGnify pipeline outputs such as merged sequence reads, assembled contigs, and details of the functional analyses. While it's possible to use the generic \code{mgnify_retrieve_json} function to find the urls, parsing the nested lists it returns can be a little cumbersome. \code{mgnify_get_downloads} is a simple wrapper function whcih, when supplied a list of accessions, finds the urls of the files we're after. In most cases we'll want to filter the returned list down to only the files of interest, which is easily done on the resulting data.frame object. In addition to the actual download location (the `download_url` column), extra columns include file type, contents and compression. It's recommended that the `colnames` of the `data.frame` be examined to get a grasp on the available metadata. To demonstrate the process, the code below retrieves a data.frame containing all available downloads for each accession we've been examining previously. It then filters this to retain only those files corresponding retain the annotated amino acid sequence files.
+Finally, we can use `mgnify_download` to retrieve other MGnify pipeline outputs such as merged sequence reads, assembled contigs, and details of the functional analyses. While it's possible to use the generic \code{.mgnify_retrieve_json} function to find the urls, parsing the nested lists it returns can be a little cumbersome. \code{mgnify_get_downloads} is a simple wrapper function whcih, when supplied a list of accessions, finds the urls of the files we're after. In most cases we'll want to filter the returned list down to only the files of interest, which is easily done on the resulting data.frame object. In addition to the actual download location (the `download_url` column), extra columns include file type, contents and compression. It's recommended that the `colnames` of the `data.frame` be examined to get a grasp on the available metadata. To demonstrate the process, the code below retrieves a data.frame containing all available downloads for each accession we've been examining previously. It then filters this to retain only those files corresponding retain the annotated amino acid sequence files.
 
 ```{r, get_download_urls, results='hide',message=FALSE}
 #Find list of available downloads, and filter for 
@@ -326,17 +325,17 @@ genome_urls[c("id","attributes.file.format.name","download_url")]
 ```
 Having found the a set of target urls, the final step is to use `mgnify_download` to actually retrieve the file. Unlike other functions, this only works with a single url location at once, so each entry in `target_urls` from above must be downloaded individually - easily done by either looping or `apply`ing over the list.
 
-If the files are intended to be used with external programs, it might be easiest to provide a `target_filename` parameter to the function call, which specifies a local filename for writing the file. By default `MGnifyR` will use the local cache, which can make getting to the file afterwards more awkward. Regardless, the default befahiour of `mgnify_download` is to retrive the file specified in the parameter `url`, save it to disk, and return the filepath it was saved to. 
+If the files are intended to be used with external programs, it might be easiest to provide a `file` parameter to the function call, which specifies a local filename for writing the file. By default `MGnifyR` will use the local cache, which can make getting to the file afterwards more awkward. Regardless, the default befahiour of `mgnify_download` is to retrive the file specified in the parameter `url`, save it to disk, and return the filepath it was saved to. 
 
 
 ```{r, filter_dl_urls, echo=T, message=FALSE}
 #Just select a single file from the target_urls list for demonstration.
 
 #Default behaviour - use local cache.
-cached_location = mgnify_download(mg, target_urls$download_url[[41]])
+cached_location = mgnify_download(mg, target_urls$download_url[[1]])
 
-#Specifying a target_filename
-specified_location = mgnify_download(mg, target_urls$download_url[[41]], target_filename = "Coding_Sequences_1.fasta.gz")
+#Specifying a file
+specified_location = mgnify_download(mg, target_urls$download_url[[1]], file = "Coding_Sequences_1.fasta.gz")
 
 #Where are the files?
 c(cached_location,specified_location)
@@ -364,7 +363,7 @@ Having defined the function, it just remains to include it in the call to `mgnif
 ```{r,do_download_with_read}
 
 #Just download a single accession for demonstration, specifying a read_function
-amoC_seq_counts <- mgnify_download(mg, target_urls$download_url[[41]] , read_func = getAmoCseqs, usecache = F)
+amoC_seq_counts <- mgnify_download(mg, target_urls$download_url[[1]] , read_func = getAmoCseqs, usecache = F)
 
 amoC_seq_counts %>% t  
 
