@@ -165,16 +165,16 @@ NULL
 #' @importFrom plyr rbind.fill
 #' @importFrom urltools parameters parameters<-
 #' @export
-setGeneric("getFileUrl", signature = c("x"), function(
+setGeneric("searchFile", signature = c("x"), function(
         x, accession, type = c("studies", "samples", "analyses", "assembly",
                                  "genome", "run"),
         use.cache = TRUE, ...
         )
-    standardGeneric("getFileUrl"))
+    standardGeneric("searchFile"))
 
 #' @rdname getFile
 #' @export
-setMethod("getFileUrl", signature = c(x = "MgnifyClient"), function(
+setMethod("searchFile", signature = c(x = "MgnifyClient"), function(
         x, accession, type = c("studies", "samples", "analyses", "assembly",
                                 "genome", "run"),
         use.cache = TRUE, ...
@@ -227,7 +227,7 @@ setMethod("getFileUrl", signature = c(x = "MgnifyClient"), function(
     }
 
     if(use.cache & client@clearCache){
-        message(paste("clear_cache is TRUE: deleting ", file_tgt, sep=""))
+        message(paste("clearCache is TRUE: deleting ", file_tgt, sep=""))
         tryCatch(unlink(file_tgt), error=warning)
     }
 
@@ -272,14 +272,20 @@ setMethod("getFileUrl", signature = c(x = "MgnifyClient"), function(
             ))
         df$accession <- x
         df$type <- type
-        # For convenience, rename the "self" column to "download_url" - which
-        # is what it actually is...
-        colnames(df)[colnames(df) == 'self'] <- 'download_url'
-        # Finally, strip off any options from the url - they sometimes seem
-        # to get format=json stuck on the end
-        urls <- df$download_url
-        parameters(urls) <- NULL
-        df$download_url <- urls
+        # If no match, df is a list --> convert to data.frame
+        if( !is.data.frame(df) ){
+            df <- as.data.frame(df)
+        } else {
+            # If search result was found, modify
+            # For convenience, rename the "self" column to "download_url" - which
+            # is what it actually is...
+            colnames(df)[colnames(df) == 'self'] <- 'download_url'
+            # Finally, strip off any options from the url - they sometimes seem
+            # to get format=json stuck on the end
+            urls <- df$download_url
+            parameters(urls) <- NULL
+            df$download_url <- urls
+        }
         df
     }, .progress="text")
     do.call(rbind.fill, results)

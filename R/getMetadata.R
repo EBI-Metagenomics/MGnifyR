@@ -69,7 +69,6 @@ setMethod("getMetadata", signature = c(x = "MgnifyClient"), function(
         .mgnify_get_single_analysis_metadata(client, x, use.cache = use.cache)
     })
     df <- do.call(bind_rows, reslist)
-    rownames(df) <- accession
     df
 }
 
@@ -80,6 +79,11 @@ setMethod("getMetadata", signature = c(x = "MgnifyClient"), function(
     dat <- .mgnify_retrieve_json(
         client, paste("analyses", accession, sep="/"), use.cache = use.cache,
         max.hits = max.hits)
+    # If metadata was not found, return the NULL value
+    if(is.null(dat)){
+        warning(paste("Failed to find study metadata for ", accession, sep=""))
+        return(dat)
+    }
     #There ~should~ be just a single result
     top_data <- dat[[1]]
     # Convert hit result to df

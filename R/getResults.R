@@ -190,6 +190,7 @@ setMethod("getResults", signature = c(x = "MgnifyClient"), function(
 ################################ HELP FUNCTIONS ################################
 
 # Convert results to TreeSE, MultiAssayExperiment or phyloseq.
+#' @importFrom methods is
 .convert_results_to_object <- function(taxa_res, func_res, output, accession){
     # If there are microbial profiling data, convert it to TreeSE or phyloseq
     if( !is.null(taxa_res) ){
@@ -200,7 +201,8 @@ setMethod("getResults", signature = c(x = "MgnifyClient"), function(
         col_data <- DataFrame(col_data)
         # Merge TreeSEs into one
         tse_list <- taxa_res$tse_objects
-        result <- mergeSEs(tse_list, assay_name = "counts", missing_values = 0)
+        # Merge individual TreeSEs into one
+        result <- mergeSEs(tse_list, assay.type = "counts", missing_values = 0)
         # Replace sample names with sample metadata sample names
         # (They are correct since the data was fetched in same order as TreeSEs)
         colnames(result) <- rownames(col_data)
@@ -210,6 +212,9 @@ setMethod("getResults", signature = c(x = "MgnifyClient"), function(
         if( output == "phyloseq" ){
             result <- makePhyloseqFromTreeSE(result)
         }
+
+    } else{
+        result <- NULL
     }
     # If there are functional data
     if( !is.null(func_res) ){
@@ -221,14 +226,22 @@ setMethod("getResults", signature = c(x = "MgnifyClient"), function(
                 accession = accession)
             # Remove data that is NULL
             func_res <- func_res[!unlist(lapply(func_res, is.null))]
-            # Get colData from microbial profiling data TreeSE
-            col_data <- colData(result)
-            # Create a MAE
-            result <- list(microbiota = result)
-            exp_list <- append(result, func_res)
+            # Get colData from microbial profiling data TreeSE,
+            # if it is included
+            args <- list()
+            if( !is.null(result) ){
+                col_data <- colData(result)
+                # Create a MAE
+                result <- list(microbiota = result)
+                exp_list <- append(result, func_res)
+                args$colData <- col_data
+            } else {
+                exp_list <- func_res
+                col_data <- NULL
+            }
             exp_list <- ExperimentList(exp_list)
-            result <- MultiAssayExperiment(
-                experiments = exp_list, colData = col_data)
+            args$experiments <- exp_list
+            result <- do.call(MultiAssayExperiment, args)
         } else{
             # If user wants output as a phyloseq, give a list of one phyloseq
             # object and functional data
@@ -247,7 +260,7 @@ setMethod("getResults", signature = c(x = "MgnifyClient"), function(
         # Add rownames
         rownames(x) <- x$accession
         # Get assay
-        assay <- x[, colnames(x) %in% accession]
+        assay <- x[, colnames(x) %in% accession, drop = FALSE]
         # Get row_data
         row_data <- x[, !colnames(x) %in% accession]
         # Create a TreeSE
@@ -265,16 +278,27 @@ setMethod("getResults", signature = c(x = "MgnifyClient"), function(
 .mgnify_get_analyses_treese <- function(
         client, accession, use.cache,
         taxa.su = "SSU", get.tree = FALSE, ...){
+    ############################### INPUT CHECK ################################
+    if( !(.is_non_empty_string(taxa.su)) ){
+        stop("'taxa.su' must be a single character value specifying taxa ",
+             "subunit.",
+             call. = FALSE)
+    }
+    if( !.is_a_bool(get.tree) ){
+        stop("'get.tree' must be TRUE or FALSE.",
+             call. = FALSE)
+    }
+    ############################# INPUT CHECK END ##############################
     # Some biom files don't import - so need a try/catch
     tse_list <- llply(accession, function(x) {
         tryCatch(
             .mgnify_get_single_analysis_treese(
                 client, x, use.cache = use.cache, taxa.su = taxa.su,
                 get.tree = get.tree),
-            warning=function(x){
+            error=function(x){
                 message("a biom listed in \"accession\" is missing from the ",
-                        "retrieved tse_list")},
-            error=function(x) NULL
+                        "retrieved tse_list")
+                NULL}
         )
     }, .progress = "text")
     # The sample_data has been corrupted by doing the merge (names get messed
@@ -348,16 +372,15 @@ setMethod("getResults", signature = c(x = "MgnifyClient"), function(
     }
 
     if (! file.exists(biom_path)){#} | !use_downloads ){
-        GET(biom_url, write_disk(biom_path, overwrite = T))
+        GET(biom_url, write_disk(biom_path, overwrite = TRUE))
     }
-
     # Load in the TreeSummarizedExperiment object
     # Some files do not have sample names --> suppress warning message
     # "there is no colnames, you can add them..."
     suppressWarnings(
         tse <- loadFromBiom(biom_path, removeTaxaPrefixes = TRUE,
                             rankFromPrefix = TRUE
-        )
+                            )
     )
     # Add sample names if data does not include them
     if( is.null(colnames(tse)) ){

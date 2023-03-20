@@ -31,7 +31,8 @@ Imports:
     plyr,
     reshape2,
     stats,
-    methods
+    methods,
+    biomformat
 Suggests:
     testthat,
     knitr,
@@ -48,8 +49,8 @@ Collate:
     'MgnifyClient.R'
     'deprecate.R'
     'doQuery.R'
-    'getAnalysisAccessions.R'
     'getFile.R'
     'getMetadata.R'
     'utils.R'
     'getResults.R'
+    'searchAnalysis.R'

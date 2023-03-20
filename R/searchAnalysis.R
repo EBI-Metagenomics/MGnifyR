@@ -25,29 +25,29 @@
 #' \dontrun{
 #' # Retrieve all analysis ids from studies
 #' # MGYS00005058, MGYS00005058 and MGYS00005058
-#' result <- getAnalysisAccessions(myclient, "study", c("MGYS00005058"))
+#' result <- searchAnalysis(myclient, "study", c("MGYS00005058"))
 #'
 #' # Retrieve all analysis ids from samples
-#' result <- getAnalysisAccessions(
+#' result <- searchAnalysis(
 #'     myclient, "sample", c("SRS4392730", "SRS4392743"))
 #' }
 #'
-#' @name getAnalysisAccessions
+#' @name searchAnalysis
 NULL
 
-#' @rdname getAnalysisAccessions
+#' @rdname searchAnalysis
 #' @include MgnifyClient.R
 #' @importFrom plyr llply
 #' @export
-setGeneric("getAnalysisAccessions", signature = c("x"), function(
+setGeneric("searchAnalysis", signature = c("x"), function(
         x, type, accession, use.cache=TRUE,
         ...
         )
-    standardGeneric("getAnalysisAccessions"))
+    standardGeneric("searchAnalysis"))
 
-#' @rdname getAnalysisAccessions
+#' @rdname searchAnalysis
 #' @export
-setMethod("getAnalysisAccessions", signature = c(x = "MgnifyClient"), function(
+setMethod("searchAnalysis", signature = c(x = "MgnifyClient"), function(
         x, type, accession, use.cache=TRUE,
         ...
         ){
@@ -84,10 +84,16 @@ setMethod("getAnalysisAccessions", signature = c(x = "MgnifyClient"), function(
     analyses_accessions <- llply(as.list(accession), function(x){
         accurl <- .mgnify_get_x_for_y(
             client, x, "studies","analyses", use.cache = use.cache )
-        jsondat <- .mgnify_retrieve_json(
-            client, complete_url = accurl, use.cache = use.cache, max.hits = -1)
-        # Just need the accession ID
-        lapply(jsondat, function(x) x$id)
+        if( !is.null(accurl) ){
+            jsondat <- .mgnify_retrieve_json(
+                client, complete_url = accurl, use.cache = use.cache, max.hits = -1)
+            # Just need the accession ID
+            res <- lapply(jsondat, function(x) x$id)
+        } else {
+            res <- accurl
+            warning("Analyses not found for studies ", x, call. = FALSE)
+        }
+        return(res)
     }, .progress="text")
     res <- unlist(analyses_accessions)
     return(res)
@@ -103,6 +109,10 @@ setMethod("getAnalysisAccessions", signature = c(x = "MgnifyClient"), function(
         if(is.null(accurl)){
             runurl <- .mgnify_get_x_for_y(
                 client, x, "samples","runs", use.cache = use.cache )
+            if(is.null(runurl)){
+                warning("Analyses not found for samples ", x, call. = FALSE)
+                return(runurl)
+            }
             jsondat <- .mgnify_retrieve_json(
                 client, complete_url = runurl, use.cache = use.cache)
             run_accs <- lapply(jsondat, function(y) y$id)

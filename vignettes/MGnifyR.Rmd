@@ -139,8 +139,7 @@ Although the previous queries have been based on the results from `doQuery`, fro
 For the remainder of this vignette however, we'll be comparing 3 ostensibly different studies. A study of saltmarsh soils from York University, human faecal samples from a survey of healthy Sardinians, and a set of samples from hydrothermal vents in the Mid-Cayman rise in the Carribbean Sea. To simplify things, only the first 20 samples from each study will be used. Furthermore, the intention is only to demonstrate the functionality of the MGnifyR package, rather than produce scientifically rigorous results.
 
 ```{r get_analyses, results='hide', fig.keep='all', message = FALSE}
-
-soil <- getAnalysisAccessions(mg, "study", "MGYS00001447")[1:20]
+soil <- searchAnalysis(mg, "study", "MGYS00001447")[1:20]
 human <- mgnify_analyses_from_studies(mg, "MGYS00001442")[1:20]
 marine <- mgnify_analyses_from_studies(mg, "MGYS00001282")[1:20]
 

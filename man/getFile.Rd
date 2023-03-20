@@ -3,8 +3,8 @@
 \name{getFile}
 \alias{getFile}
 \alias{getFile,MgnifyClient-method}
-\alias{getFileUrl}
-\alias{getFileUrl,MgnifyClient-method}
+\alias{searchFile}
+\alias{searchFile,MgnifyClient-method}
 \title{Download arbitrary files from MGnify, including processed reads and
 identified protein sequences}
 \usage{
@@ -12,7 +12,7 @@ getFile(x, url, file = NULL, read.func = NULL, use.cache = TRUE, ...)
 
 \S4method{getFile}{MgnifyClient}(x, url, file = NULL, read.func = NULL, use.cache = TRUE, ...)
 
-getFileUrl(
+searchFile(
   x,
   accession,
   type = c("studies", "samples", "analyses", "assembly", "genome", "run"),
@@ -20,7 +20,7 @@ getFileUrl(
   ...
 )
 
-\S4method{getFileUrl}{MgnifyClient}(
+\S4method{searchFile}{MgnifyClient}(
   x,
   accession,
   type = c("studies", "samples", "analyses", "assembly", "genome", "run"),

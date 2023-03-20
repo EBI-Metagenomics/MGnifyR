@@ -84,8 +84,8 @@ mgnify_query <- function(
 #' @export
 mgnify_analyses_from_samples <- function(
         client, accession, usecache = TRUE, ...){
-    .Deprecated("getAnalysisAccessions")
-    getAnalysisAccessions(
+    .Deprecated("searchAnalysis")
+    searchAnalysis(
         x = client, type = "sample", accession = accession,
         use.cache = usecache, ...)
 }
@@ -94,8 +94,8 @@ mgnify_analyses_from_samples <- function(
 #' @export
 mgnify_analyses_from_studies <- function(
         client, accession, usecache = TRUE, ...){
-    .Deprecated("getAnalysisAccessions")
-    getAnalysisAccessions(
+    .Deprecated("searchAnalysis")
+    searchAnalysis(
         x = client, type = "study", accession = accession,
         use.cache = usecache, ...)
 }
@@ -104,8 +104,8 @@ mgnify_analyses_from_studies <- function(
 #' @export
 mgnify_get_download_urls <- function(
         client, accessions, accession_type, usecache = TRUE, ...){
-    .Deprecated("getFileUrl")
-    getFileUrl(
+    .Deprecated("searchFile")
+    searchFile(
         x = client, accession = accessions, type = accession_type,
         use.cache = usecache, ...)
 }

@@ -123,7 +123,7 @@ setMethod("doQuery", signature = c(x = "MgnifyClient"), function(
         stop("'as.df' must be a single boolean value specifying whether",
              "to return list or data.frame.", call. = FALSE)
     }
-    if( !(.is_an_integer(max.hits) ||
+    if( !((.is_an_integer(max.hits) && max.hits > 0) ||
           (.is_a_bool(max.hits) && max.hits == FALSE))  ){
         stop("'max.hits' must be a single integer value specifying the maximum ",
              "number of results to return or FALSE.", call. = FALSE)
