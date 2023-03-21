@@ -139,6 +139,9 @@ setMethod("getFile", signature = c(x = "MgnifyClient"), function(
 #' @param use.cache A single boolean value specifying whether to use the
 #' on-disk cache to speed up queries. (By default: \code{use.cache = TRUE})
 #'
+#' @param verbose A single boolean value to specify whether to show
+#' the progress bar. (By default: \code{verbose = TRUE})
+#'
 #' @return \code{data.frame} containing all discovered downloads. If
 #' multiple \code{accessions} are queried, the \code{accessions} column
 #' may to filter the results - since rownames are not set (and wouldn;'t
@@ -168,7 +171,7 @@ NULL
 setGeneric("searchFile", signature = c("x"), function(
         x, accession, type = c("studies", "samples", "analyses", "assembly",
                                  "genome", "run"),
-        use.cache = TRUE, ...
+        use.cache = TRUE, verbose = TRUE, ...
         )
     standardGeneric("searchFile"))
 
@@ -177,7 +180,7 @@ setGeneric("searchFile", signature = c("x"), function(
 setMethod("searchFile", signature = c(x = "MgnifyClient"), function(
         x, accession, type = c("studies", "samples", "analyses", "assembly",
                                 "genome", "run"),
-        use.cache = TRUE, ...
+        use.cache = TRUE, verbose = TRUE, ...
         ){
     ############################### INPUT CHECK ################################
     if( !.is_non_empty_character(accession) ){
@@ -194,10 +197,16 @@ setMethod("searchFile", signature = c(x = "MgnifyClient"), function(
         stop("'use.cache' must be a single boolean value specifying whether to ",
              "use on-disk caching.", call. = FALSE)
     }
+    if( !.is_a_bool(verbose) ){
+        stop("'verbose' must be a single boolean value specifying whether to ",
+             "show progress.", call. = FALSE)
+    }
+    verbose <- ifelse(verbose, "text", "none")
     ############################# INPUT CHECK END ##############################
     # Get file urls
     result <- .mgnify_get_download_urls(
-        client = x, accession = accession, type = type, use.cache = use.cache)
+        client = x, accession = accession, type = type, use.cache = use.cache,
+        verbose = verbose)
     return(result)
 })
 
@@ -263,7 +272,8 @@ setMethod("searchFile", signature = c(x = "MgnifyClient"), function(
     result
 }
 
-.mgnify_get_download_urls <- function(client, accession, type, use.cache){
+.mgnify_get_download_urls <- function(
+        client, accession, type, use.cache, verbose){
     results <- llply(accession, function(x){
         download_list <- .mgnify_retrieve_json(
             client, paste(type,x,"downloads", sep="/"), use.cache = use.cache)
@@ -287,6 +297,6 @@ setMethod("searchFile", signature = c(x = "MgnifyClient"), function(
             df$download_url <- urls
         }
         df
-    }, .progress="text")
+    }, .progress = verbose)
     do.call(rbind.fill, results)
 }

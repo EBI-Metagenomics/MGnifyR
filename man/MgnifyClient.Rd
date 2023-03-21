@@ -7,20 +7,20 @@
 MgnifyClient(
   username = NULL,
   password = NULL,
-  use.cache = FALSE,
-  cache.dir = NULL,
+  useCache = FALSE,
+  cacheDir = NULL,
   warnings = FALSE,
-  use.memcache = FALSE,
+  useMemCache = FALSE,
   ...
 )
 
 MgnifyClient(
   username = NULL,
   password = NULL,
-  use.cache = FALSE,
-  cache.dir = NULL,
+  useCache = FALSE,
+  cacheDir = NULL,
   warnings = FALSE,
-  use.memcache = FALSE,
+  useMemCache = FALSE,
   ...
 )
 }
@@ -31,12 +31,12 @@ authentication. (By default: \code{username = NULL})}
 \item{password}{A single character value specifying an optional password for
 authentication. (By default: \code{password = NULL})}
 
-\item{use.cache}{A single boolean value specifying whether to enable on-disk
+\item{useCache}{A single boolean value specifying whether to enable on-disk
 caching of results during this session. In most use cases should be TRUE.
-(By default: \code{use.cache = FALSE})}
+(By default: \code{useCache = FALSE})}
 
-\item{cache.dir}{A single character value specifying a folder to contain the
-local cache. If NULL, and use.cache is TRUE, the new subdirectory
+\item{cacheDir}{A single character value specifying a folder to contain the
+local cache. If NULL, and useCache is TRUE, the new subdirectory
 \code{.MGnifyR_cache} in the current working directory will be used. Note
 that cached files are persistent, so the cache directory may be reused
 between sessions, taking advantage of previously downloaded results. The
@@ -47,14 +47,14 @@ directory will be created if it doesn't exist already.
 output during invocation of some MGnifyR functions.
 (By default: \code{warnings = FALSE})}
 
-\item{use.memcache}{A single boolean value specifying whether to indicate
+\item{useMemCache}{A single boolean value specifying whether to indicate
 whether functional results obtained when \code{bulk_dl} is \code{TRUE}
 in \code{mgnify_get_analyses_results} should be stored in an in-memory
 cache, rather than the cached input being re-read for each accession. this
 is currently NOT working properly and should therefore be set \code{FALSE}.
 It has the potential to speed up searches considerably though, especially
 for studies with a large number of samples, so will be implemented properly
-in the future. (By default: \code{use.memcache = FALSE})}
+in the future. (By default: \code{useMemCache = FALSE})}
 
 \item{...}{optional arguments:
 \itemize{
@@ -108,7 +108,7 @@ memory.}
 \dontrun{
 my_client <- MgnifyClient(
     username = "Webin-1122334", password = "SecretPassword",
-    use.cache = TRUE, cache.dir = "/scratch/MGnify_cache_location"
+    useCache = TRUE, cacheDir = "/scratch/MGnify_cache_location"
     )
 }
 

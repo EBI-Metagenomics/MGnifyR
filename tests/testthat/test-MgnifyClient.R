@@ -6,10 +6,10 @@ test_that("MgnifyClient", {
     var <- list(
         username = list("test", "study", "TreeSE", "taxonomy-ssu", NULL),
         password = list("test", "study", "TreeSE", "taxonomy-ssu", NULL),
-        use.cache = list(TRUE, FALSE),
-        cache.dir = list("test", "study", "TreeSE", "taxonomy-ssu", NULL),
+        useCache = list(TRUE, FALSE),
+        cacheDir = list("test", "study", "TreeSE", "taxonomy-ssu", NULL),
         warnings = list(TRUE, FALSE),
-        use.memcache = list(TRUE, FALSE),
+        useMemCache = list(TRUE, FALSE),
         url = list("test", "study", "TreeSE", "taxonomy-ssu")
     )
     var <- .wrong_arguments(var)
@@ -19,10 +19,10 @@ test_that("MgnifyClient", {
             MgnifyClient(
                 username = var[i, 2][[1]],
                 password = var[i, 3][[1]],
-                use.cache = var[i, 4][[1]],
-                cache.dir = var[i, 5][[1]],
+                useCache = var[i, 4][[1]],
+                cacheDir = var[i, 5][[1]],
                 warnings = var[i, 6][[1]],
-                use.memcache = var[i, 7][[1]],
+                useMemCache = var[i, 7][[1]],
                 url = var[i, 8][[1]],
             )
         )
@@ -30,10 +30,10 @@ test_that("MgnifyClient", {
     # Test that slots are updated. Change arguments --> check that values
     # of slots correspond argument.
     mg <- MgnifyClient(
-        use.cache = TRUE,
-        cache.dir = "test",
+        useCache = TRUE,
+        cacheDir = "test",
         warnings = FALSE,
-        use.memcache = TRUE,
+        useMemCache = TRUE,
         url = "test"
     )
     expect_equal(mg@cacheDir, "test")
@@ -41,10 +41,10 @@ test_that("MgnifyClient", {
     expect_equal(mg@useMemCache, TRUE)
     expect_equal(mg@url, "test")
     mg <- MgnifyClient(
-        use.cache = FALSE,
-        cache.dir = "test",
+        useCache = FALSE,
+        cacheDir = "test",
         warnings = TRUE,
-        use.memcache = FALSE,
+        useMemCache = FALSE,
     )
     expect_true(is.na(mg@cacheDir))
     expect_equal(mg@warnings, TRUE)

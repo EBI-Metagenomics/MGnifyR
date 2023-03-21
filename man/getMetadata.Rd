@@ -6,9 +6,9 @@
 \title{Get all Study, Sample and Analysis metadata for the supplied analyses
 accessions}
 \usage{
-getMetadata(x, accession, use.cache = TRUE, ...)
+getMetadata(x, accession, use.cache = TRUE, verbose = TRUE, ...)
 
-\S4method{getMetadata}{MgnifyClient}(x, accession, use.cache = TRUE, ...)
+\S4method{getMetadata}{MgnifyClient}(x, accession, use.cache = TRUE, verbose = TRUE, ...)
 }
 \arguments{
 \item{x}{A \code{MgnifyClient} object.}
@@ -18,6 +18,9 @@ IDs specifying accessions to retrieve data for.}
 
 \item{use.cache}{A single boolean value specifying whether to use the disk
 based cache. (By default: \code{use.cache = TRUE})}
+
+\item{verbose}{A single boolean value to specify whether to show
+the progress bar. (By default: \code{verbose = TRUE})}
 
 \item{...}{Optional arguments; not currently used.}
 }

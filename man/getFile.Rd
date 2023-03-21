@@ -17,6 +17,7 @@ searchFile(
   accession,
   type = c("studies", "samples", "analyses", "assembly", "genome", "run"),
   use.cache = TRUE,
+  verbose = TRUE,
   ...
 )
 
@@ -25,6 +26,7 @@ searchFile(
   accession,
   type = c("studies", "samples", "analyses", "assembly", "genome", "run"),
   use.cache = TRUE,
+  verbose = TRUE,
   ...
 )
 }
@@ -64,6 +66,9 @@ specifying accession IDs to return results for.}
 query. Must be one of the following options: \code{analysis}, \code{samples},
 \code{studies}, \code{assembly}, \code{genome} or \code{run}.
 (By default: \code{type = "samples"})}
+
+\item{verbose}{A single boolean value to specify whether to show
+the progress bar. (By default: \code{verbose = TRUE})}
 }
 \value{
 Either the local filename of the downloaded file, be it either the

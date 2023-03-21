@@ -52,5 +52,5 @@ Collate:
     'getFile.R'
     'getMetadata.R'
     'utils.R'
-    'getResults.R'
+    'getResult.R'
     'searchAnalysis.R'

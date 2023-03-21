@@ -13,10 +13,13 @@
 #' @param use.cache A single boolean value specifying whether to use the disk
 #' based cache. (By default: \code{use.cache = TRUE})
 #'
-#' @return \code{data.frame} of metadata for each analysis in the
-#' \code{accession} list.
+#' @param verbose A single boolean value to specify whether to show
+#' the progress bar. (By default: \code{verbose = TRUE})
 #'
 #' @param ... Optional arguments; not currently used.
+#'
+#' @return \code{data.frame} of metadata for each analysis in the
+#' \code{accession} list.
 #'
 #' @examples
 #' \dontrun{
@@ -35,7 +38,7 @@ NULL
 #' @importFrom dplyr bind_rows
 #' @export
 setGeneric("getMetadata", signature = c("x"), function(
-        x, accession, use.cache = TRUE,
+        x, accession, use.cache = TRUE, verbose = TRUE,
         ...
 )
     standardGeneric("getMetadata"))
@@ -43,7 +46,7 @@ setGeneric("getMetadata", signature = c("x"), function(
 #' @rdname getMetadata
 #' @export
 setMethod("getMetadata", signature = c(x = "MgnifyClient"), function(
-        x, accession, use.cache = TRUE,
+        x, accession, use.cache = TRUE, verbose = TRUE,
         ...){
     ############################### INPUT CHECK ################################
     if( !is.character(accession) ){
@@ -54,18 +57,25 @@ setMethod("getMetadata", signature = c(x = "MgnifyClient"), function(
         stop("'use.cache' must be a boolean value specifying whether to use ",
              "on-disk caching.", call. = FALSE)
     }
+    if( !.is_a_bool(verbose) ){
+        stop("'verbose' must be a single boolean value specifying whether to ",
+             "show progress.", call. = FALSE)
+    }
+    verbose <- ifelse(verbose, "text", "none")
     ############################# INPUT CHECK END ##############################
     # Get metadata
     result <- .mgnify_get_analyses_metadata(
-        client = x, accession = accession, use.cache = use.cache)
+        client = x, accession = accession, use.cache = use.cache,
+        verbose = verbose)
     return(result)
 })
 
 ################################ HELP FUNCTIONS ################################
 
-.mgnify_get_analyses_metadata <- function(client, accession, use.cache){
+.mgnify_get_analyses_metadata <- function(
+        client, accession, use.cache, verbose){
     # TODO: Chnage to biocparallel?
-    reslist <- llply(as.list(accession), .progress = "text", function(x){
+    reslist <- llply(as.list(accession), .progress = verbose, function(x){
         .mgnify_get_single_analysis_metadata(client, x, use.cache = use.cache)
     })
     df <- do.call(bind_rows, reslist)

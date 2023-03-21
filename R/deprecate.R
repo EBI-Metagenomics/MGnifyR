@@ -65,8 +65,8 @@ mgnify_client <- function(
     .Deprecated("MgnifyClient")
     MgnifyClient(url = url,
                  username = username, password = password,
-                 use.cache = usecache, cache.dir = cache_dir, warnings = warnings,
-                 use.memcache = use_memcache)
+                 useCache = usecache, cacheDir = cache_dir, warnings = warnings,
+                 useMemCache = use_memcache)
 }
 
 #' @rdname deprecate
@@ -126,11 +126,11 @@ mgnify_download <- function(
 mgnify_get_analyses_results <- function(
         client=NULL, accessions, retrievelist = c(), compact_results = TRUE,
         usecache = TRUE, bulk_dl = FALSE, ...){
-    .Deprecated("getResults")
+    .Deprecated("getResult")
     if( length(retrievelist) == 0 ){
         retrievelist <- FALSE
     }
-    getResults(
+    getResult(
         x = client, accession = accessions, get.taxa = FALSE,
         get.func = retrievelist, output = "list", usecache = TRUE,
         as.df = compact_results, ...)
@@ -141,9 +141,9 @@ mgnify_get_analyses_results <- function(
 mgnify_get_analyses_phyloseq <- function(
         client = NULL, accessions, usecache = TRUE, returnLists = FALSE,
         tax_SU = "SSU", get_tree = FALSE, ...){
-    .Deprecated("getResults")
+    .Deprecated("getResult")
     output <- ifelse(returnLists, "list", "phyloseq")
-    getResults(
+    getResult(
         x = client, accession = accessions, get.taxa = TRUE, get.func = FALSE,
         output = output, use.cache = usecache, tax.su = tax_SU,
         get.tree = get_tree, ...

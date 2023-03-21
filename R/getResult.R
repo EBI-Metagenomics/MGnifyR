@@ -30,6 +30,9 @@
 #' MGnify local caching system to speed up searching. It is highly
 #' recommended that this be enabled (By default: \code{use.cache = TRUE})
 #'
+#' @param verbose A single boolean value to specify whether to show
+#' the progress bar. (By default: \code{verbose = TRUE})
+#'
 #' @param ... optional arguments:
 #' \itemize{
 #'   \item{taxa.su}{ A single character value specifying which taxa subunit
@@ -86,39 +89,39 @@
 #' @examples
 #' \dontrun{
 #' # Get OTU tables as TreeSE
-#' tse <- getResults(mg, accession_list, get.func=FALSE, get.taxa=TRUE)
+#' tse <- getResult(mg, accession_list, get.func=FALSE, get.taxa=TRUE)
 #'
 #' # Get functional data along with OTU tables as MAE
-#' mae <- getResults(mg, accession_list, get.func=TRUE, get.taxa=TRUE)
+#' mae <- getResult(mg, accession_list, get.func=TRUE, get.taxa=TRUE)
 #'
 #' # Get same data as list
-#' analyses_res <- getResults(
+#' analyses_res <- getResult(
 #'     mg, accession_list, get.func=TRUE, get.taxa=TRUE, output = "list",
 #'     as.df=T, use.cache = T, bulk.dl = F)
 #' }
 #'
-#' @name getResults
+#' @name getResult
 NULL
 
-#' @rdname getResults
+#' @rdname getResult
 #' @include MgnifyClient.R utils.R
 #' @importFrom plyr llply
 #' @importFrom dplyr bind_rows
 #' @importFrom reshape2 dcast
 #' @importFrom stats as.formula
 #' @export
-setGeneric("getResults", signature = c("x"), function(
+setGeneric("getResult", signature = c("x"), function(
         x, accession, get.taxa = TRUE, get.func = TRUE,
-        output = "TreeSE", use.cache = TRUE,
+        output = "TreeSE", use.cache = TRUE, verbose = TRUE,
         ...
         )
-    standardGeneric("getResults"))
+    standardGeneric("getResult"))
 
-#' @rdname getResults
+#' @rdname getResult
 #' @export
-setMethod("getResults", signature = c(x = "MgnifyClient"), function(
+setMethod("getResult", signature = c(x = "MgnifyClient"), function(
         x, accession, get.taxa = TRUE, get.func = TRUE,
-        output = "TreeSE", use.cache = TRUE,
+        output = "TreeSE", use.cache = TRUE, verbose = TRUE,
         ...
         ){
     ############################### INPUT CHECK ################################
@@ -154,6 +157,11 @@ setMethod("getResults", signature = c(x = "MgnifyClient"), function(
         stop("'use.cache' must be a single boolean value specifying whether to ",
              "use on-disk caching.", call. = FALSE)
     }
+    if( !.is_a_bool(verbose) ){
+        stop("'verbose' must be a single boolean value specifying whether to ",
+             "show progress.", call. = FALSE)
+    }
+    verbose <- ifelse(verbose, "text", "none")
     ############################# INPUT CHECK END ##############################
     # Get functional data if user specified
     if( is.character(get.func) ){
@@ -163,7 +171,7 @@ setMethod("getResults", signature = c(x = "MgnifyClient"), function(
         }
         func_res <- .mgnify_get_analyses_results(
             client = x, accession = accession, retrievelist = get.func,
-            output = output, use.cache = use.cache, ...
+            output = output, use.cache = use.cache, verbose = verbose, ...
         )
     } else{
         func_res <- NULL
@@ -171,7 +179,8 @@ setMethod("getResults", signature = c(x = "MgnifyClient"), function(
     # Get microbial profiling data
     if( get.taxa ){
         taxa_res <- .mgnify_get_analyses_treese(
-            client = x, accession = accession, use.cache = use.cache, ...
+            client = x, accession = accession, use.cache = use.cache,
+            verbose = verbose, ...
         )
     } else{
         taxa_res <- NULL
@@ -276,7 +285,7 @@ setMethod("getResults", signature = c(x = "MgnifyClient"), function(
 
 # Helper function for importing microbial profiling data.
 .mgnify_get_analyses_treese <- function(
-        client, accession, use.cache,
+        client, accession, use.cache, verbose,
         taxa.su = "SSU", get.tree = FALSE, ...){
     ############################### INPUT CHECK ################################
     if( !(.is_non_empty_string(taxa.su)) ){
@@ -300,7 +309,7 @@ setMethod("getResults", signature = c(x = "MgnifyClient"), function(
                         "retrieved tse_list")
                 NULL}
         )
-    }, .progress = "text")
+    }, .progress = verbose)
     # The sample_data has been corrupted by doing the merge (names get messed
     # up and duplicated), so just regrab it with another lapply/rbind
     col_data <- lapply(accession, function(x){
@@ -428,7 +437,7 @@ setMethod("getResults", signature = c(x = "MgnifyClient"), function(
 
 # Helper function for importing functional data
 .mgnify_get_analyses_results <- function(
-        client, accession, retrievelist, output, use.cache,
+        client, accession, retrievelist, output, use.cache, verbose,
         as.df = TRUE, bulk.dl = TRUE, ...){
     ############################### INPUT CHECK ################################
     # If output is TreeSE or object, get results as data.frames
@@ -441,7 +450,7 @@ setMethod("getResults", signature = c(x = "MgnifyClient"), function(
     }
     ############################# INPUT CHECK END ##############################
     # Get functional results
-    all_results <- llply(accession, .progress = "text", function(x){
+    all_results <- llply(accession, .progress = verbose, function(x){
         .mgnify_get_single_analysis_results(
             client, x, use.cache = use.cache, retrievelist = retrievelist,
             bulk.files = bulk.dl)

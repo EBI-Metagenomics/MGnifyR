@@ -52,12 +52,12 @@ MgnifyClient <- setClass(
 #' @param password A single character value specifying an optional password for
 #' authentication. (By default: \code{password = NULL})
 #'
-#' @param use.cache A single boolean value specifying whether to enable on-disk
+#' @param useCache A single boolean value specifying whether to enable on-disk
 #' caching of results during this session. In most use cases should be TRUE.
-#' (By default: \code{use.cache = FALSE})
+#' (By default: \code{useCache = FALSE})
 #'
-#' @param cache.dir A single character value specifying a folder to contain the
-#' local cache. If NULL, and use.cache is TRUE, the new subdirectory
+#' @param cacheDir A single character value specifying a folder to contain the
+#' local cache. If NULL, and useCache is TRUE, the new subdirectory
 #' \code{.MGnifyR_cache} in the current working directory will be used. Note
 #' that cached files are persistent, so the cache directory may be reused
 #' between sessions, taking advantage of previously downloaded results. The
@@ -68,14 +68,14 @@ MgnifyClient <- setClass(
 #' output during invocation of some MGnifyR functions.
 #' (By default: \code{warnings = FALSE})
 #'
-#' @param use.memcache A single boolean value specifying whether to indicate
+#' @param useMemCache A single boolean value specifying whether to indicate
 #' whether functional results obtained when \code{bulk_dl} is \code{TRUE}
 #' in \code{mgnify_get_analyses_results} should be stored in an in-memory
 #' cache, rather than the cached input being re-read for each accession. this
 #' is currently NOT working properly and should therefore be set \code{FALSE}.
 #' It has the potential to speed up searches considerably though, especially
 #' for studies with a large number of samples, so will be implemented properly
-#' in the future. (By default: \code{use.memcache = FALSE})
+#' in the future. (By default: \code{useMemCache = FALSE})
 #'
 #' @param ... optional arguments:
 #' \itemize{
@@ -90,7 +90,7 @@ MgnifyClient <- setClass(
 #' \dontrun{
 #' my_client <- MgnifyClient(
 #'     username = "Webin-1122334", password = "SecretPassword",
-#'     use.cache = TRUE, cache.dir = "/scratch/MGnify_cache_location"
+#'     useCache = TRUE, cacheDir = "/scratch/MGnify_cache_location"
 #'     )
 #'}
 #'
@@ -101,8 +101,8 @@ NULL
 #' @importFrom methods new
 #' @export
 MgnifyClient <- function(
-        username = NULL, password = NULL, use.cache = FALSE, cache.dir = NULL,
-        warnings = FALSE, use.memcache = FALSE, ...){
+        username = NULL, password = NULL, useCache = FALSE, cacheDir = NULL,
+        warnings = FALSE, useMemCache = FALSE, ...){
     ############################### INPUT CHECK ################################
     if( !(is.null(username) || .is_non_empty_string(username)) ){
         stop("'username' must be NULL or single character value specifying ",
@@ -112,16 +112,16 @@ MgnifyClient <- function(
         stop("'password' must be NULL or single character value specifying ",
              "the password.", call. = FALSE)
     }
-    if( !.is_a_bool(use.cache) ){
-        stop("'use.cache' must be a boolean value specifying whether to use ",
+    if( !.is_a_bool(useCache) ){
+        stop("'useCache' must be a boolean value specifying whether to use ",
              "on-disk caching.", call. = FALSE)
     }
-    if( !(is.null(cache.dir) || .is_non_empty_string(cache.dir)) ){
-        stop("'cache.dir' must be NULL or single character value specifying ",
+    if( !(is.null(cacheDir) || .is_non_empty_string(cacheDir)) ){
+        stop("'cacheDir' must be NULL or single character value specifying ",
              "the the directory for cache.", call. = FALSE)
     }
-    if( !.is_a_bool(use.memcache) ){
-        stop("'use.memcache' must be a boolean value specifying whether use ",
+    if( !.is_a_bool(useMemCache) ){
+        stop("'useMemCache' must be a boolean value specifying whether use ",
              "on-disk memory.", call. = FALSE)
     }
     ############################# INPUT CHECK END ##############################
@@ -148,11 +148,11 @@ MgnifyClient <- function(
     # Assume we're not using it
     cachepath <- NA_character_
     # If user has specified that on-disk cache will be used
-    if(use.cache){
-        if (is.null(cache.dir) ){
+    if(useCache){
+        if (is.null(cacheDir) ){
             cachepath <- paste(getwd(), ".MGnifyR_cache", sep = "/")
         } else{
-            cachepath <- cache.dir
+            cachepath <- cacheDir
         }
         # Make it if needed - assume the user is sensible and the path will work...
         dir.create(cachepath, showWarnings = FALSE)
@@ -160,7 +160,7 @@ MgnifyClient <- function(
     # Return the final object
     obj <- new("MgnifyClient", url = url, authTok = authtok,
                cacheDir = cachepath, warnings = warnings, memCache = list(),
-               useMemCache = use.memcache)
+               useMemCache = useMemCache)
     return(obj)
 }
 

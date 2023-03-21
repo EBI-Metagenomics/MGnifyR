@@ -7,7 +7,7 @@
 #' @param x A \code{MgnifyClient} object.
 #'
 #' @param type A single character value specifying a type of
-#' accession IDs specified by \code{accession}. Must be "study" or "sample".
+#' accession IDs specified by \code{accession}. Must be "studies" or "samples".
 #'
 #' @param accession A single character value or a vector of character values
 #' specifying study or sample accession IDs that are used to retrieve analyses
@@ -16,6 +16,9 @@
 #' @param use.cache A single boolean value to specify whether to re-use/store
 #' data on disk, rather than query the server.
 #' (By default: \code{use.cache = TRUE})
+#'
+#' @param verbose A single boolean value to specify whether to show
+#' the progress bar. (By default: \code{verbose = TRUE})
 #'
 #' @param ... Optional arguments; not currently used.
 #'
@@ -48,12 +51,12 @@ setGeneric("searchAnalysis", signature = c("x"), function(
 #' @rdname searchAnalysis
 #' @export
 setMethod("searchAnalysis", signature = c(x = "MgnifyClient"), function(
-        x, type, accession, use.cache=TRUE,
+        x, type, accession, use.cache=TRUE, verbose=TRUE,
         ...
         ){
     ############################### INPUT CHECK ################################
-    if( !(type %in% c("sample", "study")) ){
-        stop("'type' must be 'sample' or 'study'.",
+    if( !(type %in% c("samples", "studies")) ){
+        stop("'type' must be 'samples' or 'studies'.",
              call. = FALSE)
     }
     if( !(.is_non_empty_character(accession)) ){
@@ -65,21 +68,29 @@ setMethod("searchAnalysis", signature = c(x = "MgnifyClient"), function(
         stop("'use.cache' must be a single boolean value specifying whether to ",
              "use on-disk caching.", call. = FALSE)
     }
+    if( !.is_a_bool(verbose) ){
+        stop("'verbose' must be a single boolean value specifying whether to ",
+             "show progress.", call. = FALSE)
+    }
+    verbose <- ifelse(verbose, "text", "none")
     ############################# INPUT CHECK END ##############################
     # Get analysis accession IDs based on sample or study accessions
-    if( type == "sample" ){
+    if( type == "samples" ){
         result <- .mgnify_analyses_from_samples(
-            client = x, accession = accession, use.cache = use.cache)
+            client = x, accession = accession, use.cache = use.cache,
+            verbose = verbose)
     } else{
         result <- .mgnify_analyses_from_studies(
-            client = x, accession = accession, use.cache = use.cache)
+            client = x, accession = accession, use.cache = use.cache,
+            verbose = verbose)
     }
     return(result)
 })
 
 ################################ HELP FUNCTIONS ################################
 
-.mgnify_analyses_from_studies <- function(client, accession, use.cache){
+.mgnify_analyses_from_studies <- function(
+        client, accession, use.cache, verbose){
     # Loop over studies, get analyses accessions
     analyses_accessions <- llply(as.list(accession), function(x){
         accurl <- .mgnify_get_x_for_y(
@@ -94,12 +105,13 @@ setMethod("searchAnalysis", signature = c(x = "MgnifyClient"), function(
             warning("Analyses not found for studies ", x, call. = FALSE)
         }
         return(res)
-    }, .progress="text")
+    }, .progress=verbose)
     res <- unlist(analyses_accessions)
     return(res)
 }
 
-.mgnify_analyses_from_samples <- function(client, accession, use.cache){
+.mgnify_analyses_from_samples <- function(
+        client, accession, use.cache, verbose){
     # Loop over sample accessions
     analyses_accessions <- llply(as.list(accession), function(x){
         accurl <- .mgnify_get_x_for_y(
@@ -154,7 +166,7 @@ setMethod("searchAnalysis", signature = c(x = "MgnifyClient"), function(
                 client, complete_url = accurl, use.cache = use.cache)
             # Just need the accession ID
             lapply(jsondat, function(x) x$id)
-        }}, .progress="text")
+        }}, .progress=verbose)
     res <- unlist(analyses_accessions)
     return(res)
 }

@@ -14,24 +14,22 @@ test_that("getResult", {
                         c("studies", "assembly"), "TreeSE",
                         c("TreeSE", "phyloseq"), "taxonomy-ssu",
                         c("taxonomy-ssu", "go-slim")),
-        use.cache = list(TRUE, FALSE)
+        use.cache = list(TRUE, FALSE),
+        verbose = list(TRUE, FALSE)
     )
     var <- .wrong_arguments(var)
     # Loop through rows, all variable pairs should end up to error
     for( i in seq_len(nrow(var)) ){
         expect_error(
             suppressWarnings(
-            getResults(
+            getResult(
                 x = var[i, 1][[1]],
                 accession = var[i, 2][[1]],
                 output = var[i, 3][[1]],
                 get.taxa = var[i, 4][[1]],
                 get.func = var[i, 5][[1]],
                 use.cache = var[i, 6][[1]],
-                taxa.su = var[i, 7][[1]],
-                get.tree = var[i, 8][[1]],
-                as.df = var[i, 9][[1]],
-                bulk.dl = var[i, 10][[1]]
+                verbose = var[i, 7][[1]],
             ))
         )
     }
@@ -40,8 +38,9 @@ test_that("getResult", {
 
     # Test that only functional data is fetched based on certain accession ID.
     # Get data as list of data.frames
-    res <- getResults(
-        mg, "MGYA00097621", get.taxa = FALSE, get.func = TRUE, output = "list")
+    res <- getResult(
+        mg, "MGYA00097621", get.taxa = FALSE, get.func = TRUE, output = "list",
+        verbose = FALSE)
     expect_true(is.list(res))
     expect_true("go-terms" %in% names(res))
     expect_true(is.character(res$`interpro-identifiers`$accession) &&
@@ -50,7 +49,8 @@ test_that("getResult", {
     # Test that microbial profiling data and functional data is fetched. Get
     # data as MAE. Fetch also trees. Check that all data is is in correct place
     # and is correct.
-    res <- getResults(mg, "MGYA00097621", get.tree=TRUE, get.func = TRUE)
+    res <- getResult(
+        mg, "MGYA00097621", get.tree=TRUE, get.func = TRUE, verbose = FALSE)
     expect_true(class(res) == "MultiAssayExperiment")
     expect_true(class(res[[1]]) == "TreeSummarizedExperiment")
     expect_true("microbiota" %in% names(res) && "go-terms" %in% names(res))
