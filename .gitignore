@@ -16,3 +16,6 @@ tmp
 .RDataTmp
 *.Rproj
 **/NA/
+vignettes/*.html
+vignettes/*.R
+vignettes/*.pdf
