@@ -1,17 +1,15 @@
 Package: MGnifyR
 Type: Package
-Version: 0.2.2
+Version: 0.2.3
 Authors@R:
     c(person(given = "Ben", family = "Allen", role = c("aut","cre"),
              email = "ben.allen@ncl.ac.uk"),
+      person(given = "Tuomas", family = "Borman", role = c("aut"),
+             email = "tuomas.v.borman@utu.fi",
+             comment = c(ORCID = "0000-0002-8563-8884")),
       person(given = "Leo", family = "Lahti", role = c("aut"),
              email = "leo.lahti@iki.fi",
-             comment = c(ORCID = "0000-0001-5537-637X")),
-      person(given = "Kévin", family = "Gatel", role = c("aut"),
-             email = "kevin.gatel@insa-rouen.fr"),
-      person(given = "Tuomas", family = "Borman", role = c("ctb"),
-             email = "tuomas.v.borman@utu.fi",
-             comment = c(ORCID = "0000-0002-8563-8884")))
+             comment = c(ORCID = "0000-0001-5537-637X")))
 Title: R interface to EBI MGnify metagenomics resource
 Description:
     Utility package to facilitate easy integration and analysis of EBI Mgnify pipeline results in R.
