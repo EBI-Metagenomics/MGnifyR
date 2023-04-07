@@ -373,8 +373,8 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
     fname <- utils::tail(strsplit(biom_url, '/')[[1]], n=1)
     biom_path <- paste(downloadDIR, fname, sep="/")
 
-    ## Quick check to see if we should clear the disk cache ~for this specific
-    # call~ - used for debugging and when MGnify breaks
+    ## Quick check to see if we should clear the disk cache  for this specific
+    # call  - used for debugging and when MGnify breaks
     if(use.cache && client@clearCache){
         message(paste("clear_cache is TRUE: deleting ", biom_path, sep=""))
         tryCatch(unlink(biom_path), error=warning)
@@ -419,7 +419,7 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
             tree_path <- paste(downloadDIR, fname, sep="/")
 
             ## Quick check to see if we should clear the disk cache
-            # ~for this specific call~ - used for debugging and when MGnify breaks
+            #  for this specific call  - used for debugging and when MGnify breaks
             if(use.cache && client@clearCache){
                 message(paste("clear_cache is TRUE: deleting ",tree_path, sep=""))
                 tryCatch({unlink(tree_path)}, error=warning)
@@ -473,7 +473,7 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
                 extras <- cn[!(cn %in% c("count","index_id", "analysis"))]
                 final_df <- dcast(
                     longform, as.formula(paste(paste(extras, collapse = " + "),
-                                               " ~ analysis")),
+                                               "   analysis")),
                     value.var = "count", fun.aggregate = sum)
                 final_df}, error=function(x) NULL)
         })
@@ -593,7 +593,7 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
                         # the first one is always an ID, but need to keep some
                         # others as well...
                         i <- 1
-                        #tmp_df <- read.csv('~/.MGnify_cache/tsv/ERP108138_
+                        #tmp_df <- read.csv(' /.MGnify_cache/tsv/ERP108138_
                         # IPR_abundances_v4.1.tsv', sep="\t", header = T,
                         # stringsAsFactors = F)
                         while(
@@ -649,7 +649,7 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
                 }
             }
         })
-        # R is sometimes a bit ~awkward~
+        # R is sometimes a bit  awkward 
         names(parsed_results) <- names(
             .analyses_results_bulk_file_names)[match(unlist(lapply(
                 available_downloads_json,
