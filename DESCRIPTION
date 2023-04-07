@@ -29,8 +29,7 @@ Imports:
     plyr,
     reshape2,
     stats,
-    methods,
-    biomformat
+    methods
 Suggests:
     testthat,
     knitr,
