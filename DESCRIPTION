@@ -37,8 +37,8 @@ Suggests:
     ggplot2,
     broom,
     vegan
-URL : https://github.com/beadyallen/MGnifyR
-BugReports: https://github.com/beadyallen/MGnifyR/issues
+URL : https://github.com/microbiome/MGnifyR
+BugReports: https://github.com/microbiome/MGnifyR/issues
 VignetteBuilder: knitr
 RoxygenNote: 7.2.3
 Collate: 
