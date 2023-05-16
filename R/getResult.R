@@ -221,7 +221,6 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
         if( output == "phyloseq" ){
             result <- makePhyloseqFromTreeSE(result)
         }
-
     } else{
         result <- NULL
     }
@@ -373,8 +372,8 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
     fname <- utils::tail(strsplit(biom_url, '/')[[1]], n=1)
     biom_path <- paste(downloadDIR, fname, sep="/")
 
-    ## Quick check to see if we should clear the disk cache ~for this specific
-    # call~ - used for debugging and when MGnify breaks
+    ## Quick check to see if we should clear the disk cache  for this specific
+    # call  - used for debugging and when MGnify breaks
     if(use.cache && client@clearCache){
         message(paste("clear_cache is TRUE: deleting ", biom_path, sep=""))
         tryCatch(unlink(biom_path), error=warning)
@@ -419,7 +418,7 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
             tree_path <- paste(downloadDIR, fname, sep="/")
 
             ## Quick check to see if we should clear the disk cache
-            # ~for this specific call~ - used for debugging and when MGnify breaks
+            #  for this specific call  - used for debugging and when MGnify breaks
             if(use.cache && client@clearCache){
                 message(paste("clear_cache is TRUE: deleting ",tree_path, sep=""))
                 tryCatch({unlink(tree_path)}, error=warning)

@@ -30,7 +30,7 @@ Ben Allen
 
 <ben.allen@ncl.ac.uk>
 
-[MGnifyR homepage](http://github.com/beadyallen/MGnifyR)
+[MGnifyR homepage](http://github.com/microbiome/MGnifyR)
 
 
 # Introduction
@@ -44,7 +44,7 @@ Ben Allen
 Once package dependencies are installed, `MGnifyR` should be built using the following snippet.
 
 ```{r devtools_install, eval=FALSE}
-devtools::install_github("beadyallen/MGnifyR")
+devtools::install_github("microbiome/MGnifyR")
 ```
 
 

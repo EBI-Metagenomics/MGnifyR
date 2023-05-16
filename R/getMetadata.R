@@ -94,7 +94,7 @@ setMethod("getMetadata", signature = c(x = "MgnifyClient"), function(
         warning(paste("Failed to find study metadata for ", accession, sep=""))
         return(dat)
     }
-    #There ~should~ be just a single result
+    #There  should  be just a single result
     top_data <- dat[[1]]
     # Convert hit result to df
     analysis_df <- .mgnify_attr_list_to_df_row(

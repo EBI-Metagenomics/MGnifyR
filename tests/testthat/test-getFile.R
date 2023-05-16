@@ -53,6 +53,7 @@ test_that("getFile", {
     skip_if(httr::http_error("https://www.ebi.ac.uk/metagenomics/api/v1"))
 
     # Test that df is returned even if accession ID is not correct
+    library(xml2)
     res <- searchFile(mg, type="assembly", accession="random", verbose = FALSE)
     expect_true(is.data.frame(res))
 

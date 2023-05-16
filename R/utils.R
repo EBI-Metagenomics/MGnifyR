@@ -173,7 +173,7 @@
     #cat(fullurl)
 
     # Convert to csv if filters are lists.
-    # This doesn't check if they ~can~ be searched for in the API,
+    # This doesn't check if they  can  be searched for in the API,
     # which is an issue since no error is returned by the JSON if the search
     # is invalid - we only get a result as if no query was present...
     tmpqopts <- lapply(qopts,function(x) paste(x,collapse = ','))
@@ -187,8 +187,8 @@
     cache_full_fname <- paste(client@cacheDir, '/', cache_fname, '.RDS', sep="")
 
 
-    ## Quick check to see if we should clear the disk cache ~for this
-    # specific call~ - used for debugging and when MGnify breaks
+    ## Quick check to see if we should clear the disk cache  for this
+    # specific call  - used for debugging and when MGnify breaks
     if(use.cache & client@clearCache){
         message(paste("clear_cache is TRUE: deleting ", cache_full_fname, sep=""))
         tryCatch(unlink(cache_full_fname), error=warning)

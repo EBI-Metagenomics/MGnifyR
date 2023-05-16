@@ -16,3 +16,7 @@ tmp
 .RDataTmp
 *.Rproj
 **/NA/
+vignettes/*.html
+vignettes/*.R
+vignettes/*.pdf
+vignettes/MGnifyR_cache

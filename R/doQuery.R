@@ -169,7 +169,7 @@ setMethod("doQuery", signature = c(x = "MgnifyClient"), function(
     dflist <- list()
     # Because metadata might not match across studies, the full dataframe
     # is built by first building per-sample dataframes, then using
-    # rbind. fill from plyr to combine. For ~most~ use cases the number of
+    # rbind. fill from plyr to combine. For most use cases the number of
     # empty columns will hopefully be minimal... because who's going to
     # want cross study grabbing (?)
     for(r in result){

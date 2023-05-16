@@ -1,7 +1,7 @@
 #' Look up analysis accession IDs for one or more study or sample accessions
 #'
 #' @details
-#' Retrieve Analysis accession IDs associated with the supplied study or
+#' Retrieve analysis accession IDs associated with the supplied study or
 #' sample accession.
 #'
 #' @param x A \code{MgnifyClient} object.

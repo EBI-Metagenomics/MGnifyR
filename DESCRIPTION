@@ -1,47 +1,45 @@
 Package: MGnifyR
 Type: Package
-Version: 0.2.2
+Version: 0.2.3
 Authors@R:
     c(person(given = "Ben", family = "Allen", role = c("aut","cre"),
              email = "ben.allen@ncl.ac.uk"),
+      person(given = "Tuomas", family = "Borman", role = c("aut"),
+             email = "tuomas.v.borman@utu.fi",
+             comment = c(ORCID = "0000-0002-8563-8884")),
       person(given = "Leo", family = "Lahti", role = c("aut"),
              email = "leo.lahti@iki.fi",
-             comment = c(ORCID = "0000-0001-5537-637X")),
-      person(given = "Kévin", family = "Gatel", role = c("aut"),
-             email = "kevin.gatel@insa-rouen.fr"),
-      person(given = "Tuomas", family = "Borman", role = c("ctb"),
-             email = "tuomas.v.borman@utu.fi",
-             comment = c(ORCID = "0000-0002-8563-8884")))
+             comment = c(ORCID = "0000-0001-5537-637X")))
 Title: R interface to EBI MGnify metagenomics resource
 Description:
-    Utility package to facilitate easy integration and analysis of EBI Mgnify pipeline results in R.
+    Utility package to facilitate integration and analysis of EBI Mgnify data in R.
 License: Artistic-2.0 | file LICENSE
 Encoding: UTF-8
 Depends:
     R(>= 4.0),
     mia,
-    TreeSummarizedExperiment (>= 1.99.3),
-    MultiAssayExperiment
+    MultiAssayExperiment,    
+    TreeSummarizedExperiment (>= 1.99.3)
 Imports:
-    httr,
-    urltools,
     ape,
-    S4Vectors,
-    dplyr,
-    plyr,
-    reshape2,
-    stats,
+    dplyr,    
+    httr,
     methods,
-    biomformat
+    plyr,
+    reshape2,    
+    S4Vectors,    
+    stats,
+    urltools    
 Suggests:
-    testthat,
-    knitr,
-    rmarkdown,
-    ggplot2,
     broom,
-    vegan
-URL : https://github.com/beadyallen/MGnifyR
-BugReports: https://github.com/beadyallen/MGnifyR/issues
+    ggplot2,
+    knitr,
+    rmarkdown,    
+    testthat,
+    vegan,
+    xml2
+URL : https://github.com/microbiome/MGnifyR
+BugReports: https://github.com/microbiome/MGnifyR/issues
 VignetteBuilder: knitr
 RoxygenNote: 7.2.3
 Collate: 
