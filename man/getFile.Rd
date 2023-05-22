@@ -15,7 +15,7 @@ getFile(x, url, file = NULL, read.func = NULL, use.cache = TRUE, ...)
 searchFile(
   x,
   accession,
-  type = c("studies", "samples", "analyses", "assembly", "genome", "run"),
+  type = c("studies", "samples", "analyses", "assemblies", "genomes", "run"),
   use.cache = TRUE,
   verbose = TRUE,
   ...
@@ -24,7 +24,7 @@ searchFile(
 \S4method{searchFile}{MgnifyClient}(
   x,
   accession,
-  type = c("studies", "samples", "analyses", "assembly", "genome", "run"),
+  type = c("studies", "samples", "analyses", "assemblies", "genomes", "run"),
   use.cache = TRUE,
   verbose = TRUE,
   ...

@@ -207,6 +207,13 @@
         res <- GET(url=fullurl, config(verbose=Debug), query=full_qopts )
         data <- content(res)
 
+        # Check if the search was successful
+        if( res$status_code == 400 ){
+            warning(data$errors[[1]]$detail, call. = FALSE)
+            return(NULL)
+        }
+
+
         # At this point, data$data is either a list of lists or a single named
         # list. If it's a single entry, it needs embedding in a list for
         # consistency downstream datlist is built up as a list of pages, where

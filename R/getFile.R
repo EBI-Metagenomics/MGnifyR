@@ -169,8 +169,8 @@ NULL
 #' @importFrom urltools parameters parameters<-
 #' @export
 setGeneric("searchFile", signature = c("x"), function(
-        x, accession, type = c("studies", "samples", "analyses", "assembly",
-                                 "genome", "run"),
+        x, accession, type = c("studies", "samples", "analyses", "assemblies",
+                                 "genomes", "run"), # Check how they re in database """""""""""""""####################3
         use.cache = TRUE, verbose = TRUE, ...
         )
     standardGeneric("searchFile"))
@@ -178,13 +178,13 @@ setGeneric("searchFile", signature = c("x"), function(
 #' @rdname getFile
 #' @export
 setMethod("searchFile", signature = c(x = "MgnifyClient"), function(
-        x, accession, type = c("studies", "samples", "analyses", "assembly",
-                                "genome", "run"),
+        x, accession, type = c("studies", "samples", "analyses", "assemblies",
+                                "genomes", "run"),
         use.cache = TRUE, verbose = TRUE, ...
         ){
     ############################### INPUT CHECK ################################
     if( !.is_non_empty_character(accession) ){
-        stop("'accession' must be alist of character values specifying ",
+        stop("'accession' must be a list of character values specifying ",
              "the MGnify accession identifiers.",
              call. = FALSE)
     }

@@ -86,7 +86,7 @@ mgnify_analyses_from_samples <- function(
         client, accession, usecache = TRUE, ...){
     .Deprecated("searchAnalysis")
     searchAnalysis(
-        x = client, type = "sample", accession = accession,
+        x = client, type = "samples", accession = accession,
         use.cache = usecache, ...)
 }
 
@@ -96,7 +96,7 @@ mgnify_analyses_from_studies <- function(
         client, accession, usecache = TRUE, ...){
     .Deprecated("searchAnalysis")
     searchAnalysis(
-        x = client, type = "study", accession = accession,
+        x = client, type = "studies", accession = accession,
         use.cache = usecache, ...)
 }
 

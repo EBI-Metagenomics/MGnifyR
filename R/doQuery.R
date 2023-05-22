@@ -161,7 +161,9 @@ setMethod("doQuery", signature = c(x = "MgnifyClient"), function(
 
     # Rename entries by accession
     id_list <- lapply(result, function(res) res$id)
-    names(result) <- id_list
+    if( !is.null(result) ){
+        names(result) <- id_list
+    }
     return(result)
 }
 

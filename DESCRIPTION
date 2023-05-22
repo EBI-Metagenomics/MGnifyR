@@ -37,7 +37,8 @@ Suggests:
     rmarkdown,    
     testthat,
     vegan,
-    xml2
+    xml2,
+    BiocStyle
 URL : https://github.com/microbiome/MGnifyR
 BugReports: https://github.com/microbiome/MGnifyR/issues
 VignetteBuilder: knitr

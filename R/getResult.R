@@ -200,24 +200,39 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
 
 # Convert results to TreeSE, MultiAssayExperiment or phyloseq.
 #' @importFrom methods is
+#' @importFrom dplyr bind_rows
 .convert_results_to_object <- function(taxa_res, func_res, output, accession){
     # If there are microbial profiling data, convert it to TreeSE or phyloseq
     if( !is.null(taxa_res) ){
+        # Get TreeSE objects
+        tse_list <- taxa_res$tse_objects
         # Get sample metadata
         col_data <- taxa_res$sample_metadata
+        # If some results were not found, remove them
+        ind <- !unlist(lapply(tse_list, is.null))
+        tse_list <- tse_list[ind]
+        col_data <- col_data[ind]
         # Bind sample metadata to one table
-        col_data <- do.call(rbind, col_data)
+        col_data <- do.call(bind_rows, col_data)
         col_data <- DataFrame(col_data)
-        # Merge TreeSEs into one
-        tse_list <- taxa_res$tse_objects
+        # Add suffix for every sample name so that order can be preserved
+        sample_names <- c()
+        for( i in seq_len(length(tse_list)) ){
+            new_colnames <- paste0(colnames(tse_list[[i]]), "_object_", i)
+            new_colnames <- make.unique(new_colnames)
+            colnames(tse_list[[i]]) <- new_colnames
+            sample_names <- c(sample_names, new_colnames)
+        }
         # Merge individual TreeSEs into one
         result <- mergeSEs(tse_list, assay.type = "counts", missing_values = 0)
+        # Preserve the order
+        result <- result[ , sample_names]
         # Replace sample names with sample metadata sample names
         # (They are correct since the data was fetched in same order as TreeSEs)
         colnames(result) <- rownames(col_data)
         # Add sample metadata to the object
         colData(result) <- col_data
-        # If user  wants phyloseq, convert TreeSE
+        # If user wants phyloseq, convert TreeSE
         if( output == "phyloseq" ){
             result <- makePhyloseqFromTreeSE(result)
         }
@@ -247,14 +262,25 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
                 exp_list <- func_res
                 col_data <- NULL
             }
-            exp_list <- ExperimentList(exp_list)
-            args$experiments <- exp_list
-            result <- do.call(MultiAssayExperiment, args)
+            # If there are more than 1 experiments, create MAE
+            if( length(exp_list) > 1 ){
+                exp_list <- ExperimentList(exp_list)
+                args$experiments <- exp_list
+                result <- do.call(MultiAssayExperiment, args)
+            }else{
+                # If there are only 1 experiment, give it as it is
+                result <- exp_list[[1]]
+            }
+
         } else{
             # If user wants output as a phyloseq, give a list of one phyloseq
             # object and functional data
             result <- list(microbiota = result)
             result <- append(result, func_res)
+            # If there are only one experiment, take it out from the list
+            if( length(result) == 1 ){
+                result <- result[[1]]
+            }
         }
     }
     return(result)
@@ -524,129 +550,25 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
                 .analyses_results_bulk_file_names[is.finite(match(
                     .analyses_results_bulk_file_names, cur_lab))])
 
-            if (!identical(cur_type, character(0))){
+            # Check the pipeline versions match and there are data to
+            # retrieve
+            if(!identical(cur_type, character(0)) &&
+               cur_pipeversion ==
+               metadata_df$`analysis_pipeline-version` &&
+               any(cur_type %in% retrievelist)){
+                # If there are "taxonomic assignments ssu", it can match with
+                # 2 --> take the first one
+                cur_type <- cur_type[[1]]
 
-                # Check the pipeline versions match
-                if (cur_pipeversion == metadata_df$`analysis_pipeline-version`){
-                    if( cur_type %in% retrievelist) {
-
-                        #Get the url
-                        data_url <- r$links$self
-
-                        #Clear off extraneous gubbins
-                        parameters(data_url) <- NULL
-
-                        #build the cache filename
-                        fname <- utils::tail(strsplit(data_url, '/')[[1]], n=1)
-
-                        #At this point we might have alread got the data we want
-                        # loaded. Check the memory cache object
-
-                        if(client@useMemCache & (
-                            cur_type %in% names(mgnify_memory_cache)) & (
-                                mgnify_memory_cache[cur_type][
-                                    "fname"] == fname)){
-                            tmp_df <- mgnify_memory_cache[cur_type][["data"]]
-                        }else{
-                            # Nope - gonna have to load it up from disk or grab
-                            # it from t'interweb
-                            data_path <- paste(downloadDIR, fname, sep="/")
-
-                            if(use.cache & client@clearCache){
-                                message(paste("clear_cache is TRUE: deleting ",
-                                              data_path, sep=""))
-                                tryCatch({unlink(data_path)}, error=warning)
-                            }
-
-                            if (! file.exists(data_path)){#} | !use_downloads ){
-                                GET(data_url, write_disk(
-                                    data_path, overwrite = TRUE ))
-                            }
-
-                            # Load the file (might be big so save it in the
-                            # 1 deep cache)
-                            tmp_df <- read.csv2(
-                                data_path, sep="\t", header = TRUE,
-                                stringsAsFactors = FALSE)
-                        }
-                        # Save it in memory using "super assignment" - which
-                        # I'm not really sure about but it seems to work...
-                        # thing'd be much easier if R passed objects
-                        # by reference.
-                        if(client@useMemCache){
-                            mgnify_memory_cache[[cur_type]] <- list(
-                                data=tmp_df, fname=fname)
-                        }
-
-                        # Because there seem to be "mismatches" between the
-                        # JSON and downloadable files, and maybe some issues
-                        # with missing downloads, we have to check if we
-                        # actually got a valid file:
-                        if(ncol(tmp_df) < 3){
-                            warning(paste(
-                                "Invalid download for", accession, sep=" "))
-                            return(NULL)
-                        }
-
-                        # Need to figure out how many columns to keep -
-                        # the first one is always an ID, but need to keep some
-                        # others as well...
-                        i <- 1
-                        #tmp_df <- read.csv('~/.MGnify_cache/tsv/ERP108138_
-                        # IPR_abundances_v4.1.tsv', sep="\t", header = T,
-                        # stringsAsFactors = F)
-                        while(
-                            any(is.na(suppressWarnings(
-                                as.numeric(tmp_df[,i]))))
-                            ){
-                            i <- i+1
-                        }
-                        i <- i-1
-
-                        # Also need the column name for this particular
-                        # analysis...
-                        # As far as I can see they could be either assembly IDs
-                        # or run ids. FFS. Assuming that both assembly and run
-                        # won't be present...:
-                        if("assembly_accession" %in% colnames(metadata_df)){
-                            accession <- metadata_df$assembly_accession[[1]]
-                        }else if("run_accession" %in% colnames(metadata_df)){
-                            accession <- metadata_df$run_accession[[1]]
-                        }
-                        #cat(accession)
-                        #    cat(str(head(tmp_df[1:5,1:5])))
-                        # Break up the dataframe, only keeping the bits we need.
-
-                        # So at this point we learn that some of the "download"
-                        # files don't match the assembly/run IDs given in the
-                        # JSON. For now, do a try/catch, chuck a warning, and
-                        # then optionally go off and try again - this time from
-                        # the JSON. No doubt this'll be fixed at some point in
-                        # the future...
-
-                        column_position <- match(accession, colnames(tmp_df))
-                        if (is.na(column_position)){
-                            warning(paste(
-                                "Failed to find column", accession, sep = " "))
-                            return(NULL)
-                        }
-                        keeper_columns <- c(seq(1,i), column_position)
-
-                        #cat(keeper_columns)
-                        tmp_df2 <- tmp_df[,keeper_columns]
-
-                        tmp_colnames <- colnames(tmp_df2)
-                        tmp_colnames[1] <- "accession"
-                        tmp_colnames[length(tmp_colnames)] <- "count"
-
-                        colnames(tmp_df2) <- tmp_colnames
-
-                        tmp_df2$index_id <- tmp_df2$accession
-                        rownames(tmp_df2) <- tmp_df2$accession
-                        tmp_df2
-                    }
-                }
+                # Get the first from the lsit because the are same
+                temp <- .get_bulk_files(
+                    cur_type[[1]], client=client, r=r,
+                    metadata_df=metadata_df, data_path=data_path,
+                    downloadDIR=downloadDIR, use.cache=use.cache)
+            } else{
+                temp <- NULL
             }
+            return(temp)
         })
         # R is sometimes a bit ~awkward~
         names(parsed_results) <- names(
@@ -688,6 +610,125 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
     }
     # Return the results...
     parsed_results
+}
+
+# Helper function for getting bulk file
+.get_bulk_files <- function(
+        cur_type, client, r, metadata_df, data_path, downloadDIR, use.cache){
+    # Get the url
+    data_url <- r$links$self
+
+    #Clear off extraneous gubbins
+    parameters(data_url) <- NULL
+
+    #build the cache filename
+    fname <- utils::tail(strsplit(data_url, '/')[[1]], n=1)
+
+    #At this point we might have alread got the data we want
+    # loaded. Check the memory cache object
+
+    if(client@useMemCache & (
+        cur_type %in% names(mgnify_memory_cache)) & (
+            mgnify_memory_cache[cur_type][
+                "fname"] == fname)){
+        tmp_df <- mgnify_memory_cache[cur_type][["data"]]
+    }else{
+        # Nope - gonna have to load it up from disk or grab
+        # it from t'interweb
+        data_path <- paste(downloadDIR, fname, sep="/")
+
+        if(use.cache & client@clearCache){
+            message(paste("clear_cache is TRUE: deleting ",
+                          data_path, sep=""))
+            tryCatch({unlink(data_path)}, error=warning)
+        }
+
+        if (! file.exists(data_path)){#} | !use_downloads ){
+            GET(data_url, write_disk(
+                data_path, overwrite = TRUE ))
+        }
+
+        # Load the file (might be big so save it in the
+        # 1 deep cache)
+        tmp_df <- read.csv2(
+            data_path, sep="\t", header = TRUE,
+            stringsAsFactors = FALSE)
+    }
+    # Save it in memory using "super assignment" - which
+    # I'm not really sure about but it seems to work...
+    # thing'd be much easier if R passed objects
+    # by reference.
+    if(client@useMemCache){
+        mgnify_memory_cache[[cur_type]] <- list(
+            data=tmp_df, fname=fname)
+    }
+
+    # Because there seem to be "mismatches" between the
+    # JSON and downloadable files, and maybe some issues
+    # with missing downloads, we have to check if we
+    # actually got a valid file:
+    if(ncol(tmp_df) < 3){
+        warning(paste(
+            "Invalid download for", accession, sep=" "))
+        return(NULL)
+    }
+
+    # Need to figure out how many columns to keep -
+    # the first one is always an ID, but need to keep some
+    # others as well...
+    i <- 1
+    #tmp_df <- read.csv('~/.MGnify_cache/tsv/ERP108138_
+    # IPR_abundances_v4.1.tsv', sep="\t", header = T,
+    # stringsAsFactors = F)
+    while(
+        any(is.na(suppressWarnings(
+            as.numeric(tmp_df[,i]))))
+    ){
+        i <- i+1
+    }
+    i <- i-1
+
+    # Also need the column name for this particular
+    # analysis...
+    # As far as I can see they could be either assembly IDs
+    # or run ids. FFS. Assuming that both assembly and run
+    # won't be present...:
+    if("assembly_accession" %in% colnames(metadata_df)){
+        accession <- metadata_df$assembly_accession[[1]]
+    }else if("run_accession" %in% colnames(metadata_df)){
+        accession <- metadata_df$run_accession[[1]]
+    }
+    #cat(accession)
+    #    cat(str(head(tmp_df[1:5,1:5])))
+    # Break up the dataframe, only keeping the bits we need.
+
+    # So at this point we learn that some of the "download"
+    # files don't match the assembly/run IDs given in the
+    # JSON. For now, do a try/catch, chuck a warning, and
+    # then optionally go off and try again - this time from
+    # the JSON. No doubt this'll be fixed at some point in
+    # the future...
+
+    column_position <- match(accession, colnames(tmp_df))
+    if (is.na(column_position)){
+        warning(paste(
+            "Failed to find column", accession, sep = " "))
+        return(NULL)
+    }
+    keeper_columns <- c(seq(1,i), column_position)
+
+    #cat(keeper_columns)
+    tmp_df2 <- tmp_df[,keeper_columns]
+
+    tmp_colnames <- colnames(tmp_df2)
+    tmp_colnames[1] <- "accession"
+    tmp_colnames[length(tmp_colnames)] <- "count"
+
+    colnames(tmp_df2) <- tmp_colnames
+
+    tmp_df2$index_id <- tmp_df2$accession
+    rownames(tmp_df2) <- tmp_df2$accession
+    return(tmp_df2)
 }
 
 # Result table caching
