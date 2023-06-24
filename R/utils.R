@@ -212,7 +212,11 @@
             warning(data$errors[[1]]$detail, call. = FALSE)
             return(NULL)
         }
-
+        
+        if( isEmpty(data$data) ) {
+            warning("Nothing was found. Make sure that ", names(full_qopts)[[2]],
+                    " is correct."," Returning empty query.", call. = FALSE)
+        }
 
         # At this point, data$data is either a list of lists or a single named
         # list. If it's a single entry, it needs embedding in a list for

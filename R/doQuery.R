@@ -3,7 +3,7 @@
 #' @details
 #' \code{doQuery} is a flexible query function, harnessing the "full"
 #' power of the JSONAPI MGnify search filters. Search results may be filtered
-#' by metadata value, associated study/sample/analyese etc. Details of the
+#' by metadata value, associated study/sample/analyse etc. Details of the
 #' capabilities may be found
 #' [here](https://emg-docs.readthedocs.io/en/latest/api.html#customising-queries).
 #' Currently, the following filters are available (based on examination of the
@@ -161,6 +161,7 @@ setMethod("doQuery", signature = c(x = "MgnifyClient"), function(
 
     # Rename entries by accession
     id_list <- lapply(result, function(res) res$id)
+    
     if( !is.null(result) ){
         names(result) <- id_list
     }
