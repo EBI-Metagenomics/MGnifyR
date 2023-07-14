@@ -328,6 +328,10 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
              call. = FALSE)
     }
     ############################# INPUT CHECK END ##############################
+    # Give message about progress
+    if( verbose =="text" ){
+        message("Fetching taxonomy data...")
+    }
     # Get TreeSE objects
     tse_list <- llply(accession, function(x) {
             .mgnify_get_single_analysis_treese(
@@ -486,12 +490,16 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
         stop("'bulk.dl' must be TRUE or FALSE.", call. = FALSE)
     }
     ############################# INPUT CHECK END ##############################
+    # Give message about progress
+    if( verbose == "text" ){
+        message("Fetching functional data...")
+    }
     # Get functional results
-    all_results <- llply(accession, .progress = verbose, function(x){
+    all_results <- llply(accession, function(x){
         .mgnify_get_single_analysis_results(
             client, x, use.cache = use.cache, retrievelist = retrievelist,
             bulk.files = bulk.dl, ...)
-    })
+    }, .progress = verbose)
     # Add names based on accessions codes
     names(all_results) <- accession
 

@@ -75,11 +75,14 @@ setMethod("getMetadata", signature = c(x = "MgnifyClient"), function(
 # Fetch metadata based on analysis accessions.
 .mgnify_get_analyses_metadata <- function(
         client, accession, use.cache, verbose, ...){
-    # TODO: Chnage to biocparallel?
+    # Give message about progress
+    if( verbose == "text" ){
+        message("Fetching metadata...")
+    }
     # Loop through analysis accessions and find metadata
-    reslist <- llply(as.list(accession), .progress = verbose, function(x){
+    reslist <- llply(as.list(accession), function(x){
         .mgnify_get_single_analysis_metadata(client, x, use.cache = use.cache, ...)
-    })
+    }, .progress = verbose)
     # Combine all metadata to single df
     df <- do.call(bind_rows, reslist)
     return(df)

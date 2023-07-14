@@ -274,6 +274,11 @@ setMethod("searchFile", signature = c(x = "MgnifyClient"), function(
 # Get URL addresses of downloadable files that are related to certain accession ID.
 .mgnify_get_download_urls <- function(
         client, accession, type, use.cache, verbose, ...){
+    # Give message about progress
+    if( verbose == "text" ){
+        message("Searching files...")
+    }
+    # L
     # Loop though accession IDs and find the info
     results <- llply(accession, function(x){
         # Get the data as nested json list

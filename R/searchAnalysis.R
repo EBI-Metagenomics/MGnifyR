@@ -91,6 +91,10 @@ setMethod("searchAnalysis", signature = c(x = "MgnifyClient"), function(
 # Get analysis accessions based on studies
 .mgnify_analyses_from_studies <- function(
         client, accession, use.cache, verbose, ...){
+    # Give message about progress
+    if( verbose == "text" ){
+        message("Fetching analyses...")
+    }
     # Loop over studies, get analyses accessions
     analyses_accessions <- llply(as.list(accession), function(x){
         # Find analyses based on studies. Get uRL address.
@@ -117,6 +121,10 @@ setMethod("searchAnalysis", signature = c(x = "MgnifyClient"), function(
 # Get analysis accessions based on sample accessions
 .mgnify_analyses_from_samples <- function(
         client, accession, use.cache, verbose, ...){
+    # Give message about progress
+    if( verbose == "text" ){
+        message("Fetching analyses...")
+    }
     # Loop over sample accessions
     analyses_accessions <- llply(as.list(accession), function(x){
         accurl <- .mgnify_get_x_for_y(
