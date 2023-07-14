@@ -53,7 +53,9 @@ test_that("getFile", {
     skip_if(httr::http_error("https://www.ebi.ac.uk/metagenomics/api/v1"))
 
     # Test that df is returned even if accession ID is not correct
-    res <- searchFile(mg, type="assemblies", accession="random", verbose = FALSE)
+    expect_warning(
+        res <- searchFile(mg, type="assemblies", accession="random", verbose = FALSE)
+    )
     expect_true(is.data.frame(res))
 
     # Test that file search is done correctly based on accession ID.

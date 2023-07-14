@@ -31,7 +31,10 @@
 #'
 #' @param use.cache A single boolean value to specify whether to enable the
 #' default MGnifyR caching mechanism. File locations are overridden if
-#' \code{file} is supplied. (By default: \code{use.cache = TRUE})
+#' \code{file} is supplied. Note that files are downloaded to local system
+#' when they are fetched from the database. The files are not removed meaning
+#' that the local storage can include additional files after the run even though
+#' \code{use.cache = FALSE} was specified. (By default: \code{use.cache = TRUE})
 #'
 #' @param ... Additional arguments; not used currently.
 #'
@@ -169,8 +172,8 @@ NULL
 #' @importFrom urltools parameters parameters<-
 #' @export
 setGeneric("searchFile", signature = c("x"), function(
-        x, accession, type = c("studies", "samples", "analyses", "assemblies",
-                                 "genomes", "run"), # Check how they re in database """""""""""""""####################3
+        x, accession,
+        type = c("studies", "samples", "analyses", "assemblies", "genomes", "run"),
         use.cache = TRUE, verbose = TRUE, ...
         )
     standardGeneric("searchFile"))
@@ -206,80 +209,81 @@ setMethod("searchFile", signature = c(x = "MgnifyClient"), function(
     # Get file urls
     result <- .mgnify_get_download_urls(
         client = x, accession = accession, type = type, use.cache = use.cache,
-        verbose = verbose)
+        verbose = verbose, ...)
     return(result)
 })
 
 ################################ HELP FUNCTIONS ################################
 
-.mgnify_download <- function(client, url, file, read.func,
-                             use.cache, ...){
+# Download the specified files from the database
+.mgnify_download <- function(
+        client, url, file, read.func, use.cache, ...){
     # Set up filenames for storing the data
-    ftgt <- NULL
-    if (! is.null(file)){
-        file_tgt <- file
-    }else if(use.cache == TRUE){
-        #Build a filename out of the url, including the full paths. Annoying,
+    if ( !is.null(file) ){
+        file_path <- file
+    }else if(use.cache){
+        # Build a filename out of the url, including the full paths. Annoying,
         # but some downloads (e.g. genome results) are just names like
         # core_genes.fa , which would break the caching.
         cachetgt <- gsub(paste(client@url,'/',sep=""), '', url)
-        #Make sure the direcory exists
 
+        # Make sure the directory exists
         cache_full_name <- paste(client@cacheDir, cachetgt, sep="/")
         dir.create(dirname(cache_full_name), recursive = TRUE,
                    showWarnings = client@warnings)
-
-
-        file_tgt <- cache_full_name
+        file_path <- cache_full_name
     } else{
-        file_tgt <- tempfile()[[1]]
+        file_path <- tempfile()[[1]]
     }
 
-    if(use.cache & client@clearCache){
-        message(paste("clearCache is TRUE: deleting ", file_tgt, sep=""))
-        tryCatch(unlink(file_tgt), error=warning)
+    # Clear cache if specified
+    if( use.cache && client@clearCache && file.exists(file_path) ){
+        message(paste("clear_cache is TRUE: deleting ", file_path, sep=""))
+        unlink(file_path)
     }
 
-    #Only get the data if it's not already on disk
-    if(!(use.cache && file.exists(file_tgt))){
-
+    # Only get the data if it's not already on disk
+    if( !file.exists(file_path) || (use.cache && file.exists(file_path)) ){
+        # Add authentication details to query options
         if(!is.null(client@authTok)){
             add_headers(.headers = c(
                 Authorization = paste("Bearer", client@authTok, sep=" ")))
         }
-        #If there's an error we need to make sure the cache file isn't written
+        # If there's an error we need to make sure the cache file isn't written
         # - by default it seems it is.
-        tryCatch(expr = {
-            curd <- content(GET(url, write_disk(file_tgt, overwrite = T)))
-        }, error=function(x){
-            unlink(file_tgt)
-            message(paste("Error retrieving file",file_tgt))
-            message(paste("Error:",x))
-            stop()
-        })
+        res <- GET(url, write_disk(file_path, overwrite = TRUE))
+        # If the file was not successfully downloaded
+        if( res$status_code != 200 ){
+            # Remove the downloaded file
+            unlink(file_path)
+            stop(
+                url, ": ", content(res, ...)$errors[[1]]$detail,
+                " Error while loading the file from database.",
+                call. = FALSE)
+        }
     }
-
-    if (is.null(read.func)){
-        result <- file_tgt
+    # Whether to use user-specified read function
+    if( is.null(read.func) ){
+        result <- file_path
     } else{
-        result <- read.func(file_tgt)
+        result <- read.func(file_path)
     }
-
-    if (is.null(file) & !use.cache){
-        #Need to clear out the temporary file
-        unlink(file_tgt)
-    }
-    result
+    return(result)
 }
 
+# Get URL addresses of downloadable files that are related to certain accession ID.
 .mgnify_get_download_urls <- function(
-        client, accession, type, use.cache, verbose){
+        client, accession, type, use.cache, verbose, ...){
+    # Loop though accession IDs and find the info
     results <- llply(accession, function(x){
+        # Get the data as nested json list
         download_list <- .mgnify_retrieve_json(
-            client, paste(type,x,"downloads", sep="/"), use.cache = use.cache)
+            client, paste(type,x,"downloads", sep="/"), use.cache = use.cache, ...)
+        # Convert to df
         df <- do.call(rbind.fill, lapply(download_list, function(x){
             as.data.frame(x,stringsAsFactors=FALSE)}
             ))
+        # Add info to df
         df$accession <- x
         df$type <- type
         # If no match, df is a list --> convert to data.frame
@@ -289,14 +293,16 @@ setMethod("searchFile", signature = c(x = "MgnifyClient"), function(
             # If search result was found, modify
             # For convenience, rename the "self" column to "download_url" - which
             # is what it actually is...
-            colnames(df)[colnames(df) == 'self'] <- 'download_url'
+            colnames(df)[colnames(df) == "self"] <- "download_url"
             # Finally, strip off any options from the url - they sometimes seem
             # to get format=json stuck on the end
             urls <- df$download_url
             parameters(urls) <- NULL
             df$download_url <- urls
         }
-        df
+        return(df)
     }, .progress = verbose)
-    do.call(rbind.fill, results)
+    # Combine results of multiple accessions IDs
+    results <- do.call(rbind.fill, results)
+    return(results)
 }

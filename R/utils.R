@@ -83,28 +83,17 @@
 # Examples:
 # cl <- new("MgnifyClient")
 # .mgnify_get_x_for_y(cl, "MGYS00005126", "studies", "samples")
-.mgnify_get_x_for_y <- function(client, x, typeX, typeY, use.cache = FALSE){
-    # TODO: remove comments? what is the meaning of these?
-    # Are they improvements that do not work yeat or just old code?
-
-    #This one's easy - just rearrange the URLs
-    #if(typeX=="samples" & typeY %in% c("runs","studies")){
-    #    paste( typeX,x,typeY, sep="/")
-    #}else if(typeX=="runs" & typeY == "analyses"){
-    #    paste( typeX,x,typeY, sep="/")
-    #}
-    #else{
-    #Do it the hard way with a callout
-    json_dat <- .mgnify_retrieve_json(client,
-                                     paste(typeX, x, sep = "/"),
-                                     use.cache = use.cache)
-    #cat(str(json_dat))
-    #tgt_access = json_dat[[1]]$relationships[[typeY]]$data$id
-    #tgt_type = json_dat[[1]]$relationships[[typeY]]$data$type
-    #paste(tgt_type,tgt_access,sep="/")
-    res <- json_dat[[1]]$relationships[[typeY]]$links$related
-    #substr(tgt_url, nchar(client@url) + 1, nchar(tgt_url))
-    #}
+.mgnify_get_x_for_y <- function(client, x, typeX, typeY, use.cache = FALSE, ...){
+    # Fetch the data on samples/analyses as a json list
+    res <- .mgnify_retrieve_json(
+        client,
+        paste(typeX, x, sep = "/"),
+        use.cache = use.cache,
+        ...)
+    # Get related analyses when samples were found and vice versa if result was found.
+    if( !is.null(res) ){
+        res <- res[[1]]$relationships[[typeY]]$links$related
+    }
     return(res)
 }
 
@@ -151,8 +140,10 @@
 #' @importFrom httr content
 .mgnify_retrieve_json <- function(
         client, path = "biomes", complete_url = NULL, qopts = NULL,
-        max.hits = 200, use.cache = FALSE, Debug=FALSE){
-    #client@warnings turns on debugging too:
+        max.hits = 200, use.cache = FALSE, Debug=FALSE, ...){
+    # Warning message if data is not found
+    warning_msg <- paste0(path, ": No data found.")
+    # client@warnings turns on debugging too:
     if(client@warnings){
         Debug <- TRUE
     }
@@ -160,17 +151,14 @@
     # Are we using internal paths?
     if (is.null(complete_url)){
         fullurl <- paste(client@url, path, sep="/")
-    }
-    # Or direct links from e.g. a "related" section
-    else{
+    } else{
+        # Or direct links from e.g. a "related" section
         # Set the full url, but clean off any existing parameters
         # (page, format etc) as they'll be added back later:
         fullurl <- complete_url
         parameters(fullurl) <- NULL
         path <- substr(fullurl, nchar(client@url) + 2, nchar(fullurl))
     }
-
-    #cat(fullurl)
 
     # Convert to csv if filters are lists.
     # This doesn't check if they  can  be searched for in the API,
@@ -181,90 +169,109 @@
     # Include the json and page position options
     # full_qopts <- as.list(c(format="json", tmpqopts, page=1))
     full_qopts <- as.list(c(format="json", tmpqopts))
+
     # Build up the cache name anyway - even if it's not ultimately used:
     fname_list <- c(path, names(unlist(full_qopts)), unlist(full_qopts))
     cache_fname <- paste(fname_list,collapse = "_")
     cache_full_fname <- paste(client@cacheDir, '/', cache_fname, '.RDS', sep="")
 
-
-    ## Quick check to see if we should clear the disk cache  for this
+    # Quick check to see if we should clear the disk cache  for this
     # specific call  - used for debugging and when MGnify breaks
     if(use.cache & client@clearCache){
-        message(paste("clear_cache is TRUE: deleting ", cache_full_fname, sep=""))
-        tryCatch(unlink(cache_full_fname), error=warning)
+        if( file.exists(cache_full_fname) ){
+            message(paste("clear_cache is TRUE: deleting ", cache_full_fname, sep=""))
+            unlink(cache_full_fname)
+        }
     }
 
     # Do we want to try and use a cache to speed things up?
     if(use.cache & file.exists(cache_full_fname)){
         final_data <- readRDS(cache_full_fname)
-    }else{
-        #Authorization: Bearer <your_token>
+    } else{
+        # Authorization: Bearer <your_token>
         if(!is.null(client@authTok)){
             add_headers(
                 .headers = c(Authorization = paste("Bearer",
                                                    client@authTok, sep=" ")))
         }
         res <- GET(url=fullurl, config(verbose=Debug), query=full_qopts )
-        data <- content(res)
+        # Get the data
+        data <- content(res, ...)
 
-        # Check if the search was successful
-        if( res$status_code == 400 ){
-            warning(data$errors[[1]]$detail, call. = FALSE)
-            return(NULL)
-        }
-
-
-        # At this point, data$data is either a list of lists or a single named
-        # list. If it's a single entry, it needs embedding in a list for
-        # consistency downstream datlist is built up as a list of pages, where
-        # each entry must be another list. Thus, on the first page,
-        #
-        datlist <- list()
-        if (!is.null(names(data$data))){
-            #Create something to store the returned data
-
-            datlist[[1]] <- list(data$data)
-        }else{
-            datlist[[1]] <- data$data
-        }
-        #cat(str(data))
-        # Check to see if there's pagination required
-        if ("meta" %in% names(data)){
-            #Yes, paginate
-            pstart <- as.numeric(data$meta$pagination$page)
-            pend <- as.numeric(data$meta$pagination$pages)
-
-            for (p in seq(pstart+1,pend)){    # We've already got the first one
-
-                full_qopts$page <- p
-                if(!is.null(client@authTok)){
-                    add_headers(
-                        .headers = c(
-                            Authorization = paste("Bearer",
-                                                  client@authTok, sep=" ")))
-                }
-                curd <- content(GET(fullurl, config(verbose=Debug),
-                                    query=full_qopts ))
-                datlist[[p]] <- curd$data
-                #Check to see if we've pulled enough entries
-                if(max.hits > 0){
-                    curlen <- sum(sapply(datlist, length))
-                    if (curlen > max.hits){
-                        break
-                    }
-                }
+        # Check if the search was successful and data can be found
+        not_found <- (res$status_code != 200) || (
+            is.null(data$data) || length(data$data) == 0)
+        # If data is found
+        if( !not_found ){
+            # Fetch all the data
+            final_data <- .retrieve_json_data(
+                client, data, fullurl, full_qopts, max.hits, Debug
+            )
+        } else{
+            final_data <- NULL
+            if( res$status_code != 200 ){
+                warning_msg <- paste0(path, ": ", data$errors[[1]]$detail)
             }
         }
-        #if(length(datlist) > 1){
-        final_data <- unlist(datlist, recursive=F)
-
+        # Save the result to file if specified
         if (use.cache && !file.exists(cache_full_fname)){
-            #Make sure the directory is created...
+            # Make sure the directory is created...
             dir.create(dirname(cache_full_fname), recursive = TRUE,
                        showWarnings = client@warnings)
             saveRDS(final_data, file = cache_full_fname)
         }
     }
+    # Give warning if data is not found.
+    if( is.null(final_data) ){
+        warning(warning_msg, call. = FALSE)
+    }
+    return(final_data)
+}
+
+# This retrives all the data related to accession. FOr example, it loops
+# oer multiple pages.
+.retrieve_json_data <- function(
+        client, data, fullurl, full_qopts, max.hits, Debug, ...){
+    # At this point, data$data is either a list of lists or a single named
+    # list. If it's a single entry, it needs embedding in a list for
+    # consistency downstream datlist is built up as a list of pages, where
+    # each entry must be another list. Thus, on the first page,
+    #
+    datlist <- list()
+    if( !is.null(names(data$data)) ){
+        # Create something to store the returned data
+        datlist[[1]] <- list(data$data)
+    }else{
+        datlist[[1]] <- data$data
+    }
+    # Check to see if there's pagination required
+    if( "meta" %in% names(data) ){
+        # Yes, paginate
+        pstart <- as.numeric(data$meta$pagination$page)
+        pend <- as.numeric(data$meta$pagination$pages)
+        # We've already got the first one
+        if( pend > 1 ){
+            # Loop over pages and save their result to list
+            for (p in seq(pstart+1,pend)){
+                full_qopts$page <- p
+                if(!is.null(client@authTok)){
+                    add_headers(
+                        .headers = c(
+                            Authorization = paste("Bearer", client@authTok, sep=" ")))
+                }
+                curd <- content(GET(fullurl, config(verbose=Debug),
+                                    query=full_qopts ), ...)
+                datlist[[p]] <- curd$data
+                # Check to see if we've pulled enough entries
+                curlen <- sum(sapply(datlist, length))
+                if (curlen >= max.hits){
+                    break
+                }
+            }
+        }
+    }
+    # Combine results from different pages
+    final_data <- unlist(datlist, recursive = FALSE)
     return(final_data)
 }
 

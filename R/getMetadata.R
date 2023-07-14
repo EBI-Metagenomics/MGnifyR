@@ -66,58 +66,67 @@ setMethod("getMetadata", signature = c(x = "MgnifyClient"), function(
     # Get metadata
     result <- .mgnify_get_analyses_metadata(
         client = x, accession = accession, use.cache = use.cache,
-        verbose = verbose)
+        verbose = verbose, ...)
     return(result)
 })
 
 ################################ HELP FUNCTIONS ################################
 
+# Fetch metadata based on analysis accessions.
 .mgnify_get_analyses_metadata <- function(
-        client, accession, use.cache, verbose){
+        client, accession, use.cache, verbose, ...){
     # TODO: Chnage to biocparallel?
+    # Loop through analysis accessions and find metadata
     reslist <- llply(as.list(accession), .progress = verbose, function(x){
-        .mgnify_get_single_analysis_metadata(client, x, use.cache = use.cache)
+        .mgnify_get_single_analysis_metadata(client, x, use.cache = use.cache, ...)
     })
+    # Combine all metadata to single df
     df <- do.call(bind_rows, reslist)
-    df
+    return(df)
 }
 
 # Retrieves combined study/sample/analysis metadata - not exported
 .mgnify_get_single_analysis_metadata <- function(
-        client, accession, use.cache = TRUE, max.hits = -1){
+        client, accession, use.cache = TRUE, max.hits = -1, ...){
     # Get data in json format
     dat <- .mgnify_retrieve_json(
         client, paste("analyses", accession, sep="/"), use.cache = use.cache,
-        max.hits = max.hits)
+        max.hits = max.hits, ...)
     # If metadata was not found, return the NULL value
     if(is.null(dat)){
         warning(paste("Failed to find study metadata for ", accession, sep=""))
         return(dat)
     }
-    #There  should  be just a single result
+
+    # There  should  be just a single result
     top_data <- dat[[1]]
     # Convert hit result to df
     analysis_df <- .mgnify_attr_list_to_df_row(
         top_data, metadata_key = "analysis-summary")
 
-    #cat(str(analysis_metadata))
     # Build up the metadata dataframe from the analyses_metadata_headers vector:
     sample_met <- .mgnify_retrieve_json(
         client, complete_url = top_data$relationships$sample$links$related,
-        use.cache = use.cache)
+        use.cache = use.cache, ...)
     study_met <- .mgnify_retrieve_json(
         client, complete_url = top_data$relationships$study$links$related,
-        use.cache = use.cache)
+        use.cache = use.cache, ...)
     # Again, convert to df
-    sample_df <- .mgnify_attr_list_to_df_row(
-        sample_met[[1]], metadata_key = "sample-metadata")
+    if(!is.null(sample_met)){
+        sample_df <- .mgnify_attr_list_to_df_row(
+            sample_met[[1]], metadata_key = "sample-metadata")
+    } else{
+        warning(paste("Failed to find sample metadata for ", accession, sep=""))
+        sample_df <- data.frame(accession=NA)
+    }
     # It turns out that a sample might not be part of a study - if it's been
-    # harvested... So tryCatch it and return an emtpy df row if things go south.
-    study_df <- tryCatch({.mgnify_attr_list_to_df_row(study_met[[1]])},
-                         error=function(X) {
+    # harvested...
+    if(!is.null(study_met)){
+        study_df <- .mgnify_attr_list_to_df_row(study_met[[1]])
+    } else{
         warning(paste("Failed to find study metadata for ", accession, sep=""))
-        data.frame(accession=NA)
-    })
+        study_df <- data.frame(accession=NA)
+    }
     # Add colnames to sample, study and analysis tables
     colnames(sample_df) <- paste("sample", colnames(sample_df), sep="_")
     colnames(study_df) <- paste("study", colnames(study_df), sep="_")
@@ -138,10 +147,10 @@ setMethod("getMetadata", signature = c(x = "MgnifyClient"), function(
         full_df$run_accession <- top_data$relationships$run$data$id
     }
     # biom (from the sample metadata)
-    tryCatch({
+    if( !is.null(sample_met[[1]]$relationships$biome$data$id) ){
         full_df$biome_string <- sample_met[[1]]$relationships$biome$data$id
-    },
-    error = function(cond){warning("Error finding biome entry")}
-    )
+    } else {
+        warning(paste("Failed to find biome entry for ", accession, sep=""))
+    }
     return(full_df)
 }

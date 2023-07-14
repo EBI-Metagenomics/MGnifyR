@@ -78,26 +78,30 @@ setMethod("searchAnalysis", signature = c(x = "MgnifyClient"), function(
     if( type == "samples" ){
         result <- .mgnify_analyses_from_samples(
             client = x, accession = accession, use.cache = use.cache,
-            verbose = verbose)
+            verbose = verbose, ...)
     } else{
         result <- .mgnify_analyses_from_studies(
             client = x, accession = accession, use.cache = use.cache,
-            verbose = verbose)
+            verbose = verbose, ...)
     }
     return(result)
 })
 
 ################################ HELP FUNCTIONS ################################
-
+# Get analysis accessions based on studies
 .mgnify_analyses_from_studies <- function(
-        client, accession, use.cache, verbose){
+        client, accession, use.cache, verbose, ...){
     # Loop over studies, get analyses accessions
     analyses_accessions <- llply(as.list(accession), function(x){
+        # Find analyses based on studies. Get uRL address.
         accurl <- .mgnify_get_x_for_y(
-            client, x, "studies","analyses", use.cache = use.cache )
+            client, x, "studies","analyses", use.cache = use.cache, ...)
+        # If found
         if( !is.null(accurl) ){
+            # Get data
             jsondat <- .mgnify_retrieve_json(
-                client, complete_url = accurl, use.cache = use.cache, max.hits = -1)
+                client, complete_url = accurl, use.cache = use.cache, max.hits = -1,
+                ...)
             # Just need the accession ID
             res <- lapply(jsondat, function(x) x$id)
         } else {
@@ -110,63 +114,89 @@ setMethod("searchAnalysis", signature = c(x = "MgnifyClient"), function(
     return(res)
 }
 
+# Get analysis accessions based on sample accessions
 .mgnify_analyses_from_samples <- function(
-        client, accession, use.cache, verbose){
+        client, accession, use.cache, verbose, ...){
     # Loop over sample accessions
     analyses_accessions <- llply(as.list(accession), function(x){
         accurl <- .mgnify_get_x_for_y(
-            client, x, "samples", "analyses", use.cache = use.cache )
+            client, x, "samples", "analyses", use.cache = use.cache, ...)
         # For some reason, it appears you "sometimes" have to go from study
         # to runs to analyses. Need to query this with the API people...
-        if(is.null(accurl)){
-            runurl <- .mgnify_get_x_for_y(
-                client, x, "samples","runs", use.cache = use.cache )
-            if(is.null(runurl)){
-                warning("Analyses not found for samples ", x, call. = FALSE)
-                return(runurl)
-            }
+        if( is.null(accurl) ){
+            temp <- .mgnify_analyses_from_samples_based_on_runs(
+                client, x, use.cache, verbose, ...)
+        } else {
             jsondat <- .mgnify_retrieve_json(
-                client, complete_url = runurl, use.cache = use.cache)
-            run_accs <- lapply(jsondat, function(y) y$id)
-            a_access <- sapply(as.list(run_accs), function(z){
-                accurl <- .mgnify_get_x_for_y(
-                    client, z, "runs","analyses", use.cache = use.cache )
-                jsondat <- .mgnify_retrieve_json(
-                    client, complete_url = accurl, use.cache = use.cache)
-                # Now... if jsondat is empty, it means we couldn't find an
-                # analysis for this run. This is known to occur when an assembly
-                # has been harvested (or something like that). There may be
-                # other cases as well. Anyway, what we'll do is go try and look
-                # for an assembly->analysis entry instead.
-                if(length(jsondat) == 0){
-                    assemurl <- .mgnify_get_x_for_y(
-                        client, z, "runs","assemblies", use.cache = use.cache )
-                    jsondat <- .mgnify_retrieve_json(
-                        client, complete_url = assemurl, use.cache = use.cache)
-                    assemids <- lapply(jsondat, function(x) x$id)
-                    if(length(assemids) >0){
-                        #Assumes that there's only one assembly ID per run...
-                        # I hope that's okay.
-                        accurl <- .mgnify_get_x_for_y(
-                            client, assemids[[1]], "assemblies", "analyses",
-                            use.cache = use.cache )
-                        jsondat <- .mgnify_retrieve_json(
-                            client, complete_url = accurl, use.cache = use.cache)
-                    }else{
-                        # If we've got to this point, I give up - just return an empty list...
-                        warning(paste(
-                            "Failed to find an analysis for sample ", accession))
-                    }
-                }
-                lapply(jsondat, function(x) x$id)
-            })
-            unlist(a_access)
-        }else{
-            jsondat <- .mgnify_retrieve_json(
-                client, complete_url = accurl, use.cache = use.cache)
+                client, complete_url = accurl, use.cache = use.cache, ...)
             # Just need the accession ID
-            lapply(jsondat, function(x) x$id)
-        }}, .progress=verbose)
+            temp <- lapply(jsondat, function(x) x$id)
+        }
+        return(temp)
+        }, .progress = verbose)
     res <- unlist(analyses_accessions)
     return(res)
+}
+
+# Get analysis accessions based on runs or assemblies
+.mgnify_analyses_from_samples_based_on_runs <- function(
+        client, x, use.cache, verbose, ...){
+    # Get urö for runs
+    runurl <- .mgnify_get_x_for_y(
+        client, x, "samples","runs", use.cache = use.cache, ...)
+    if(is.null(runurl)){
+        warning("Analyses not found for samples ", x, call. = FALSE)
+        return(runurl)
+    }
+    # If found, get data for runs
+    jsondat <- .mgnify_retrieve_json(
+        client, complete_url = runurl, use.cache = use.cache, ...)
+    # Get accession ID for the runs
+    run_accs <- lapply(jsondat, function(y) y$id)
+    # Loop through runs
+    analyses_accessions <- sapply(as.list(run_accs), function(z){
+        # Get data url of related analyses
+        accurl <- .mgnify_get_x_for_y(
+            client, z, "runs","analyses", use.cache = use.cache, ...)
+        # Get data of those analyses
+        jsondat <- .mgnify_retrieve_json(
+            client, complete_url = accurl, use.cache = use.cache, ...)
+        # Now... if jsondat is empty, it means we couldn't find an
+        # analysis for this run. This is known to occur when an assembly
+        # has been harvested (or something like that). There may be
+        # other cases as well. Anyway, what we'll do is go try and look
+        # for an assembly->analysis entry instead.
+        if(length(jsondat) == 0){
+            # Get url addresses for assemblies based on runs
+            assemurl <- .mgnify_get_x_for_y(
+                client, z, "runs","assemblies", use.cache = use.cache, ...)
+            # Get data on those assemblies
+            jsondat <- .mgnify_retrieve_json(
+                client, complete_url = assemurl, use.cache = use.cache, ...)
+            # Get accession IDs for assemblies
+            assemids <- lapply(jsondat, function(x) x$id)
+            if(length(assemids) > 0){
+                # Assumes that there's only one assembly ID per run...
+                # I hope that's okay.
+                # Get analyses based on assemblies
+                accurl <- .mgnify_get_x_for_y(
+                    client, assemids[[1]], "assemblies", "analyses",
+                    use.cache = use.cache, ...)
+                # Get the data on analyses
+                jsondat <- .mgnify_retrieve_json(
+                    client, complete_url = accurl, use.cache = use.cache, ...)
+            } else{
+                # If we've got to this point, I give up - just return an empty list...
+                warning(paste(
+                    "Failed to find an analysis for sample ", accession))
+            }
+        }
+        # Get analyses IDs
+        if( !is.null(jsondat) ){
+            temp <- lapply(jsondat, function(x) x$id)
+        } else{
+            temp <- NULL
+        }
+        return(temp)
+    })
 }

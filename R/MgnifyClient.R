@@ -138,7 +138,7 @@ MgnifyClient <- function(
                   encode = "json")
         # If the authentication was not successful, returned value do not
         # include data
-        cont <- content(r)
+        cont <- content(r, ...)
         if ("data" %in% names(cont)){
             authtok <- cont$data$token
         } else{
