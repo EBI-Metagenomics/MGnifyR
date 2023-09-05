@@ -104,7 +104,7 @@ setMethod("searchAnalysis", signature = c(x = "MgnifyClient"), function(
         if( !is.null(accurl) ){
             # Get data
             jsondat <- .mgnify_retrieve_json(
-                client, complete_url = accurl, use.cache = use.cache, max.hits = -1,
+                client, complete_url = accurl, use.cache = use.cache, max.hits = NULL,
                 ...)
             # Just need the accession ID
             res <- lapply(jsondat, function(x) x$id)

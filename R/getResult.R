@@ -24,7 +24,7 @@
 #' "interpro-identifiers", "taxonomy", "taxonomy-itsonedb",
 #' "taxonomy-itsunite", "taxonomy-lsu", and "taxonomy-ssu". Note that
 #' depending on the particular analysis type, pipeline version etc., not all
-#' functional results will be available. (By default: \code{get.func = FALSE})
+#' functional results will be available. (By default: \code{get.func = TRUE})
 #'
 #' @param use.cache A single boolean value specifying whether to use the
 #' MGnify local caching system to speed up searching. It is highly
@@ -205,6 +205,7 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
 #' @importFrom methods is
 #' @importFrom dplyr bind_rows
 .convert_results_to_object <- function(taxa_res, func_res, output){
+    result <- NULL
     # If there are microbial profiling data, convert it to TreeSE or phyloseq
     if( !is.null(taxa_res) ){
         # Get TreeSE objects
@@ -213,66 +214,77 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
         col_data <- taxa_res$sample_metadata
         # If some results were not found, remove them
         ind <- !unlist(lapply(tse_list, is.null))
-        tse_list <- tse_list[ind]
-        col_data <- col_data[ind]
-        # Bind sample metadata to one table
-        col_data <- do.call(bind_rows, col_data)
-        col_data <- DataFrame(col_data)
-        # Merge individual TreeSEs into one
-        result <- mergeSEs(tse_list, assay.type = "counts", missing_values = 0)
-        # Order the sample metadata
-        col_data <- col_data[ colnames(result), , drop = FALSE]
-        # Add sample metadata to the object
-        colData(result) <- col_data
-        # If user wants phyloseq, convert TreeSE
-        if( output == "phyloseq" ){
-            result <- makePhyloseqFromTreeSE(result)
+        # If there are samples left after subsetting
+        if( any(ind) ){
+            tse_list <- tse_list[ind]
+            col_data <- col_data[ind]
+            # Bind sample metadata to one table
+            col_data <- do.call(bind_rows, col_data)
+            col_data <- DataFrame(col_data)
+            # Merge individual TreeSEs into one
+            result <- mergeSEs(tse_list, assay.type = "counts", missing_values = 0)
+            # Order the sample metadata
+            col_data <- col_data[ colnames(result), , drop = FALSE]
+            # Add sample metadata to the object
+            colData(result) <- col_data
+            # If user wants phyloseq, convert TreeSE
+            if( output == "phyloseq" ){
+                result <- makePhyloseqFromTreeSE(result)
+            }
+        } else{
+            warning("No taxonomy data was found for the dataset.", call. = FALSE)
         }
-    } else{
-        result <- NULL
     }
     # If there are functional data
     if( !is.null(func_res) ){
-        # If user wants TreeSE
-        if( output == "TreeSE" ){
-            # Create TreeSE from functional data
-            func_res <- lapply(
-                func_res,
-                .create_TreeSE_from_func_data, tse = result)
-            # Remove data that is NULL
-            func_res <- func_res[!unlist(lapply(func_res, is.null))]
-            # Get colData from microbial profiling data TreeSE,
-            # if it is included
-            args <- list()
-            if( !is.null(result) ){
-                col_data <- colData(result)
-                # Create a MAE
-                result <- list(microbiota = result)
-                exp_list <- append(result, func_res)
-                args$colData <- col_data
-            } else {
-                exp_list <- func_res
-                col_data <- NULL
-            }
-            # If there are more than 1 experiments, create MAE
-            if( length(exp_list) > 1 ){
-                exp_list <- ExperimentList(exp_list)
-                args$experiments <- exp_list
-                result <- do.call(MultiAssayExperiment, args)
-            }else{
-                # If there are only 1 experiment, give it as it is
-                result <- exp_list[[1]]
-            }
+        # Remove data that is NULL
+        ind <- !unlist(lapply(func_res, is.null))
+        # If there are experiments left after subsetting
+        if( any(ind) ){
+            # Take only those experiments that are not NULL
+            func_res <- func_res[ind]
+            # If user wants TreeSE
+            if( output == "TreeSE" ){
+                # Create TreeSE from functional data
+                func_res <- lapply(
+                    func_res,
+                    .create_TreeSE_from_func_data, tse = result)
+                # Get colData from microbial profiling data TreeSE,
+                # if it is included
+                args <- list()
+                # If taxa data is included
+                if( !is.null(result) ){
+                    col_data <- colData(result)
+                    # Create a MAE
+                    result <- list(microbiota = result)
+                    exp_list <- append(result, func_res)
+                    args$colData <- col_data
+                } else {
+                    exp_list <- func_res
+                    col_data <- NULL
+                }
 
-        } else{
-            # If user wants output as a phyloseq, give a list of one phyloseq
-            # object and functional data
-            result <- list(microbiota = result)
-            result <- append(result, func_res)
-            # If there are only one experiment, take it out from the list
-            if( length(result) == 1 ){
-                result <- result[[1]]
+                # If there are more than 1 experiments, create MAE
+                if( length(exp_list) > 1 ){
+                    exp_list <- ExperimentList(exp_list)
+                    args$experiments <- exp_list
+                    result <- do.call(MultiAssayExperiment, args)
+                } else{
+                    # If there are only 1 experiment, give it as it is
+                    result <- exp_list[[1]]
+                }
+            } else{
+                # If user wants output as a phyloseq, give a list of one phyloseq
+                # object and functional data
+                result <- list(microbiota = result)
+                result <- append(result, func_res)
+                # If there are only one experiment, take it out from the list
+                if( length(result) == 1 ){
+                    result <- result[[1]]
+                }
             }
+        } else{
+            warning("No functional data found for the dataset.", call. = FALSE)
         }
     }
     return(result)
@@ -280,6 +292,7 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
 
 # Create a TreeSE from single functional data data.frame
 #' @importFrom S4Vectors SimpleList
+#' @importFrom dplyr %>% mutate_all na_if
 .create_TreeSE_from_func_data <- function(x, tse_microbiota){
     # If data was provided
     if( !is.null(x) ){
@@ -289,12 +302,22 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
         assay[["index_id"]] <- NULL
         # Get row_data
         row_data <- x[ , !colnames(x) %in% c("analysis", "count"), drop = FALSE]
-        row_data <- row_data[!duplicated(row_data), ]
+        row_data <- row_data[!duplicated(row_data), , drop = FALSE]
         rownames(row_data) <- row_data[["index_id"]]
         row_data <- row_data[rownames(assay), , drop=FALSE]
+        # Get taxonomy from the information
+        tax_tab <- mia:::.parse_taxonomy(row_data, column_name = "index_id")
+        # Remove prefixes
+        tax_tab <- mia:::.remove_prefixes_from_taxa(tax_tab)
+        # Replace empty cells with NA
+        tax_tab <- tax_tab %>% mutate_all(na_if, "")
+        # Add taxonomy info to original rowData
+        row_data <- cbind(row_data, tax_tab)
         # If microbiota data exists, order the functional data based on that
+        # Do not drop samples that are not found from microbiota data
         if( !is.null(tse_microbiota) ){
-            assay <- assay[ , colnames(tse_microbiota), drop = FALSE]
+            assay <-  assay[ , order(match(
+                colnames(assay), colnames(tse_microbiota))), drop = FALSE]
         }
         # Create a TreeSE
         assay <- as.matrix(assay)
@@ -376,6 +399,11 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
     # otherwise spit out a warning and grab the generic (older pipelines)
     available_biom_files <- analysis_downloads[grepl('JSON Biom', sapply(
         analysis_downloads, function(x){x$attributes$`file-format`$name}))]
+    # Check if any biom files was found
+    if( is.null(available_biom_files) || length(available_biom_files) == 0 ){
+        warning("No BIOM data found for accession '", accession, "'.", call. = FALSE)
+        return(NULL)
+    }
     biom_position <- grepl(taxa.su, sapply(
         available_biom_files, function(x){x$attributes$`group-type`}))
     if( sum(biom_position) == 0 ){
@@ -426,7 +454,8 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
 
     # Load in the TreeSummarizedExperiment object
     tse <- loadFromBiom(
-        biom_path, removeTaxaPrefixes = TRUE, rankFromPrefix = TRUE)
+        biom_path, removeTaxaPrefixes = TRUE, rankFromPrefix = TRUE,
+        remove.artifacts = TRUE)
     # TreeSE has sample ID as its colnames. Rename so that it is the accession ID.
     colData(tse)[["biom_sample_id"]] <- colnames(tse)
     colnames(tse) <- accession
@@ -549,7 +578,7 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
 #' @importFrom utils read.csv2
 .mgnify_get_single_analysis_results <- function(
         client = NULL, accession, retrievelist=c(), use.cache = TRUE,
-        max.hits = -1, bulk.files = FALSE, ...){
+        max.hits = NULL, bulk.files = FALSE, ...){
     # Get the metadata describing the samples
     metadata_df <- .mgnify_get_single_analysis_metadata(
         client, accession, use.cache=use.cache, max.hits = max.hits)

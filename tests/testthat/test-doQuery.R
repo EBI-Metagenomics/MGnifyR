@@ -10,7 +10,7 @@ test_that("doQuery", {
                          c("TreeSE", "phyloseq"), "taxonomy-ssu",
                          c("taxonomy-ssu", "go-slim"), NULL),
         as.df = list(TRUE, FALSE),
-        max.hits = list(FALSE, 0, 1, 16),
+        max.hits = list(NULL, 0, 1, 16),
         use.cache = list(TRUE, FALSE)
     )
     var <- .wrong_arguments(var)

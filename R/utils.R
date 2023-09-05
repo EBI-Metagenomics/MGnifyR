@@ -262,9 +262,10 @@
                 curd <- content(GET(fullurl, config(verbose=Debug),
                                     query=full_qopts ), ...)
                 datlist[[p]] <- curd$data
-                # Check to see if we've pulled enough entries
+                # Check to see if we've pulled enough entries.
+                # With NULL and -1, disable max.hits
                 curlen <- sum(sapply(datlist, length))
-                if (curlen >= max.hits){
+                if( !is.null(max.hits) && curlen >= max.hits && max.hits != -1 ){
                     break
                 }
             }

@@ -44,7 +44,7 @@ available types is "antismash-gene-clusters", "go-slim", "go-terms",
 "interpro-identifiers", "taxonomy", "taxonomy-itsonedb",
 "taxonomy-itsunite", "taxonomy-lsu", and "taxonomy-ssu". Note that
 depending on the particular analysis type, pipeline version etc., not all
-functional results will be available. (By default: \code{get.func = FALSE})}
+functional results will be available. (By default: \code{get.func = TRUE})}
 
 \item{output}{A single character value specifying the format of an output.
 Must be one of the following options: "TreeSE", "list", or "phyloseq".

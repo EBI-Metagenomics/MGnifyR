@@ -52,7 +52,7 @@
 #' @param max.hits A single integer value specifying the maximum number of
 #' results to return or FALSE. The actual number of results will actually be
 #' higher than \code{max.hits}, as clipping only occurs on pagination page
-#' boundaries. To disable the limit, set \code{max.hits = FALSE}.
+#' boundaries. To disable the limit, set \code{max.hits = NULL}.
 #' (By default: \code{max.hits = 200})
 #'
 #' @param use.cache A single boolean value specifying whether to cache the
@@ -81,8 +81,8 @@
 #' samps <- doQuery(mg, "samples", study_accession="MGYS00004521")
 #'
 #' # Search for all polar samples
-#' samps_np <- doQuery(mg, "samples", latitude_gte=66, max.hits=-1)
-#' samps_sp <- doQuery(mg, "samples", latitude_lte=-66, max.hits=-1)
+#' samps_np <- doQuery(mg, "samples", latitude_gte=66, max.hits=NULL)
+#' samps_sp <- doQuery(mg, "samples", latitude_lte=-66, max.hits=NULL)
 #' samps_polar <- rbind(samps_np, samps_sp)
 #' }
 #'
@@ -123,10 +123,10 @@ setMethod("doQuery", signature = c(x = "MgnifyClient"), function(
         stop("'as.df' must be a single boolean value specifying whether",
              "to return list or data.frame.", call. = FALSE)
     }
-    if( !((.is_an_integer(max.hits) && max.hits > 0) ||
-          (.is_a_bool(max.hits) && max.hits == FALSE))  ){
+    if( !((.is_an_integer(max.hits) && (max.hits > 0 || max.hits == -1) ) ||
+          is.null(max.hits) )  ){
         stop("'max.hits' must be a single integer value specifying the maximum ",
-             "number of results to return or FALSE.", call. = FALSE)
+             "number of results to return or NULL.", call. = FALSE)
     }
     if( !.is_a_bool(use.cache) ){
         stop("'use.cache' must be a single boolean value specifying whether to ",

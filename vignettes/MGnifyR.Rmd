@@ -121,7 +121,7 @@ available in MGnify, a limit to the number of results returned may be set
 using `max.hits`. By default this is set to 200, which for most exploratory
 queries should be sufficient. It may be increased or decreased by directly
 specifying `max.hits`, and disabled completely (no limit) by setting
-`max.hits=-1`.
+`max.hits=NULL`.
 
 In most cases we will want to be more specific about the search, and will
 also use either an `accession` parameter, or the many filter options available

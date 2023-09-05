@@ -45,7 +45,7 @@ results as a data.frame or leave as a nested list. In most cases,
 \item{max.hits}{A single integer value specifying the maximum number of
 results to return or FALSE. The actual number of results will actually be
 higher than \code{max.hits}, as clipping only occurs on pagination page
-boundaries. To disable the limit, set \code{max.hits = FALSE}.
+boundaries. To disable the limit, set \code{max.hits = NULL}.
 (By default: \code{max.hits = 200})}
 
 \item{use.cache}{A single boolean value specifying whether to cache the
@@ -111,8 +111,8 @@ agwaste_studies <- doQuery(
 samps <- doQuery(mg, "samples", study_accession="MGYS00004521")
 
 # Search for all polar samples
-samps_np <- doQuery(mg, "samples", latitude_gte=66, max.hits=-1)
-samps_sp <- doQuery(mg, "samples", latitude_lte=-66, max.hits=-1)
+samps_np <- doQuery(mg, "samples", latitude_gte=66, max.hits=NULL)
+samps_sp <- doQuery(mg, "samples", latitude_lte=-66, max.hits=NULL)
 samps_polar <- rbind(samps_np, samps_sp)
 }
 

@@ -90,7 +90,7 @@ setMethod("getMetadata", signature = c(x = "MgnifyClient"), function(
 
 # Retrieves combined study/sample/analysis metadata - not exported
 .mgnify_get_single_analysis_metadata <- function(
-        client, accession, use.cache = TRUE, max.hits = -1, ...){
+        client, accession, use.cache = TRUE, max.hits = NULL, ...){
     # Get data in json format
     dat <- .mgnify_retrieve_json(
         client, paste("analyses", accession, sep="/"), use.cache = use.cache,
