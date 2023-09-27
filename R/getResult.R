@@ -506,7 +506,7 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
                 }
             }
             # Add the tree to TreeSE object
-            if( !file.exists(tree_path) ){
+            if( file.exists(tree_path) ){
                 row_tree <- read.tree(tree_path)
                 rowTree(tse) <- row_tree
                 # If the file was not in store already but fetched from database,
@@ -648,7 +648,8 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
         })
         # Add data types to data as names (taxonomy might have 2 data types if NULL
         # because these both 2 data types are tried to fetch)
-        cur_type <- unlist(lapply(parsed_results, function(x) x$type[[1]]))
+        cur_type <- unlist(lapply(parsed_results, function(x)
+            ifelse( length(x$type) > 1, x$type[[1]], x$type)))
         parsed_results <- lapply(parsed_results, function(x) x$data)
         names(parsed_results) <- cur_type
     }else{

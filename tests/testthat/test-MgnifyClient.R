@@ -1,32 +1,33 @@
 context("MgnifyClient")
 test_that("MgnifyClient", {
     # Test that input check caches wrong arguments.
-    # List of arguments with correct values
     mg <- MgnifyClient()
-    var <- list(
-        username = list("test", "study", "TreeSE", "taxonomy-ssu", NULL),
-        password = list("test", "study", "TreeSE", "taxonomy-ssu", NULL),
-        useCache = list(TRUE, FALSE),
-        cacheDir = list("test", "study", "TreeSE", "taxonomy-ssu", NULL),
-        warnings = list(TRUE, FALSE),
-        useMemCache = list(TRUE, FALSE),
-        url = list("test", "study", "TreeSE", "taxonomy-ssu")
-    )
-    var <- .wrong_arguments(var)
-    # Loop through rows, all variable pairs should end up to error
-    for(i in seq_len(nrow(var)) ){
-        expect_error(
-            MgnifyClient(
-                username = var[i, 2][[1]],
-                password = var[i, 3][[1]],
-                useCache = var[i, 4][[1]],
-                cacheDir = var[i, 5][[1]],
-                warnings = var[i, 6][[1]],
-                useMemCache = var[i, 7][[1]],
-                url = var[i, 8][[1]],
-            )
-        )
-    }
+
+    # Expect errors when input is wrong
+    expect_error(MgnifyClient(useCache = 1))
+    expect_error(MgnifyClient(useCache = "TRUE"))
+    expect_error(MgnifyClient(useCache = c(TRUE, TRUE)))
+
+    expect_error(MgnifyClient(warnings = 1))
+    expect_error(MgnifyClient(warnings = "TRUE"))
+    expect_error(MgnifyClient(warnings = c(TRUE, TRUE)))
+
+    expect_error(MgnifyClient(useMemCache = 1))
+    expect_error(MgnifyClient(useMemCache = "TRUE"))
+    expect_error(MgnifyClient(useMemCache = c(TRUE, TRUE)))
+
+    expect_error(MgnifyClient(url = 1))
+    expect_error(MgnifyClient(url = TRUE))
+    expect_error(MgnifyClient(url = c("url", "url")))
+
+    expect_error(MgnifyClient(username = 1))
+    expect_error(MgnifyClient(username = TRUE))
+    expect_error(MgnifyClient(username = c("url", "url")))
+
+    expect_error(MgnifyClient(password = 1))
+    expect_error(MgnifyClient(password = TRUE))
+    expect_error(MgnifyClient(password = c("url", "url")))
+
     # Test that slots are updated. Change arguments --> check that values
     # of slots correspond argument.
     mg <- MgnifyClient(
@@ -53,8 +54,6 @@ test_that("MgnifyClient", {
     skip_if(httr::http_error("https://www.ebi.ac.uk/metagenomics/api/v1"))
     # Test that error occurs when wrong username/password is used in
     # authentication
-    expect_error(MgnifyClient(
-        username = "not_work",
-        password = "not_work"
-    ))
+    expect_error(MgnifyClient(username = "not_work", password = "not_work"))
+    expect_error(MgnifyClient(username = "not_work", password = "not_work", url = "not_work"))
 })

@@ -120,6 +120,10 @@ MgnifyClient <- function(
         stop("'cacheDir' must be NULL or single character value specifying ",
              "the the directory for cache.", call. = FALSE)
     }
+    if( !.is_a_bool(warnings) ){
+        stop("'wanings' must be a boolean value specifying whether print ",
+             "extra output during invocation of MGnifyR functions.", call. = FALSE)
+    }
     if( !.is_a_bool(useMemCache) ){
         stop("'useMemCache' must be a boolean value specifying whether use ",
              "on-disk memory.", call. = FALSE)

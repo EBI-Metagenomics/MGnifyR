@@ -1,32 +1,35 @@
 context("doQuery")
 test_that("doQuery", {
     # Test that input check caches wrong arguments.
-    # List of arguments with correct values
     mg <- MgnifyClient()
-    var <- list(
-        x = list(mg),
-        type = list("studies"),
-        accession = list("test", "studies", c("studies", "assembly"), "TreeSE",
-                         c("TreeSE", "phyloseq"), "taxonomy-ssu",
-                         c("taxonomy-ssu", "go-slim"), NULL),
-        as.df = list(TRUE, FALSE),
-        max.hits = list(NULL, 0, 1, 16),
-        use.cache = list(TRUE, FALSE)
-    )
-    var <- .wrong_arguments(var)
-    # Loop through rows, all variable pairs should end up to error
-    for( i in seq_len(nrow(var)) ){
-        expect_error(
-            doQuery(
-                x = var[i, 1][[1]],
-                type = var[i, 2][[1]],
-                accession = var[i, 3][[1]],
-                as.df = var[i, 4][[1]],
-                max.hits = var[i, 5][[1]],
-                use.cache = var[i, 6][[1]]
-            )
-        )
-    }
+
+    # Expect errors when input is wrong
+    expect_error(doQuery("test"))
+    expect_error(doQuery(TRUE))
+    expect_error(doQuery(1))
+
+    expect_error(doQuery(mg, type = 1))
+    expect_error(doQuery(mg, type = "test"))
+    expect_error(doQuery(mg, type = TRUE))
+    expect_error(doQuery(mg, type = c("studies", "samples")))
+
+    expect_error(doQuery(mg, type = "studies", accession = 1))
+    expect_error(doQuery(mg, type = "studies", accession = TRUE))
+    expect_error(doQuery(mg, type = "studies", accession = c(1, 2)))
+
+    expect_error(doQuery(mg, type = "studies", accession = "test", as.df = NULL))
+    expect_error(doQuery(mg, type = "studies", accession = "test", as.df = 1))
+    expect_error(doQuery(mg, type = "studies", accession = "test", as.df = c(TRUE, FALSE)))
+
+    expect_error(doQuery(mg, type = "studies", accession = "test", max.hits = TRUE))
+    expect_error(doQuery(mg, type = "studies", accession = "test", max.hits = -100))
+    expect_error(doQuery(mg, type = "studies", accession = "test", max.hits = c(1, 2)))
+    expect_error(doQuery(mg, type = "studies", accession = "test", max.hits = 1.5))
+
+    expect_error(doQuery(mg, type = "studies", accession = "test", use.cache = NULL))
+    expect_error(doQuery(mg, type = "studies", accession = "test", use.cache = 1))
+    expect_error(doQuery(mg, type = "studies", accession = "test", use.cache = c(TRUE, FALSE)))
+
     # Require internet access
     skip_if(httr::http_error("https://www.ebi.ac.uk/metagenomics/api/v1"))
     # Test that studies are searched based on certain accession ID, get result
@@ -38,5 +41,6 @@ test_that("doQuery", {
     # Test that runs are searched, get result as df, choose max hits
     query2 <- doQuery(mg, "studies", "MGYS00005292", max.hits = 1)
     expect_true(is.data.frame(query2))
-    expect_equal(query2$bioproject, query$MGYS00005292$attributes$bioproject)
+    expect_equal(query2$bioproject,
+                 query$MGYS00005292$attributes$bioproject)
 })

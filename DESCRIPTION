@@ -19,7 +19,8 @@ Depends:
     R(>= 4.0),
     mia,
     MultiAssayExperiment,    
-    TreeSummarizedExperiment (>= 1.99.3)
+    TreeSummarizedExperiment (>= 1.99.3),
+    biomformat
 Imports:
     ape,
     dplyr,    
