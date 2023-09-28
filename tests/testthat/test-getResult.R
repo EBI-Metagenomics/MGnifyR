@@ -57,7 +57,7 @@ test_that("getResult", {
     # Test that microbial profiling data and functional data is fetched. Get
     # data as MAE. Fetch also trees. Check that all data is is in correct place
     # and is correct.
-    res <- getResult(mg, "MGYA00097621", get.tree = TRUE, get.func = TRUE, verbose = FALSE)
+    res <- getResult(mg, "MGYA00097621", get.func = TRUE, verbose = FALSE)
     expect_true(class(res) == "MultiAssayExperiment")
     expect_true(class(res[[1]]) == "TreeSummarizedExperiment")
     expect_true(!is.null(rowTree(res[["microbiota"]])))

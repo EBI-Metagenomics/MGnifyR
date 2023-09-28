@@ -16,21 +16,9 @@ knitr::opts_chunk$set(
   cache = TRUE
 )
 ```
-<!-- #```{r, cache=TRUE} -->
-<!-- #knitr::opts_current$get(c( -->
-<!-- #  "cache", -->
-<!-- #  "cache.path", -->
-<!-- #  "cache.rebuild", -->
-<!-- #  "dependson", -->
-<!-- #  "autodep" -->
-<!-- #)) -->
-<!-- #``` -->
 
-Ben Allen
 
-<ben.allen@ncl.ac.uk>
-
-[MGnifyR homepage](http://github.com/microbiome/MGnifyR)
+[MGnifyR homepage](http://github.com/EBI-Metagenomics/MGnifyR)
 
 
 # Introduction
@@ -58,7 +46,7 @@ book that offers valuable guidance and support.
 `devtools`. `MGnifyR` should be built using the following snippet.
 
 ```{r devtools_install, eval=FALSE}
-devtools::install_github("microbiome/MGnifyR")
+devtools::install_github("EBI-Metagenomics/MGnifyR")
 ```
 
 # Load `MGnifyR` package
@@ -76,11 +64,12 @@ of the JSONAPI url, disk cache location and user access tokens. Thus the first
 thing to do when starting any analysis is to instantiate this object. The
 following snippet creates this.
 
-```{r create_client, echo=TRUE, fig.keep='all', message = FALSE}
-mg <- MgnifyClient(usecache = TRUE, cache_dir = "~/.MGnify_cache")
+```{r create_client}
+mg <- MgnifyClient(useCache = TRUE, cacheDir = "~/.MGnify_cache")
+mg
 ```
 
-It's recommended that local caching is enabled with `usecache = TRUE`. Queries
+It's recommended that local caching is enabled with `useCache = TRUE`. Queries
 to the MGnify API can be quite slow, particularly when retrieving multipage
 results for many analyses (such as many `Interpro` results). Using a local
 disk cache can significantly speed up subsequent work, bypassing the need to
@@ -96,7 +85,7 @@ author imposed embargo period.
 
 ```{r create_client_passwd, eval=FALSE}
 mg <- MgnifyClient(username = "Webin-username", password = "your-password",
-                   usecache = TRUE)
+                   useCache = TRUE)
 ```
 
 # Functions for fetching the data
@@ -110,7 +99,7 @@ interrogated from a common interface. As with all MGnifyR functions the first
 argument `client` must be a valid `MgnifyClient` instance. The only remaining
 **required** parameter is `qtype`, specifying the type of data to be queried,
 and may be one of `studies`, `samples`, `runs`, `analyses` or `assemblies`.
-Other general parameters include `usecache` and `max.hits`. 
+Other general parameters include `use.cache` and `max.hits`. 
 
 Unlike most other `MGnifyR` high level functions, caching is turned off by
 default for `doQuery`. New data and analyses are being added to MGnify all the
@@ -135,10 +124,10 @@ are given in `help(doQuery)`. By way of example though, supposing we are
 interested in amplicon Illumina samples from the arctic, we might try the
 following query:
 
-```{r search_studies, fig.keep='all', message = FALSE, eval=FALSE}
+```{r search_studiesE}
 northpolar <- doQuery(
     mg, "samples", latitude_gte=60.0, experiment_type="amplicon",
-    biome_name="Soil", instrument_platform = "Illumina", usecache = FALSE)
+    biome_name="Soil", instrument_platform = "Illumina", use.cache = FALSE)
 northpolar[1:5,]
 ```
 
@@ -146,9 +135,9 @@ Specifying an `accession` parameter will restrict results to just those matching
 that particular entry, be it a study, sample or run. For example, to retrieve
 information for study "MGYS00002891":
 
-```{r search_studies_accession, message = FALSE, eval = FALSE}
+```{r search_studies_accession}
 study_samples <- doQuery(
-    mg, "studies", accession="MGYS00002891", usecache=TRUE)
+    mg, "studies", accession="MGYS00002891", use.cache=TRUE)
 study_samples
 ```
 
@@ -169,12 +158,9 @@ need converting to the corresponding `analyses`.
 `searchAnalyses`. Following on from our previous search, we have a
 list of `study` accessions, so to convert to corresponding `analyses` we use:
 
-```{r convert_to_analyses, fig.keep='all', results='hide', message = FALSE, eval = FALSE}
+```{r convert_to_analyses}
 analyses_accessions <- searchAnalysis(
     mg, type="studies", accession = study_samples$accession)
-```
-
-```{r show_accessions, eval = FALSE}
 analyses_accessions[1:20]
 ```
 
@@ -197,11 +183,8 @@ duplicates) corresponding to the samples previously found. We use the
 and `study` metadata, which we then filter as required to include only the
 rows we want.
 
-```{r get_metadata, fig.keep='all', results='hide', message = FALSE}
+```{r get_metadata}
 analyses_metadata <- getMetadata(mg, analyses_accessions)
-```
-
-```{r show_metadata}
 head(analyses_metadata)
 ```
 
@@ -246,12 +229,12 @@ tutorial book called [OMA](https://microbiome.github.io/OMA/).
 
 ### Amplicon sequencing
 
-When the dataset includes amplicon sequencing data, `getResult` functions
-returns the dataset as a `TreeSE` by default. See other output types from
-the function documentation.
+When the dataset includes amplicon sequencing data, i.e., the dataset does not
+include function predictions, `getResult` method returns the dataset as a
+`TreeSE` by default. See other output types from the function documentation.
 
 ```{r get_TreeSE}
-tse <- getResult(mg, accession = analyses_accessions)
+tse <- getResult(mg, accession = analyses_accessions[1:10], get.func = FALSE)
 tse
 ```
 
@@ -289,7 +272,7 @@ specific studies.  Since newly performed analyses are retrieved first in the
 results will be different.  This is principally due to the rapid increase in
 MGnify submissions, leading to a potential lack of consistency between even
 closely spaced queries. As mentioned previously, it may be best to use
-`usecache=FALSE` for `doQuery` calls, to ensure queries are actually returning
+`use.cache=FALSE` for `doQuery` calls, to ensure queries are actually returning
 the latest data. *** REWRITE THIS BIT***.
 
 For the remainder of this vignette however, we'll be comparing 3 ostensibly
@@ -300,12 +283,16 @@ things, only the first 20 samples from each study will be used. Furthermore,
 the intention is only to demonstrate the functionality of the MGnifyR package,
 rather than produce scientifically rigorous results.
 
-```{r get_analyses, results='hide', fig.keep='all', message = FALSE}
+```{r get_analyses}
 soil <- searchAnalysis(mg, "studies", "MGYS00001447")[1:20]
 human <- searchAnalysis(mg, "studies", "MGYS00001442")[1:20]
 marine <- searchAnalysis(mg, "studies", "MGYS00001282")[1:20]
 
+# Combine analyses
 all_accessions <- c(soil,human,marine)
+# Subset the accessions by taking 10 random analyses
+set.seed(74)
+all_accessions <- sample(all_accessions, 20)
 all_accessions
 ```
 
@@ -316,7 +303,7 @@ columns. Being autogenerated and flexible, the column names can be a little
 difficult to predict, but examining `colnames(full_metadata)` should make
 things clearer.
 
-```{r get_new_metadata, echo=TRUE, results='hide', fig.keep='all', message = FALSE}
+```{r get_new_metadata}
 full_metadata <- getMetadata(mg, all_accessions)
 ```
 
@@ -352,14 +339,14 @@ ggplot(
     ylab("log(submitted reads)")
 ```
 
-Again, we can fetch the data by calling `getResult`. `bulk_dl=TRUE` has the
+Again, we can fetch the data by calling `getResult`. `bulk.dl=TRUE` has the
 potential to significantly speed up data retrieval. MGnify makes its
 functional results available in two separate ways, either on a per-analysis
 basis through the web api, or at the whole study level as large files,
 tab separated (TSV), and with columns representing the results for each
-analysis. When `bulk_dl` is `FALSE`, `MGnifyR` queries the web api to get
+analysis. When `bulk.dl` is `FALSE`, `MGnifyR` queries the web api to get
 results which (given some functional analyses results may consist of
-thousands of entries) may take significant time. Setting `bulk_dl` to
+thousands of entries) may take significant time. Setting `bulk.dl` to
 `TRUE` causes `MGnifyR` to determine the source study associated with a
 particular `analysis` and to instead download and parse its corresponding
 results file. Since this result file contains entries for all analyses
@@ -370,17 +357,17 @@ this affords several orders of magnitude speedup over the api query case.
 Unfortunately, column entries in the per-study results files do not always
 directly correspond to those from a particular analysis run, causing the
 retrieval to fail. The principal cause of this is believed to be the running
-of multiple analyses jobs on the same sample. Thus for reliability, `bulk_dl`
+of multiple analyses jobs on the same sample. Thus for reliability, `bulk.dl`
 is `FALSE` by default. As a general recommendation though, you should try
 setting it `TRUE` the first time `getResult` is used on a
-set of accessions. If this fails, setting `bulk_dl` to `FALSE` will enable the
+set of accessions. If this fails, setting `bulk.dl` to `FALSE` will enable the
 more robust approach allowing the analysis to continue. It might take a while
 though. Hopefully in the future the sample/analysis correspondence mismatches
-will be fixed and the default `bulk_dl` will be switch to `TRUE`.
+will be fixed and the default `bulk.dl` will be switch to `TRUE`.
 
-```{r, get_mae, cache=TRUE, echo=TRUE, results='hide', fig.keep='all', message = FALSE}
+```{r get_mae}
 mae <- getResult(
-    mg, all_accessions, bulk_dl = TRUE, usecache = TRUE)
+    mg, all_accessions, bulk.dl = TRUE, use.cache = TRUE)
 mae
 ```
 
@@ -424,13 +411,13 @@ a data.frame containing all available downloads for each accession we've been
 examining previously. It then filters this to retain only those files
 corresponding retain the annotated amino acid sequence files.
 
-```{r, get_download_urls, results='hide',message=FALSE}
+```{r get_download_urls}
 #Find list of available downloads, and filter for 
 dl_urls <- searchFile(
     mg, full_metadata$analysis_accession, type = "analyses")
 ```
 
-```{r, show_tgt_urls}
+```{r show_tgt_urls}
 target_urls <- dl_urls[
     dl_urls$attributes.description.label == "Predicted CDS with annotation",]
 head(target_urls)
@@ -451,7 +438,7 @@ integrated into `MGnifyR`, we can retrieve associated files for a particular
 
 ```{r get_genome_urls, results='hide', eval=FALSE}
 # FIXME
-genome_urls <- searchFile(mg, "MGYG-HGUT-04644", type = "genomes")
+genome_urls <- searchFile(mg, "MGYS00005650", type = "genomes")
 ```
 
 ```{r show_genome_urls, eval=FALSE}
@@ -471,14 +458,14 @@ cache, which can make getting to the file afterwards more awkward. Regardless,
 the default behaviour of `getFile` is to retrieve the file specified in the
 parameter `url`, save it to disk, and return the filepath it was saved to. 
 
-```{r, filter_dl_urls, echo=T, message=FALSE}
+```{r, filter_dl_urls}
 # Just select a single file from the target_urls list for demonstration.
 
 # Default behavior - use local cache.
 cached_location = getFile(mg, target_urls$download_url[[1]])
 
 # Specifying a file
-specified_location = getFile(
+specified_location <- getFile(
     mg, target_urls$download_url[[1]], file = "Coding_Sequences_1.fasta.gz")
 
 # Where are the files?
@@ -498,7 +485,7 @@ then processed using this same function in a loop. Therefore in many cases
 the `read_func` parameter is redundant. However, many of the outputs from
 MGnify can be quite large, meaning local storage of many files may become an
 issue. By providing a `read_func` parameter (and necessarily setting
-`usecache=FALSE`) analysis of a large number of datasets may be possible with
+`use.cache=FALSE`) analysis of a large number of datasets may be possible with
 minimal storage requirements.
 
 To illustrate, suppose we were interested in retrieving all detected sequences
@@ -509,7 +496,7 @@ sequences into a single data.frame row. In this case the PFAM motif identifies
 sequences coding for the amoC gene, found in both ammonia and methane
 oxidizing organisms, but any other filtering method could be used.
 
-```{r, simple_parse_function}
+```{r simple_parse_function}
 library(Biostrings)
 
 #Simple function to a count of unique sequences matching PFAM amoC/mmoC motif
@@ -523,11 +510,11 @@ getAmoCseqs <- function(fname){
 Having defined the function, it just remains to include it in the call to
 `getFile`. 
 
-```{r,do_download_with_read}
+```{r do_download_with_read}
 #Just download a single accession for demonstration, specifying a read_function
 amoC_seq_counts <- getFile(
     mg, target_urls$download_url[[1]], read_func = getAmoCseqs,
-    usecache = FALSE)
+    use.cache = FALSE)
 
 amoC_seq_counts %>% t  
 ```

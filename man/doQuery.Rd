@@ -74,14 +74,14 @@ capabilities may be found
 Currently, the following filters are available (based on examination of the
 Python source code):
     \itemize{
-        \item{\strong{Studies}: accession, biome_name, lineage, centre_name}
-        \item{\strong{Samples}: accession, experiment_type, biome_name,
+        \item{\strong{studies}: accession, biome_name, lineage, centre_name}
+        \item{\strong{samples}: accession, experiment_type, biome_name,
             lineage, geo_loc_name, latitude_gte, latitude_lte,
             longitude_gte, longitude_lte, species, instrument_model,
             instrument_platform, metadata_key, metadata_value_gte,
             metadata_value_lte, metadata_value, environment_material,
             environment_feature, study_accession}
-       \item{\strong{Runs}: accession, experiment_type, biome_name, lineage,
+       \item{\strong{runs}: accession, experiment_type, biome_name, lineage,
            species, instrument_platform, instrument_model}
        }
 Unfortunately it appears that in some cases, some of these filters don't work

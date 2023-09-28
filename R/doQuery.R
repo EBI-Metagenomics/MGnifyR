@@ -9,14 +9,14 @@
 #' Currently, the following filters are available (based on examination of the
 #' Python source code):
 #'     \itemize{
-#'         \item{\strong{Studies}: accession, biome_name, lineage, centre_name}
-#'         \item{\strong{Samples}: accession, experiment_type, biome_name,
+#'         \item{\strong{studies}: accession, biome_name, lineage, centre_name}
+#'         \item{\strong{samples}: accession, experiment_type, biome_name,
 #'             lineage, geo_loc_name, latitude_gte, latitude_lte,
 #'             longitude_gte, longitude_lte, species, instrument_model,
 #'             instrument_platform, metadata_key, metadata_value_gte,
 #'             metadata_value_lte, metadata_value, environment_material,
 #'             environment_feature, study_accession}
-#'        \item{\strong{Runs}: accession, experiment_type, biome_name, lineage,
+#'        \item{\strong{runs}: accession, experiment_type, biome_name, lineage,
 #'            species, instrument_platform, instrument_model}
 #'        }
 #' Unfortunately it appears that in some cases, some of these filters don't work
@@ -174,7 +174,10 @@ setMethod("doQuery", signature = c(x = "MgnifyClient"), function(
     # rbind. fill from plyr to combine. For most use cases the number of
     # empty columns will hopefully be minimal... because who's going to
     # want cross study grabbing (?)
+    i <- 0
     for(r in result){
+        i <- i + 1
+        print(i)
         df2 <- .mgnify_attr_list_to_df_row(
             json = r, metadata_key = "sample-metadata")
         # Loop through different datasets (e.g., biomes) that are related
@@ -186,7 +189,7 @@ setMethod("doQuery", signature = c(x = "MgnifyClient"), function(
             temp_data <- temp$data
             # If there is data, include it
             # names(temp_data) %in% "id"
-            if( !is.null(temp_data) ){
+            if( !is.null(temp_data) && length(temp_data) > 0 ){
                 # Take all "id" values. Some data can also include list of
                 # lists. --> unlist and take "id" values
                 temp_data <- unlist(temp_data)

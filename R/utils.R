@@ -179,7 +179,7 @@
     # specific call  - used for debugging and when MGnify breaks
     if(use.cache & client@clearCache){
         if( file.exists(cache_full_fname) ){
-            message(paste("clear_cache is TRUE: deleting ", cache_full_fname, sep=""))
+            message(paste("clearCache is TRUE: deleting ", cache_full_fname, sep=""))
             unlink(cache_full_fname)
         }
     }
