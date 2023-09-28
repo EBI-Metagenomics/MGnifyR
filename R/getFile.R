@@ -1,4 +1,4 @@
-#' Download arbitrary files from MGnify, including processed reads and
+#' Download any MGnify files, also including processed reads and
 #' identified protein sequences
 #'
 #' @details

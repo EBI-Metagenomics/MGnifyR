@@ -5,7 +5,7 @@
 \alias{getFile,MgnifyClient-method}
 \alias{searchFile}
 \alias{searchFile,MgnifyClient-method}
-\title{Download arbitrary files from MGnify, including processed reads and
+\title{Download any MGnify files, also including processed reads and
 identified protein sequences}
 \usage{
 getFile(x, url, file = NULL, read.func = NULL, use.cache = TRUE, ...)
@@ -81,7 +81,7 @@ may to filter the results - since rownames are not set (and wouldn;'t
 make sense as each query will return multiple items)
 }
 \description{
-Download arbitrary files from MGnify, including processed reads and
+Download any MGnify files, also including processed reads and
 identified protein sequences
 
 Listing files available for download
