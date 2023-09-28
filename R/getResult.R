@@ -342,15 +342,11 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
 # Helper function for importing microbial profiling data.
 .mgnify_get_analyses_treese <- function(
         client, accession, use.cache, verbose,
-        taxa.su = "SSU", get.tree = FALSE, ...){
+        taxa.su = "SSU", ...){
     ############################### INPUT CHECK ################################
     if( !(.is_non_empty_string(taxa.su)) ){
         stop("'taxa.su' must be a single character value specifying taxa ",
              "subunit.",
-             call. = FALSE)
-    }
-    if( !.is_a_bool(get.tree) ){
-        stop("'get.tree' must be TRUE or FALSE.",
              call. = FALSE)
     }
     ############################# INPUT CHECK END ##############################
@@ -361,8 +357,7 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
     # Get TreeSE objects
     tse_list <- llply(accession, function(x) {
             .mgnify_get_single_analysis_treese(
-                client, x, use.cache = use.cache, taxa.su = taxa.su,
-                get.tree = get.tree, ...)
+                client, x, use.cache = use.cache, taxa.su = taxa.su, ...)
     }, .progress = verbose)
     # The sample_data has been corrupted by doing the merge (names get messed
     # up and duplicated), so just regrab it with another lapply/rbind
@@ -386,7 +381,13 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
 #' @importFrom TreeSummarizedExperiment rowTree
 .mgnify_get_single_analysis_treese <- function(
         client = NULL, accession, use.cache = TRUE, downloadDIR = NULL,
-        taxa.su = "SSU", get.tree = FALSE, ...){
+        taxa.su = "SSU", get.tree = TRUE, ...){
+    ############################### INPUT CHECK ################################
+    if( !.is_a_bool(get.tree) ){
+        stop("'get.tree' must be TRUE or FALSE.",
+             call. = FALSE)
+    }
+    ############################# INPUT CHECK END ##############################
     # Get the metadata related to analysis
     metadata_df <- .mgnify_get_single_analysis_metadata(
         client, accession, use.cache=use.cache, ...)

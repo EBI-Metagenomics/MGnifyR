@@ -42,7 +42,7 @@ cutting-edge tools in microbiome down-stream analytics.
 `devtools`. `MGnifyR` should be built using the following snippet.
 
 ```{r devtools_install, eval=FALSE}
-devtools::install_github("beadyallen/MGnifyR")
+devtools::install_github("EBI-Metagenomics/MGnifyR")
 ```
 
 # Load `MGnifyR` package
