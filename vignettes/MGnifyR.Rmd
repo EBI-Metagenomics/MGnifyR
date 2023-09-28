@@ -386,7 +386,7 @@ utilizing miaverse tools.
 
 ```{r pcoa}
 # Apply relative transformation
-mae[[1]] <- transformCounts(mae[[1]], method = "relabundance")
+mae[[1]] <- transformAssay(mae[[1]], method = "relabundance")
 # Perform PCoA
 mae[[1]] <- runMDS(
     mae[[1]], assay.type = "relabundance",
