@@ -16,16 +16,6 @@ vignette: >
 bibliography: references.bib
 ---
 
-```{r, echo=FALSE}
-knitr::opts_chunk$set(
-    cache = FALSE,
-    fig.width = 9,
-    message = FALSE,
-    warning = FALSE,
-    eval = FALSE
-    )
-```
-
 # Introduction
 
 `MGnifyR` is a package designed to ease access to the EBI's
@@ -61,34 +51,23 @@ thing to do when starting any analysis is to instantiate this object. The
 following snippet creates this.
 
 ```{r create_client, echo=TRUE, fig.keep='all', message = FALSE}
-mg <- MgnifyClient(usecache = TRUE, cache_dir = "~/.MGnify_cache")
+mg <- MgnifyClient(useache = TRUE, cacheDir = "~/.MGnify_cache")
 ```
 
 # Functions for fetching the data
 
 ## Search data
 
-Below, we combine data from two studies. Accession IDs were fetched from the
-[MGnify website](https://www.ebi.ac.uk/metagenomics/search.
-
-# TODO: I believe searching with keywords is not possible? Should it be?
-# otherwise doQuery does not do much
+Below, we fetch information on samples of drinking water.
 
 ```{r search_studies}
-# studies <- doQuery(
-#     mg, "studies", accession = c("MGYS00005132"))
-# head(studies)
+# Fetch studies
+samples <- doQuery(
+    mg,
+    type = "samples",
+    biome_name = "root:Environmental:Aquatic:Freshwater:Drinking water",
+    max.hits = 10)
 ```
-
-
-```{r get_analyses, results='hide', fig.keep='all', message = FALSE}
-soil <- searchAnalysis(mg, "studies", "MGYS00001447")[1:20]
-human <- searchAnalysis(mg, "studies", "MGYS00001442")[1:20]
-
-analyses_accessions <- c(soil, human)
-analyses_accessions
-```
-
 
 ## Find relevent **analyses** accessions
 
@@ -97,8 +76,7 @@ analyses. Each analysis ID corresponds to a single run of a particular pipeline
 on a single sample in a single study.
 
 ```{r convert_to_analyses}
-analyses_accessions <- searchAnalysis(
-    mg, type="studies", accession = studies$accession)
+analyses_accessions <- searchAnalysis(mg, "samples", samples$accession)
 
 head(analyses_accessions)
 ```
@@ -107,7 +85,7 @@ head(analyses_accessions)
 
 We can now check the metadata to get hint of what kind of data we have.
 
-```{r get_metadata, fig.keep='all', results='hide', message = FALSE}
+```{r get_metadata}
 analyses_metadata <- getMetadata(mg, analyses_accessions)
 
 head(analyses_metadata)
@@ -131,7 +109,7 @@ You can get access to individual `TreeSE` object in `MAE` by specifying
 index or name.
 
 ```{r mae_access}
-mae[[2]]
+mae[[1]]
 ```
 
 `TreeSE` object is uniquely positioned to support `SummarizedExperiment`-based
@@ -148,9 +126,14 @@ plotColData(mae[[1]], "shannon", x = "sample_environment.feature")
 
 
 ```{r plot_abundance}
+# Agglomerate data
+altExps(mae[[1]]) <- splitByRanks(mae[[1]])
+
 library(miaViz)
 
-plotAbundance(mae[[1]], rank = "Phylum")
+# Plot top taxa
+top_taxa <- getTopFeatures(altExp(mae[[1]], "Phylum"), 10)
+plotAbundance(altExp(mae[[1]], "Phylum")[top_taxa, ], rank = "Phylum")
 ```
 
 We can perform principal component analysis to microbial profiling data by
@@ -174,20 +157,19 @@ of the functional analyses.
 
 With `searchFile`, we can search files from the database.
 
-```{r, get_download_urls, results='hide',message=FALSE}
-#Find list of available downloads, and filter for 
-dl_urls <- searchFile(
-    mg, analyses_accessions, type = "analyses")
+```{r get_download_urls}
+# Find list of available downloads, and filter for 
+dl_urls <- searchFile(mg, analyses_accessions, type = "analyses")
 ```
 
-```{r,show_tgt_urls}
+```{r show_tgt_urls}
 target_urls <- dl_urls[dl_urls$attributes.description.label == "Predicted CDS with annotation",]
 head(target_urls)
 ```
 
 Finally, we can download the files with `getFile`.
 
-```{r, filter_dl_urls, echo=T, message=FALSE}
+```{r filter_dl_urls, echo=T, message=FALSE}
 # Just select a single file from the target_urls list for demonstration.
 
 # Default behavior - use local cache.

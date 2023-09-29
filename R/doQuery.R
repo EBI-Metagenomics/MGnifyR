@@ -84,6 +84,13 @@
 #' samps_np <- doQuery(mg, "samples", latitude_gte=66, max.hits=NULL)
 #' samps_sp <- doQuery(mg, "samples", latitude_lte=-66, max.hits=NULL)
 #' samps_polar <- rbind(samps_np, samps_sp)
+#'
+#' # Search studies that have studied drinking water
+#' tbl <- doQuery(
+#'     mg,
+#'     type = "studies",
+#'     biome_name = "root:Environmental:Aquatic:Freshwater:Drinking water",
+#'     max.hits = 10)
 #' }
 #'
 #' @name doQuery
@@ -174,10 +181,7 @@ setMethod("doQuery", signature = c(x = "MgnifyClient"), function(
     # rbind. fill from plyr to combine. For most use cases the number of
     # empty columns will hopefully be minimal... because who's going to
     # want cross study grabbing (?)
-    i <- 0
     for(r in result){
-        i <- i + 1
-        print(i)
         df2 <- .mgnify_attr_list_to_df_row(
             json = r, metadata_key = "sample-metadata")
         # Loop through different datasets (e.g., biomes) that are related

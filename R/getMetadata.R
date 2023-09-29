@@ -97,7 +97,8 @@ setMethod("getMetadata", signature = c(x = "MgnifyClient"), function(
         max.hits = max.hits, ...)
     # If metadata was not found, return the NULL value
     if(is.null(dat)){
-        warning(paste("Failed to find study metadata for ", accession, sep=""))
+        warning(paste("Failed to find study metadata for ", accession, sep=""),
+                call. = FALSE)
         return(dat)
     }
 

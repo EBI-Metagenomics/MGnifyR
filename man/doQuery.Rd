@@ -114,6 +114,13 @@ samps <- doQuery(mg, "samples", study_accession="MGYS00004521")
 samps_np <- doQuery(mg, "samples", latitude_gte=66, max.hits=NULL)
 samps_sp <- doQuery(mg, "samples", latitude_lte=-66, max.hits=NULL)
 samps_polar <- rbind(samps_np, samps_sp)
+
+# Search studies that have studied drinking water
+tbl <- doQuery(
+    mg,
+    type = "studies",
+    biome_name = "root:Environmental:Aquatic:Freshwater:Drinking water",
+    max.hits = 10)
 }
 
 }

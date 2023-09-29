@@ -317,10 +317,13 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
             row_data <- cbind(row_data, tax_tab)
         }
         # If microbiota data exists, order the functional data based on that
-        # Do not drop samples that are not found from microbiota data
-        if( !is.null(tse_microbiota) ){
-            assay <-  assay[ , order(match(
-                colnames(assay), colnames(tse_microbiota))), drop = FALSE]
+        # Do not drop samples that are not found from microbiota data.
+        # Order only when samples are shared.
+        if( !is.null(tse_microbiota) &&
+            all(colnames(assay) %in% colnames(tse_microbiota)) &&
+            all(colnames(tse_microbiota) %in% colnames(assay)) ){
+            assay <-  assay[ , match(colnames(tse_microbiota), colnames(assay)),
+                             drop = FALSE]
         }
         # Create a TreeSE
         assay <- as.matrix(assay)
@@ -328,8 +331,12 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
         row_data <- DataFrame(row_data)
         # Get arguments for TreeSE
         args <- list(assays = assays, rowData = row_data)
+        # Get sample metadata
         if( !is.null(tse_microbiota) ){
-            args$colData <- colData(tse_microbiota)
+            col_data <- colData(tse_microbiota)
+            # Order coldata
+            col_data <- col_data[match(colnames(assay), rownames(col_data)), ]
+            args$colData <- col_data
         }
         # Create TreeSE
         tse <- do.call(TreeSummarizedExperiment, args)
@@ -460,8 +467,8 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
 
     # Load in the TreeSummarizedExperiment object
     tse <- loadFromBiom(
-        biom_path, removeTaxaPrefixes = TRUE, rankFromPrefix = TRUE,
-        remove.artifacts = TRUE)
+        biom_path, removeTaxaPrefixes = TRUE, only.taxa.col = TRUE,
+        rankFromPrefix = TRUE, remove.artifacts = TRUE)
     # If the file was not in store already but fetched from database, and cache
     # storing is disabled
     if( fetched_from_url && !use.cache ){
@@ -718,7 +725,7 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
         data_path <- paste(downloadDIR, fname, sep="/")
         # Clear cache if specified
         if(use.cache && client@clearCache && file.exists(data_path) ){
-            message(paste("clear_cache is TRUE: deleting ",
+            message(paste("clearCache is TRUE: deleting ",
                           data_path, sep=""))
             unlink(data_path)
         }
@@ -765,10 +772,10 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
     # Need to figure out how many columns to keep -
     # Get those columns that do not include numeric values but some info about
     # samples etc... First column includes always sample ID.
-    info_cols <- apply(tmp_df, 2, function(x) is.na(suppressWarnings(as.numeric(x))) )
-    info_cols <- colSums(info_cols) == nrow(info_cols)
+    info_cols <- lapply(tmp_df, function(x) all(is.na(suppressWarnings(as.numeric(x)))) )
+    info_cols <- unlist(info_cols)
+    info_cols <- c(sample_ID = TRUE, info_cols[2:length(info_cols)])
     info_cols <- which(info_cols)
-    info_cols <- unique(c(1, info_cols))
 
     # Also need the column name for this particular
     # analysis...
@@ -788,11 +795,14 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
     # Get the correct sample and subset the data so that it includes only
     # the sample and info columns
     column_position <- match(accession, colnames(tmp_df))
-    if( is.na(column_position) || length(column_position) != 1 ){
+    if( (is.na(column_position) || length(column_position) != 1) ){
         warning(
             paste("Failed to find column", accession, sep = " "), call. = FALSE)
         return(NULL)
     }
+    # Ensure that the counts are numeric
+    tmp_df[[column_position]] <- as.numeric(tmp_df[[column_position]])
+    # Get columns to keep
     keeper_columns <- c(info_cols, column_position)
     tmp_df <- tmp_df[, keeper_columns, drop = FALSE]
     # Adjust colnames rownames and add column

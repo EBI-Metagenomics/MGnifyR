@@ -47,7 +47,7 @@ test_that("getResult", {
 
     # Test that only functional data is fetched based on certain accession ID.
     # Get data as list of data.frames
-    res <- getResult( mg, "MGYA00097621", get.taxa = FALSE, output = "list", get.func = TRUE, verbose = FALSE)
+    res <- getResult(mg, "MGYA00097621", get.taxa = FALSE, output = "list", get.func = TRUE, verbose = FALSE)
     expect_true(is.list(res))
     expect_true("go-terms" %in% names(res))
     expect_true(is.character(res$`interpro-identifiers`$analysis) &&
