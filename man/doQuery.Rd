@@ -99,7 +99,6 @@ it is possible to run multiple queries and combine the results using set
 operations in R to get the desired behaviour.
 }
 \examples{
-\dontrun{
 mg <- MgnifyClient(cache_dir="/tmp/mgcache")
 
 # Get a list of studies from the Agricultural Wastewater :
@@ -110,10 +109,9 @@ agwaste_studies <- doQuery(
 # Get all samples from a particular study
 samps <- doQuery(mg, "samples", study_accession="MGYS00004521")
 
-# Search for all polar samples
-samps_np <- doQuery(mg, "samples", latitude_gte=66, max.hits=NULL)
-samps_sp <- doQuery(mg, "samples", latitude_lte=-66, max.hits=NULL)
-samps_polar <- rbind(samps_np, samps_sp)
+# Search polar samples
+samps_np <- doQuery(mg, "samples", latitude_gte=66, max.hits=10)
+samps_sp <- doQuery(mg, "samples", latitude_lte=-66, max.hits=10)
 
 # Search studies that have studied drinking water
 tbl <- doQuery(
@@ -121,6 +119,5 @@ tbl <- doQuery(
     type = "studies",
     biome_name = "root:Environmental:Aquatic:Freshwater:Drinking water",
     max.hits = 10)
-}
 
 }

@@ -25,15 +25,16 @@
 #' @return vector of analysis accession IDs.
 #'
 #' @examples
-#' \dontrun{
+#' # Create a client object
+#' mg <- MgnifyClient(useache = TRUE, cacheDir = "~/.MGnify_cache")
+#'
 #' # Retrieve all analysis ids from studies
 #' # MGYS00005058, MGYS00005058 and MGYS00005058
-#' result <- searchAnalysis(myclient, "study", c("MGYS00005058"))
+#' result <- searchAnalysis(mg, "studies", c("MGYS00005058"))
 #'
 #' # Retrieve all analysis ids from samples
 #' result <- searchAnalysis(
-#'     myclient, "sample", c("SRS4392730", "SRS4392743"))
-#' }
+#'     mg, "samples", c("SRS4392730", "SRS4392743"))
 #'
 #' @name searchAnalysis
 NULL

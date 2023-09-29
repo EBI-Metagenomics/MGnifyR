@@ -121,17 +121,19 @@ Given a set of analysis accessions and collection of annotation types,
 the function queries the MGNify API and returns the results.
 }
 \examples{
-\dontrun{
+# Create a client object
+mg <- MgnifyClient(useache = TRUE, cacheDir = "~/.MGnify_cache")
+
 # Get OTU tables as TreeSE
+accession_list <- c("MGYA00377505", "MGYA00377506")
 tse <- getResult(mg, accession_list, get.func=FALSE, get.taxa=TRUE)
 
 # Get functional data along with OTU tables as MAE
 mae <- getResult(mg, accession_list, get.func=TRUE, get.taxa=TRUE)
 
 # Get same data as list
-analyses_res <- getResult(
+list <- getResult(
     mg, accession_list, get.func=TRUE, get.taxa=TRUE, output = "list",
-    as.df=T, use.cache = T, bulk.dl = F)
-}
+    as.df = TRUE, use.cache = TRUE)
 
 }

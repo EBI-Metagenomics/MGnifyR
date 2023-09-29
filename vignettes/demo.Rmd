@@ -16,6 +16,10 @@ vignette: >
 bibliography: references.bib
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(eval = FALSE)
+```
+
 # Introduction
 
 `MGnifyR` is a package designed to ease access to the EBI's

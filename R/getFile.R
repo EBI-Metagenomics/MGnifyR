@@ -43,7 +43,6 @@
 #' used, its result will be returned.
 #'
 #' @examples
-#' \dontrun{
 #' # Make a client object
 #' mg <- MgnifyClient(cache_dir="/tmp/mgcache")
 #' # Create a vector of accession ids - these happen to be \code{analysis}
@@ -51,7 +50,7 @@
 #' accession_vect <- c(
 #'     "MGYA00563876", "MGYA00563877", "MGYA00563878", "MGYA00563879",
 #'     "MGYA00563880")
-#' downloads <- mgnify_get_downloads_urls(mg, accession_vect, "analyses")
+#' downloads <- searchFile(mg, accession_vect, "analyses")
 #'
 #' # Filter to find the urls of 16S encoding sequences
 #' url_list <- downloads[
@@ -59,21 +58,20 @@
 #'     "download_url"]
 #'
 #' # Example 1:
-#' #Download the first file
-#' supplied_filename <- mgnify_download(
+#' # Download the first file
+#' supplied_filename <- getFile(
 #'     mg, url_list[[1]], file="SSU_file.fasta.gz")
 #'
 #'
 #' # Example 2:
-#' #Just use local caching
-#' cached_filename <- mgnify_download(mg, url_list[[2]])
+#' # Just use local caching
+#' cached_filename <- getFile(mg, url_list[[2]])
 #'
 #' # Example 3:
 #' # Using read.func to open the reads with readDNAStringSet from
 #' # \code{biostrings}. Without retaining on disk
-#' dna_seqs <- mgnify_download(
+#' dna_seqs <- getFile(
 #'     mg, url_list[[3]], read.func = readDNAStringSet, use.cache = FALSE)
-#' }
 #'
 #' @name getFile
 NULL

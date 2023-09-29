@@ -22,12 +22,14 @@
 #' \code{accession} list.
 #'
 #' @examples
-#' \dontrun{
+#' # Create a client object
+#' mg <- MgnifyClient(useache = TRUE, cacheDir = "~/.MGnify_cache")
+#'
 #' # Download all associated study/sample and analysis metadata
+#' accession_list <- c("MGYA00377505", "MGYA00377506")
 #' meta_dataframe <- getMetadata(
-#'     mgclnt, accession_list, use.cache = TRUE
+#'     mg, accession_list, use.cache = TRUE
 #'     )
-#' }
 #'
 #' @name getMetadata
 NULL

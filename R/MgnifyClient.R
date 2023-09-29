@@ -87,7 +87,12 @@ MgnifyClient <- setClass(
 #' @return A MgnifyClient object.
 #'
 #' @examples
+#' my_client <- MgnifyClient(
+#'     useCache = TRUE, cacheDir = "/scratch/MGnify_cache_location"
+#'     )
+#'
 #' \dontrun{
+#' # Use username and password to get access to non-public data
 #' my_client <- MgnifyClient(
 #'     username = "Webin-1122334", password = "SecretPassword",
 #'     useCache = TRUE, cacheDir = "/scratch/MGnify_cache_location"
