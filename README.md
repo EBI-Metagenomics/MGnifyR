@@ -1,12 +1,24 @@
-# [MGnifyR](https://github.com/beadyallen/MGnifyR)
+# MGnifyR <img src="man/figures/mgnify_logo.jpg" align="right" width="120" />
 
-An R package for searching and retrieving data from the EBI Metagenomics resource. Currently undergoing heavy development, it nevertheless provides a useful set of tools to easily access and process MGnify data in R. In most cases, MGnifyR interacts directly with the JSONAPI, rather than relying on downloading analyses outputs as TSV files. Thus it is more general - allowing for example the intuitive combining of multiple studies and analyses into a single workflow, but is in some cases slower than the afformentioned direct access. Local caching of results on disk is implemented to help counter some of the overheads, but data downloads can be slow - particularly for functional annotation retrieval. 
+An R package for searching and retrieving data from the EBI Metagenomics resource. 
+In most cases, MGnifyR interacts directly with the JSONAPI, rather than relying
+on downloading analyses outputs as TSV files. Thus it is more general - allowing
+for example the intuitive combining of multiple studies and analyses
+into a single workflow, but is in some cases slower than the afformentioned
+direct access. Local caching of results on disk is implemented to help counter
+some of the overheads, but data downloads can be slow - particularly for
+functional annotation retrieval. 
+
+MGnifyR package is part of [miaverse](https://microbiome.github.io/) 
+microbiome analysis ecosystem enabling usage of
+[mia](https://bioconductor.org/packages/release/bioc/html/mia.html)
+and other miaverse packages.
 
 ## Requirements
 
 ```
 devtools # for installation
-phyloseq
+mia
 plyr
 dplyr
 reshape2
@@ -18,7 +30,7 @@ urltools
 ## Installation instructions
 At the R terminal:
 ```
-devtools::install_github("beadyallen/MGnifyR")
+devtools::install_github("EBI-Metagenomics/MGnifyR")
 ```
 
 
@@ -28,22 +40,17 @@ For more detailed instructions read the associated function help and vignette (`
 ```
 library(MGnifyR)
 
-#Set up the MGnify client instance
-mgclnt <- mgnify_client(usecache = T, cache_dir = '/tmp/MGnify_cache')
+# Set up the MGnify client instance
+mgclnt <- MgnifyClient(usecache = TRUE, cache_dir = '/tmp/MGnify_cache')
 
-#Retrieve the list of analyses associated with a study
-accession_list <- mgnify_analyses_from_studies(mgclnt, "MGYS00005058", usecache = T)
+# Retrieve the list of analyses associated with a study
+accession_list <- searchAnalysis(mgclnt, "studies", "MGYS00005058", usecache = TRUE)
 
-#Download all associated study/sample and analysis metadata
-meta_dataframe <- mgnify_get_analyses_metadata(mgclnt, accession_list, usecache = T )
+# Download all associated study/sample and analysis metadata
+meta_dataframe <- getMetadata(mgclnt, accession_list, usecache = TRUE)
 
-#Convert analyses outputs to a single `phyloseq` object
-psobj <- mgnify_get_analyses_phyloseq(mgclnt, meta_dataframe$analysis_accession, usecache = T)
-psobj
-
-#Retrieve Interpro assignment counts for these analyses
-ip_df <- mgnify_get_analyses_results(mgclnt, meta_dataframe$analysis_accession, retrievelist = c("interpro-identifiers"), usecache = T)
-head(ip_df)
+# Convert analyses outputs to a single `MultiAssayExperiment` object
+mae <- getResult(mgclnt, meta_dataframe$analysis_accession, usecache = TRUE)
+mae
 ```
-
 

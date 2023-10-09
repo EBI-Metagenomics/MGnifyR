@@ -1,3 +1,6 @@
+*_cache
+inst/extras/
+*~
 .Rproj.user
 .Rhistory
 .RData
@@ -11,3 +14,9 @@ Testing
 .gitignore
 tmp
 .RDataTmp
+*.Rproj
+**/NA/
+vignettes/*.html
+vignettes/*.R
+vignettes/*.pdf
+vignettes/MGnifyR_cache
