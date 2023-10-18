@@ -61,7 +61,8 @@
 # Given an accession x, we want to get the link to get the url for the
 # corresponding typeY JSONAPI path for child elements
 #
-# .mgnify_get_x_for_y determines the location of typeY child objects of x (typeX)
+# .mgnify_get_x_for_y determines the location of typeY child objects of x
+# (typeX)
 #
 # This helper function, principally intended to be used internally,
 # is used to match up related objects within the path. The inherently
@@ -90,7 +91,8 @@
         paste(typeX, x, sep = "/"),
         use.cache = use.cache,
         ...)
-    # Get related analyses when samples were found and vice versa if result was found.
+    # Get related analyses when samples were found and vice versa if result was
+    # found.
     if( !is.null(res) ){
         res <- res[[1]]$relationships[[typeY]]$links$related
     }
@@ -179,7 +181,7 @@
     # specific call  - used for debugging and when MGnify breaks
     if(use.cache & client@clearCache){
         if( file.exists(cache_full_fname) ){
-            message(paste("clearCache is TRUE: deleting ", cache_full_fname, sep=""))
+            message("clearCache is TRUE: deleting ", cache_full_fname)
             unlink(cache_full_fname)
         }
     }
@@ -191,8 +193,8 @@
         # Authorization: Bearer <your_token>
         if(!is.null(client@authTok)){
             add_headers(
-                .headers = c(Authorization = paste("Bearer",
-                                                   client@authTok, sep=" ")))
+                .headers = c(Authorization = paste(
+                    "Bearer", client@authTok, sep = " ")))
         }
         res <- GET(url=fullurl, config(verbose=Debug), query=full_qopts )
         # Get the data
@@ -216,8 +218,9 @@
         # Save the result to file if specified
         if (use.cache && !file.exists(cache_full_fname)){
             # Make sure the directory is created...
-            dir.create(dirname(cache_full_fname), recursive = TRUE,
-                       showWarnings = client@warnings)
+            dir.create(
+                dirname(cache_full_fname), recursive = TRUE,
+                showWarnings = client@warnings)
             saveRDS(final_data, file = cache_full_fname)
         }
     }
@@ -257,7 +260,8 @@
                 if(!is.null(client@authTok)){
                     add_headers(
                         .headers = c(
-                            Authorization = paste("Bearer", client@authTok, sep=" ")))
+                            Authorization = paste(
+                                "Bearer", client@authTok, sep = " ")))
                 }
                 curd <- content(GET(fullurl, config(verbose=Debug),
                                     query=full_qopts ), ...)
@@ -265,7 +269,8 @@
                 # Check to see if we've pulled enough entries.
                 # With NULL and -1, disable max.hits
                 curlen <- sum(vapply(datlist, length))
-                if( !is.null(max.hits) && curlen >= max.hits && max.hits != -1 ){
+                if( !is.null(max.hits) && curlen >= max.hits &&
+                    max.hits != -1 ){
                     break
                 }
             }

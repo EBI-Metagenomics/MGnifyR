@@ -10,10 +10,10 @@ vignette: >
 ```{r, include = FALSE}
 library(knitr)
 knitr::opts_chunk$set(
-  collapse = TRUE,
-  eval =FALSE,
-  comment = "#>",
-  cache = TRUE
+    collapse = TRUE,
+    eval =FALSE,
+    comment = "#>",
+    cache = TRUE
 )
 ```
 
@@ -84,8 +84,8 @@ Doing so gives access to non-public results, such as those currently under an
 author imposed embargo period.
 
 ```{r create_client_passwd, eval=FALSE}
-mg <- MgnifyClient(username = "Webin-username", password = "your-password",
-                   useCache = TRUE)
+mg <- MgnifyClient(
+  username = "Webin-username", password = "your-password", useCache = TRUE)
 ```
 
 # Functions for fetching the data
@@ -501,9 +501,9 @@ library(Biostrings)
 
 #Simple function to a count of unique sequences matching PFAM amoC/mmoC motif
 getAmoCseqs <- function(fname){
-  sequences <- readAAStringSet(fname)
-  tgtvec <- grepl("PF04896", names(sequences))
-  as.data.frame(as.list(table(as.character(sequences[tgtvec]))))
+    sequences <- readAAStringSet(fname)
+    tgtvec <- grepl("PF04896", names(sequences))
+    as.data.frame(as.list(table(as.character(sequences[tgtvec]))))
 }
 ```
 

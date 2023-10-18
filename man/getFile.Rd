@@ -129,7 +129,7 @@ cached_filename <- getFile(mg, url_list[[2]])
 dna_seqs <- getFile(
     mg, url_list[[3]], read.func = readDNAStringSet, use.cache = FALSE)
 
-\dontrun{
+\donttest{
 # Make a client object
 mg <- MgnifyClient(cache_dir="/tmp/mgcache")
 # Create a vector of accession ids - these happen to be \code{analysis}

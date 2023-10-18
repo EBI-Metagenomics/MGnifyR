@@ -113,33 +113,39 @@ setMethod("doQuery", signature = c(x = "MgnifyClient"), function(
         ){
     ############################### INPUT CHECK ################################
     if( !(.is_non_empty_string(type)) ){
-        stop("'type' must be a single character value specifying ",
-             "the type of instance to query.", call. = FALSE)
+        stop(
+            "'type' must be a single character value specifying ",
+            "the type of instance to query.", call. = FALSE)
     }
     type <- match.arg(type, several.ok = FALSE)
     if( !(.is_non_empty_character(accession) || is.null(accession)) ){
-        stop("'accession' must be a single character value or list of ",
-             "character values specifying the MGnify accession identifier ",
-             "or NULL.",
-             call. = FALSE)
+        stop(
+            "'accession' must be a single character value or list of ",
+            "character values specifying the MGnify accession identifier ",
+            "or NULL.",
+            call. = FALSE)
     }
     if( !.is_a_bool(as.df) ){
-        stop("'as.df' must be a single boolean value specifying whether",
-             "to return list or data.frame.", call. = FALSE)
+        stop(
+            "'as.df' must be a single boolean value specifying whether",
+            "to return list or data.frame.", call. = FALSE)
     }
     if( !((.is_an_integer(max.hits) && (max.hits > 0 || max.hits == -1) ) ||
-          is.null(max.hits) )  ){
-        stop("'max.hits' must be a single integer value specifying the maximum ",
-             "number of results to return or NULL.", call. = FALSE)
+        is.null(max.hits) )  ){
+        stop(
+            "'max.hits' must be a single integer value specifying the ", 
+            "maximum number of results to return or NULL.", call. = FALSE)
     }
     if( !.is_a_bool(use.cache) ){
-        stop("'use.cache' must be a single boolean value specifying whether to ",
-             "use on-disk caching.", call. = FALSE)
+        stop(
+            "'use.cache' must be a single boolean value specifying whether ",
+            "to use on-disk caching.", call. = FALSE)
     }
     ############################# INPUT CHECK END ##############################
     # Perform query
-    result <- .perform_query(client = x, type = type, accession = accession,
-                             max.hits = max.hits, use.cache = use.cache, ...)
+    result <- .perform_query(
+        client = x, type = type, accession = accession, max.hits = max.hits,
+        use.cache = use.cache, ...)
     # Convert list to data.frame if specified
     if(as.df){
         result <- .list_to_dataframe(result)
@@ -195,8 +201,8 @@ setMethod("doQuery", signature = c(x = "MgnifyClient"), function(
                 # lists. --> unlist and take "id" values
                 temp_data <- unlist(temp_data)
                 temp_data <- temp_data[names(temp_data) %in% "id"]
-                temp_names <- rep(names(r$relationships)[rn],
-                                  length(temp_data))
+                temp_names <- rep(
+                    names(r$relationships)[rn], length(temp_data))
                 # Get all column names and make them unique
                 colnames <- append(colnames(df2), temp_names)
                 colnames <- make.unique(colnames)

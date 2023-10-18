@@ -63,10 +63,11 @@ mgnify_client <- function(
         url = NULL, username = NULL, password = NULL, usecache = FALSE,
         cache_dir = NULL, warnings = FALSE, use_memcache = FALSE){
     .Deprecated("MgnifyClient")
-    MgnifyClient(url = url,
-                 username = username, password = password,
-                 useCache = usecache, cacheDir = cache_dir, warnings = warnings,
-                 useMemCache = use_memcache)
+    MgnifyClient(
+        url = url,
+        username = username, password = password,
+        useCache = usecache, cacheDir = cache_dir, warnings = warnings,
+        useMemCache = use_memcache)
 }
 
 #' @rdname deprecate

@@ -57,21 +57,24 @@ setMethod("searchAnalysis", signature = c(x = "MgnifyClient"), function(
         ){
     ############################### INPUT CHECK ################################
     if( !(type %in% c("samples", "studies")) ){
-        stop("'type' must be 'samples' or 'studies'.",
-             call. = FALSE)
+        stop(
+            "'type' must be 'samples' or 'studies'.", call. = FALSE)
     }
     if( !(.is_non_empty_character(accession)) ){
-        stop("'accession' must be a single character value or list of ",
-             "character values specifying the MGnify accession identifier.",
-             call. = FALSE)
+        stop(
+            "'accession' must be a single character value or list of ",
+            "character values specifying the MGnify accession identifier.",
+            call. = FALSE)
     }
     if( !.is_a_bool(use.cache) ){
-        stop("'use.cache' must be a single boolean value specifying whether to ",
-             "use on-disk caching.", call. = FALSE)
+        stop(
+            "'use.cache' must be a single boolean value specifying whether ",
+            "to use on-disk caching.", call. = FALSE)
     }
     if( !.is_a_bool(verbose) ){
-        stop("'verbose' must be a single boolean value specifying whether to ",
-             "show progress.", call. = FALSE)
+        stop(
+            "'verbose' must be a single boolean value specifying whether to ",
+            "show progress.", call. = FALSE)
     }
     verbose <- ifelse(verbose, "text", "none")
     ############################# INPUT CHECK END ##############################
@@ -105,8 +108,8 @@ setMethod("searchAnalysis", signature = c(x = "MgnifyClient"), function(
         if( !is.null(accurl) ){
             # Get data
             jsondat <- .mgnify_retrieve_json(
-                client, complete_url = accurl, use.cache = use.cache, max.hits = NULL,
-                ...)
+                client, complete_url = accurl, use.cache = use.cache,
+                max.hits = NULL, ...)
             # Just need the accession ID
             res <- lapply(jsondat, function(x) x$id)
         } else {
@@ -195,9 +198,10 @@ setMethod("searchAnalysis", signature = c(x = "MgnifyClient"), function(
                 jsondat <- .mgnify_retrieve_json(
                     client, complete_url = accurl, use.cache = use.cache, ...)
             } else{
-                # If we've got to this point, I give up - just return an empty list...
-                warning(paste(
-                    "Failed to find an analysis for sample ", accession))
+                # If we've got to this point, I give up - just return an empty
+                # list...
+                warning("Failed to find an analysis for sample ", accession,
+                        call. = FALSE)
             }
         }
         # Get analyses IDs

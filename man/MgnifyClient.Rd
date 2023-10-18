@@ -109,7 +109,7 @@ my_client <- MgnifyClient(
     useCache = TRUE, cacheDir = "/scratch/MGnify_cache_location"
     )
 
-\dontrun{
+\donttest{
 # Use username and password to get access to non-public data
 my_client <- MgnifyClient(
     username = "Webin-1122334", password = "SecretPassword",
