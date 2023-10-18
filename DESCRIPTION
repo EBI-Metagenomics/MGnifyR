@@ -13,7 +13,10 @@ Authors@R:
 Title: R interface to EBI MGnify metagenomics resource
 Description:
     Utility package to facilitate integration and analysis of EBI Mgnify data in R.
-biocViews: MicrobiomeData, SequencingData
+    The package can be used to import microbial data for instance into
+    TreeSummarizedExperiment (TreeSE). In TreeSE format, the data is directly
+    compatible with miaverse framework.
+biocViews: PackageTypeData, ExperimentData, MicrobiomeData, SequencingData
 License: Artistic-2.0 | file LICENSE
 Encoding: UTF-8
 Depends:

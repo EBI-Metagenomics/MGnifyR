@@ -163,7 +163,7 @@ setMethod("searchAnalysis", signature = c(x = "MgnifyClient"), function(
     # Get accession ID for the runs
     run_accs <- lapply(jsondat, function(y) y$id)
     # Loop through runs
-    analyses_accessions <- sapply(as.list(run_accs), function(z){
+    analyses_accessions <- lapply(as.list(run_accs), function(z){
         # Get data url of related analyses
         accurl <- .mgnify_get_x_for_y(
             client, z, "runs","analyses", use.cache = use.cache, ...)
@@ -208,4 +208,5 @@ setMethod("searchAnalysis", signature = c(x = "MgnifyClient"), function(
         }
         return(temp)
     })
+    analyses_accessions <- unlist(analyses_accessions)
 }

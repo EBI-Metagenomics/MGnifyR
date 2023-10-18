@@ -16,10 +16,6 @@ vignette: >
 bibliography: references.bib
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(eval = FALSE)
-```
-
 # Introduction
 
 `MGnifyR` is a package designed to ease access to the EBI's
@@ -181,4 +177,8 @@ cached_location <- getFile(mg, target_urls$download_url[[1]])
 
 # Where are the files?
 c(cached_location)
+```
+
+```{r session_info}
+sessionInfo()
 ```

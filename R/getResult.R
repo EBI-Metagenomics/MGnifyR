@@ -410,15 +410,17 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
     # Depending on the pipeline version, there may be more than one OTU table
     # available (LSU/SSU), so try and get the one specified in taxa.su -
     # otherwise spit out a warning and grab the generic (older pipelines)
-    available_biom_files <- analysis_downloads[grepl('JSON Biom', sapply(
-        analysis_downloads, function(x){x$attributes$`file-format`$name}))]
+    formats <- vapply(
+        analysis_downloads, function(x){x$attributes$`file-format`$name}, character(1))
+    available_biom_files <- analysis_downloads[grepl('JSON Biom', formats)]
     # Check if any biom files was found
     if( is.null(available_biom_files) || length(available_biom_files) == 0 ){
         warning("No BIOM data found for accession '", accession, "'.", call. = FALSE)
         return(NULL)
     }
-    biom_position <- grepl(taxa.su, sapply(
-        available_biom_files, function(x){x$attributes$`group-type`}))
+    group_type <- vapply(
+        available_biom_files, function(x){x$attributes$`group-type`}, character(1))
+    biom_position <- grepl(taxa.su, group_type)
     if( sum(biom_position) == 0 ){
         if( client@warnings ){
             warning("Unable to locate requested taxonomy type ", taxa.su, ". ",
@@ -483,8 +485,9 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
     # If user wants also phylogenetic tree
     if(get.tree){
         # Is there a tree?
-        tvec <- grepl('Phylogenetic tree', sapply(
-            analysis_downloads, function(x) x$attributes$`description`$label))
+        data_types <- vapply(
+            analysis_downloads, function(x) x$attributes$`description`$label, character(1))
+        tvec <- grepl('Phylogenetic tree', data_types)
         if( any(tvec) ){
             # Get the url address of tree
             tree_url <- analysis_downloads[tvec][[1]]$links$self
@@ -685,7 +688,7 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
         })
         # Add data types as names
         names(all_results) <- names(.analyses_results_type_parsers)
-        parsed_results <- sapply(names(all_results), function(x){
+        parsed_results <- vapply(names(all_results), function(x){
             # Get the specific type of data
             all_json <- all_results[[x]]
             # If specific type of data can be found

@@ -518,3 +518,7 @@ amoC_seq_counts <- getFile(
 
 amoC_seq_counts %>% t  
 ```
+
+```{r session_info}
+sessionInfo()
+```
