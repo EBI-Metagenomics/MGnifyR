@@ -183,9 +183,9 @@ setMethod("doQuery", signature = c(x = "MgnifyClient"), function(
             json = r, metadata_key = "sample-metadata")
         # Loop through different datasets (e.g., biomes) that are related
         # to data
-        for(rn in 1:length(r$relationships)){
+        for(rn in seq_len(length(r$relationships))){
             # Get specific relationship
-            temp = r$relationships[[rn]]
+            temp <- r$relationships[[rn]]
             # Get only data of it
             temp_data <- temp$data
             # If there is data, include it
@@ -215,7 +215,7 @@ setMethod("doQuery", signature = c(x = "MgnifyClient"), function(
         dflist[[df2$accession]] <- df2
     }
     # Combine all data frames together
-    result = bind_rows(dflist)
+    result <- bind_rows(dflist)
     return(result)
 }
 # # REMOVE THESE SINCE THEY ARE NOT USED?

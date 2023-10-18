@@ -124,7 +124,7 @@ mgnify_download <- function(
 #' @rdname deprecate
 #' @export
 mgnify_get_analyses_results <- function(
-        client=NULL, accessions, retrievelist = c(), compact_results = TRUE,
+        client  =NULL, accessions, retrievelist = c(), compact_results = TRUE,
         usecache = TRUE, bulk_dl = FALSE, ...){
     .Deprecated("getResult")
     if( length(retrievelist) == 0 ){
