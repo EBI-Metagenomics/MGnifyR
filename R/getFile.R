@@ -233,7 +233,7 @@ setMethod("searchFile", signature = c(x = "MgnifyClient"), function(
         cachetgt <- gsub(paste(client@url, "/", sep = ""), "", url)
 
         # Make sure the directory exists
-        cache_full_name <- paste(client@cacheDir, cachetgt, sep="/")
+        cache_full_name <- file.path(client@cacheDir, cachetgt)
         dir.create(
             dirname(cache_full_name), recursive = TRUE,
             showWarnings = client@warnings)
@@ -290,11 +290,11 @@ setMethod("searchFile", signature = c(x = "MgnifyClient"), function(
     results <- llply(accession, function(x){
         # Get the data as nested json list
         download_list <- .mgnify_retrieve_json(
-            client, paste(type,x,"downloads", sep="/"),
+            client, paste(type, x, "downloads", sep = "/"),
             use.cache = use.cache, ...)
         # Convert to df
         df <- do.call(rbind.fill, lapply(download_list, function(x){
-            as.data.frame(x,stringsAsFactors=FALSE)}
+            as.data.frame(x, stringsAsFactors = FALSE)}
             ))
         # Add info to df
         df$accession <- x

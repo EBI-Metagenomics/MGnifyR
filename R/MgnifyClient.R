@@ -173,7 +173,7 @@ MgnifyClient <- function(
     # If user has specified that on-disk cache will be used
     if(useCache){
         if (is.null(cacheDir) ){
-            cachepath <- paste(getwd(), ".MGnifyR_cache", sep = "/")
+            cachepath <- file.path(getwd(), ".MGnifyR_cache")
         } else{
             cachepath <- cacheDir
         }

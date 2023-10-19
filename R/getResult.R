@@ -411,7 +411,7 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
     metadata_df <- .mgnify_get_single_analysis_metadata(
         client, accession, use.cache=use.cache, ...)
     analysis_data <- .mgnify_retrieve_json(
-        client, paste("analyses",accession, sep="/"), use.cache = use.cache,
+        client, paste("analyses", accession, sep = "/"), use.cache = use.cache,
         ...)
     # Get the metadata related to available files etc
     download_url <- analysis_data[[1]]$relationships$downloads$links$related
@@ -453,7 +453,7 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
     # Can specify a separate dir for saving biom files, otherwise they end up
     # in the client@cachdir folder, under "bioms"
     if(is.null(downloadDIR)){
-        downloadDIR <- paste(client@cacheDir,"biom_files",sep="/")
+        downloadDIR <- file.path(client@cacheDir, "biom_files")
         dir.create(
             downloadDIR, recursive = TRUE, showWarnings = client@warnings)
     }
@@ -461,7 +461,7 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
     parameters(biom_url) <- NULL
     # Get the file name and path to it in local machine
     fname <- utils::tail(strsplit(biom_url, '/')[[1]], n=1)
-    biom_path <- paste(downloadDIR, fname, sep="/")
+    biom_path <- file.path(downloadDIR, fname)
 
     ## Quick check to see if we should clear the disk cache  for this specific
     # call  - used for debugging and when MGnify breaks
@@ -516,7 +516,7 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
             # Get the file name for the tree
             fname <- utils::tail(strsplit(tree_url, '/')[[1]], n=1)
             # Get the path for the tree
-            tree_path <- paste(downloadDIR, fname, sep="/")
+            tree_path <- file.path(downloadDIR, fname)
 
             # Quick check to see if we should clear the disk cache
             #  for this specific call  - used for debugging and when MGnify
@@ -639,7 +639,7 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
     # local caching to speed things along.
     if(bulk.files){
         # Create a directory for donwloading the file
-        downloadDIR <- paste(client@cacheDir, "tsv", sep="/")
+        downloadDIR <- file.path(client@cacheDir, "tsv")
         if(!dir.exists(downloadDIR)){
             dir.create(
                 downloadDIR, recursive = TRUE, showWarnings = client@warnings)
@@ -648,7 +648,7 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
         available_downloads_json <- .mgnify_retrieve_json(
             client,
             path = paste(
-                "studies", metadata_df$study_accession, "downloads", sep="/"),
+                "studies", metadata_df$study_accession, "downloads", sep = "/"),
             use.cache = use.cache, ...)
         # Load the files
         parsed_results <- lapply(available_downloads_json, function(r) {
@@ -690,7 +690,7 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
         # If user do not want to fetch bulk files
         # Now (re)load the analysis data:
         analysis_data <- .mgnify_retrieve_json(
-            client, paste("analyses", accession, sep="/"),
+            client, paste("analyses", accession, sep = "/"),
             use.cache = use.cache, max.hits = max.hits, ...)
         # For now try and grab all data types that user has specified -
         # just return the list - don't do any processing...
@@ -751,7 +751,7 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
     }else{
         # Nope - gonna have to load it up from disk or grab
         # it from t'interweb
-        data_path <- paste(downloadDIR, fname, sep="/")
+        data_path <- file.path(downloadDIR, fname)
         # Clear cache if specified
         if(use.cache && client@clearCache && file.exists(data_path) ){
             message("clearCache is TRUE: deleting ", data_path)

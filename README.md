@@ -27,12 +27,34 @@ httr
 urltools
 ```
 
-## Installation instructions
-At the R terminal:
+## Installation
+
+### Bioc-release
+
 ```
-devtools::install_github("EBI-Metagenomics/MGnifyR")
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("MGnifyR")
 ```
 
+### Bioc-devel
+
+```
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+# The following initializes usage of Bioc devel
+BiocManager::install(version='devel')
+
+BiocManager::install("MGnifyR")
+```
+
+### GitHub
+
+```
+remotes::install_github("EBI-Metagenomics/MGnifyR")
+```
 
 ## Basic usage
 For more detailed instructions read the associated function help and vignette (`vignette("MGNifyR")`)

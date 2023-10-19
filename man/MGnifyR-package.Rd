@@ -3,6 +3,7 @@
 \docType{package}
 \name{MGnifyR-package}
 \alias{MGnifyR-package}
+\alias{MGnifyR}
 \title{\code{MGnifyR} Package.}
 \description{
 \code{MGnifyR} implements an interface to the EBI MGnify database.

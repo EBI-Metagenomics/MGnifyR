@@ -84,7 +84,8 @@
 # Examples:
 # cl <- new("MgnifyClient")
 # .mgnify_get_x_for_y(cl, "MGYS00005126", "studies", "samples")
-.mgnify_get_x_for_y <- function(client, x, typeX, typeY, use.cache = FALSE, ...){
+.mgnify_get_x_for_y <- function(
+        client, x, typeX, typeY, use.cache = FALSE, ...){
     # Fetch the data on samples/analyses as a json list
     res <- .mgnify_retrieve_json(
         client,
@@ -152,7 +153,7 @@
     # Set up the base url
     # Are we using internal paths?
     if (is.null(complete_url)){
-        fullurl <- paste(client@url, path, sep="/")
+        fullurl <- paste(client@url, path, sep = "/")
     } else{
         # Or direct links from e.g. a "related" section
         # Set the full url, but clean off any existing parameters
@@ -166,7 +167,7 @@
     # This doesn't check if they  can  be searched for in the API,
     # which is an issue since no error is returned by the JSON if the search
     # is invalid - we only get a result as if no query was present...
-    tmpqopts <- lapply(qopts,function(x) paste(x,collapse = ','))
+    tmpqopts <- lapply(qopts, function(x) paste(x, collapse = ","))
 
     # Include the json and page position options
     # full_qopts <- as.list(c(format="json", tmpqopts, page=1))
@@ -174,8 +175,8 @@
 
     # Build up the cache name anyway - even if it's not ultimately used:
     fname_list <- c(path, names(unlist(full_qopts)), unlist(full_qopts))
-    cache_fname <- paste(fname_list,collapse = "_")
-    cache_full_fname <- paste(client@cacheDir, '/', cache_fname, '.RDS', sep="")
+    cache_fname <- paste(fname_list, collapse = "_")
+    cache_full_fname <- file.path(client@cacheDir, cache_fname, ".RDS")
 
     # Quick check to see if we should clear the disk cache  for this
     # specific call  - used for debugging and when MGnify breaks
