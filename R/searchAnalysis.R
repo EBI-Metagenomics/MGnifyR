@@ -40,16 +40,8 @@
 NULL
 
 #' @rdname searchAnalysis
-#' @include MgnifyClient.R
 #' @importFrom plyr llply
-#' @export
-setGeneric("searchAnalysis", signature = c("x"), function(
-        x, type, accession, use.cache=TRUE,
-        ...
-        )
-    standardGeneric("searchAnalysis"))
-
-#' @rdname searchAnalysis
+#' @include MgnifyClient.R utils.R
 #' @export
 setMethod("searchAnalysis", signature = c(x = "MgnifyClient"), function(
         x, type, accession, use.cache=TRUE, verbose=TRUE,

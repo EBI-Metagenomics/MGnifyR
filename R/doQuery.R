@@ -94,17 +94,8 @@
 NULL
 
 #' @rdname doQuery
-#' @include MgnifyClient.R
 #' @importFrom dplyr bind_rows
-#' @export
-setGeneric("doQuery", signature = c("x"), function(
-        x, type = c("studies", "samples", "runs", "analyses"),
-        accession = NULL, as.df = TRUE, max.hits = 200, use.cache = FALSE,
-        ...
-        )
-    standardGeneric("doQuery"))
-
-#' @rdname doQuery
+#' @include MgnifyClient.R utils.R
 #' @export
 setMethod("doQuery", signature = c(x = "MgnifyClient"), function(
         x, type = c("studies", "samples", "runs", "analyses"),

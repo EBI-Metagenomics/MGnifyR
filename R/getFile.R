@@ -77,17 +77,8 @@
 NULL
 
 #' @rdname getFile
-#' @include MgnifyClient.R
-#' @importFrom httr add_headers
-#' @importFrom httr content
-#' @importFrom httr write_disk
-#' @export
-setGeneric("getFile", signature = c("x"), function(
-        x, url, file = NULL, read.func = NULL, use.cache = TRUE, ...
-        )
-    standardGeneric("getFile"))
-
-#' @rdname getFile
+#' @importFrom httr add_headers content write_disk
+#' @include MgnifyClient.R utils.R
 #' @export
 setMethod("getFile", signature = c(x = "MgnifyClient"), function(
         x, url, file = NULL, read.func = NULL, use.cache = TRUE, ...
@@ -166,20 +157,9 @@ setMethod("getFile", signature = c(x = "MgnifyClient"), function(
 NULL
 
 #' @rdname getFile
-#' @include MgnifyClient.R
-#' @importFrom plyr llply
-#' @importFrom plyr rbind.fill
+#' @importFrom plyr llply rbind.fill
 #' @importFrom urltools parameters parameters<-
-#' @export
-setGeneric("searchFile", signature = c("x"), function(
-        x, accession,
-        type = c(
-            "studies", "samples", "analyses", "assemblies", "genomes", "run"),
-        use.cache = TRUE, verbose = TRUE, ...
-        )
-    standardGeneric("searchFile"))
-
-#' @rdname getFile
+#' @include MgnifyClient.R utils.R
 #' @export
 setMethod("searchFile", signature = c(x = "MgnifyClient"), function(
         x, accession, type = c(

@@ -110,20 +110,11 @@
 NULL
 
 #' @rdname getResult
-#' @include MgnifyClient.R utils.R
 #' @importFrom plyr llply
 #' @importFrom dplyr bind_rows
 #' @importFrom reshape2 dcast
 #' @importFrom stats as.formula
-#' @export
-setGeneric("getResult", signature = c("x"), function(
-        x, accession, get.taxa = TRUE, get.func = TRUE,
-        output = "TreeSE", use.cache = TRUE, verbose = TRUE,
-        ...
-        )
-    standardGeneric("getResult"))
-
-#' @rdname getResult
+#' @include MgnifyClient.R utils.R
 #' @export
 setMethod("getResult", signature = c(x = "MgnifyClient"), function(
         x, accession, get.taxa = TRUE, get.func = TRUE,

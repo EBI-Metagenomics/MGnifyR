@@ -35,17 +35,9 @@
 NULL
 
 #' @rdname getMetadata
-#' @include MgnifyClient.R
 #' @importFrom plyr llply
 #' @importFrom dplyr bind_rows
-#' @export
-setGeneric("getMetadata", signature = c("x"), function(
-        x, accession, use.cache = TRUE, verbose = TRUE,
-        ...
-)
-    standardGeneric("getMetadata"))
-
-#' @rdname getMetadata
+#' @include MgnifyClient.R utils.R
 #' @export
 setMethod("getMetadata", signature = c(x = "MgnifyClient"), function(
         x, accession, use.cache = TRUE, verbose = TRUE,
