@@ -1,20 +1,26 @@
 ---
-title: "MGnifyR"
+title: "MGnifyR: interface to MGnify database"
+date: "`r Sys.Date()`"
+package: MGnifyR
 output:
-  BiocStyle::html_document:
-    toc: true
-    toc_depth: 2
+    BiocStyle::html_document:
+        fig_height: 7
+        fig_width: 10
+        toc: yes
+        toc_depth: 2
+        number_sections: true
 vignette: >
-  %\VignetteIndexEntry{MGnifyR}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+    %\VignetteIndexEntry{mia}
+    %\VignetteEngine{knitr::rmarkdown}
+    %\VignetteEncoding{UTF-8}
+bibliography: references.bib
 ---
 
 ```{r, include = FALSE}
 library(knitr)
 knitr::opts_chunk$set(
     collapse = TRUE,
-    eval =FALSE,
+    eval = FALSE,
     comment = "#>",
     cache = TRUE
 )

@@ -1,7 +1,7 @@
 ---
 title: "MGnifyR: interface to MGnify database"
 date: "`r Sys.Date()`"
-package: mia
+package: MGnifyR
 output:
     BiocStyle::html_document:
         fig_height: 7
