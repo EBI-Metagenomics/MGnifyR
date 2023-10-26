@@ -269,7 +269,7 @@
                 datlist[[p]] <- curd$data
                 # Check to see if we've pulled enough entries.
                 # With NULL and -1, disable max.hits
-                curlen <- sum(vapply(datlist, length))
+                curlen <- sum(vapply(datlist, length, numeric(1)))
                 if( !is.null(max.hits) && curlen >= max.hits &&
                     max.hits != -1 ){
                     break

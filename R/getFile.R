@@ -78,7 +78,7 @@ NULL
 
 #' @rdname getFile
 #' @importFrom httr add_headers content write_disk
-#' @include MgnifyClient.R utils.R
+#' @include allClass.R allGenerics.R MgnifyClient.R utils.R
 #' @export
 setMethod("getFile", signature = c(x = "MgnifyClient"), function(
         x, url, file = NULL, read.func = NULL, use.cache = TRUE, ...
@@ -159,7 +159,7 @@ NULL
 #' @rdname getFile
 #' @importFrom plyr llply rbind.fill
 #' @importFrom urltools parameters parameters<-
-#' @include MgnifyClient.R utils.R
+#' @include allClass.R allGenerics.R MgnifyClient.R utils.R
 #' @export
 setMethod("searchFile", signature = c(x = "MgnifyClient"), function(
         x, accession, type = c(

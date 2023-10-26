@@ -24,7 +24,8 @@ Depends:
     mia,
     MultiAssayExperiment,
     TreeSummarizedExperiment (>= 1.99.3),
-    biomformat
+    biomformat,
+    BiocGenerics
 Imports:
     ape,
     dplyr,
@@ -51,11 +52,13 @@ BugReports: https://github.com/EBI-Metagenomics/MGnifyR/issues
 VignetteBuilder: knitr
 RoxygenNote: 7.2.3
 Collate:
-    'MgnifyClient.R'
-    'AllGenerics.R'
     'MGnifyR.R'
-    'deprecate.R'
+    'MgnifyClient.R'
     'utils.R'
+    'allGenerics.R'
+    'allClass.R'
+    'allAccessors.R'
+    'deprecate.R'
     'doQuery.R'
     'getFile.R'
     'getMetadata.R'

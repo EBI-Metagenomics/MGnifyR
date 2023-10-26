@@ -37,7 +37,7 @@ NULL
 #' @rdname getMetadata
 #' @importFrom plyr llply
 #' @importFrom dplyr bind_rows
-#' @include MgnifyClient.R utils.R
+#' @include allClass.R allGenerics.R MgnifyClient.R utils.R
 #' @export
 setMethod("getMetadata", signature = c(x = "MgnifyClient"), function(
         x, accession, use.cache = TRUE, verbose = TRUE,

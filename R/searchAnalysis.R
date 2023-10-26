@@ -41,7 +41,7 @@ NULL
 
 #' @rdname searchAnalysis
 #' @importFrom plyr llply
-#' @include MgnifyClient.R utils.R
+#' @include allClass.R allGenerics.R MgnifyClient.R utils.R
 #' @export
 setMethod("searchAnalysis", signature = c(x = "MgnifyClient"), function(
         x, type, accession, use.cache=TRUE, verbose=TRUE,

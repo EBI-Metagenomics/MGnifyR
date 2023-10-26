@@ -31,7 +31,7 @@ cutting-edge tools in microbiome down-stream analytics.
 `MGnifyR` is currently hosted on GitHub, and can be installed using via
 `devtools`. `MGnifyR` should be built using the following snippet.
 
-```{r devtools_install, eval=FALSE}
+```{r install, eval=FALSE}
 BiocManager::install(MGnifyR)
 ```
 
@@ -164,7 +164,8 @@ dl_urls <- searchFile(mg, analyses_accessions, type = "analyses")
 ```
 
 ```{r show_tgt_urls}
-target_urls <- dl_urls[dl_urls$attributes.description.label == "Predicted CDS with annotation",]
+target_urls <- dl_urls[
+    dl_urls$attributes.description.label == "Predicted CDS with annotation", ]
 head(target_urls)
 ```
 

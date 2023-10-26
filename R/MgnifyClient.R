@@ -1,48 +1,3 @@
-#' A MgnifyClient object
-#'
-#' @details An object that are required by functions of MGnifyR package.
-#'
-#' @slot url A single character value specifying an URL address of database.
-#'
-#' @slot authTok A single character value specifying authentication token.
-#'
-#' @slot cacheDir A single character value specifying cache directory.
-#'
-#' @slot warnings A single boolean value specifying whether to show warnings.
-#'
-#' @slot useMemCache A single boolean value specifying whether to use on-disk
-#' memory.
-#'
-#' @slot memCache A single character value specifying on-disk memory directory.
-#'
-#' @slot clearCache A single boolean value specifying whether to clear cache.
-#'
-#' @section Constructor: see \code{MgnifyClient}.
-#'
-#' @name MgnifyClient
-NULL
-
-#' @rdname MgnifyClient
-#' @importFrom httr POST
-#' @importFrom httr content
-#' @export
-MgnifyClient <- setClass(
-    "MgnifyClient", slots = list(
-        url = "character",
-        authTok = "character",
-        cacheDir = "character",
-        warnings = "logical",
-        useMemCache = "logical",
-        memCache = "list",
-        clearCache = "logical"),
-        prototype = list(
-            url = "https://www.ebi.ac.uk/metagenomics/api/v1",
-            authTok = NULL,
-            cacheDir = NULL,
-            useMemCache = FALSE,
-            memCache = list(),
-            clearCache = FALSE))
-
 #' Constructor for creating a MgnifyClient object to allow the access to
 #' MGnify database.
 #'
@@ -83,6 +38,9 @@ MgnifyClient <- setClass(
 #' It has the potential to speed up searches considerably though, especially
 #' for studies with a large number of samples, so will be implemented properly
 #' in the future. (By default: \code{useMemCache = FALSE})
+#' 
+#' @param clearCache A single boolean value specifying whether to clear the
+#' cache. (By default: \code{clearCache = FALSE})
 #'
 #' @param ... optional arguments:
 #' \itemize{
@@ -114,7 +72,7 @@ NULL
 #' @export
 MgnifyClient <- function(
         username = NULL, password = NULL, useCache = FALSE, cacheDir = NULL,
-        warnings = FALSE, useMemCache = FALSE, ...){
+        warnings = FALSE, useMemCache = FALSE, clearCache = FALSE, ...){
     ############################### INPUT CHECK ################################
     if( !(is.null(username) || .is_non_empty_string(username)) ){
         stop(
@@ -146,6 +104,11 @@ MgnifyClient <- function(
         stop(
             "'useMemCache' must be a boolean value specifying whether use ",
             "on-disk memory.", call. = FALSE)
+    }
+    if( !.is_a_bool(clearCache) ){
+        stop(
+            "'clearCache' must be a boolean value specifying whether to ",
+            "clear the cache.", call. = FALSE)
     }
     ############################# INPUT CHECK END ##############################
     # Get the url address
@@ -189,7 +152,9 @@ MgnifyClient <- function(
         cacheDir = cachepath,
         warnings = warnings,
         memCache = list(),
-        useMemCache = useMemCache)
+        useMemCache = useMemCache,
+        clearCache = clearCache
+    )
     return(obj)
 }
 
