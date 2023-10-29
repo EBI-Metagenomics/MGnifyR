@@ -349,7 +349,6 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
 }
 
 # Helper function for importing microbial profiling data.
-#' @importFrom TreeSummarizedExperiment rowData rowData<-
 .mgnify_get_analyses_treese <- function(
         client, accession, use.cache, verbose,
         taxa.su = "SSU", ...){
@@ -390,6 +389,7 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
 #' @importFrom httr write_disk
 #' @importFrom ape read.tree
 #' @importFrom TreeSummarizedExperiment rowTree
+#' @importFrom SummarizedExperiment rowData rowData<-
 .mgnify_get_single_analysis_treese <- function(
         client = NULL, accession, use.cache = TRUE, downloadDIR = NULL,
         taxa.su = "SSU", get.tree = TRUE, ...){
