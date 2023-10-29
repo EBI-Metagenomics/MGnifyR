@@ -24,6 +24,7 @@ Depends:
     mia,
     MultiAssayExperiment,
     TreeSummarizedExperiment (>= 1.99.3),
+    SummarizedExperiment,
     biomformat,
     BiocGenerics
 Imports:
