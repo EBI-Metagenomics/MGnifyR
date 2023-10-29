@@ -20,7 +20,7 @@
 #' @slot clearCache A single boolean value specifying whether to clear cache.
 #'
 #' @section Constructor:
-#' See  \code{\link{MgnifyClient-accessors}} for constructor.
+#' See  \code{\link{MgnifyClient}} for constructor.
 #' 
 #' @section Accessor:
 #' See \code{\link{MgnifyClient-accessors}} for accessor functions.

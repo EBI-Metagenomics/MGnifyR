@@ -16,7 +16,7 @@
 \alias{useMemCache<-,MgnifyClient-method}
 \alias{memCache<-,MgnifyClient-method}
 \alias{clearCache<-,MgnifyClient-method}
-\title{Access and mutate slots of MgnifyClient object.}
+\title{MgnifyClient accessors and mutators}
 \usage{
 \S4method{url}{MgnifyClient}(x)
 
@@ -47,21 +47,24 @@
 \S4method{clearCache}{MgnifyClient}(x) <- value
 }
 \arguments{
-\item{x}{MgnifClient object}
+\item{x}{A \code{MgnifyClient} object.}
 
-\item{value}{A value to be added to a specified slot.}
+\item{value}{A value to be added to a certain slot.}
 }
 \value{
-A value of a certain slot.
+A value of MgnifyClient object or nothing.
 }
 \description{
-Access and mutate slots of MgnifyClient object.
+MgnifyClient accessors and mutators
 }
 \details{
-Accessors and mutators of MgnifyClient object.
+These functions are for fetching and mutating slots of
+\code{MgnifyClient} object.
 }
 \examples{
 mg <- MgnifyClient()
+
 url(mg)
+warnings(mg) <- FALSE
 
 }

@@ -62,8 +62,6 @@ cache. (By default: \code{clearCache = FALSE})}
 }
 \value{
 A MgnifyClient object.
-
-A MgnifyCLient object.
 }
 \description{
 Constructor for creating a MgnifyClient object to allow the access to
@@ -100,7 +98,13 @@ memory.}
 }}
 
 \section{Constructor}{
- see \code{MgnifyClient}.
+
+See  \code{\link{MgnifyClient}} for constructor.
+}
+
+\section{Accessor}{
+
+See \code{\link{MgnifyClient-accessors}} for accessor functions.
 }
 
 \examples{
