@@ -192,8 +192,8 @@ setMethod("searchAnalysis", signature = c(x = "MgnifyClient"), function(
             } else{
                 # If we've got to this point, I give up - just return an empty
                 # list...
-                warning("Failed to find an analysis for sample ", accession,
-                        call. = FALSE)
+                warning(
+                    "Failed to find an analysis for sample ", x, call. = FALSE)
             }
         }
         # Get analyses IDs

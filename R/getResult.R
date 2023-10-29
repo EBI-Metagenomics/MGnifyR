@@ -349,6 +349,7 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
 }
 
 # Helper function for importing microbial profiling data.
+#' @importFrom TreeSummarizedExperiment rowData rowData<-
 .mgnify_get_analyses_treese <- function(
         client, accession, use.cache, verbose,
         taxa.su = "SSU", ...){
@@ -666,8 +667,8 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
                 # Get the data
                 temp <- .get_bulk_files(
                     cur_type, client=client, r=r,
-                    metadata_df=metadata_df, data_path=data_path,
-                    downloadDIR=downloadDIR, use.cache=use.cache, ...)
+                    metadata_df=metadata_df, downloadDIR=downloadDIR,
+                    use.cache=use.cache, ...)
             } else{
                 temp <- NULL
             }
@@ -725,7 +726,7 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
 
 # Helper function for getting bulk file
 .get_bulk_files <- function(
-        cur_type, client, r, metadata_df, data_path, downloadDIR, use.cache,
+        cur_type, client, r, metadata_df, downloadDIR, use.cache,
         ...){
     # Get the url
     data_url <- r$links$self

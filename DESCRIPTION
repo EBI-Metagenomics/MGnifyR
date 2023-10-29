@@ -46,7 +46,8 @@ Suggests:
     xml2,
     BiocStyle,
     miaViz,
-    vegan
+    vegan,
+    scater
 URL: https://github.com/EBI-Metagenomics/MGnifyR
 BugReports: https://github.com/EBI-Metagenomics/MGnifyR/issues
 VignetteBuilder: knitr
