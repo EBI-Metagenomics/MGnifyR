@@ -17,15 +17,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MGnifyR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.99.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.99.1</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav"><li>
-  <a href="../articles/MGnifyR.html">Get started</a>
-</li>
-<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
@@ -35,7 +32,10 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/demo.html">MGnifyR: interface to MGnify database</a>
+      <a href="../articles/MGnifyR_long.html">MGnifyR: interface to MGnify database</a>
+    </li>
+    <li>
+      <a href="../articles/MgnifyR.html">MGnifyR: interface to MGnify database</a>
     </li>
   </ul></li>
       </ul><ul class="nav navbar-nav navbar-right"><li>
@@ -54,7 +54,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Search MGnify database for studies, samples and runs</h1>
-    <small class="dont-index">Source: <a href="https://github.com/EBI-Metagenomics/MGnifyR/blob/HEAD/R/doQuery.R" class="external-link"><code>R/doQuery.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/EBI-Metagenomics/MGnifyR/blob/HEAD/R/allGenerics.R" class="external-link"><code>R/allGenerics.R</code></a>, <a href="https://github.com/EBI-Metagenomics/MGnifyR/blob/HEAD/R/doQuery.R" class="external-link"><code>R/doQuery.R</code></a></small>
     <div class="hidden name"><code>doQuery.Rd</code></div>
     </div>
 
@@ -63,15 +63,7 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">doQuery</span><span class="op">(</span></span>
-<span>  <span class="va">x</span>,</span>
-<span>  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"studies"</span>, <span class="st">"samples"</span>, <span class="st">"runs"</span>, <span class="st">"analyses"</span><span class="op">)</span>,</span>
-<span>  accession <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  as.df <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  max.hits <span class="op">=</span> <span class="fl">200</span>,</span>
-<span>  use.cache <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  <span class="va">...</span></span>
-<span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">doQuery</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S4 method for MgnifyClient</span></span>
 <span><span class="fu">doQuery</span><span class="op">(</span></span>
@@ -89,6 +81,12 @@
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>A <code>MgnifyClient</code> object.</p></dd>
+
+
+<dt>...</dt>
+<dd><p>Remaining parameter key/value pairs may be supplied to filter
+the returned values. Available options differ between <code>types</code>.
+See discussion above for details.</p></dd>
 
 
 <dt>type</dt>
@@ -126,12 +124,6 @@ callout. In general the use of caching for queries is discouraged, as
 new data is being uploaded to MGnify all the time, which might potentially
 be missed. However, for some purposes (such as analysis reproducibility)
 caching makes sense. (By default: <code>use.cache = FALSE</code>)</p></dd>
-
-
-<dt>...</dt>
-<dd><p>Remaining parameter key/value pairs may be supplied to filter
-the returned values. Available options differ between <code>types</code>.
-See discussion above for details.</p></dd>
 
 </dl></div>
     <div id="value">

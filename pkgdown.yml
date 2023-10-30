@@ -2,7 +2,7 @@ pandoc: 3.1.1
 pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
-  MGnifyR: MGnifyR.html
-  demo: demo.html
-last_built: 2023-10-09T16:08Z
+  MGnifyR_long: MGnifyR_long.html
+  MgnifyR: MgnifyR.html
+last_built: 2023-10-30T15:36Z
 

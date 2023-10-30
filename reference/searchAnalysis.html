@@ -17,15 +17,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MGnifyR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.99.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.99.1</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav"><li>
-  <a href="../articles/MGnifyR.html">Get started</a>
-</li>
-<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
@@ -35,7 +32,10 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/demo.html">MGnifyR: interface to MGnify database</a>
+      <a href="../articles/MGnifyR_long.html">MGnifyR: interface to MGnify database</a>
+    </li>
+    <li>
+      <a href="../articles/MgnifyR.html">MGnifyR: interface to MGnify database</a>
     </li>
   </ul></li>
       </ul><ul class="nav navbar-nav navbar-right"><li>
@@ -54,7 +54,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Look up analysis accession IDs for one or more study or sample accessions</h1>
-    <small class="dont-index">Source: <a href="https://github.com/EBI-Metagenomics/MGnifyR/blob/HEAD/R/searchAnalysis.R" class="external-link"><code>R/searchAnalysis.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/EBI-Metagenomics/MGnifyR/blob/HEAD/R/allGenerics.R" class="external-link"><code>R/allGenerics.R</code></a>, <a href="https://github.com/EBI-Metagenomics/MGnifyR/blob/HEAD/R/searchAnalysis.R" class="external-link"><code>R/searchAnalysis.R</code></a></small>
     <div class="hidden name"><code>searchAnalysis.Rd</code></div>
     </div>
 
@@ -63,7 +63,7 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">searchAnalysis</span><span class="op">(</span><span class="va">x</span>, <span class="va">type</span>, <span class="va">accession</span>, use.cache <span class="op">=</span> <span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">searchAnalysis</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S4 method for MgnifyClient</span></span>
 <span><span class="fu">searchAnalysis</span><span class="op">(</span><span class="va">x</span>, <span class="va">type</span>, <span class="va">accession</span>, use.cache <span class="op">=</span> <span class="cn">TRUE</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
@@ -73,6 +73,10 @@
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>A <code>MgnifyClient</code> object.</p></dd>
+
+
+<dt>...</dt>
+<dd><p>Optional arguments; not currently used.</p></dd>
 
 
 <dt>type</dt>
@@ -90,10 +94,6 @@ IDs.</p></dd>
 <dd><p>A single boolean value to specify whether to re-use/store
 data on disk, rather than query the server.
 (By default: <code>use.cache = TRUE</code>)</p></dd>
-
-
-<dt>...</dt>
-<dd><p>Optional arguments; not currently used.</p></dd>
 
 
 <dt>verbose</dt>

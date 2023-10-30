@@ -17,15 +17,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MGnifyR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.99.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.99.1</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav"><li>
-  <a href="../articles/MGnifyR.html">Get started</a>
-</li>
-<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
@@ -35,7 +32,10 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/demo.html">MGnifyR: interface to MGnify database</a>
+      <a href="../articles/MGnifyR_long.html">MGnifyR: interface to MGnify database</a>
+    </li>
+    <li>
+      <a href="../articles/MgnifyR.html">MGnifyR: interface to MGnify database</a>
     </li>
   </ul></li>
       </ul><ul class="nav navbar-nav navbar-right"><li>
@@ -54,7 +54,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Get functional and/or taxonomic information for a list of accessions</h1>
-    <small class="dont-index">Source: <a href="https://github.com/EBI-Metagenomics/MGnifyR/blob/HEAD/R/getResult.R" class="external-link"><code>R/getResult.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/EBI-Metagenomics/MGnifyR/blob/HEAD/R/allGenerics.R" class="external-link"><code>R/allGenerics.R</code></a>, <a href="https://github.com/EBI-Metagenomics/MGnifyR/blob/HEAD/R/getResult.R" class="external-link"><code>R/getResult.R</code></a></small>
     <div class="hidden name"><code>getResult.Rd</code></div>
     </div>
 
@@ -63,16 +63,7 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">getResult</span><span class="op">(</span></span>
-<span>  <span class="va">x</span>,</span>
-<span>  <span class="va">accession</span>,</span>
-<span>  get.taxa <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  get.func <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  output <span class="op">=</span> <span class="st">"TreeSE"</span>,</span>
-<span>  use.cache <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  <span class="va">...</span></span>
-<span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">getResult</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S4 method for MgnifyClient</span></span>
 <span><span class="fu">getResult</span><span class="op">(</span></span>
@@ -91,48 +82,6 @@
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>A <code>MgnifyClient</code> object.</p></dd>
-
-
-<dt>accession</dt>
-<dd><p>A single character value or a vector of character values
-specifying accession IDs to return results for.</p></dd>
-
-
-<dt>get.taxa</dt>
-<dd><p>A boolean value specifying whether to retrieve metagenomic
-data. (By default: <code>get.taxa = TRUE</code>)</p></dd>
-
-
-<dt>get.func</dt>
-<dd><p>A boolean value or a single character value or a vector
-character values specifying functional analysis types to retrieve. If
-<code>get.func = TRUE</code>, all available functional datatypes are retrieved,
-and if <code>FALSE</code>, functional data is not retrieved. The current list of
-available types is "antismash-gene-clusters", "go-slim", "go-terms",
-"interpro-identifiers", "taxonomy", "taxonomy-itsonedb",
-"taxonomy-itsunite", "taxonomy-lsu", and "taxonomy-ssu". Note that
-depending on the particular analysis type, pipeline version etc., not all
-functional results will be available. (By default: <code>get.func = TRUE</code>)</p></dd>
-
-
-<dt>output</dt>
-<dd><p>A single character value specifying the format of an output.
-Must be one of the following options: "TreeSE", "list", or "phyloseq".
-(By default: <code>output = "TreeSE"</code>)</p></dd>
-
-
-<dt>use.cache</dt>
-<dd><p>A single boolean value specifying whether to use the
-MGnify local caching system to speed up searching. It is highly
-recommended that this be enabled. Note that files are downloaded to local system
-when they are fetched from the database. The files are not removed meaning
-that the local storage can include additional files after the run even though
-<code>use.cache = FALSE</code> was specified. (By default: <code>use.cache = TRUE</code>)</p></dd>
-
-
-<dt>verbose</dt>
-<dd><p>A single boolean value to specify whether to show
-the progress bar. (By default: <code>verbose = TRUE</code>)</p></dd>
 
 
 <dt>...</dt>
@@ -167,6 +116,49 @@ the progress bar. (By default: <code>verbose = TRUE</code>)</p></dd>
   be orders of magnitude more efficient.
   (By default: <code>buld_dl = TRUE</code>)</p></li>
 </ul></dd>
+
+
+<dt>accession</dt>
+<dd><p>A single character value or a vector of character values
+specifying accession IDs to return results for.</p></dd>
+
+
+<dt>get.taxa</dt>
+<dd><p>A boolean value specifying whether to retrieve metagenomic
+data. (By default: <code>get.taxa = TRUE</code>)</p></dd>
+
+
+<dt>get.func</dt>
+<dd><p>A boolean value or a single character value or a vector
+character values specifying functional analysis types to retrieve. If
+<code>get.func = TRUE</code>, all available functional datatypes are retrieved,
+and if <code>FALSE</code>, functional data is not retrieved. The current list of
+available types is "antismash-gene-clusters", "go-slim", "go-terms",
+"interpro-identifiers", "taxonomy", "taxonomy-itsonedb",
+"taxonomy-itsunite", "taxonomy-lsu", and "taxonomy-ssu". Note that
+depending on the particular analysis type, pipeline version etc., not all
+functional results will be available. (By default: <code>get.func = TRUE</code>)</p></dd>
+
+
+<dt>output</dt>
+<dd><p>A single character value specifying the format of an output.
+Must be one of the following options: "TreeSE", "list", or "phyloseq".
+(By default: <code>output = "TreeSE"</code>)</p></dd>
+
+
+<dt>use.cache</dt>
+<dd><p>A single boolean value specifying whether to use the
+MGnify local caching system to speed up searching. It is highly
+recommended that this be enabled. Note that files are downloaded to local
+system when they are fetched from the database. The files are not removed
+meaning that the local storage can include additional files after the run
+even though <code>use.cache = FALSE</code> was specified.
+(By default: <code>use.cache = TRUE</code>)</p></dd>
+
+
+<dt>verbose</dt>
+<dd><p>A single boolean value to specify whether to show
+the progress bar. (By default: <code>verbose = TRUE</code>)</p></dd>
 
 </dl></div>
     <div id="value">
