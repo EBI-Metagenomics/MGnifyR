@@ -94,7 +94,7 @@ author imposed embargo period.
 
 ```{r create_client_passwd, eval=FALSE}
 mg <- MgnifyClient(
-  username = "Webin-username", password = "your-password", useCache = TRUE)
+    username = "Webin-username", password = "your-password", useCache = TRUE)
 ```
 
 # Functions for fetching the data

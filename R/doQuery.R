@@ -224,7 +224,8 @@ setMethod("doQuery", signature = c(x = "MgnifyClient"), function(
 #     runs <- run_filters
 # )
 #
-# # Filters possible - this comes from the django source code - would be nice if we could
+# # Filters possible - this comes from the django source code - would be nice
+# if we could
 # # look it up.
 # # These DON'T seem to include all possible attributes ....
 # # And only some
@@ -233,7 +234,8 @@ setMethod("doQuery", signature = c(x = "MgnifyClient"), function(
 #     'latitude_gte', 'latitude_lte', 'longitude_gte', 'longitude_lte',
 #     'species','instrument_model', 'instrument_platform', 'metadata_key',
 #     'metadata_value_gte', 'metadata_value_lte', 'metadata_value',
-#     'environment_material', 'environment_feature', 'study_accession', 'include')
+#     'environment_material', 'environment_feature', 'study_accession',
+#     'include')
 # biome_filters <- c(
 #     'depth_gte', 'depth_lte')
 # study_filters <- c(
