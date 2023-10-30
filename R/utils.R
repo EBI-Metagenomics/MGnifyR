@@ -33,8 +33,8 @@
     if (!is.null(metadata_key)){
         # Get metadata related to specific key
         metaattrlist <- json$attributes[[metadata_key]]
-        metlist <- sapply(metaattrlist, function(x) x$value)
-        names(metlist) <- sapply(metaattrlist, function(x) x$key)
+        metlist <- vapply(metaattrlist, function(x) x$value, character(1))
+        names(metlist) <- vapply(metaattrlist, function(x) x$key, character(1))
         # Get metadata without the key
         baseattrlist <- attrlist[!(attrlist %in% c(metadata_key))]
         # Combine metadata
@@ -61,7 +61,8 @@
 # Given an accession x, we want to get the link to get the url for the
 # corresponding typeY JSONAPI path for child elements
 #
-# .mgnify_get_x_for_y determines the location of typeY child objects of x (typeX)
+# .mgnify_get_x_for_y determines the location of typeY child objects of x
+# (typeX)
 #
 # This helper function, principally intended to be used internally,
 # is used to match up related objects within the path. The inherently
@@ -83,14 +84,16 @@
 # Examples:
 # cl <- new("MgnifyClient")
 # .mgnify_get_x_for_y(cl, "MGYS00005126", "studies", "samples")
-.mgnify_get_x_for_y <- function(client, x, typeX, typeY, use.cache = FALSE, ...){
+.mgnify_get_x_for_y <- function(
+        client, x, typeX, typeY, use.cache = FALSE, ...){
     # Fetch the data on samples/analyses as a json list
     res <- .mgnify_retrieve_json(
         client,
         paste(typeX, x, sep = "/"),
         use.cache = use.cache,
         ...)
-    # Get related analyses when samples were found and vice versa if result was found.
+    # Get related analyses when samples were found and vice versa if result was
+    # found.
     if( !is.null(res) ){
         res <- res[[1]]$relationships[[typeY]]$links$related
     }
@@ -150,7 +153,7 @@
     # Set up the base url
     # Are we using internal paths?
     if (is.null(complete_url)){
-        fullurl <- paste(client@url, path, sep="/")
+        fullurl <- paste(client@url, path, sep = "/")
     } else{
         # Or direct links from e.g. a "related" section
         # Set the full url, but clean off any existing parameters
@@ -164,7 +167,7 @@
     # This doesn't check if they  can  be searched for in the API,
     # which is an issue since no error is returned by the JSON if the search
     # is invalid - we only get a result as if no query was present...
-    tmpqopts <- lapply(qopts,function(x) paste(x,collapse = ','))
+    tmpqopts <- lapply(qopts, function(x) paste(x, collapse = ","))
 
     # Include the json and page position options
     # full_qopts <- as.list(c(format="json", tmpqopts, page=1))
@@ -172,14 +175,14 @@
 
     # Build up the cache name anyway - even if it's not ultimately used:
     fname_list <- c(path, names(unlist(full_qopts)), unlist(full_qopts))
-    cache_fname <- paste(fname_list,collapse = "_")
-    cache_full_fname <- paste(client@cacheDir, '/', cache_fname, '.RDS', sep="")
+    cache_fname <- paste(fname_list, collapse = "_")
+    cache_full_fname <- file.path(client@cacheDir, cache_fname, ".RDS")
 
     # Quick check to see if we should clear the disk cache  for this
     # specific call  - used for debugging and when MGnify breaks
     if(use.cache & client@clearCache){
         if( file.exists(cache_full_fname) ){
-            message(paste("clearCache is TRUE: deleting ", cache_full_fname, sep=""))
+            message("clearCache is TRUE: deleting ", cache_full_fname)
             unlink(cache_full_fname)
         }
     }
@@ -191,8 +194,8 @@
         # Authorization: Bearer <your_token>
         if(!is.null(client@authTok)){
             add_headers(
-                .headers = c(Authorization = paste("Bearer",
-                                                   client@authTok, sep=" ")))
+                .headers = c(Authorization = paste(
+                    "Bearer", client@authTok, sep = " ")))
         }
         res <- GET(url=fullurl, config(verbose=Debug), query=full_qopts )
         # Get the data
@@ -216,8 +219,9 @@
         # Save the result to file if specified
         if (use.cache && !file.exists(cache_full_fname)){
             # Make sure the directory is created...
-            dir.create(dirname(cache_full_fname), recursive = TRUE,
-                       showWarnings = client@warnings)
+            dir.create(
+                dirname(cache_full_fname), recursive = TRUE,
+                showWarnings = client@warnings)
             saveRDS(final_data, file = cache_full_fname)
         }
     }
@@ -257,15 +261,17 @@
                 if(!is.null(client@authTok)){
                     add_headers(
                         .headers = c(
-                            Authorization = paste("Bearer", client@authTok, sep=" ")))
+                            Authorization = paste(
+                                "Bearer", client@authTok, sep = " ")))
                 }
                 curd <- content(GET(fullurl, config(verbose=Debug),
                                     query=full_qopts ), ...)
                 datlist[[p]] <- curd$data
                 # Check to see if we've pulled enough entries.
                 # With NULL and -1, disable max.hits
-                curlen <- sum(sapply(datlist, length))
-                if( !is.null(max.hits) && curlen >= max.hits && max.hits != -1 ){
+                curlen <- sum(vapply(datlist, length, numeric(1)))
+                if( !is.null(max.hits) && curlen >= max.hits &&
+                    max.hits != -1 ){
                     break
                 }
             }

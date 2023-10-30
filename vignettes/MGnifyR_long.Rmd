@@ -1,19 +1,28 @@
 ---
-title: "MGnifyR"
-output: rmarkdown::html_vignette
+title: "MGnifyR: interface to MGnify database"
+date: "`r Sys.Date()`"
+package: MGnifyR
+output:
+    BiocStyle::html_document:
+        fig_height: 7
+        fig_width: 10
+        toc: yes
+        toc_depth: 2
+        number_sections: true
 vignette: >
-  %\VignetteIndexEntry{MGnifyR}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+    %\VignetteIndexEntry{mia}
+    %\VignetteEngine{knitr::rmarkdown}
+    %\VignetteEncoding{UTF-8}
+bibliography: references.bib
 ---
 
 ```{r, include = FALSE}
 library(knitr)
 knitr::opts_chunk$set(
-  collapse = TRUE,
-  eval =FALSE,
-  comment = "#>",
-  cache = TRUE
+    collapse = TRUE,
+    eval = FALSE,
+    comment = "#>",
+    cache = TRUE
 )
 ```
 
@@ -45,8 +54,8 @@ book that offers valuable guidance and support.
 `MGnifyR` is currently hosted on GitHub, and can be installed using via
 `devtools`. `MGnifyR` should be built using the following snippet.
 
-```{r devtools_install, eval=FALSE}
-devtools::install_github("EBI-Metagenomics/MGnifyR")
+```{r install, eval=FALSE}
+BiocManager::install(MGnifyR)
 ```
 
 # Load `MGnifyR` package
@@ -84,8 +93,8 @@ Doing so gives access to non-public results, such as those currently under an
 author imposed embargo period.
 
 ```{r create_client_passwd, eval=FALSE}
-mg <- MgnifyClient(username = "Webin-username", password = "your-password",
-                   useCache = TRUE)
+mg <- MgnifyClient(
+    username = "Webin-username", password = "your-password", useCache = TRUE)
 ```
 
 # Functions for fetching the data
@@ -93,7 +102,7 @@ mg <- MgnifyClient(username = "Webin-username", password = "your-password",
 ## Search data
 
 `MGnifyR` gives users access to the complete range of search functionality
-implemented in the MGnify JSON API. A single function `doQuery` is used to do
+implemented in the MGnify JSON API. A single function `doQuery()` is used to do
 perform this searching, allowing Studies, Samples, Runs and Accession to be
 interrogated from a common interface. As with all MGnifyR functions the first
 argument `client` must be a valid `MgnifyClient` instance. The only remaining
@@ -102,7 +111,7 @@ and may be one of `studies`, `samples`, `runs`, `analyses` or `assemblies`.
 Other general parameters include `use.cache` and `max.hits`. 
 
 Unlike most other `MGnifyR` high level functions, caching is turned off by
-default for `doQuery`. New data and analyses are being added to MGnify all the
+default for `doQuery()`. New data and analyses are being added to MGnify all the
 time, so enabling caching by default may lead to out-of-date search results for
 long-lived sessions. However, it's easy to switch back on, and may be useful in
 many cases. Also, given the huge and ever increasing number of datasets
@@ -155,7 +164,7 @@ returning `studies`, `samples` (or anything other than `analyses`) accessions
 need converting to the corresponding `analyses`. 
 
 `MGnifyR` therefore provides a helper function to handle this conversion -
-`searchAnalyses`. Following on from our previous search, we have a
+`searchAnalysis()`. Following on from our previous search, we have a
 list of `study` accessions, so to convert to corresponding `analyses` we use:
 
 ```{r convert_to_analyses}
@@ -169,7 +178,7 @@ each sample has now been retrieved and stored in the local cache. Thus
 subsequent API calls for these samples (which will occur multiple times in
 later steps) will be significantly faster.
 
-It's important to be aware that the results of a `searchAnalyses` command will
+It's important to be aware that the results of a `searchAnalysis()` command will
 not necessarily be a one-to-one match with the input accessions. `MGnify`
 analysis runs are sometimes performed multiple times, perhaps using different
 versions of the pipeline. Thus further filtering of the result list may be
@@ -214,9 +223,9 @@ dim(known_depths)
 
 ## Fetch microbiome data
 
-Having selected the analyses we wish to examine further, `getResult` is used to
-both download associated OTU tables and taxonomy, and join all results into a
-single `TreeSummarizedExperiment` (TreeSE) object. TreeSE is becoming
+Having selected the analyses we wish to examine further, `getResult()` is used
+to both download associated OTU tables and taxonomy, and join all results
+into a single `TreeSummarizedExperiment` (`TreeSE`) object. TreeSE is becoming
 a defacto standard for taxonomic abundance *munging* in R. `TreeSE` objects
 integrate abundance, taxonomic, phylogenetic, sample and sequence data into a
 single object, with powerful facilities for filtering, processing and plotting
@@ -230,7 +239,7 @@ tutorial book called [OMA](https://microbiome.github.io/OMA/).
 ### Amplicon sequencing
 
 When the dataset includes amplicon sequencing data, i.e., the dataset does not
-include function predictions, `getResult` method returns the dataset as a
+include function predictions, `getResult()` method returns the dataset as a
 `TreeSE` by default. See other output types from the function documentation.
 
 ```{r get_TreeSE}
@@ -265,15 +274,15 @@ pseq
 
 ### Metagenomics
 
-Although the previous queries have been based on the results from `doQuery`,
+Although the previous queries have been based on the results from `doQuery()`,
 from now on we will concentrate on combining and comparing results from
 specific studies.  Since newly performed analyses are retrieved first in the
-`doQuery` call, it's likely that by the time this vignette is read, the query
+`doQuery()` call, it's likely that by the time this vignette is read, the query
 results will be different.  This is principally due to the rapid increase in
 MGnify submissions, leading to a potential lack of consistency between even
 closely spaced queries. As mentioned previously, it may be best to use
-`use.cache=FALSE` for `doQuery` calls, to ensure queries are actually returning
-the latest data. *** REWRITE THIS BIT***.
+`use.cache=FALSE` for `doQuery()` calls, to ensure queries are actually returning
+the latest data.
 
 For the remainder of this vignette however, we'll be comparing 3 ostensibly
 different studies. A study of saltmarsh soils from York University, human
@@ -297,8 +306,8 @@ all_accessions
 ```
 
 The first step with this new accession list is, as previously, to retrieve the
-associated metadata using `getMetadata`, and as seen with the
-`doQuery` results, the returned `data.frame` contains a large number of
+associated metadata using `getMetadata()`, and as seen with the
+`doQuery()` results, the returned `data.frame` contains a large number of
 columns. Being autogenerated and flexible, the column names can be a little
 difficult to predict, but examining `colnames(full_metadata)` should make
 things clearer.
@@ -339,7 +348,7 @@ ggplot(
     ylab("log(submitted reads)")
 ```
 
-Again, we can fetch the data by calling `getResult`. `bulk.dl=TRUE` has the
+Again, we can fetch the data by calling `getResult()`. `bulk.dl=TRUE` has the
 potential to significantly speed up data retrieval. MGnify makes its
 functional results available in two separate ways, either on a per-analysis
 basis through the web api, or at the whole study level as large files,
@@ -359,7 +368,7 @@ directly correspond to those from a particular analysis run, causing the
 retrieval to fail. The principal cause of this is believed to be the running
 of multiple analyses jobs on the same sample. Thus for reliability, `bulk.dl`
 is `FALSE` by default. As a general recommendation though, you should try
-setting it `TRUE` the first time `getResult` is used on a
+setting it `TRUE` the first time `getResult()` is used on a
 set of accessions. If this fails, setting `bulk.dl` to `FALSE` will enable the
 more robust approach allowing the analysis to continue. It might take a while
 though. Hopefully in the future the sample/analysis correspondence mismatches
@@ -371,8 +380,8 @@ mae <- getResult(
 mae
 ```
 
-For metagenomic samples, the result is `MultiAssayExperiment` which links
-multiple `TreeSE` objects into one dataset. These `TreeSE` objects include
+For metagenomic samples, the result is `MultiAssayExperiment` (`MAE`) which
+links multiple `TreeSE` objects into one dataset. These `TreeSE` objects include
 taxonomic profiling data along with functional data in unique objects. Each
 objects is linked with each other by their sample names. You can get access
 to individual object or experiment by specifying index or name.
@@ -397,9 +406,9 @@ plotReducedDim(mae[[1]], "MDS", colour_by = "sample_environment.feature")
 
 ## Fetch sequence files
 
-Finally, we can use `searchFile` and `getFile` to retrieve other MGnify
+Finally, we can use `searchFile()` and `getFile()` to retrieve other MGnify
 pipeline outputs such as merged sequence reads, assembled contigs, and details
-of the functional analyses.  \code{searchFile} is a simple wrapper function
+of the functional analyses.  `searchFile()` is a simple wrapper function
 which, when supplied a list of accessions, finds the urls of the files we're
 after. In most cases we'll want to filter the returned list down to only the
 files of interest, which is easily done on the resulting data.frame object.
@@ -430,7 +439,7 @@ the following might be useful.
 table(dl_urls$attributes.description.label)
 ```
 
-Unlike other `MGnifyR` functions, `mgnify_get_downloads` is not limited to
+Unlike other `MGnifyR` functions, `searchFile` is not limited to
 `analyses`, and by specifying `accession_type` other results types may be
 found. For instance, while general `genome` functionality is not yet
 integrated into `MGnifyR`, we can retrieve associated files for a particular
@@ -446,7 +455,7 @@ genome_urls[c("id","attributes.file.format.name","download_url")]
 ```
 
 Having found the a set of target urls, the final step is to use
-`getFile` to actually retrieve the file. Unlike other functions, this only
+`getFile()` to actually retrieve the file. Unlike other functions, this only
 works with a single url location at once, so each entry in `target_urls` from
 above must be downloaded individually - easily done by either looping or
 `apply`ing over the list.
@@ -455,7 +464,7 @@ If the files are intended to be used with external programs, it might be
 easiest to provide a `file` parameter to the function call, which specifies
 a local filename for writing the file. By default `MGnifyR` will use the local
 cache, which can make getting to the file afterwards more awkward. Regardless,
-the default behaviour of `getFile` is to retrieve the file specified in the
+the default behaviour of `getFile()` is to retrieve the file specified in the
 parameter `url`, save it to disk, and return the filepath it was saved to. 
 
 ```{r, filter_dl_urls}
@@ -475,7 +484,7 @@ c(cached_location,specified_location)
 A second download option is available, which allows built-in parsing of the
 file. If we know ahead of time what processing will be performed, it may be
 possible to integrate it into a function, pass this function to
-`mgnify_download` as the `read_func` argument. The function in question should
+`getFile()` as the `read_func` argument. The function in question should
 take a single argument (the complete path name of the locally downloaded file)
 and the result of the call will be returned in place of the usual output
 file name. 
@@ -501,14 +510,14 @@ library(Biostrings)
 
 #Simple function to a count of unique sequences matching PFAM amoC/mmoC motif
 getAmoCseqs <- function(fname){
-  sequences <- readAAStringSet(fname)
-  tgtvec <- grepl("PF04896", names(sequences))
-  as.data.frame(as.list(table(as.character(sequences[tgtvec]))))
+    sequences <- readAAStringSet(fname)
+    tgtvec <- grepl("PF04896", names(sequences))
+    as.data.frame(as.list(table(as.character(sequences[tgtvec]))))
 }
 ```
 
 Having defined the function, it just remains to include it in the call to
-`getFile`. 
+`getFile()s`. 
 
 ```{r do_download_with_read}
 #Just download a single accession for demonstration, specifying a read_function
@@ -517,4 +526,8 @@ amoC_seq_counts <- getFile(
     use.cache = FALSE)
 
 amoC_seq_counts %>% t  
+```
+
+```{r session_info}
+sessionInfo()
 ```

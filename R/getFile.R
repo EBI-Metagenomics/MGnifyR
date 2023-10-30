@@ -77,39 +77,32 @@
 NULL
 
 #' @rdname getFile
-#' @include MgnifyClient.R
-#' @importFrom httr add_headers
-#' @importFrom httr content
-#' @importFrom httr write_disk
-#' @export
-setGeneric("getFile", signature = c("x"), function(
-        x, url, file = NULL, read.func = NULL, use.cache = TRUE, ...
-        )
-    standardGeneric("getFile"))
-
-#' @rdname getFile
+#' @importFrom httr add_headers content write_disk
+#' @include allClass.R allGenerics.R MgnifyClient.R utils.R
 #' @export
 setMethod("getFile", signature = c(x = "MgnifyClient"), function(
         x, url, file = NULL, read.func = NULL, use.cache = TRUE, ...
         ){
     ############################### INPUT CHECK ################################
     if( !.is_non_empty_string(url) ){
-        stop("'url' must be a single character value specifying ",
-             "the url of the file.", call. = FALSE)
+        stop(
+            "'url' must be a single character value specifying ",
+            "the url of the file.", call. = FALSE)
     }
     if( !(.is_non_empty_string(file) || is.null(file)) ){
-        stop("'file' must be NULL or a single character value ",
-             "specifying the name of file being saved.",
-             call. = FALSE)
+        stop(
+            "'file' must be NULL or a single character value ",
+            "specifying the name of file being saved.", call. = FALSE)
     }
     if( !(is.function(read.func) || is.null(read.func)) ){
-        stop("'read.func' must be a function that is used to process the file ",
-             "or NULL.",
-             call. = FALSE)
+        stop(
+            "'read.func' must be a function that is used to process the file ",
+            "or NULL.", call. = FALSE)
     }
     if( !.is_a_bool(use.cache) ){
-        stop("'use.cache' must be a single boolean value specifying whether to ",
-             "use on-disk caching.", call. = FALSE)
+        stop(
+            "'use.cache' must be a single boolean value specifying whether ",
+            "to use on-disk caching.", call. = FALSE)
     }
     ############################# INPUT CHECK END ##############################
     # Get file
@@ -149,7 +142,7 @@ setMethod("getFile", signature = c(x = "MgnifyClient"), function(
 #' make sense as each query will return multiple items)
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Make a client object
 #' mg <- MgnifyClient(cache_dir="/tmp/mgcache")
 #' # Create a vector of accession ids - these happen to be \code{analysis}
@@ -164,43 +157,37 @@ setMethod("getFile", signature = c(x = "MgnifyClient"), function(
 NULL
 
 #' @rdname getFile
-#' @include MgnifyClient.R
-#' @importFrom plyr llply
-#' @importFrom plyr rbind.fill
+#' @importFrom plyr llply rbind.fill
 #' @importFrom urltools parameters parameters<-
-#' @export
-setGeneric("searchFile", signature = c("x"), function(
-        x, accession,
-        type = c("studies", "samples", "analyses", "assemblies", "genomes", "run"),
-        use.cache = TRUE, verbose = TRUE, ...
-        )
-    standardGeneric("searchFile"))
-
-#' @rdname getFile
+#' @include allClass.R allGenerics.R MgnifyClient.R utils.R
 #' @export
 setMethod("searchFile", signature = c(x = "MgnifyClient"), function(
-        x, accession, type = c("studies", "samples", "analyses", "assemblies",
-                                "genomes", "run"),
+        x, accession, type = c(
+            "studies", "samples", "analyses", "assemblies", "genomes", "run"),
         use.cache = TRUE, verbose = TRUE, ...
         ){
     ############################### INPUT CHECK ################################
     if( !.is_non_empty_character(accession) ){
-        stop("'accession' must be a list of character values specifying ",
-             "the MGnify accession identifiers.",
-             call. = FALSE)
+        stop(
+            "'accession' must be a list of character values specifying ",
+            "the MGnify accession identifiers.",
+            call. = FALSE)
     }
     if( !(.is_non_empty_string(type)) ){
-        stop("'type' must be a single character value specifying ",
-             "the type of instance to query.", call. = FALSE)
+        stop(
+            "'type' must be a single character value specifying ",
+            "the type of instance to query.", call. = FALSE)
     }
     type <- match.arg(type, several.ok = FALSE)
     if( !.is_a_bool(use.cache) ){
-        stop("'use.cache' must be a single boolean value specifying whether to ",
-             "use on-disk caching.", call. = FALSE)
+        stop(
+            "'use.cache' must be a single boolean value specifying whether ",
+            "to use on-disk caching.", call. = FALSE)
     }
     if( !.is_a_bool(verbose) ){
-        stop("'verbose' must be a single boolean value specifying whether to ",
-             "show progress.", call. = FALSE)
+        stop(
+            "'verbose' must be a single boolean value specifying whether to ",
+            "show progress.", call. = FALSE)
     }
     verbose <- ifelse(verbose, "text", "none")
     ############################# INPUT CHECK END ##############################
@@ -223,12 +210,13 @@ setMethod("searchFile", signature = c(x = "MgnifyClient"), function(
         # Build a filename out of the url, including the full paths. Annoying,
         # but some downloads (e.g. genome results) are just names like
         # core_genes.fa , which would break the caching.
-        cachetgt <- gsub(paste(client@url,'/',sep=""), '', url)
+        cachetgt <- gsub(paste(client@url, "/", sep = ""), "", url)
 
         # Make sure the directory exists
-        cache_full_name <- paste(client@cacheDir, cachetgt, sep="/")
-        dir.create(dirname(cache_full_name), recursive = TRUE,
-                   showWarnings = client@warnings)
+        cache_full_name <- file.path(client@cacheDir, cachetgt)
+        dir.create(
+            dirname(cache_full_name), recursive = TRUE,
+            showWarnings = client@warnings)
         file_path <- cache_full_name
     } else{
         file_path <- tempfile()[[1]]
@@ -236,7 +224,7 @@ setMethod("searchFile", signature = c(x = "MgnifyClient"), function(
 
     # Clear cache if specified
     if( use.cache && client@clearCache && file.exists(file_path) ){
-        message(paste("clear_cache is TRUE: deleting ", file_path, sep=""))
+        message("clear_cache is TRUE: deleting ", file_path)
         unlink(file_path)
     }
 
@@ -256,7 +244,7 @@ setMethod("searchFile", signature = c(x = "MgnifyClient"), function(
             unlink(file_path)
             stop(
                 url, ": ", content(res, ...)$errors[[1]]$detail,
-                " Error while loading the file from database.",
+                " Could not load the file from database.",
                 call. = FALSE)
         }
     }
@@ -269,7 +257,8 @@ setMethod("searchFile", signature = c(x = "MgnifyClient"), function(
     return(result)
 }
 
-# Get URL addresses of downloadable files that are related to certain accession ID.
+# Get URL addresses of downloadable files that are related to certain accession
+# ID.
 .mgnify_get_download_urls <- function(
         client, accession, type, use.cache, verbose, ...){
     # Give message about progress
@@ -281,10 +270,11 @@ setMethod("searchFile", signature = c(x = "MgnifyClient"), function(
     results <- llply(accession, function(x){
         # Get the data as nested json list
         download_list <- .mgnify_retrieve_json(
-            client, paste(type,x,"downloads", sep="/"), use.cache = use.cache, ...)
+            client, paste(type, x, "downloads", sep = "/"),
+            use.cache = use.cache, ...)
         # Convert to df
         df <- do.call(rbind.fill, lapply(download_list, function(x){
-            as.data.frame(x,stringsAsFactors=FALSE)}
+            as.data.frame(x, stringsAsFactors = FALSE)}
             ))
         # Add info to df
         df$accession <- x
@@ -294,8 +284,8 @@ setMethod("searchFile", signature = c(x = "MgnifyClient"), function(
             df <- as.data.frame(df)
         } else {
             # If search result was found, modify
-            # For convenience, rename the "self" column to "download_url" - which
-            # is what it actually is...
+            # For convenience, rename the "self" column to "download_url" -
+            # which is what it actually is...
             colnames(df)[colnames(df) == "self"] <- "download_url"
             # Finally, strip off any options from the url - they sometimes seem
             # to get format=json stuck on the end

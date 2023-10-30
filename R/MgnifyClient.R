@@ -1,41 +1,3 @@
-#' A MgnifyClient object
-#'
-#' @details An object that are required by functions of MGnifyR package.
-#'
-#' @slot url A single character value specifying an URL address of database.
-#'
-#' @slot authTok A single character value specifying authentication token.
-#'
-#' @slot cacheDir A single character value specifying cache directory.
-#'
-#' @slot warnings A single boolean value specifying whether to show warnings.
-#'
-#' @slot useMemCache A single boolean value specifying whether to use on-disk
-#' memory.
-#'
-#' @slot memCache A single character value specifying on-disk memory directory.
-#'
-#' @slot clearCache A single boolean value specifying whether to clear cache.
-#'
-#' @section Constructor: see \code{MgnifyClient}.
-#'
-#' @name MgnifyClient
-NULL
-
-#' @rdname MgnifyClient
-#' @importFrom httr POST
-#' @importFrom httr content
-#' @export
-MgnifyClient <- setClass(
-    "MgnifyClient", slots = list(url = "character", authTok = "character",
-                                  cacheDir = "character", warnings = "logical",
-                                  useMemCache = "logical", memCache = "list",
-                                  clearCache = "logical"),
-    prototype = list(url = "https://www.ebi.ac.uk/metagenomics/api/v1",
-                     authTok = NULL, cacheDir = NULL,
-                     useMemCache = FALSE, memCache = list(),
-                     clearCache = FALSE))
-
 #' Constructor for creating a MgnifyClient object to allow the access to
 #' MGnify database.
 #'
@@ -76,6 +38,9 @@ MgnifyClient <- setClass(
 #' It has the potential to speed up searches considerably though, especially
 #' for studies with a large number of samples, so will be implemented properly
 #' in the future. (By default: \code{useMemCache = FALSE})
+#' 
+#' @param clearCache A single boolean value specifying whether to clear the
+#' cache. (By default: \code{clearCache = FALSE})
 #'
 #' @param ... optional arguments:
 #' \itemize{
@@ -91,7 +56,7 @@ MgnifyClient <- setClass(
 #'     useCache = TRUE, cacheDir = "/scratch/MGnify_cache_location"
 #'     )
 #'
-#' \dontrun{
+#' \donttest{
 #' # Use username and password to get access to non-public data
 #' my_client <- MgnifyClient(
 #'     username = "Webin-1122334", password = "SecretPassword",
@@ -107,31 +72,43 @@ NULL
 #' @export
 MgnifyClient <- function(
         username = NULL, password = NULL, useCache = FALSE, cacheDir = NULL,
-        warnings = FALSE, useMemCache = FALSE, ...){
+        warnings = FALSE, useMemCache = FALSE, clearCache = FALSE, ...){
     ############################### INPUT CHECK ################################
     if( !(is.null(username) || .is_non_empty_string(username)) ){
-        stop("'username' must be NULL or single character value specifying ",
-             "the username.", call. = FALSE)
+        stop(
+            "'username' must be NULL or single character value specifying ",
+            "the username.", call. = FALSE)
     }
     if( !(is.null(password) || .is_non_empty_string(password)) ){
-        stop("'password' must be NULL or single character value specifying ",
-             "the password.", call. = FALSE)
+        stop(
+            "'password' must be NULL or single character value specifying ",
+            "the password.", call. = FALSE)
     }
     if( !.is_a_bool(useCache) ){
-        stop("'useCache' must be a boolean value specifying whether to use ",
-             "on-disk caching.", call. = FALSE)
+        stop(
+            "'useCache' must be a boolean value specifying whether to use ",
+            "on-disk caching.", call. = FALSE)
     }
     if( !(is.null(cacheDir) || .is_non_empty_string(cacheDir)) ){
-        stop("'cacheDir' must be NULL or single character value specifying ",
-             "the the directory for cache.", call. = FALSE)
+        stop(
+            "'cacheDir' must be NULL or single character value specifying ",
+            "the the directory for cache.", call. = FALSE)
     }
     if( !.is_a_bool(warnings) ){
-        stop("'wanings' must be a boolean value specifying whether print ",
-             "extra output during invocation of MGnifyR functions.", call. = FALSE)
+        stop(
+            "'wanings' must be a boolean value specifying whether print ",
+            "extra output during invocation of MGnifyR functions.",
+            call. = FALSE)
     }
     if( !.is_a_bool(useMemCache) ){
-        stop("'useMemCache' must be a boolean value specifying whether use ",
-             "on-disk memory.", call. = FALSE)
+        stop(
+            "'useMemCache' must be a boolean value specifying whether use ",
+            "on-disk memory.", call. = FALSE)
+    }
+    if( !.is_a_bool(clearCache) ){
+        stop(
+            "'clearCache' must be a boolean value specifying whether to ",
+            "clear the cache.", call. = FALSE)
     }
     ############################# INPUT CHECK END ##############################
     # Get the url address
@@ -141,10 +118,10 @@ MgnifyClient <- function(
     # Check to see if we're going to try and get an authentication token:
     if (!is.null(username) && !is.null(password)){
         # Fetch username vs password data from database
-        r <- POST(paste(url, "utils/token/obtain", sep = "/"),
-                  body = list(username=username,
-                              password=password),
-                  encode = "json")
+        r <- POST(
+            paste(url, "utils/token/obtain", sep = "/"),
+            body = list(username = username, password = password),
+            encode = "json")
         # If the authentication was not successful, returned value do not
         # include data
         cont <- content(r, ...)
@@ -159,17 +136,25 @@ MgnifyClient <- function(
     # If user has specified that on-disk cache will be used
     if(useCache){
         if (is.null(cacheDir) ){
-            cachepath <- paste(getwd(), ".MGnifyR_cache", sep = "/")
+            cachepath <- file.path(getwd(), ".MGnifyR_cache")
         } else{
             cachepath <- cacheDir
         }
-        # Make it if needed - assume the user is sensible and the path will work...
+        # Make it if needed - assume the user is sensible and the path will
+        # work...
         dir.create(cachepath, showWarnings = FALSE)
     }
     # Return the final object
-    obj <- new("MgnifyClient", url = url, authTok = authtok,
-               cacheDir = cachepath, warnings = warnings, memCache = list(),
-               useMemCache = useMemCache)
+    obj <- new(
+        "MgnifyClient",
+        url = url,
+        authTok = authtok,
+        cacheDir = cachepath,
+        warnings = warnings,
+        memCache = list(),
+        useMemCache = useMemCache,
+        clearCache = clearCache
+    )
     return(obj)
 }
 
@@ -180,8 +165,9 @@ MgnifyClient <- function(
         url = "https://www.ebi.ac.uk/metagenomics/api/v1", ...){
     ############################### INPUT CHECK ################################
     if( !(.is_non_empty_string(url)) ){
-        stop("'url' must be a single character value specifying ",
-             "the URL address.", call. = FALSE)
+        stop(
+            "'url' must be a single character value specifying ",
+            "the URL address.", call. = FALSE)
     }
     ############################# INPUT CHECK END ##############################
     return(url)

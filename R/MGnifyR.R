@@ -7,6 +7,7 @@
 #' [API documentation](https://emg-docs.readthedocs.io/en/latest/api.html) for
 #' details about the JSONAPI implementation,
 #' @name MGnifyR-package
+#' @aliases MGnifyR
 #' @docType package
 #' @seealso \link[TreeSummarizedExperiment:TreeSummarizedExperiment-class]{TreeSummarizedExperiment} class
 NULL

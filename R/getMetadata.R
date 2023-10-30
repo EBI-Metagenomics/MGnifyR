@@ -35,33 +35,28 @@
 NULL
 
 #' @rdname getMetadata
-#' @include MgnifyClient.R
 #' @importFrom plyr llply
 #' @importFrom dplyr bind_rows
-#' @export
-setGeneric("getMetadata", signature = c("x"), function(
-        x, accession, use.cache = TRUE, verbose = TRUE,
-        ...
-)
-    standardGeneric("getMetadata"))
-
-#' @rdname getMetadata
+#' @include allClass.R allGenerics.R MgnifyClient.R utils.R
 #' @export
 setMethod("getMetadata", signature = c(x = "MgnifyClient"), function(
         x, accession, use.cache = TRUE, verbose = TRUE,
         ...){
     ############################### INPUT CHECK ################################
     if( !is.character(accession) ){
-        stop("'accession' must be a single character or a list of character ",
-             "values.", call. = FALSE)
+        stop(
+            "'accession' must be a single character or a list of character ",
+            "values.", call. = FALSE)
     }
     if( !.is_a_bool(use.cache) ){
-        stop("'use.cache' must be a boolean value specifying whether to use ",
-             "on-disk caching.", call. = FALSE)
+        stop(
+            "'use.cache' must be a boolean value specifying whether to use ",
+            "on-disk caching.", call. = FALSE)
     }
     if( !.is_a_bool(verbose) ){
-        stop("'verbose' must be a single boolean value specifying whether to ",
-             "show progress.", call. = FALSE)
+        stop(
+            "'verbose' must be a single boolean value specifying whether to ",
+            "show progress.", call. = FALSE)
     }
     verbose <- ifelse(verbose, "text", "none")
     ############################# INPUT CHECK END ##############################
@@ -83,7 +78,8 @@ setMethod("getMetadata", signature = c(x = "MgnifyClient"), function(
     }
     # Loop through analysis accessions and find metadata
     reslist <- llply(as.list(accession), function(x){
-        .mgnify_get_single_analysis_metadata(client, x, use.cache = use.cache, ...)
+        .mgnify_get_single_analysis_metadata(
+            client, x, use.cache = use.cache, ...)
     }, .progress = verbose)
     # Combine all metadata to single df
     df <- do.call(bind_rows, reslist)
@@ -99,8 +95,7 @@ setMethod("getMetadata", signature = c(x = "MgnifyClient"), function(
         max.hits = max.hits, ...)
     # If metadata was not found, return the NULL value
     if(is.null(dat)){
-        warning(paste("Failed to find study metadata for ", accession, sep=""),
-                call. = FALSE)
+        warning("Failed to find study metadata for ", accession, call. = FALSE)
         return(dat)
     }
 
@@ -122,7 +117,7 @@ setMethod("getMetadata", signature = c(x = "MgnifyClient"), function(
         sample_df <- .mgnify_attr_list_to_df_row(
             sample_met[[1]], metadata_key = "sample-metadata")
     } else{
-        warning(paste("Failed to find sample metadata for ", accession, sep=""))
+        warning("Failed to find sample metadata for ", accession, call. = FALSE)
         sample_df <- data.frame(accession=NA)
     }
     # It turns out that a sample might not be part of a study - if it's been
@@ -130,7 +125,7 @@ setMethod("getMetadata", signature = c(x = "MgnifyClient"), function(
     if(!is.null(study_met)){
         study_df <- .mgnify_attr_list_to_df_row(study_met[[1]])
     } else{
-        warning(paste("Failed to find study metadata for ", accession, sep=""))
+        warning("Failed to find study metadata for ", accession, call. = FALSE)
         study_df <- data.frame(accession=NA)
     }
     # Add colnames to sample, study and analysis tables
@@ -156,7 +151,7 @@ setMethod("getMetadata", signature = c(x = "MgnifyClient"), function(
     if( !is.null(sample_met[[1]]$relationships$biome$data$id) ){
         full_df$biome_string <- sample_met[[1]]$relationships$biome$data$id
     } else {
-        warning(paste("Failed to find biome entry for ", accession, sep=""))
+        warning("Failed to find biome entry for ", accession, call = FALSE)
     }
     return(full_df)
 }

@@ -94,17 +94,8 @@
 NULL
 
 #' @rdname doQuery
-#' @include MgnifyClient.R
 #' @importFrom dplyr bind_rows
-#' @export
-setGeneric("doQuery", signature = c("x"), function(
-        x, type = c("studies", "samples", "runs", "analyses"),
-        accession = NULL, as.df = TRUE, max.hits = 200, use.cache = FALSE,
-        ...
-        )
-    standardGeneric("doQuery"))
-
-#' @rdname doQuery
+#' @include allClass.R allGenerics.R MgnifyClient.R utils.R
 #' @export
 setMethod("doQuery", signature = c(x = "MgnifyClient"), function(
         x, type = c("studies", "samples", "runs", "analyses"),
@@ -113,33 +104,39 @@ setMethod("doQuery", signature = c(x = "MgnifyClient"), function(
         ){
     ############################### INPUT CHECK ################################
     if( !(.is_non_empty_string(type)) ){
-        stop("'type' must be a single character value specifying ",
-             "the type of instance to query.", call. = FALSE)
+        stop(
+            "'type' must be a single character value specifying ",
+            "the type of instance to query.", call. = FALSE)
     }
     type <- match.arg(type, several.ok = FALSE)
     if( !(.is_non_empty_character(accession) || is.null(accession)) ){
-        stop("'accession' must be a single character value or list of ",
-             "character values specifying the MGnify accession identifier ",
-             "or NULL.",
-             call. = FALSE)
+        stop(
+            "'accession' must be a single character value or list of ",
+            "character values specifying the MGnify accession identifier ",
+            "or NULL.",
+            call. = FALSE)
     }
     if( !.is_a_bool(as.df) ){
-        stop("'as.df' must be a single boolean value specifying whether",
-             "to return list or data.frame.", call. = FALSE)
+        stop(
+            "'as.df' must be a single boolean value specifying whether",
+            "to return list or data.frame.", call. = FALSE)
     }
     if( !((.is_an_integer(max.hits) && (max.hits > 0 || max.hits == -1) ) ||
-          is.null(max.hits) )  ){
-        stop("'max.hits' must be a single integer value specifying the maximum ",
-             "number of results to return or NULL.", call. = FALSE)
+        is.null(max.hits) )  ){
+        stop(
+            "'max.hits' must be a single integer value specifying the ", 
+            "maximum number of results to return or NULL.", call. = FALSE)
     }
     if( !.is_a_bool(use.cache) ){
-        stop("'use.cache' must be a single boolean value specifying whether to ",
-             "use on-disk caching.", call. = FALSE)
+        stop(
+            "'use.cache' must be a single boolean value specifying whether ",
+            "to use on-disk caching.", call. = FALSE)
     }
     ############################# INPUT CHECK END ##############################
     # Perform query
-    result <- .perform_query(client = x, type = type, accession = accession,
-                             max.hits = max.hits, use.cache = use.cache, ...)
+    result <- .perform_query(
+        client = x, type = type, accession = accession, max.hits = max.hits,
+        use.cache = use.cache, ...)
     # Convert list to data.frame if specified
     if(as.df){
         result <- .list_to_dataframe(result)
@@ -183,9 +180,9 @@ setMethod("doQuery", signature = c(x = "MgnifyClient"), function(
             json = r, metadata_key = "sample-metadata")
         # Loop through different datasets (e.g., biomes) that are related
         # to data
-        for(rn in 1:length(r$relationships)){
+        for(rn in seq_len(length(r$relationships))){
             # Get specific relationship
-            temp = r$relationships[[rn]]
+            temp <- r$relationships[[rn]]
             # Get only data of it
             temp_data <- temp$data
             # If there is data, include it
@@ -195,8 +192,8 @@ setMethod("doQuery", signature = c(x = "MgnifyClient"), function(
                 # lists. --> unlist and take "id" values
                 temp_data <- unlist(temp_data)
                 temp_data <- temp_data[names(temp_data) %in% "id"]
-                temp_names <- rep(names(r$relationships)[rn],
-                                  length(temp_data))
+                temp_names <- rep(
+                    names(r$relationships)[rn], length(temp_data))
                 # Get all column names and make them unique
                 colnames <- append(colnames(df2), temp_names)
                 colnames <- make.unique(colnames)
@@ -215,7 +212,7 @@ setMethod("doQuery", signature = c(x = "MgnifyClient"), function(
         dflist[[df2$accession]] <- df2
     }
     # Combine all data frames together
-    result = bind_rows(dflist)
+    result <- bind_rows(dflist)
     return(result)
 }
 # # REMOVE THESE SINCE THEY ARE NOT USED?
@@ -227,7 +224,8 @@ setMethod("doQuery", signature = c(x = "MgnifyClient"), function(
 #     runs <- run_filters
 # )
 #
-# # Filters possible - this comes from the django source code - would be nice if we could
+# # Filters possible - this comes from the django source code - would be nice
+# if we could
 # # look it up.
 # # These DON'T seem to include all possible attributes ....
 # # And only some
@@ -236,7 +234,8 @@ setMethod("doQuery", signature = c(x = "MgnifyClient"), function(
 #     'latitude_gte', 'latitude_lte', 'longitude_gte', 'longitude_lte',
 #     'species','instrument_model', 'instrument_platform', 'metadata_key',
 #     'metadata_value_gte', 'metadata_value_lte', 'metadata_value',
-#     'environment_material', 'environment_feature', 'study_accession', 'include')
+#     'environment_material', 'environment_feature', 'study_accession',
+#     'include')
 # biome_filters <- c(
 #     'depth_gte', 'depth_lte')
 # study_filters <- c(

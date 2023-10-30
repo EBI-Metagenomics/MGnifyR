@@ -1,7 +1,7 @@
 ---
 title: "MGnifyR: interface to MGnify database"
 date: "`r Sys.Date()`"
-package: mia
+package: MGnifyR
 output:
     BiocStyle::html_document:
         fig_height: 7
@@ -15,10 +15,6 @@ vignette: >
     %\VignetteEncoding{UTF-8}
 bibliography: references.bib
 ---
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(eval = FALSE)
-```
 
 # Introduction
 
@@ -35,8 +31,8 @@ cutting-edge tools in microbiome down-stream analytics.
 `MGnifyR` is currently hosted on GitHub, and can be installed using via
 `devtools`. `MGnifyR` should be built using the following snippet.
 
-```{r devtools_install, eval=FALSE}
-devtools::install_github("EBI-Metagenomics/MGnifyR")
+```{r install, eval=FALSE}
+BiocManager::install(MGnifyR)
 ```
 
 # Load `MGnifyR` package
@@ -97,12 +93,13 @@ head(analyses_metadata)
 
 ## Fetch microbiome data
 
-After we have selected the data to fetch, we can use `getResult`
+After we have selected the data to fetch, we can use `getResult()`
 
-The output is `TreeSE` or `MultiAssayExperiment` depending on the dataset.
-If the dataset includes only taxonomic profiling data, the output is a single
-`TreeSE`. If dataset includes also functional data, the output is multiple
-`TreeSE` objects that are linked together by utilizing `MAE`.
+The output is `TreeSummarizedExperiment` (`TreeSE`) or `MultiAssayExperiment`
+(`MAE`) depending on the dataset. If the dataset includes only taxonomic
+profiling data, the output is a single `TreeSE`. If dataset includes also
+functional data, the output is multiple `TreeSE` objects that are linked
+together by utilizing `MAE`.
 
 ```{r get_mae}
 mae <- getResult(mg, accession = analyses_accessions)
@@ -155,11 +152,11 @@ plotReducedDim(mae[[1]], "MDS", colour_by = "sample_environment.feature")
 ```
 
 ## Fetch sequence files
-Finally, we can use `searchFile` and `getFile` to retrieve other MGnify
+Finally, we can use `searchFile()` and `getFile()` to retrieve other MGnify
 pipeline outputs such as merged sequence reads, assembled contigs, and details
 of the functional analyses.
 
-With `searchFile`, we can search files from the database.
+With `searchFile()`, we can search files from the database.
 
 ```{r get_download_urls}
 # Find list of available downloads, and filter for 
@@ -167,11 +164,12 @@ dl_urls <- searchFile(mg, analyses_accessions, type = "analyses")
 ```
 
 ```{r show_tgt_urls}
-target_urls <- dl_urls[dl_urls$attributes.description.label == "Predicted CDS with annotation",]
+target_urls <- dl_urls[
+    dl_urls$attributes.description.label == "Predicted CDS with annotation", ]
 head(target_urls)
 ```
 
-Finally, we can download the files with `getFile`.
+Finally, we can download the files with `getFile()`.
 
 ```{r filter_dl_urls, echo=T, message=FALSE}
 # Just select a single file from the target_urls list for demonstration.
@@ -181,4 +179,8 @@ cached_location <- getFile(mg, target_urls$download_url[[1]])
 
 # Where are the files?
 c(cached_location)
+```
+
+```{r session_info}
+sessionInfo()
 ```
