@@ -14,7 +14,6 @@ getResult(x, ...)
   get.func = TRUE,
   output = "TreeSE",
   use.cache = TRUE,
-  verbose = TRUE,
   ...
 )
 }
@@ -86,9 +85,6 @@ system when they are fetched from the database. The files are not removed
 meaning that the local storage can include additional files after the run
 even though \code{use.cache = FALSE} was specified.
 (By default: \code{use.cache = TRUE})}
-
-\item{verbose}{A single boolean value to specify whether to show
-the progress bar. (By default: \code{verbose = TRUE})}
 }
 \value{
 If only metagenomic data is retrieved, the result is returned in

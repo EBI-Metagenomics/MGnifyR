@@ -7,7 +7,7 @@
 \usage{
 searchAnalysis(x, ...)
 
-\S4method{searchAnalysis}{MgnifyClient}(x, type, accession, use.cache = TRUE, verbose = TRUE, ...)
+\S4method{searchAnalysis}{MgnifyClient}(x, type, accession, ...)
 }
 \arguments{
 \item{x}{A \code{MgnifyClient} object.}
@@ -20,13 +20,6 @@ accession IDs specified by \code{accession}. Must be "studies" or "samples".}
 \item{accession}{A single character value or a vector of character values
 specifying study or sample accession IDs that are used to retrieve analyses
 IDs.}
-
-\item{use.cache}{A single boolean value to specify whether to re-use/store
-data on disk, rather than query the server.
-(By default: \code{use.cache = TRUE})}
-
-\item{verbose}{A single boolean value to specify whether to show
-the progress bar. (By default: \code{verbose = TRUE})}
 }
 \value{
 vector of analysis accession IDs.

@@ -9,13 +9,7 @@
 #'
 #' @param accession A single character value or a vector of analysis accession
 #' IDs specifying accessions to retrieve data for.
-#'
-#' @param use.cache A single boolean value specifying whether to use the disk
-#' based cache. (By default: \code{use.cache = TRUE})
-#'
-#' @param verbose A single boolean value to specify whether to show
-#' the progress bar. (By default: \code{verbose = TRUE})
-#'
+#' 
 #' @param ... Optional arguments; not currently used.
 #'
 #' @return \code{data.frame} of metadata for each analysis in the
@@ -23,13 +17,11 @@
 #'
 #' @examples
 #' # Create a client object
-#' mg <- MgnifyClient(useache = TRUE, cacheDir = "~/.MGnify_cache")
+#' mg <- MgnifyClient(useCache = TRUE, cacheDir = "~/.MGnify_cache")
 #'
 #' # Download all associated study/sample and analysis metadata
 #' accession_list <- c("MGYA00377505", "MGYA00377506")
-#' meta_dataframe <- getMetadata(
-#'     mg, accession_list, use.cache = TRUE
-#'     )
+#' meta_dataframe <- getMetadata(mg, accession_list)
 #'
 #' @name getMetadata
 NULL
@@ -37,33 +29,20 @@ NULL
 #' @rdname getMetadata
 #' @importFrom plyr llply
 #' @importFrom dplyr bind_rows
-#' @include allClass.R allGenerics.R MgnifyClient.R utils.R
+#' @include allClasses.R allGenerics.R MgnifyClient.R utils.R
 #' @export
 setMethod("getMetadata", signature = c(x = "MgnifyClient"), function(
-        x, accession, use.cache = TRUE, verbose = TRUE,
-        ...){
+        x, accession, ...){
     ############################### INPUT CHECK ################################
     if( !is.character(accession) ){
         stop(
             "'accession' must be a single character or a list of character ",
             "values.", call. = FALSE)
     }
-    if( !.is_a_bool(use.cache) ){
-        stop(
-            "'use.cache' must be a boolean value specifying whether to use ",
-            "on-disk caching.", call. = FALSE)
-    }
-    if( !.is_a_bool(verbose) ){
-        stop(
-            "'verbose' must be a single boolean value specifying whether to ",
-            "show progress.", call. = FALSE)
-    }
-    verbose <- ifelse(verbose, "text", "none")
     ############################# INPUT CHECK END ##############################
     # Get metadata
     result <- .mgnify_get_analyses_metadata(
-        client = x, accession = accession, use.cache = use.cache,
-        verbose = verbose, ...)
+        client = x, accession = accession, ...)
     return(result)
 })
 
@@ -71,16 +50,29 @@ setMethod("getMetadata", signature = c(x = "MgnifyClient"), function(
 
 # Fetch metadata based on analysis accessions.
 .mgnify_get_analyses_metadata <- function(
-        client, accession, use.cache, verbose, ...){
+        client, accession, use.cache = useCache(client),
+        show.messages = verbose(client), ...){
+    # Input check
+    if( !.is_a_bool(use.cache) ){
+        stop(
+            "'use.cache' must be a single boolean value specifying whether to ",
+            "show progress.", call. = FALSE)
+    }
+    if( !.is_a_bool(show.messages) ){
+        stop(
+            "'show.messages' must be a single boolean value.", call. = FALSE)
+    }
+    show.messages <- ifelse(show.messages, "text", "none")
+    #
     # Give message about progress
-    if( verbose == "text" ){
+    if( show.messages == "text" ){
         message("Fetching metadata...")
     }
     # Loop through analysis accessions and find metadata
     reslist <- llply(as.list(accession), function(x){
         .mgnify_get_single_analysis_metadata(
             client, x, use.cache = use.cache, ...)
-    }, .progress = verbose)
+    }, .progress = show.messages)
     # Combine all metadata to single df
     df <- do.call(bind_rows, reslist)
     return(df)
@@ -88,7 +80,14 @@ setMethod("getMetadata", signature = c(x = "MgnifyClient"), function(
 
 # Retrieves combined study/sample/analysis metadata - not exported
 .mgnify_get_single_analysis_metadata <- function(
-        client, accession, use.cache = TRUE, max.hits = NULL, ...){
+        client, accession, use.cache = useCache(client), max.hits = NULL, ...){
+    # Input check
+    if( !.is_a_bool(use.cache) ){
+        stop(
+            "'use.cache' must be a single boolean value specifying whether to ",
+            "show progress.", call. = FALSE)
+    }
+    #
     # Get data in json format
     dat <- .mgnify_retrieve_json(
         client, paste("analyses", accession, sep="/"), use.cache = use.cache,

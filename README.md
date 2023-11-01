@@ -1,4 +1,4 @@
-# MGnifyR <img src="man/figures/mgnify_logo.jpg" align="right" width="120" />
+# MGnifyR <img src="inst/extdata/mgnify_logo.jpg" align="right" width="120" />
 
 An R package for searching and retrieving data from the EBI Metagenomics resource. 
 In most cases, MGnifyR interacts directly with the JSONAPI, rather than relying

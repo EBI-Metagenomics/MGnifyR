@@ -3,38 +3,48 @@
 \name{url}
 \alias{url}
 \alias{authTok}
+\alias{useCache}
 \alias{cacheDir}
 \alias{warnings}
 \alias{useMemCache}
 \alias{memCache}
 \alias{clearCache}
+\alias{verbose}
 \alias{url<-}
 \alias{authTok<-}
+\alias{useCache<-}
 \alias{cacheDir<-}
 \alias{warnings<-}
 \alias{useMemCache<-}
 \alias{memCache<-}
 \alias{clearCache<-}
+\alias{verbose<-}
 \alias{MgnifyClient-accessors}
 \alias{url,MgnifyClient-method}
 \alias{authTok,MgnifyClient-method}
+\alias{useCache,MgnifyClient-method}
 \alias{cacheDir,MgnifyClient-method}
 \alias{warnings,MgnifyClient-method}
 \alias{useMemCache,MgnifyClient-method}
 \alias{memCache,MgnifyClient-method}
 \alias{clearCache,MgnifyClient-method}
+\alias{verbose,MgnifyClient-method}
 \alias{url<-,MgnifyClient-method}
 \alias{authTok<-,MgnifyClient-method}
+\alias{useCache<-,MgnifyClient-method}
 \alias{cacheDir<-,MgnifyClient-method}
 \alias{warnings<-,MgnifyClient-method}
 \alias{useMemCache<-,MgnifyClient-method}
 \alias{memCache<-,MgnifyClient-method}
 \alias{clearCache<-,MgnifyClient-method}
+\alias{verbose<-,MgnifyClient-method}
 \title{MgnifyClient accessors and mutators}
 \usage{
 url(x)
 
 authTok(x)
+
+useCache(x)
 
 cacheDir(x)
 
@@ -46,9 +56,13 @@ memCache(x)
 
 clearCache(x)
 
+verbose(x)
+
 url(x) <- value
 
 authTok(x) <- value
+
+useCache(x) <- value
 
 cacheDir(x) <- value
 
@@ -60,9 +74,13 @@ memCache(x) <- value
 
 clearCache(x) <- value
 
+verbose(x) <- value
+
 \S4method{url}{MgnifyClient}(x)
 
 \S4method{authTok}{MgnifyClient}(x)
+
+\S4method{useCache}{MgnifyClient}(x)
 
 \S4method{cacheDir}{MgnifyClient}(x)
 
@@ -74,9 +92,13 @@ clearCache(x) <- value
 
 \S4method{clearCache}{MgnifyClient}(x)
 
+\S4method{verbose}{MgnifyClient}(x)
+
 \S4method{url}{MgnifyClient}(x) <- value
 
 \S4method{authTok}{MgnifyClient}(x) <- value
+
+\S4method{useCache}{MgnifyClient}(x) <- value
 
 \S4method{cacheDir}{MgnifyClient}(x) <- value
 
@@ -87,6 +109,8 @@ clearCache(x) <- value
 \S4method{memCache}{MgnifyClient}(x) <- value
 
 \S4method{clearCache}{MgnifyClient}(x) <- value
+
+\S4method{verbose}{MgnifyClient}(x) <- value
 }
 \arguments{
 \item{x}{A \code{MgnifyClient} object.}

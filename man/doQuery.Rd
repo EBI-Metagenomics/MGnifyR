@@ -13,7 +13,6 @@ doQuery(x, ...)
   accession = NULL,
   as.df = TRUE,
   max.hits = 200,
-  use.cache = FALSE,
   ...
 )
 }
@@ -43,13 +42,6 @@ results to return or FALSE. The actual number of results will actually be
 higher than \code{max.hits}, as clipping only occurs on pagination page
 boundaries. To disable the limit, set \code{max.hits = NULL}.
 (By default: \code{max.hits = 200})}
-
-\item{use.cache}{A single boolean value specifying whether to cache the
-result -- and reuse any existing cache entry instead of issuing a new
-callout. In general the use of caching for queries is discouraged, as
-new data is being uploaded to MGnify all the time, which might potentially
-be missed. However, for some purposes (such as analysis reproducibility)
-caching makes sense. (By default: \code{use.cache = FALSE})}
 }
 \value{
 A nested list or data.frame containing the results of the query.

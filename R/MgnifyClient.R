@@ -133,22 +133,21 @@ MgnifyClient <- function(
     }
     # Assume we're not using it
     cachepath <- NA_character_
-    # If user has specified that on-disk cache will be used
-    if(useCache){
-        if (is.null(cacheDir) ){
-            cachepath <- file.path(getwd(), ".MGnifyR_cache")
-        } else{
-            cachepath <- cacheDir
-        }
-        # Make it if needed - assume the user is sensible and the path will
-        # work...
-        dir.create(cachepath, showWarnings = FALSE)
+    # Get the directory where cache will be stored, if cache is used
+    if (is.null(cacheDir) ){
+        cachepath <- file.path(getwd(), ".MGnifyR_cache")
+    } else{
+        cachepath <- cacheDir
     }
+    # Make it if needed - assume the user is sensible and the path will
+    # work...
+    dir.create(cachepath, showWarnings = FALSE)
     # Return the final object
     obj <- new(
         "MgnifyClient",
         url = url,
         authTok = authtok,
+        useCache = useCache,
         cacheDir = cachepath,
         warnings = warnings,
         memCache = list(),

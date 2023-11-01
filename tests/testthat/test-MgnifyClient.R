@@ -51,7 +51,7 @@ test_that("MgnifyClient", {
         warnings = TRUE,
         useMemCache = FALSE,
     )
-    expect_true(is.na(mg@cacheDir))
+    expect_true(!is.na(mg@cacheDir))
     expect_equal(mg@warnings, TRUE)
     expect_equal(mg@useMemCache, FALSE)
     # Require internet access

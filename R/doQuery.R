@@ -55,13 +55,6 @@
 #' boundaries. To disable the limit, set \code{max.hits = NULL}.
 #' (By default: \code{max.hits = 200})
 #'
-#' @param use.cache A single boolean value specifying whether to cache the
-#' result -- and reuse any existing cache entry instead of issuing a new
-#' callout. In general the use of caching for queries is discouraged, as
-#' new data is being uploaded to MGnify all the time, which might potentially
-#' be missed. However, for some purposes (such as analysis reproducibility)
-#' caching makes sense. (By default: \code{use.cache = FALSE})
-#'
 #' @param ... Remaining parameter key/value pairs may be supplied to filter
 #' the returned values. Available options differ between \code{types}.
 #' See discussion above for details.
@@ -95,13 +88,11 @@ NULL
 
 #' @rdname doQuery
 #' @importFrom dplyr bind_rows
-#' @include allClass.R allGenerics.R MgnifyClient.R utils.R
+#' @include allClasses.R allGenerics.R MgnifyClient.R utils.R
 #' @export
 setMethod("doQuery", signature = c(x = "MgnifyClient"), function(
         x, type = c("studies", "samples", "runs", "analyses"),
-        accession = NULL, as.df = TRUE, max.hits = 200, use.cache = FALSE,
-        ...
-        ){
+        accession = NULL, as.df = TRUE, max.hits = 200, ...){
     ############################### INPUT CHECK ################################
     if( !(.is_non_empty_string(type)) ){
         stop(
@@ -127,16 +118,11 @@ setMethod("doQuery", signature = c(x = "MgnifyClient"), function(
             "'max.hits' must be a single integer value specifying the ", 
             "maximum number of results to return or NULL.", call. = FALSE)
     }
-    if( !.is_a_bool(use.cache) ){
-        stop(
-            "'use.cache' must be a single boolean value specifying whether ",
-            "to use on-disk caching.", call. = FALSE)
-    }
     ############################# INPUT CHECK END ##############################
     # Perform query
     result <- .perform_query(
         client = x, type = type, accession = accession, max.hits = max.hits,
-        use.cache = use.cache, ...)
+        ...)
     # Convert list to data.frame if specified
     if(as.df){
         result <- .list_to_dataframe(result)
@@ -146,9 +132,16 @@ setMethod("doQuery", signature = c(x = "MgnifyClient"), function(
 
 ################################ HELP FUNCTIONS ################################
 
-.perform_query <- function(client, type, accession, max.hits, use.cache, ...){
+.perform_query <- function(
+        client, type, accession, max.hits, use.cache = useCache(client), ...){
+    # Input check
+    if( !.is_a_bool(use.cache) ){
+        stop(
+            "'use.cache' must be a single boolean value.", call. = FALSE)
+    }
+    #
     # Get optional arguments that were passed with ...
-    qopt_list <- c(list(...), accession=accession)
+    qopt_list <- c(list(...), accession = accession)
     # Combine all arguments together
     all_query_params <- unlist(list(c(list(
         client = client,

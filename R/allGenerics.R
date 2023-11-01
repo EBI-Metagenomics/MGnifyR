@@ -11,6 +11,11 @@ setGeneric("authTok", signature = c("x"), function(x)
 
 #' @rdname MgnifyClient-accessors
 #' @export
+setGeneric("useCache", signature = c("x"), function(x)
+    standardGeneric("useCache"))
+
+#' @rdname MgnifyClient-accessors
+#' @export
 setGeneric("cacheDir", signature = c("x"), function(x)
     standardGeneric("cacheDir"))
 
@@ -36,6 +41,11 @@ setGeneric("clearCache", signature = c("x"), function(x)
 
 #' @rdname MgnifyClient-accessors
 #' @export
+setGeneric("verbose", signature = c("x"), function(x)
+    standardGeneric("verbose"))
+
+#' @rdname MgnifyClient-accessors
+#' @export
 setGeneric(
     "url<-", signature = c("x"), function(x, value) standardGeneric("url<-"))
 
@@ -43,6 +53,11 @@ setGeneric(
 #' @export
 setGeneric("authTok<-", signature = c("x"), function(x, value)
     standardGeneric("authTok<-"))
+
+#' @rdname MgnifyClient-accessors
+#' @export
+setGeneric("useCache<-", signature = c("x"), function(x, value)
+    standardGeneric("useCache<-"))
 
 #' @rdname MgnifyClient-accessors
 #' @export
@@ -68,6 +83,11 @@ setGeneric("memCache<-", signature = c("x"), function(x, value)
 #' @export
 setGeneric("clearCache<-", signature = c("x"), function(x, value)
     standardGeneric("clearCache<-"))
+
+#' @rdname MgnifyClient-accessors
+#' @export
+setGeneric("verbose<-", signature = c("x"), function(x, value)
+    standardGeneric("verbose<-"))
 
 #' @rdname doQuery
 #' @export

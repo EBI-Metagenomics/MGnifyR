@@ -58,7 +58,7 @@ Collate:
     'MgnifyClient.R'
     'utils.R'
     'allGenerics.R'
-    'allClass.R'
+    'allClasses.R'
     'allAccessors.R'
     'deprecate.R'
     'doQuery.R'
