@@ -26,14 +26,6 @@
 #' depending on the particular analysis type, pipeline version etc., not all
 #' functional results will be available. (By default: \code{get.func = TRUE})
 #'
-#' @param use.cache A single boolean value specifying whether to use the
-#' MGnify local caching system to speed up searching. It is highly
-#' recommended that this be enabled. Note that files are downloaded to local
-#' system when they are fetched from the database. The files are not removed
-#' meaning that the local storage can include additional files after the run
-#' even though \code{use.cache = FALSE} was specified.
-#' (By default: \code{use.cache = TRUE})
-#'
 #' @param ... optional arguments:
 #' \itemize{
 #'   \item{taxa.su}{ A single character value specifying which taxa subunit
@@ -114,8 +106,7 @@ NULL
 #' @include allClasses.R allGenerics.R MgnifyClient.R utils.R
 #' @export
 setMethod("getResult", signature = c(x = "MgnifyClient"), function(
-        x, accession, get.taxa = TRUE, get.func = TRUE,
-        output = "TreeSE", use.cache = TRUE, ...){
+        x, accession, get.taxa = TRUE, get.func = TRUE, output = "TreeSE", ...){
     ############################### INPUT CHECK ################################
     if( !(.is_non_empty_character(accession)) ){
         stop(
@@ -148,11 +139,6 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
         stop(
             "'output' must be a 'TreeSE', 'list' or 'phyloseq'.", call. = FALSE)
     }
-    if( !.is_a_bool(use.cache) ){
-        stop(
-            "'use.cache' must be a single boolean value specifying whether ",
-            "to use on-disk caching.", call. = FALSE)
-    }
     ############################# INPUT CHECK END ##############################
     # Get functional data if user specified
     if( is.character(get.func) ){
@@ -162,14 +148,14 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
         }
         func_res <- .mgnify_get_analyses_results(
             client = x, accession = accession, retrievelist = get.func,
-            output = output, use.cache = use.cache, ...)
+            output = output, ...)
     } else{
         func_res <- NULL
     }
     # Get microbial profiling data
     if( get.taxa ){
         taxa_res <- .mgnify_get_analyses_treese(
-            client = x, accession = accession, use.cache = use.cache, ...)
+            client = x, accession = accession, ...)
     } else{
         taxa_res <- NULL
     }
@@ -336,14 +322,18 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
 
 # Helper function for importing microbial profiling data.
 .mgnify_get_analyses_treese <- function(
-        client, accession, use.cache, show.messages = verbose(client),
-        taxa.su = "SSU", ...){
+        client, accession, use.cache = useCache(client),
+        show.messages = verbose(client), taxa.su = "SSU", ...){
     ############################### INPUT CHECK ################################
     if( !(.is_non_empty_string(taxa.su)) ){
         stop(
             "'taxa.su' must be a single character value specifying taxa ",
             "subunit.",
             call. = FALSE)
+    }
+    if( !.is_a_bool(use.cache) ){
+        stop(
+            "'use.cache' must be a single boolean value.", call. = FALSE)
     }
     if( !.is_a_bool(show.messages) ){
         stop(
@@ -410,7 +400,7 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
     ############################# INPUT CHECK END ##############################
     # Get the metadata related to analysis
     metadata_df <- .mgnify_get_single_analysis_metadata(
-        client, accession, use.cache=use.cache, ...)
+        client, accession, use.cache = use.cache, ...)
     analysis_data <- .mgnify_retrieve_json(
         client, paste("analyses", accession, sep = "/"), use.cache = use.cache,
         ...)
@@ -558,7 +548,7 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
 
 # Helper function for importing functional data
 .mgnify_get_analyses_results <- function(
-        client, accession, retrievelist, output, use.cache,
+        client, accession, retrievelist, output, use.cache = useCache(client),
         show.messages = verbose(client), as.df = TRUE, bulk.dl = TRUE, ...){
     ############################### INPUT CHECK ################################
     # If output is TreeSE or object, get results as data.frames
@@ -568,6 +558,10 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
     }
     if( !.is_a_bool(bulk.dl) ){
         stop("'bulk.dl' must be TRUE or FALSE.", call. = FALSE)
+    }
+    if( !.is_a_bool(use.cache) ){
+        stop(
+            "'use.cache' must be a single boolean value.", call. = FALSE)
     }
     if( !.is_a_bool(show.messages) ){
         stop(
@@ -649,7 +643,7 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
     #
     # Get the metadata describing the samples
     metadata_df <- .mgnify_get_single_analysis_metadata(
-        client, accession, use.cache=use.cache, max.hits = max.hits)
+        client, accession, use.cache = use.cache, max.hits = max.hits)
 
     # Should we try and grab the study's full TSV download rather than parse
     # through the JSON API? Doing so has the potential to use a LOT more disk

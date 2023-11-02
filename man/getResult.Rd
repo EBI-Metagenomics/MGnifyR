@@ -13,7 +13,6 @@ getResult(x, ...)
   get.taxa = TRUE,
   get.func = TRUE,
   output = "TreeSE",
-  use.cache = TRUE,
   ...
 )
 }
@@ -77,14 +76,6 @@ functional results will be available. (By default: \code{get.func = TRUE})}
 \item{output}{A single character value specifying the format of an output.
 Must be one of the following options: "TreeSE", "list", or "phyloseq".
 (By default: \code{output = "TreeSE"})}
-
-\item{use.cache}{A single boolean value specifying whether to use the
-MGnify local caching system to speed up searching. It is highly
-recommended that this be enabled. Note that files are downloaded to local
-system when they are fetched from the database. The files are not removed
-meaning that the local storage can include additional files after the run
-even though \code{use.cache = FALSE} was specified.
-(By default: \code{use.cache = TRUE})}
 }
 \value{
 If only metagenomic data is retrieved, the result is returned in

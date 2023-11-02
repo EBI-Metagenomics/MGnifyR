@@ -1,0 +1,5 @@
+#SampleID	ERR4076730	ERR4076733	ERR4076726	ERR4076728
+sk__Bacteria;k__;p__Firmicutes;c__Bacilli;o__Lactobacillales	1	0	0	0
+sk__Bacteria;k__;p__Proteobacteria;c__Alphaproteobacteria;o__Caulobacterales;f__Caulobacteraceae;g__Phenylobacterium	0	1	0	0
+sk__Bacteria;k__;p__Proteobacteria;c__Alphaproteobacteria;o__Rhizobiales	0	0	1	0
+sk__Bacteria;k__;p__Proteobacteria;c__Alphaproteobacteria;o__Sphingomonadales;f__Sphingomonadaceae;g__Sphingomonas	0	0	0	1

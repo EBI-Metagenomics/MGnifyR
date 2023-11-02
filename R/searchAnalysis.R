@@ -83,7 +83,7 @@ setMethod("searchAnalysis", signature = c(x = "MgnifyClient"), function(
     }
     # Loop over studies, get analyses accessions
     analyses_accessions <- llply(as.list(accession), function(x){
-        # Find analyses based on studies. Get uRL address.
+        # Find analyses based on studies. Get URL address.
         accurl <- .mgnify_get_x_for_y(
             client, x, "studies","analyses", use.cache = use.cache, ...)
         # If found
@@ -130,7 +130,7 @@ setMethod("searchAnalysis", signature = c(x = "MgnifyClient"), function(
         # to runs to analyses. Need to query this with the API people...
         if( is.null(accurl) ){
             temp <- .mgnify_analyses_from_samples_based_on_runs(
-                client, x, use.cache, show.messages, ...)
+                client, x, use.cache, ...)
         } else {
             jsondat <- .mgnify_retrieve_json(
                 client, complete_url = accurl, use.cache = use.cache, ...)

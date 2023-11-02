@@ -1,4 +1,4 @@
-*_cache
+.*_cache
 inst/extras/
 *~
 .Rproj.user

@@ -20,7 +20,7 @@ bibliography: references.bib
 library(knitr)
 knitr::opts_chunk$set(
     collapse = TRUE,
-    eval = FALSE,
+    eval = TRUE,
     comment = "#>",
     cache = TRUE
 )
@@ -74,7 +74,7 @@ thing to do when starting any analysis is to instantiate this object. The
 following snippet creates this.
 
 ```{r create_client}
-mg <- MgnifyClient(useCache = TRUE, cacheDir = "~/.MGnify_cache")
+mg <- MgnifyClient(useCache = TRUE, cacheDir = "../inst/extdata//mgnify_cache")
 mg
 ```
 

@@ -85,14 +85,7 @@
 # cl <- new("MgnifyClient")
 # .mgnify_get_x_for_y(cl, "MGYS00005126", "studies", "samples")
 .mgnify_get_x_for_y <- function(
-        client, x, typeX, typeY, use.cache = useCache(client), ...){
-    # Input check
-    if( !.is_a_bool(use.cache) ){
-        stop(
-            "'use.cache' must be a single boolean value specifying whether ",
-            "to use on-disk caching.", call. = FALSE)
-    }
-    #
+        client, x, typeX, typeY, use.cache, ...){
     # Fetch the data on samples/analyses as a json list
     res <- .mgnify_retrieve_json(
         client,
@@ -150,23 +143,19 @@
 #' @importFrom httr content
 .mgnify_retrieve_json <- function(
         client, path = "biomes", complete_url = NULL, qopts = NULL,
-        max.hits = 200, use.cache = useCache(client),
+        max.hits = 200, Debug = FALSE, use.cache = useCache(client),
         show.warnings = warnings(client), clear.cache = clearCache(client),
-        Debug = FALSE, url.address = url(client), auth.tok = authTok(client),
+         url.address = url(client), auth.tok = authTok(client),
         cache.dir = cacheDir(client), ...){
     # Input check
-    if( !.is_a_bool(use.cache) ){
-        stop(
-            "'use.cache' must be a single boolean value specifying whether ",
-            "to use on-disk caching.", call. = FALSE)
-    }
     if( !.is_a_bool(Debug) ){
         stop(
             "'Debug' must be a single boolean value.", call. = FALSE)
     }
-    if( !.is_non_empty_string(url.address) ){
+    if( !.is_a_bool(use.cache) ){
         stop(
-            "'url.address' must be a string.", call. = FALSE)
+            "'use.cache' must be a single boolean value specifying whether ",
+            "to use on-disk caching.", call. = FALSE)
     }
     if( !.is_a_bool(show.warnings) ){
         stop(
@@ -175,6 +164,10 @@
     if( !.is_a_bool(clear.cache) ){
         stop(
             "'clear.cache' must be a single boolean value.", call. = FALSE)
+    }
+    if( !.is_non_empty_string(url.address) ){
+        stop(
+            "'url.address' must be a string.", call. = FALSE)
     }
     if( !(.is_non_empty_string(auth.tok) || is.null(auth.tok)) ){
         stop(

@@ -51,7 +51,7 @@ thing to do when starting any analysis is to instantiate this object. The
 following snippet creates this.
 
 ```{r create_client, echo=TRUE, fig.keep='all', message = FALSE}
-mg <- MgnifyClient(useCache = TRUE, cacheDir = "./inst/extdata//mgnify_cache")
+mg <- MgnifyClient(useCache = TRUE, cacheDir = "../inst/extdata//mgnify_cache")
 ```
 
 # Functions for fetching the data

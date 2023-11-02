@@ -37,9 +37,9 @@ test_that("getFile", {
     expect_error(searchFile(mg, accession = "test", type = "samples", use.cache = 1))
     expect_error(searchFile( mg, accession = "test", type = "samples", use.cache = c(TRUE, FALSE)))
 
-    expect_error(searchFile(mg, accession = "test", type = "samples", verbose = NULL))
-    expect_error(searchFile(mg, accession = "test", type = "samples", verbose = 1))
-    expect_error(searchFile( mg, accession = "test", type = "samples", verbose = c(TRUE, FALSE)))
+    expect_error(searchFile(mg, accession = "test", type = "samples", show.messages = NULL))
+    expect_error(searchFile(mg, accession = "test", type = "samples", show.messages = 1))
+    expect_error(searchFile( mg, accession = "test", type = "samples", show.messages = c(TRUE, FALSE)))
 
     # Require internet access
     skip_if(httr::http_error("https://www.ebi.ac.uk/metagenomics/api/v1"))
@@ -55,7 +55,7 @@ test_that("getFile", {
 
     # Test that file search is done correctly based on accession ID.
     # Use studies as type
-    res <- searchFile(mg, type = "studies", accession = "MGYS00005292", verbose = FALSE)
+    res <- searchFile(mg, type = "studies", accession = "MGYS00005292", show.messages = FALSE)
     expect_true(all(res$type == "studies"))
     expect_true(is.data.frame(res))
     expect_true(grepl("https", res$download_url[1]))
