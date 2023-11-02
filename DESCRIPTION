@@ -48,7 +48,9 @@ Suggests:
     BiocStyle,
     miaViz,
     vegan,
-    scater
+    scater,
+    phyloseq,
+    magick
 URL: https://github.com/EBI-Metagenomics/MGnifyR
 BugReports: https://github.com/EBI-Metagenomics/MGnifyR/issues
 VignetteBuilder: knitr
