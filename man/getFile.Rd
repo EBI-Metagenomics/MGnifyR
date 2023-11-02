@@ -114,7 +114,6 @@ cached_filename <- getFile(mg, url_list[[2]])
 dna_seqs <- getFile(
     mg, url_list[[3]], read.func = readDNAStringSet)
 
-\donttest{
 # Make a client object
 mg <- MgnifyClient(cache_dir="/tmp/mgcache", useCache = TRUE)
 # Create a vector of accession ids - these happen to be \code{analysis}
@@ -123,6 +122,5 @@ accession_vect <- c(
     "MGYA00563876", "MGYA00563877", "MGYA00563878",
     "MGYA00563879", "MGYA00563880" )
 downloads <- mgnify_get_download_urls(mg, accession_vect, "analyses")
-}
 
 }

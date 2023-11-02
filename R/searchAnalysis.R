@@ -106,7 +106,8 @@ setMethod("searchAnalysis", signature = c(x = "MgnifyClient"), function(
 
 # Get analysis accessions based on sample accessions
 .mgnify_analyses_from_samples <- function(
-        client, accession, use.cache = useCache(client), show.messages = verbose(client), ...){
+        client, accession, use.cache = useCache(client),
+        show.messages = verbose(client), ...){
     # Input check
     if( !.is_a_bool(use.cache) ){
         stop(

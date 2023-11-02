@@ -123,7 +123,6 @@ setMethod("getFile", signature = c(x = "MgnifyClient"), function(
 #' make sense as each query will return multiple items)
 #'
 #' @examples
-#' \donttest{
 #' # Make a client object
 #' mg <- MgnifyClient(cache_dir="/tmp/mgcache", useCache = TRUE)
 #' # Create a vector of accession ids - these happen to be \code{analysis}
@@ -132,7 +131,6 @@ setMethod("getFile", signature = c(x = "MgnifyClient"), function(
 #'     "MGYA00563876", "MGYA00563877", "MGYA00563878",
 #'     "MGYA00563879", "MGYA00563880" )
 #' downloads <- mgnify_get_download_urls(mg, accession_vect, "analyses")
-#' }
 #'
 #' @name getFile
 NULL

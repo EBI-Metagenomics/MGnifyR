@@ -108,7 +108,7 @@ interrogated from a common interface. As with all MGnifyR functions the first
 argument `client` must be a valid `MgnifyClient` instance. The only remaining
 **required** parameter is `qtype`, specifying the type of data to be queried,
 and may be one of `studies`, `samples`, `runs`, `analyses` or `assemblies`.
-Other general parameters include `use.cache` and `max.hits`. 
+Other general parameter include `max.hits`.
 
 Unlike most other `MGnifyR` high level functions, caching is turned off by
 default for `doQuery()`. New data and analyses are being added to MGnify all the
@@ -136,7 +136,7 @@ following query:
 ```{r search_studiesE}
 northpolar <- doQuery(
     mg, "samples", latitude_gte=60.0, experiment_type="amplicon",
-    biome_name="Soil", instrument_platform = "Illumina", use.cache = FALSE)
+    biome_name="Soil", instrument_platform = "Illumina")
 northpolar[1:5,]
 ```
 
@@ -145,8 +145,7 @@ that particular entry, be it a study, sample or run. For example, to retrieve
 information for study "MGYS00002891":
 
 ```{r search_studies_accession}
-study_samples <- doQuery(
-    mg, "studies", accession="MGYS00002891", use.cache=TRUE)
+study_samples <- doQuery(mg, "studies", accession="MGYS00002891")
 study_samples
 ```
 
@@ -281,8 +280,8 @@ specific studies.  Since newly performed analyses are retrieved first in the
 results will be different.  This is principally due to the rapid increase in
 MGnify submissions, leading to a potential lack of consistency between even
 closely spaced queries. As mentioned previously, it may be best to use
-`use.cache=FALSE` for `doQuery()` calls, to ensure queries are actually returning
-the latest data.
+`useCache=FALSE` from `MgnifyCLient` object for `doQuery()` calls, to ensure
+queries are actually returning the latest data.
 
 For the remainder of this vignette however, we'll be comparing 3 ostensibly
 different studies. A study of saltmarsh soils from York University, human
@@ -293,9 +292,11 @@ the intention is only to demonstrate the functionality of the MGnifyR package,
 rather than produce scientifically rigorous results.
 
 ```{r get_analyses}
+useCache(mg) <- FALSE
 soil <- searchAnalysis(mg, "studies", "MGYS00001447")[1:20]
 human <- searchAnalysis(mg, "studies", "MGYS00001442")[1:20]
 marine <- searchAnalysis(mg, "studies", "MGYS00001282")[1:20]
+useCache(mg) <- TRUE
 
 # Combine analyses
 all_accessions <- c(soil,human,marine)
@@ -375,8 +376,7 @@ though. Hopefully in the future the sample/analysis correspondence mismatches
 will be fixed and the default `bulk.dl` will be switch to `TRUE`.
 
 ```{r get_mae}
-mae <- getResult(
-    mg, all_accessions, bulk.dl = TRUE, use.cache = TRUE)
+mae <- getResult(mg, all_accessions, bulk.dl = TRUE)
 mae
 ```
 
@@ -484,18 +484,18 @@ c(cached_location,specified_location)
 A second download option is available, which allows built-in parsing of the
 file. If we know ahead of time what processing will be performed, it may be
 possible to integrate it into a function, pass this function to
-`getFile()` as the `read_func` argument. The function in question should
+`getFile()` as the `read.func` argument. The function in question should
 take a single argument (the complete path name of the locally downloaded file)
 and the result of the call will be returned in place of the usual output
 file name. 
 
 Alternatively the files could first be downloaded in the standard way, and
 then processed using this same function in a loop. Therefore in many cases
-the `read_func` parameter is redundant. However, many of the outputs from
+the `read.func` parameter is redundant. However, many of the outputs from
 MGnify can be quite large, meaning local storage of many files may become an
-issue. By providing a `read_func` parameter (and necessarily setting
-`use.cache=FALSE`) analysis of a large number of datasets may be possible with
-minimal storage requirements.
+issue. By providing a `read_func` parameter (and necessarily setting from
+`MgnifyClient` object: `useCache=FALSE`) analysis of a large number of datasets
+may be possible with minimal storage requirements.
 
 To illustrate, suppose we were interested in retrieving all detected sequences
 matching a particular PFAM motif in a set of analyses. The simple function
@@ -520,10 +520,9 @@ Having defined the function, it just remains to include it in the call to
 `getFile()s`. 
 
 ```{r do_download_with_read}
-#Just download a single accession for demonstration, specifying a read_function
+# Just download a single accession for demonstration, specifying a read_function
 amoC_seq_counts <- getFile(
-    mg, target_urls$download_url[[1]], read_func = getAmoCseqs,
-    use.cache = FALSE)
+    mg, target_urls$download_url[[1]], read_func = getAmoCseqs)
 
 amoC_seq_counts %>% t  
 ```
