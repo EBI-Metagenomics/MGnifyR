@@ -33,8 +33,10 @@
     if (!is.null(metadata_key)){
         # Get metadata related to specific key
         metaattrlist <- json$attributes[[metadata_key]]
-        metlist <- vapply(metaattrlist, function(x) x$value, character(1))
-        names(metlist) <- vapply(metaattrlist, function(x) x$key, character(1))
+        metlist <- lapply(metaattrlist, function(x) x$value)
+        metlist <- unlist(metlist)
+        names_metlist <- lapply(metaattrlist, function(x) x$key)
+        names(metlist) <- unlist(names_metlist)
         # Get metadata without the key
         baseattrlist <- attrlist[!(attrlist %in% c(metadata_key))]
         # Combine metadata
@@ -312,7 +314,7 @@
                 datlist[[p]] <- curd$data
                 # Check to see if we've pulled enough entries.
                 # With NULL and -1, disable max.hits
-                curlen <- sum(vapply(datlist, length, numeric(1)))
+                curlen <- sum(unlist(lapply(datlist, length)))
                 if( !is.null(max.hits) && curlen >= max.hits &&
                     max.hits != -1 ){
                     break
