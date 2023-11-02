@@ -524,7 +524,7 @@ Having defined the function, it just remains to include it in the call to
 amoC_seq_counts <- getFile(
     mg, target_urls$download_url[[1]], read_func = getAmoCseqs)
 
-amoC_seq_counts %>% t  
+amoC_seq_counts |> t  
 ```
 
 ```{r session_info}
