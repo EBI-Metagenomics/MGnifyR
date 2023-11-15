@@ -9,7 +9,7 @@ doQuery(x, ...)
 
 \S4method{doQuery}{MgnifyClient}(
   x,
-  type = c("studies", "samples", "runs", "analyses"),
+  type = c("studies", "samples", "runs", "analyses", "biomes"),
   accession = NULL,
   as.df = TRUE,
   max.hits = 200,
@@ -25,7 +25,8 @@ See discussion above for details.}
 
 \item{type}{A single character value specifying the type of objects to
 query. Must be one of the following options: \code{studies}, \code{samples},
-\code{runs} or \code{analyses}. (By default: \code{type = "studies"})}
+\code{runs}, \code{analyses} or \code{biomes}.
+(By default: \code{type = "studies"})}
 
 \item{accession}{A single character value or a vector of character values
 specifying MGnify accession identifiers (of type \code{type}) or NULL. When
@@ -57,17 +58,23 @@ capabilities may be found
 [here](https://emg-docs.readthedocs.io/en/latest/api.html#customising-queries).
 Currently, the following filters are available (based on examination of the
 Python source code):
-    \itemize{
-        \item{\strong{studies}: accession, biome_name, lineage, centre_name}
-        \item{\strong{samples}: accession, experiment_type, biome_name,
-            lineage, geo_loc_name, latitude_gte, latitude_lte,
-            longitude_gte, longitude_lte, species, instrument_model,
-            instrument_platform, metadata_key, metadata_value_gte,
-            metadata_value_lte, metadata_value, environment_material,
-            environment_feature, study_accession}
-       \item{\strong{runs}: accession, experiment_type, biome_name, lineage,
-           species, instrument_platform, instrument_model}
-       }
+\itemize{
+    \item{\strong{studies}: accession, biome_name, lineage, centre_name,
+    include}
+    \item{\strong{samples}: accession, experiment_type, biome_name,
+    lineage, geo_loc_name, latitude_gte, latitude_lte,
+    longitude_gte, longitude_lte, species, instrument_model,
+    instrument_platform, metadata_key, metadata_value_gte,
+    metadata_value_lte, metadata_value, environment_material,
+    environment_feature, study_accession, include}
+    \item{\strong{runs}: accession, experiment_type, biome_name, lineage,
+    species, instrument_platform, instrument_model, metdata_key,
+    metadata_value_gte, metadata_value_lte, metadata_value, sample_accession,
+    study_accession, include}
+    \item{\strong{analyses}: biome_name, lineage, experiment_type, species,
+    sample_accession, pipeline_version}
+    \item{\strong{biomes}: depth_gte, depth_lte}
+ }
 Unfortunately it appears that in some cases, some of these filters don't work
 as expected, so it is important to check the results returned match up with
 what's expected. Even more unfortunately if there's an error in the parameter
