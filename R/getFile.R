@@ -16,7 +16,7 @@
 #' MGNify local cache settings will be used. If the file is intended to be
 #' processed in a separate program, it may be sensible to provide a
 #' meaningful \code{file}, rather than having to hunt through the
-#' cache folders. If \code{file} is NULL \emph{and} \code{use.cache}
+#' cache folders. If \code{file} is NULL \emph{and} \code{useCache(client)}
 #' is \code{FALSE}, the \code{read.func} parameter must be supplied or the
 #' file will be downloaded and then deleted.
 #' (By default: \code{file = NULL})
@@ -28,13 +28,6 @@
 #' discarded. The function should take a single parameter, the downloaded
 #' filename, and may return any valid R object.
 #' (By default: \code{read.func = NULL})
-#'
-#' @param use.cache A single boolean value to specify whether to enable the
-#' default MGnifyR caching mechanism. File locations are overridden if
-#' \code{file} is supplied. Note that files are downloaded to local system
-#' when they are fetched from the database. The files are not removed meaning
-#' that the local storage can include additional files after the run even though
-#' \code{use.cache = FALSE} was specified. (By default: \code{use.cache = TRUE})
 #'
 #' @param ... Additional arguments; not used currently.
 #'
@@ -71,18 +64,17 @@
 #' # Using read.func to open the reads with readDNAStringSet from
 #' # \code{biostrings}. Without retaining on disk
 #' dna_seqs <- getFile(
-#'     mg, url_list[[3]], read.func = readDNAStringSet, use.cache = FALSE)
+#'     mg, url_list[[3]], read.func = readDNAStringSet)
 #'
 #' @name getFile
 NULL
 
 #' @rdname getFile
 #' @importFrom httr add_headers content write_disk
-#' @include allClass.R allGenerics.R MgnifyClient.R utils.R
+#' @include allClasses.R allGenerics.R MgnifyClient.R utils.R
 #' @export
 setMethod("getFile", signature = c(x = "MgnifyClient"), function(
-        x, url, file = NULL, read.func = NULL, use.cache = TRUE, ...
-        ){
+        x, url, file = NULL, read.func = NULL, ...){
     ############################### INPUT CHECK ################################
     if( !.is_non_empty_string(url) ){
         stop(
@@ -99,16 +91,11 @@ setMethod("getFile", signature = c(x = "MgnifyClient"), function(
             "'read.func' must be a function that is used to process the file ",
             "or NULL.", call. = FALSE)
     }
-    if( !.is_a_bool(use.cache) ){
-        stop(
-            "'use.cache' must be a single boolean value specifying whether ",
-            "to use on-disk caching.", call. = FALSE)
-    }
     ############################# INPUT CHECK END ##############################
     # Get file
     result <- .mgnify_download(
         client = x, url = url, file = file,
-        read.func = read.func, use.cache = use.cache, ...)
+        read.func = read.func, ...)
     return(result)
 })
 
@@ -130,28 +117,20 @@ setMethod("getFile", signature = c(x = "MgnifyClient"), function(
 #' \code{studies}, \code{assembly}, \code{genome} or \code{run}.
 #' (By default: \code{type = "samples"})
 #'
-#' @param use.cache A single boolean value specifying whether to use the
-#' on-disk cache to speed up queries. (By default: \code{use.cache = TRUE})
-#'
-#' @param verbose A single boolean value to specify whether to show
-#' the progress bar. (By default: \code{verbose = TRUE})
-#'
 #' @return \code{data.frame} containing all discovered downloads. If
 #' multiple \code{accessions} are queried, the \code{accessions} column
 #' may to filter the results - since rownames are not set (and wouldn;'t
 #' make sense as each query will return multiple items)
 #'
 #' @examples
-#' \donttest{
 #' # Make a client object
-#' mg <- MgnifyClient(cache_dir="/tmp/mgcache")
+#' mg <- MgnifyClient(cache_dir="/tmp/mgcache", useCache = TRUE)
 #' # Create a vector of accession ids - these happen to be \code{analysis}
 #' # accessions
 #' accession_vect <- c(
 #'     "MGYA00563876", "MGYA00563877", "MGYA00563878",
 #'     "MGYA00563879", "MGYA00563880" )
 #' downloads <- mgnify_get_download_urls(mg, accession_vect, "analyses")
-#' }
 #'
 #' @name getFile
 NULL
@@ -159,12 +138,12 @@ NULL
 #' @rdname getFile
 #' @importFrom plyr llply rbind.fill
 #' @importFrom urltools parameters parameters<-
-#' @include allClass.R allGenerics.R MgnifyClient.R utils.R
+#' @include allClasses.R allGenerics.R MgnifyClient.R utils.R
 #' @export
 setMethod("searchFile", signature = c(x = "MgnifyClient"), function(
         x, accession, type = c(
             "studies", "samples", "analyses", "assemblies", "genomes", "run"),
-        use.cache = TRUE, verbose = TRUE, ...
+        ...
         ){
     ############################### INPUT CHECK ################################
     if( !.is_non_empty_character(accession) ){
@@ -179,22 +158,10 @@ setMethod("searchFile", signature = c(x = "MgnifyClient"), function(
             "the type of instance to query.", call. = FALSE)
     }
     type <- match.arg(type, several.ok = FALSE)
-    if( !.is_a_bool(use.cache) ){
-        stop(
-            "'use.cache' must be a single boolean value specifying whether ",
-            "to use on-disk caching.", call. = FALSE)
-    }
-    if( !.is_a_bool(verbose) ){
-        stop(
-            "'verbose' must be a single boolean value specifying whether to ",
-            "show progress.", call. = FALSE)
-    }
-    verbose <- ifelse(verbose, "text", "none")
     ############################# INPUT CHECK END ##############################
     # Get file urls
     result <- .mgnify_get_download_urls(
-        client = x, accession = accession, type = type, use.cache = use.cache,
-        verbose = verbose, ...)
+        client = x, accession = accession, type = type, ...)
     return(result)
 })
 
@@ -202,7 +169,36 @@ setMethod("searchFile", signature = c(x = "MgnifyClient"), function(
 
 # Download the specified files from the database
 .mgnify_download <- function(
-        client, url, file, read.func, use.cache, ...){
+        client, url, file, read.func, use.cache = useCache(client),
+        url.address = databaseUrl(client), cache.dir = cacheDir(client),
+        show.warnings = showWarnings(client), clear.cache = clearCache(client),
+        auth.tok = authTok(client), ...){
+    # Input check
+    if( !.is_non_empty_string(url.address) ){
+        stop(
+            "'url.address' must be a string.", call. = FALSE)
+    }
+    if( !.is_a_bool(use.cache) ){
+        stop(
+            "'use.cache' must be a single boolean value.", call. = FALSE)
+    }
+    if( !.is_non_empty_string(cache.dir) ){
+        stop(
+            "'cache.dir' must be a string.", call. = FALSE)
+    }
+    if( !.is_a_bool(show.warnings) ){
+        stop(
+            "'show.warnings' must be a single boolean value.", call. = FALSE)
+    }
+    if( !.is_a_bool(clear.cache) ){
+        stop(
+            "'clear.cache' must be a single boolean value.", call. = FALSE)
+    }
+    if( !(.is_non_empty_string(auth.tok) || is.null(auth.tok)) ){
+        stop(
+            "'auth.tok' must be a string or NULL.", call. = FALSE)
+    }
+    #
     # Set up filenames for storing the data
     if ( !is.null(file) ){
         file_path <- file
@@ -210,20 +206,20 @@ setMethod("searchFile", signature = c(x = "MgnifyClient"), function(
         # Build a filename out of the url, including the full paths. Annoying,
         # but some downloads (e.g. genome results) are just names like
         # core_genes.fa , which would break the caching.
-        cachetgt <- gsub(paste(client@url, "/", sep = ""), "", url)
+        cachetgt <- gsub(paste(url.address, "/", sep = ""), "", url)
 
         # Make sure the directory exists
-        cache_full_name <- file.path(client@cacheDir, cachetgt)
+        cache_full_name <- file.path(cache.dir, cachetgt)
         dir.create(
             dirname(cache_full_name), recursive = TRUE,
-            showWarnings = client@warnings)
+            showWarnings = show.warnings)
         file_path <- cache_full_name
     } else{
         file_path <- tempfile()[[1]]
     }
 
     # Clear cache if specified
-    if( use.cache && client@clearCache && file.exists(file_path) ){
+    if( use.cache && clear.cache && file.exists(file_path) ){
         message("clear_cache is TRUE: deleting ", file_path)
         unlink(file_path)
     }
@@ -231,9 +227,9 @@ setMethod("searchFile", signature = c(x = "MgnifyClient"), function(
     # Only get the data if it's not already on disk
     if( !file.exists(file_path) || (use.cache && file.exists(file_path)) ){
         # Add authentication details to query options
-        if(!is.null(client@authTok)){
+        if( !is.null(auth.tok) ){
             add_headers(.headers = c(
-                Authorization = paste("Bearer", client@authTok, sep=" ")))
+                Authorization = paste("Bearer", auth.tok, sep = " ")))
         }
         # If there's an error we need to make sure the cache file isn't written
         # - by default it seems it is.
@@ -260,9 +256,21 @@ setMethod("searchFile", signature = c(x = "MgnifyClient"), function(
 # Get URL addresses of downloadable files that are related to certain accession
 # ID.
 .mgnify_get_download_urls <- function(
-        client, accession, type, use.cache, verbose, ...){
+        client, accession, type, use.cache = useCache(client),
+        show.messages = verbose(client), ...){
+    # Input check
+    if( !.is_a_bool(use.cache) ){
+        stop(
+            "'use.cache' must be a single boolean value.", call. = FALSE)
+    }
+    if( !.is_a_bool(show.messages) ){
+        stop(
+            "'show.messages' must be a single boolean value.", call. = FALSE)
+    }
+    show.messages <- ifelse(show.messages, "text", "none")
+    #
     # Give message about progress
-    if( verbose == "text" ){
+    if( show.messages == "text" ){
         message("Searching files...")
     }
     # L
@@ -294,7 +302,7 @@ setMethod("searchFile", signature = c(x = "MgnifyClient"), function(
             df$download_url <- urls
         }
         return(df)
-    }, .progress = verbose)
+    }, .progress = show.messages)
     # Combine results of multiple accessions IDs
     results <- do.call(rbind.fill, results)
     return(results)

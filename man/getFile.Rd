@@ -12,14 +12,12 @@ getFile(x, ...)
 
 searchFile(x, ...)
 
-\S4method{getFile}{MgnifyClient}(x, url, file = NULL, read.func = NULL, use.cache = TRUE, ...)
+\S4method{getFile}{MgnifyClient}(x, url, file = NULL, read.func = NULL, ...)
 
 \S4method{searchFile}{MgnifyClient}(
   x,
   accession,
   type = c("studies", "samples", "analyses", "assemblies", "genomes", "run"),
-  use.cache = TRUE,
-  verbose = TRUE,
   ...
 )
 }
@@ -36,7 +34,7 @@ optional local filename to use for saving the file. If NULL (default),
 MGNify local cache settings will be used. If the file is intended to be
 processed in a separate program, it may be sensible to provide a
 meaningful \code{file}, rather than having to hunt through the
-cache folders. If \code{file} is NULL \emph{and} \code{use.cache}
+cache folders. If \code{file} is NULL \emph{and} \code{useCache(client)}
 is \code{FALSE}, the \code{read.func} parameter must be supplied or the
 file will be downloaded and then deleted.
 (By default: \code{file = NULL})}
@@ -49,9 +47,6 @@ discarded. The function should take a single parameter, the downloaded
 filename, and may return any valid R object.
 (By default: \code{read.func = NULL})}
 
-\item{use.cache}{A single boolean value specifying whether to use the
-on-disk cache to speed up queries. (By default: \code{use.cache = TRUE})}
-
 \item{accession}{A single character value or a vector of character values
 specifying accession IDs to return results for.}
 
@@ -59,9 +54,6 @@ specifying accession IDs to return results for.}
 query. Must be one of the following options: \code{analysis}, \code{samples},
 \code{studies}, \code{assembly}, \code{genome} or \code{run}.
 (By default: \code{type = "samples"})}
-
-\item{verbose}{A single boolean value to specify whether to show
-the progress bar. (By default: \code{verbose = TRUE})}
 }
 \value{
 Either the local filename of the downloaded file, be it either the
@@ -120,17 +112,15 @@ cached_filename <- getFile(mg, url_list[[2]])
 # Using read.func to open the reads with readDNAStringSet from
 # \code{biostrings}. Without retaining on disk
 dna_seqs <- getFile(
-    mg, url_list[[3]], read.func = readDNAStringSet, use.cache = FALSE)
+    mg, url_list[[3]], read.func = readDNAStringSet)
 
-\donttest{
 # Make a client object
-mg <- MgnifyClient(cache_dir="/tmp/mgcache")
+mg <- MgnifyClient(cache_dir="/tmp/mgcache", useCache = TRUE)
 # Create a vector of accession ids - these happen to be \code{analysis}
 # accessions
 accession_vect <- c(
     "MGYA00563876", "MGYA00563877", "MGYA00563878",
     "MGYA00563879", "MGYA00563880" )
 downloads <- mgnify_get_download_urls(mg, accession_vect, "analyses")
-}
 
 }

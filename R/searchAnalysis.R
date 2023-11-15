@@ -13,13 +13,6 @@
 #' specifying study or sample accession IDs that are used to retrieve analyses
 #' IDs.
 #'
-#' @param use.cache A single boolean value to specify whether to re-use/store
-#' data on disk, rather than query the server.
-#' (By default: \code{use.cache = TRUE})
-#'
-#' @param verbose A single boolean value to specify whether to show
-#' the progress bar. (By default: \code{verbose = TRUE})
-#'
 #' @param ... Optional arguments; not currently used.
 #'
 #' @return vector of analysis accession IDs.
@@ -41,12 +34,10 @@ NULL
 
 #' @rdname searchAnalysis
 #' @importFrom plyr llply
-#' @include allClass.R allGenerics.R MgnifyClient.R utils.R
+#' @include allClasses.R allGenerics.R MgnifyClient.R utils.R
 #' @export
 setMethod("searchAnalysis", signature = c(x = "MgnifyClient"), function(
-        x, type, accession, use.cache=TRUE, verbose=TRUE,
-        ...
-        ){
+        x, type, accession, ...){
     ############################### INPUT CHECK ################################
     if( !(type %in% c("samples", "studies")) ){
         stop(
@@ -58,27 +49,14 @@ setMethod("searchAnalysis", signature = c(x = "MgnifyClient"), function(
             "character values specifying the MGnify accession identifier.",
             call. = FALSE)
     }
-    if( !.is_a_bool(use.cache) ){
-        stop(
-            "'use.cache' must be a single boolean value specifying whether ",
-            "to use on-disk caching.", call. = FALSE)
-    }
-    if( !.is_a_bool(verbose) ){
-        stop(
-            "'verbose' must be a single boolean value specifying whether to ",
-            "show progress.", call. = FALSE)
-    }
-    verbose <- ifelse(verbose, "text", "none")
     ############################# INPUT CHECK END ##############################
     # Get analysis accession IDs based on sample or study accessions
     if( type == "samples" ){
         result <- .mgnify_analyses_from_samples(
-            client = x, accession = accession, use.cache = use.cache,
-            verbose = verbose, ...)
+            client = x, accession = accession, ...)
     } else{
         result <- .mgnify_analyses_from_studies(
-            client = x, accession = accession, use.cache = use.cache,
-            verbose = verbose, ...)
+            client = x, accession = accession, ...)
     }
     return(result)
 })
@@ -86,14 +64,26 @@ setMethod("searchAnalysis", signature = c(x = "MgnifyClient"), function(
 ################################ HELP FUNCTIONS ################################
 # Get analysis accessions based on studies
 .mgnify_analyses_from_studies <- function(
-        client, accession, use.cache, verbose, ...){
+        client, accession, use.cache = useCache(client),
+        show.messages = verbose(client), ...){
+    # Input check
+    if( !.is_a_bool(use.cache) ){
+        stop(
+            "'use.cache' must be a single boolean value", call. = FALSE)
+    }
+    if( !.is_a_bool(show.messages) ){
+        stop(
+            "'show.messages' must be a single boolean value.", call. = FALSE)
+    }
+    show.messages <- ifelse(show.messages, "text", "none")
+    #
     # Give message about progress
-    if( verbose == "text" ){
+    if( show.messages == "text" ){
         message("Fetching analyses...")
     }
     # Loop over studies, get analyses accessions
     analyses_accessions <- llply(as.list(accession), function(x){
-        # Find analyses based on studies. Get uRL address.
+        # Find analyses based on studies. Get URL address.
         accurl <- .mgnify_get_x_for_y(
             client, x, "studies","analyses", use.cache = use.cache, ...)
         # If found
@@ -109,16 +99,28 @@ setMethod("searchAnalysis", signature = c(x = "MgnifyClient"), function(
             warning("Analyses not found for studies ", x, call. = FALSE)
         }
         return(res)
-    }, .progress=verbose)
+    }, .progress=show.messages)
     res <- unlist(analyses_accessions)
     return(res)
 }
 
 # Get analysis accessions based on sample accessions
 .mgnify_analyses_from_samples <- function(
-        client, accession, use.cache, verbose, ...){
+        client, accession, use.cache = useCache(client),
+        show.messages = verbose(client), ...){
+    # Input check
+    if( !.is_a_bool(use.cache) ){
+        stop(
+            "'use.cache' must be a single boolean value", call. = FALSE)
+    }
+    if( !.is_a_bool(show.messages) ){
+        stop(
+            "'show.messages' must be a single boolean value.", call. = FALSE)
+    }
+    show.messages <- ifelse(show.messages, "text", "none")
+    #
     # Give message about progress
-    if( verbose == "text" ){
+    if( show.messages == "text" ){
         message("Fetching analyses...")
     }
     # Loop over sample accessions
@@ -129,7 +131,7 @@ setMethod("searchAnalysis", signature = c(x = "MgnifyClient"), function(
         # to runs to analyses. Need to query this with the API people...
         if( is.null(accurl) ){
             temp <- .mgnify_analyses_from_samples_based_on_runs(
-                client, x, use.cache, verbose, ...)
+                client, x, use.cache, ...)
         } else {
             jsondat <- .mgnify_retrieve_json(
                 client, complete_url = accurl, use.cache = use.cache, ...)
@@ -137,14 +139,20 @@ setMethod("searchAnalysis", signature = c(x = "MgnifyClient"), function(
             temp <- lapply(jsondat, function(x) x$id)
         }
         return(temp)
-        }, .progress = verbose)
+        }, .progress = show.messages)
     res <- unlist(analyses_accessions)
     return(res)
 }
 
 # Get analysis accessions based on runs or assemblies
 .mgnify_analyses_from_samples_based_on_runs <- function(
-        client, x, use.cache, verbose, ...){
+        client, x, use.cache = useCache(client), ...){
+    # Input check
+    if( !.is_a_bool(use.cache) ){
+        stop(
+            "'use.cache' must be a single boolean value", call. = FALSE)
+    }
+    #
     # Get urö for runs
     runurl <- .mgnify_get_x_for_y(
         client, x, "samples","runs", use.cache = use.cache, ...)

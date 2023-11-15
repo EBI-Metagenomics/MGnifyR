@@ -4,13 +4,17 @@
 #'
 #' @details An object that are required by functions of MGnifyR package.
 #'
-#' @slot url A single character value specifying an URL address of database.
+#' @slot databaseUrl A single character value specifying an URL address of
+#' database.
 #'
 #' @slot authTok A single character value specifying authentication token.
+#' 
+#' @slot useCache A single boolean value specifying whether to use cache.
 #'
 #' @slot cacheDir A single character value specifying cache directory.
 #'
-#' @slot warnings A single boolean value specifying whether to show warnings.
+#' @slot showWarnings A single boolean value specifying whether to show
+#' warnings.
 #'
 #' @slot useMemCache A single boolean value specifying whether to use on-disk
 #' memory.
@@ -18,6 +22,8 @@
 #' @slot memCache A single character value specifying on-disk memory directory.
 #'
 #' @slot clearCache A single boolean value specifying whether to clear cache.
+#' 
+#' @slot verbose A single boolean value specifying whether to show messages.
 #'
 #' @section Constructor:
 #' See  \code{\link{MgnifyClient}} for constructor.
@@ -34,17 +40,21 @@ NULL
 #' @exportClass MgnifyClient
 setClass(
     "MgnifyClient", representation(
-        url = "character",
+        databaseUrl = "character",
         authTok = "character",
+        useCache = "logical",
         cacheDir = "character",
-        warnings = "logical",
+        showWarnings = "logical",
         useMemCache = "logical",
         memCache = "list",
-        clearCache = "logical"),
+        clearCache = "logical",
+        verbose = "logical"),
     prototype = list(
-        url = "https://www.ebi.ac.uk/metagenomics/api/v1",
+        databaseUrl = "https://www.ebi.ac.uk/metagenomics/api/v1",
         authTok = NULL,
+        useCache = FALSE,
         cacheDir = NULL,
         useMemCache = FALSE,
         memCache = list(),
-        clearCache = FALSE))
+        clearCache = FALSE,
+        verbose = TRUE))

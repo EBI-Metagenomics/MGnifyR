@@ -1,6 +1,6 @@
 Package: MGnifyR
 Type: Package
-Version: 0.99.1
+Version: 0.99.2
 Authors@R:
     c(person(given = "Tuomas", family = "Borman", role = c("aut", "cre"),
              email = "tuomas.v.borman@utu.fi",
@@ -48,7 +48,9 @@ Suggests:
     BiocStyle,
     miaViz,
     vegan,
-    scater
+    scater,
+    phyloseq,
+    magick
 URL: https://github.com/EBI-Metagenomics/MGnifyR
 BugReports: https://github.com/EBI-Metagenomics/MGnifyR/issues
 VignetteBuilder: knitr
@@ -58,7 +60,7 @@ Collate:
     'MgnifyClient.R'
     'utils.R'
     'allGenerics.R'
-    'allClass.R'
+    'allClasses.R'
     'allAccessors.R'
     'deprecate.R'
     'doQuery.R'

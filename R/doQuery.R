@@ -8,17 +8,23 @@
 #' [here](https://emg-docs.readthedocs.io/en/latest/api.html#customising-queries).
 #' Currently, the following filters are available (based on examination of the
 #' Python source code):
-#'     \itemize{
-#'         \item{\strong{studies}: accession, biome_name, lineage, centre_name}
-#'         \item{\strong{samples}: accession, experiment_type, biome_name,
-#'             lineage, geo_loc_name, latitude_gte, latitude_lte,
-#'             longitude_gte, longitude_lte, species, instrument_model,
-#'             instrument_platform, metadata_key, metadata_value_gte,
-#'             metadata_value_lte, metadata_value, environment_material,
-#'             environment_feature, study_accession}
-#'        \item{\strong{runs}: accession, experiment_type, biome_name, lineage,
-#'            species, instrument_platform, instrument_model}
-#'        }
+#' \itemize{
+#'     \item{\strong{studies}: accession, biome_name, lineage, centre_name,
+#'     include}
+#'     \item{\strong{samples}: accession, experiment_type, biome_name,
+#'     lineage, geo_loc_name, latitude_gte, latitude_lte,
+#'     longitude_gte, longitude_lte, species, instrument_model,
+#'     instrument_platform, metadata_key, metadata_value_gte,
+#'     metadata_value_lte, metadata_value, environment_material,
+#'     environment_feature, study_accession, include}
+#'     \item{\strong{runs}: accession, experiment_type, biome_name, lineage,
+#'     species, instrument_platform, instrument_model, metdata_key,
+#'     metadata_value_gte, metadata_value_lte, metadata_value, sample_accession,
+#'     study_accession, include}
+#'     \item{\strong{analyses}: biome_name, lineage, experiment_type, species,
+#'     sample_accession, pipeline_version}
+#'     \item{\strong{biomes}: depth_gte, depth_lte}
+#'  }
 #' Unfortunately it appears that in some cases, some of these filters don't work
 #' as expected, so it is important to check the results returned match up with
 #' what's expected. Even more unfortunately if there's an error in the parameter
@@ -37,7 +43,8 @@
 #'
 #' @param type A single character value specifying the type of objects to
 #' query. Must be one of the following options: \code{studies}, \code{samples},
-#' \code{runs} or \code{analyses}. (By default: \code{type = "studies"})
+#' \code{runs}, \code{analyses} or \code{biomes}.
+#' (By default: \code{type = "studies"})
 #'
 #' @param accession A single character value or a vector of character values
 #' specifying MGnify accession identifiers (of type \code{type}) or NULL. When
@@ -54,13 +61,6 @@
 #' higher than \code{max.hits}, as clipping only occurs on pagination page
 #' boundaries. To disable the limit, set \code{max.hits = NULL}.
 #' (By default: \code{max.hits = 200})
-#'
-#' @param use.cache A single boolean value specifying whether to cache the
-#' result -- and reuse any existing cache entry instead of issuing a new
-#' callout. In general the use of caching for queries is discouraged, as
-#' new data is being uploaded to MGnify all the time, which might potentially
-#' be missed. However, for some purposes (such as analysis reproducibility)
-#' caching makes sense. (By default: \code{use.cache = FALSE})
 #'
 #' @param ... Remaining parameter key/value pairs may be supplied to filter
 #' the returned values. Available options differ between \code{types}.
@@ -95,13 +95,11 @@ NULL
 
 #' @rdname doQuery
 #' @importFrom dplyr bind_rows
-#' @include allClass.R allGenerics.R MgnifyClient.R utils.R
+#' @include allClasses.R allGenerics.R MgnifyClient.R utils.R
 #' @export
 setMethod("doQuery", signature = c(x = "MgnifyClient"), function(
-        x, type = c("studies", "samples", "runs", "analyses"),
-        accession = NULL, as.df = TRUE, max.hits = 200, use.cache = FALSE,
-        ...
-        ){
+        x, type = c("studies", "samples", "runs", "analyses", "biomes"),
+        accession = NULL, as.df = TRUE, max.hits = 200, ...){
     ############################### INPUT CHECK ################################
     if( !(.is_non_empty_string(type)) ){
         stop(
@@ -127,16 +125,11 @@ setMethod("doQuery", signature = c(x = "MgnifyClient"), function(
             "'max.hits' must be a single integer value specifying the ", 
             "maximum number of results to return or NULL.", call. = FALSE)
     }
-    if( !.is_a_bool(use.cache) ){
-        stop(
-            "'use.cache' must be a single boolean value specifying whether ",
-            "to use on-disk caching.", call. = FALSE)
-    }
     ############################# INPUT CHECK END ##############################
     # Perform query
     result <- .perform_query(
         client = x, type = type, accession = accession, max.hits = max.hits,
-        use.cache = use.cache, ...)
+        ...)
     # Convert list to data.frame if specified
     if(as.df){
         result <- .list_to_dataframe(result)
@@ -146,9 +139,16 @@ setMethod("doQuery", signature = c(x = "MgnifyClient"), function(
 
 ################################ HELP FUNCTIONS ################################
 
-.perform_query <- function(client, type, accession, max.hits, use.cache, ...){
+.perform_query <- function(
+        client, type, accession, max.hits, use.cache = useCache(client), ...){
+    # Input check
+    if( !.is_a_bool(use.cache) ){
+        stop(
+            "'use.cache' must be a single boolean value.", call. = FALSE)
+    }
+    #
     # Get optional arguments that were passed with ...
-    qopt_list <- c(list(...), accession=accession)
+    qopt_list <- c(list(...), accession = accession)
     # Combine all arguments together
     all_query_params <- unlist(list(c(list(
         client = client,
@@ -215,37 +215,3 @@ setMethod("doQuery", signature = c(x = "MgnifyClient"), function(
     result <- bind_rows(dflist)
     return(result)
 }
-# # REMOVE THESE SINCE THEY ARE NOT USED?
-# # Combined together into a single queriably list
-# query_filters <- list(
-#     biomes <- biome_filters,
-#     samples <- sample_filters,
-#     studies <- study_filters,
-#     runs <- run_filters
-# )
-#
-# # Filters possible - this comes from the django source code - would be nice
-# if we could
-# # look it up.
-# # These DON'T seem to include all possible attributes ....
-# # And only some
-# sample_filters <- c(
-#     'accession', 'experiment_type', 'biome_name', 'lineage', 'geo_loc_name',
-#     'latitude_gte', 'latitude_lte', 'longitude_gte', 'longitude_lte',
-#     'species','instrument_model', 'instrument_platform', 'metadata_key',
-#     'metadata_value_gte', 'metadata_value_lte', 'metadata_value',
-#     'environment_material', 'environment_feature', 'study_accession',
-#     'include')
-# biome_filters <- c(
-#     'depth_gte', 'depth_lte')
-# study_filters <- c(
-#     'accession', 'biome_name', 'lineage', 'centre_name', 'include')
-# run_filters <- c(
-#     'accession', 'experiment_type', 'biome_name', 'lineage' , 'species',
-#     'instrument_platform','instrument_model',
-#     # 'metadata_key', 'metadata_value_gte', 'metadata_value_lte',
-#     # 'metadata_value','sample_accession','study_accession',
-#     'include')
-# analysis_filters <- c(
-#     'biome_name', 'lineage', 'experiment_type', 'species', 'sample_accession',
-#     'pipeline_version')

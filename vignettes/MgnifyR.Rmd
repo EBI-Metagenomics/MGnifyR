@@ -51,7 +51,7 @@ thing to do when starting any analysis is to instantiate this object. The
 following snippet creates this.
 
 ```{r create_client, echo=TRUE, fig.keep='all', message = FALSE}
-mg <- MgnifyClient(useache = TRUE, cacheDir = "~/.MGnify_cache")
+mg <- MgnifyClient(useCache = TRUE, cacheDir = "../inst/extdata//mgnify_cache")
 ```
 
 # Functions for fetching the data
@@ -95,11 +95,11 @@ head(analyses_metadata)
 
 After we have selected the data to fetch, we can use `getResult()`
 
-The output is `TreeSummarizedExperiment` (`TreeSE`) or `MultiAssayExperiment`
-(`MAE`) depending on the dataset. If the dataset includes only taxonomic
-profiling data, the output is a single `TreeSE`. If dataset includes also
-functional data, the output is multiple `TreeSE` objects that are linked
-together by utilizing `MAE`.
+The output is `r BiocStyle::Biocpkg("TreeSummarizedExperiment")` (`TreeSE`) or
+`r BiocStyle::Biocpkg("MultiAssayExperiment")` (`MAE`) depending on the dataset.
+If the dataset includes only taxonomic profiling data, the output is a single
+`TreeSE`. If dataset includes also functional data, the output is multiple
+`TreeSE` objects that are linked together by utilizing `MAE`.
 
 ```{r get_mae}
 mae <- getResult(mg, accession = analyses_accessions)

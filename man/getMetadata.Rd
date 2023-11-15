@@ -8,7 +8,7 @@ accessions}
 \usage{
 getMetadata(x, ...)
 
-\S4method{getMetadata}{MgnifyClient}(x, accession, use.cache = TRUE, verbose = TRUE, ...)
+\S4method{getMetadata}{MgnifyClient}(x, accession, ...)
 }
 \arguments{
 \item{x}{A \code{MgnifyClient} object.}
@@ -17,12 +17,6 @@ getMetadata(x, ...)
 
 \item{accession}{A single character value or a vector of analysis accession
 IDs specifying accessions to retrieve data for.}
-
-\item{use.cache}{A single boolean value specifying whether to use the disk
-based cache. (By default: \code{use.cache = TRUE})}
-
-\item{verbose}{A single boolean value to specify whether to show
-the progress bar. (By default: \code{verbose = TRUE})}
 }
 \value{
 \code{data.frame} of metadata for each analysis in the
@@ -38,12 +32,10 @@ metadata attributes as a list of analyses accessions.
 }
 \examples{
 # Create a client object
-mg <- MgnifyClient(useache = TRUE, cacheDir = "~/.MGnify_cache")
+mg <- MgnifyClient(useCache = TRUE, cacheDir = "~/.MGnify_cache")
 
 # Download all associated study/sample and analysis metadata
 accession_list <- c("MGYA00377505", "MGYA00377506")
-meta_dataframe <- getMetadata(
-    mg, accession_list, use.cache = TRUE
-    )
+meta_dataframe <- getMetadata(mg, accession_list)
 
 }

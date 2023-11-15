@@ -33,8 +33,10 @@
     if (!is.null(metadata_key)){
         # Get metadata related to specific key
         metaattrlist <- json$attributes[[metadata_key]]
-        metlist <- vapply(metaattrlist, function(x) x$value, character(1))
-        names(metlist) <- vapply(metaattrlist, function(x) x$key, character(1))
+        metlist <- lapply(metaattrlist, function(x) x$value)
+        metlist <- unlist(metlist)
+        names_metlist <- lapply(metaattrlist, function(x) x$key)
+        names(metlist) <- unlist(names_metlist)
         # Get metadata without the key
         baseattrlist <- attrlist[!(attrlist %in% c(metadata_key))]
         # Combine metadata
@@ -85,7 +87,7 @@
 # cl <- new("MgnifyClient")
 # .mgnify_get_x_for_y(cl, "MGYS00005126", "studies", "samples")
 .mgnify_get_x_for_y <- function(
-        client, x, typeX, typeY, use.cache = FALSE, ...){
+        client, x, typeX, typeY, use.cache, ...){
     # Fetch the data on samples/analyses as a json list
     res <- .mgnify_retrieve_json(
         client,
@@ -143,24 +145,59 @@
 #' @importFrom httr content
 .mgnify_retrieve_json <- function(
         client, path = "biomes", complete_url = NULL, qopts = NULL,
-        max.hits = 200, use.cache = FALSE, Debug=FALSE, ...){
+        max.hits = 200, Debug = FALSE, use.cache = useCache(client),
+        show.warnings = showWarnings(client), clear.cache = clearCache(client),
+        url.address = databaseUrl(client), auth.tok = authTok(client),
+        cache.dir = cacheDir(client), ...){
+    # Input check
+    if( !.is_a_bool(Debug) ){
+        stop(
+            "'Debug' must be a single boolean value.", call. = FALSE)
+    }
+    if( !.is_a_bool(use.cache) ){
+        stop(
+            "'use.cache' must be a single boolean value specifying whether ",
+            "to use on-disk caching.", call. = FALSE)
+    }
+    if( !.is_a_bool(show.warnings) ){
+        stop(
+            "'show.warnings' must be a single boolean value.", call. = FALSE)
+    }
+    if( !.is_a_bool(clear.cache) ){
+        stop(
+            "'clear.cache' must be a single boolean value.", call. = FALSE)
+    }
+    if( !.is_non_empty_string(url.address) ){
+        stop(
+            "'url.address' must be a string.", call. = FALSE)
+    }
+    if( !(.is_non_empty_string(auth.tok) || is.null(auth.tok)) ){
+        stop(
+            "'auth.tok' must be a string or NULL.", call. = FALSE)
+    }
+    #
+    if( !.is_non_empty_string(cache.dir) ){
+        stop(
+            "'cache.dir' must be a string.", call. = FALSE)
+    }
+    #
     # Warning message if data is not found
     warning_msg <- paste0(path, ": No data found.")
-    # client@warnings turns on debugging too:
-    if(client@warnings){
+    # warnings(client) turns on debugging too:
+    if( show.warnings ){
         Debug <- TRUE
     }
     # Set up the base url
     # Are we using internal paths?
-    if (is.null(complete_url)){
-        fullurl <- paste(client@url, path, sep = "/")
+    if( is.null(complete_url) ){
+        fullurl <- paste(url.address, path, sep = "/")
     } else{
         # Or direct links from e.g. a "related" section
         # Set the full url, but clean off any existing parameters
         # (page, format etc) as they'll be added back later:
         fullurl <- complete_url
         parameters(fullurl) <- NULL
-        path <- substr(fullurl, nchar(client@url) + 2, nchar(fullurl))
+        path <- substr(fullurl, nchar(url.address) + 2, nchar(fullurl))
     }
 
     # Convert to csv if filters are lists.
@@ -176,11 +213,11 @@
     # Build up the cache name anyway - even if it's not ultimately used:
     fname_list <- c(path, names(unlist(full_qopts)), unlist(full_qopts))
     cache_fname <- paste(fname_list, collapse = "_")
-    cache_full_fname <- file.path(client@cacheDir, cache_fname, ".RDS")
+    cache_full_fname <- file.path(cache.dir, cache_fname, ".RDS")
 
     # Quick check to see if we should clear the disk cache  for this
     # specific call  - used for debugging and when MGnify breaks
-    if(use.cache & client@clearCache){
+    if( use.cache && clear.cache ){
         if( file.exists(cache_full_fname) ){
             message("clearCache is TRUE: deleting ", cache_full_fname)
             unlink(cache_full_fname)
@@ -188,16 +225,16 @@
     }
 
     # Do we want to try and use a cache to speed things up?
-    if(use.cache & file.exists(cache_full_fname)){
+    if( use.cache && file.exists(cache_full_fname) ){
         final_data <- readRDS(cache_full_fname)
     } else{
         # Authorization: Bearer <your_token>
-        if(!is.null(client@authTok)){
+        if( !is.null(auth.tok) ){
             add_headers(
                 .headers = c(Authorization = paste(
-                    "Bearer", client@authTok, sep = " ")))
+                    "Bearer", authTok(client), sep = " ")))
         }
-        res <- GET(url=fullurl, config(verbose=Debug), query=full_qopts )
+        res <- GET(url = fullurl, config(verbose = Debug), query = full_qopts )
         # Get the data
         data <- content(res, ...)
 
@@ -217,11 +254,11 @@
             }
         }
         # Save the result to file if specified
-        if (use.cache && !file.exists(cache_full_fname)){
+        if( use.cache && !file.exists(cache_full_fname) ){
             # Make sure the directory is created...
             dir.create(
                 dirname(cache_full_fname), recursive = TRUE,
-                showWarnings = client@warnings)
+                showWarnings = show.warnings)
             saveRDS(final_data, file = cache_full_fname)
         }
     }
@@ -235,7 +272,14 @@
 # This retrives all the data related to accession. FOr example, it loops
 # oer multiple pages.
 .retrieve_json_data <- function(
-        client, data, fullurl, full_qopts, max.hits, Debug, ...){
+        client, data, fullurl, full_qopts, max.hits, Debug,
+        auth.tok = authTok(client), ...){
+    # Input check
+    if( !(.is_non_empty_string(auth.tok) || is.null(auth.tok)) ){
+        stop(
+            "'auth.tok' must be a string or NULL.", call. = FALSE)
+    }
+    #
     # At this point, data$data is either a list of lists or a single named
     # list. If it's a single entry, it needs embedding in a list for
     # consistency downstream datlist is built up as a list of pages, where
@@ -256,20 +300,21 @@
         # We've already got the first one
         if( pend > 1 ){
             # Loop over pages and save their result to list
-            for (p in seq(pstart+1,pend)){
+            for( p in seq(pstart+1,pend) ){
                 full_qopts$page <- p
-                if(!is.null(client@authTok)){
+                if( !is.null(auth.tok) ){
                     add_headers(
                         .headers = c(
                             Authorization = paste(
-                                "Bearer", client@authTok, sep = " ")))
+                                "Bearer", auth.tok, sep = " ")))
                 }
-                curd <- content(GET(fullurl, config(verbose=Debug),
-                                    query=full_qopts ), ...)
+                curd <- content(
+                    GET(fullurl, config(verbose = Debug), query = full_qopts ),
+                    ...)
                 datlist[[p]] <- curd$data
                 # Check to see if we've pulled enough entries.
                 # With NULL and -1, disable max.hits
-                curlen <- sum(vapply(datlist, length, numeric(1)))
+                curlen <- sum(unlist(lapply(datlist, length)))
                 if( !is.null(max.hits) && curlen >= max.hits &&
                     max.hits != -1 ){
                     break

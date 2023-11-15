@@ -26,17 +26,6 @@
 #' depending on the particular analysis type, pipeline version etc., not all
 #' functional results will be available. (By default: \code{get.func = TRUE})
 #'
-#' @param use.cache A single boolean value specifying whether to use the
-#' MGnify local caching system to speed up searching. It is highly
-#' recommended that this be enabled. Note that files are downloaded to local
-#' system when they are fetched from the database. The files are not removed
-#' meaning that the local storage can include additional files after the run
-#' even though \code{use.cache = FALSE} was specified.
-#' (By default: \code{use.cache = TRUE})
-#'
-#' @param verbose A single boolean value to specify whether to show
-#' the progress bar. (By default: \code{verbose = TRUE})
-#'
 #' @param ... optional arguments:
 #' \itemize{
 #'   \item{taxa.su}{ A single character value specifying which taxa subunit
@@ -114,13 +103,10 @@ NULL
 #' @importFrom dplyr bind_rows
 #' @importFrom reshape2 dcast
 #' @importFrom stats as.formula
-#' @include allClass.R allGenerics.R MgnifyClient.R utils.R
+#' @include allClasses.R allGenerics.R MgnifyClient.R utils.R
 #' @export
 setMethod("getResult", signature = c(x = "MgnifyClient"), function(
-        x, accession, get.taxa = TRUE, get.func = TRUE,
-        output = "TreeSE", use.cache = TRUE, verbose = TRUE,
-        ...
-        ){
+        x, accession, get.taxa = TRUE, get.func = TRUE, output = "TreeSE", ...){
     ############################### INPUT CHECK ################################
     if( !(.is_non_empty_character(accession)) ){
         stop(
@@ -153,17 +139,6 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
         stop(
             "'output' must be a 'TreeSE', 'list' or 'phyloseq'.", call. = FALSE)
     }
-    if( !.is_a_bool(use.cache) ){
-        stop(
-            "'use.cache' must be a single boolean value specifying whether ",
-            "to use on-disk caching.", call. = FALSE)
-    }
-    if( !.is_a_bool(verbose) ){
-        stop(
-            "'verbose' must be a single boolean value specifying whether to ",
-            "show progress.", call. = FALSE)
-    }
-    verbose <- ifelse(verbose, "text", "none")
     ############################# INPUT CHECK END ##############################
     # Get functional data if user specified
     if( is.character(get.func) ){
@@ -173,17 +148,14 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
         }
         func_res <- .mgnify_get_analyses_results(
             client = x, accession = accession, retrievelist = get.func,
-            output = output, use.cache = use.cache, verbose = verbose, ...
-        )
+            output = output, ...)
     } else{
         func_res <- NULL
     }
     # Get microbial profiling data
     if( get.taxa ){
         taxa_res <- .mgnify_get_analyses_treese(
-            client = x, accession = accession, use.cache = use.cache,
-            verbose = verbose, ...
-        )
+            client = x, accession = accession, ...)
     } else{
         taxa_res <- NULL
     }
@@ -350,8 +322,8 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
 
 # Helper function for importing microbial profiling data.
 .mgnify_get_analyses_treese <- function(
-        client, accession, use.cache, verbose,
-        taxa.su = "SSU", ...){
+        client, accession, use.cache = useCache(client),
+        show.messages = verbose(client), taxa.su = "SSU", ...){
     ############################### INPUT CHECK ################################
     if( !(.is_non_empty_string(taxa.su)) ){
         stop(
@@ -359,16 +331,25 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
             "subunit.",
             call. = FALSE)
     }
+    if( !.is_a_bool(use.cache) ){
+        stop(
+            "'use.cache' must be a single boolean value.", call. = FALSE)
+    }
+    if( !.is_a_bool(show.messages) ){
+        stop(
+            "'show.messages' must be a single boolean value.", call. = FALSE)
+    }
+    show.messages <- ifelse(show.messages, "text", "none")
     ############################# INPUT CHECK END ##############################
     # Give message about progress
-    if( verbose =="text" ){
+    if( show.messages =="text" ){
         message("Fetching taxonomy data...")
     }
     # Get TreeSE objects
     tse_list <- llply(accession, function(x) {
             .mgnify_get_single_analysis_treese(
                 client, x, use.cache = use.cache, taxa.su = taxa.su, ...)
-    }, .progress = verbose)
+    }, .progress = show.messages)
     # The sample_data has been corrupted by doing the merge (names get messed
     # up and duplicated), so just regrab it with another lapply/rbind
     col_data <- lapply(accession, function(x){
@@ -391,17 +372,35 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
 #' @importFrom TreeSummarizedExperiment rowTree
 #' @importFrom SummarizedExperiment rowData rowData<-
 .mgnify_get_single_analysis_treese <- function(
-        client = NULL, accession, use.cache = TRUE, downloadDIR = NULL,
-        taxa.su = "SSU", get.tree = TRUE, ...){
+        client = NULL, accession, use.cache = useCache(client),
+        downloadDIR = NULL, taxa.su = "SSU", get.tree = TRUE,
+        show.warnings = showWarnings(client), cache.dir = cacheDir(client),
+        clear.cache = clearCache(client), ...){
     ############################### INPUT CHECK ################################
     if( !.is_a_bool(get.tree) ){
         stop("'get.tree' must be TRUE or FALSE.",
             call. = FALSE)
     }
+    if( !.is_a_bool(use.cache) ){
+        stop(
+            "'use.cache' must be a single boolean value.", call. = FALSE)
+    }
+    if( !.is_a_bool(show.warnings) ){
+        stop(
+            "'show.warnings' must be a single boolean value.", call. = FALSE)
+    }
+    if( !.is_non_empty_string(cache.dir) ){
+        stop(
+            "'cache.dir' must be a string.", call. = FALSE)
+    }
+    if( !.is_a_bool(clear.cache) ){
+        stop(
+            "'clear.cache' must be a single boolean value.", call. = FALSE)
+    }
     ############################# INPUT CHECK END ##############################
     # Get the metadata related to analysis
     metadata_df <- .mgnify_get_single_analysis_metadata(
-        client, accession, use.cache=use.cache, ...)
+        client, accession, use.cache = use.cache, ...)
     analysis_data <- .mgnify_retrieve_json(
         client, paste("analyses", accession, sep = "/"), use.cache = use.cache,
         ...)
@@ -413,9 +412,9 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
     # Depending on the pipeline version, there may be more than one OTU table
     # available (LSU/SSU), so try and get the one specified in taxa.su -
     # otherwise spit out a warning and grab the generic (older pipelines)
-    formats <- vapply(
-        analysis_downloads, function(x){
-            x$attributes$`file-format`$name}, character(1))
+    formats <- lapply(
+        analysis_downloads, function(x){x$attributes$`file-format`$name})
+    formats <- unlist(formats)
     available_biom_files <- analysis_downloads[grepl('JSON Biom', formats)]
     # Check if any biom files was found
     if( is.null(available_biom_files) || length(available_biom_files) == 0 ){
@@ -424,12 +423,13 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
             call. = FALSE)
         return(NULL)
     }
-    group_type <- vapply(
+    group_type <- lapply(
         available_biom_files, function(x){
-            x$attributes$`group-type`}, character(1))
+            x$attributes$`group-type`})
+    group_type <- unlist(group_type)
     biom_position <- grepl(taxa.su, group_type)
     if( sum(biom_position) == 0 ){
-        if( client@warnings ){
+        if( show.warnings ){
             warning(
                 "Unable to locate requested taxonomy type ", taxa.su, ". ",
                 "This is likely due to the current analysis having been ",
@@ -443,22 +443,22 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
     }
 
     # Can specify a separate dir for saving biom files, otherwise they end up
-    # in the client@cachdir folder, under "bioms"
-    if(is.null(downloadDIR)){
-        downloadDIR <- file.path(client@cacheDir, "biom_files")
+    # in the cacheDir(client) folder, under "bioms"
+    if( is.null(downloadDIR) ){
+        downloadDIR <- file.path(cache.dir, "biom_files")
         dir.create(
-            downloadDIR, recursive = TRUE, showWarnings = client@warnings)
+            downloadDIR, recursive = TRUE, showWarnings = show.warnings)
     }
     # Clear out any ?params after the main location - don't need them for this
     parameters(biom_url) <- NULL
     # Get the file name and path to it in local machine
-    fname <- utils::tail(strsplit(biom_url, '/')[[1]], n=1)
+    fname <- utils::tail(strsplit(biom_url, "/")[[1]], n = 1)
     biom_path <- file.path(downloadDIR, fname)
 
     ## Quick check to see if we should clear the disk cache  for this specific
     # call  - used for debugging and when MGnify breaks
-    if( use.cache && client@clearCache && file.exists(biom_path) ){
-        message("clear_cache is TRUE: deleting ", biom_path)
+    if( use.cache && clear.cache && file.exists(biom_path) ){
+        message("clearCache is TRUE: deleting ", biom_path)
         unlink(biom_path)
     }
     # Download the file from the database to specific file path
@@ -497,9 +497,9 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
     # If user wants also phylogenetic tree
     if(get.tree){
         # Is there a tree?
-        data_types <- vapply(
-            analysis_downloads, function(x){x$attributes$`description`$label},
-            character(1))
+        data_types <- lapply(
+            analysis_downloads, function(x){x$attributes$`description`$label})
+        data_types <- unlist(data_types)
         tvec <- grepl('Phylogenetic tree', data_types)
         if( any(tvec) ){
             # Get the url address of tree
@@ -515,8 +515,8 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
             # Quick check to see if we should clear the disk cache
             #  for this specific call  - used for debugging and when MGnify
             # breaks
-            if(use.cache && client@clearCache && file.exists(tree_path) ){
-                message("clear_cache is TRUE: deleting ", tree_path)
+            if(use.cache && clear.cache && file.exists(tree_path) ){
+                message("clearCache is TRUE: deleting ", tree_path)
                 unlink(tree_path)
             }
             # Download the file from the database to specific file path
@@ -549,8 +549,8 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
 
 # Helper function for importing functional data
 .mgnify_get_analyses_results <- function(
-        client, accession, retrievelist, output, use.cache, verbose,
-        as.df = TRUE, bulk.dl = TRUE, ...){
+        client, accession, retrievelist, output, use.cache = useCache(client),
+        show.messages = verbose(client), as.df = TRUE, bulk.dl = TRUE, ...){
     ############################### INPUT CHECK ################################
     # If output is TreeSE or object, get results as data.frames
     as.df <- ifelse(output != "list", TRUE, as.df)
@@ -560,9 +560,18 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
     if( !.is_a_bool(bulk.dl) ){
         stop("'bulk.dl' must be TRUE or FALSE.", call. = FALSE)
     }
+    if( !.is_a_bool(use.cache) ){
+        stop(
+            "'use.cache' must be a single boolean value.", call. = FALSE)
+    }
+    if( !.is_a_bool(show.messages) ){
+        stop(
+            "'show.messages' must be a single boolean value.", call. = FALSE)
+    }
+    show.messages <- ifelse(show.messages, "text", "none")
     ############################# INPUT CHECK END ##############################
     # Give message about progress
-    if( verbose == "text" ){
+    if( show.messages == "text" ){
         message("Fetching functional data...")
     }
     # Get functional results
@@ -570,7 +579,7 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
         .mgnify_get_single_analysis_results(
             client, x, use.cache = use.cache, retrievelist = retrievelist,
             bulk.files = bulk.dl, ...)
-    }, .progress = verbose)
+    }, .progress = show.messages)
     # Add names based on accessions codes
     names(all_results) <- accession
 
@@ -619,11 +628,23 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
 #' @importFrom dplyr bind_rows
 #' @importFrom utils read.csv2
 .mgnify_get_single_analysis_results <- function(
-        client = NULL, accession, retrievelist=c(), use.cache = TRUE,
-        max.hits = NULL, bulk.files = FALSE, ...){
+        client, accession, retrievelist=c(),
+        use.cache = useCache(client), clear.cache = clearCache(client),
+        max.hits = NULL, bulk.files = FALSE,
+        show.warnings = showWarnings(client), ...){
+    # Input check
+    if( !.is_a_bool(clear.cache) ){
+        stop(
+            "'clear.cache' must be a single boolean value.", call. = FALSE)
+    }
+    if( !.is_a_bool(show.warnings) ){
+        stop(
+            "'show.warnings' must be a single boolean value.", call. = FALSE)
+    }
+    #
     # Get the metadata describing the samples
     metadata_df <- .mgnify_get_single_analysis_metadata(
-        client, accession, use.cache=use.cache, max.hits = max.hits)
+        client, accession, use.cache = use.cache, max.hits = max.hits)
 
     # Should we try and grab the study's full TSV download rather than parse
     # through the JSON API? Doing so has the potential to use a LOT more disk
@@ -631,12 +652,12 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
     # be faster though, except in pathological cases (e.g. only 1 sample per
     # 1000 sample study required). As with everything else, we make use of
     # local caching to speed things along.
-    if(bulk.files){
+    if( bulk.files ){
         # Create a directory for donwloading the file
-        downloadDIR <- file.path(client@cacheDir, "tsv")
+        downloadDIR <- file.path(cacheDir(client), "tsv")
         if(!dir.exists(downloadDIR)){
             dir.create(
-                downloadDIR, recursive = TRUE, showWarnings = client@warnings)
+                downloadDIR, recursive = TRUE, showWarnings = show.warnings)
         }
         # Get what files are available in database
         available_downloads_json <- .mgnify_retrieve_json(
@@ -666,9 +687,9 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
                 cur_type <- cur_type[[1]]
                 # Get the data
                 temp <- .get_bulk_files(
-                    cur_type, client=client, r=r,
-                    metadata_df=metadata_df, downloadDIR=downloadDIR,
-                    use.cache=use.cache, ...)
+                    cur_type, client = client, r = r,
+                    metadata_df = metadata_df, downloadDIR = downloadDIR,
+                    use.cache = use.cache, ...)
             } else{
                 temp <- NULL
             }
@@ -690,6 +711,7 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
         # just return the list - don't do any processing...
         all_results <- lapply(
             names(.analyses_results_type_parsers), function(r) {
+                tmp <- NULL
                 if(r %in% retrievelist){
                     tmp <- .mgnify_retrieve_json(
                         client,
@@ -697,17 +719,17 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
                             r]]$links$related,
                         use.cache = use.cache,
                         max.hits = max.hits, ...)
-                } else{
-                    tmp <- NULL
                 }
                 return(tmp)
         })
         # Add data types as names
         names(all_results) <- names(.analyses_results_type_parsers)
-        parsed_results <- vapply(names(all_results), function(x){
+        # Get the data in correct format
+        parsed_results <- lapply(names(all_results), function(x){
             # Get the specific type of data
             all_json <- all_results[[x]]
             # If specific type of data can be found
+            res_df <- NULL
             if( !is.null(all_json) && length(all_json) > 0 ){
                 # Get the specific type of data from all accessions
                 all_json <- lapply(
@@ -715,19 +737,30 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
                 # Combine
                 res_df <- do.call(bind_rows, all_json)
                 rownames(res_df) <- res_df$index_id
-            }else{
-                res_df <- NULL
             }
             return(res_df)
         })
+        names(parsed_results) <- names(all_results)
     }
+    # Return a list of data types, e.g., taxonomy, GO...
     return(parsed_results)
 }
 
 # Helper function for getting bulk file
 .get_bulk_files <- function(
-        cur_type, client, r, metadata_df, downloadDIR, use.cache,
-        ...){
+        cur_type, client, r, metadata_df, downloadDIR,
+        use.cache, clear.cache = clearCache(client),
+        use.mem.cache = useMemCache(client), ...){
+    # Input check
+    if( !.is_a_bool(clear.cache) ){
+        stop(
+            "'clear.cache' must be a single boolean value.", call. = FALSE)
+    }
+    if( !.is_a_bool(use.mem.cache) ){
+        stop(
+            "'use.mem.cache' must be a single boolean value.", call. = FALSE)
+    }
+    #
     # Get the url
     data_url <- r$links$self
     # Clear off extraneous gubbins
@@ -735,10 +768,9 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
     #build the cache filename
     fname <- utils::tail(strsplit(data_url, '/')[[1]], n=1)
 
-    #At this point we might have alread got the data we want
+    # At this point we might have alread got the data we want
     # loaded. Check the memory cache object
-
-    if( (client@useMemCache &&
+    if( (use.mem.cache &&
         cur_type %in% names(mgnify_memory_cache) &&
         mgnify_memory_cache[cur_type]["fname"] == fname) ){
         tmp_df <- mgnify_memory_cache[cur_type][["data"]]
@@ -747,7 +779,7 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
         # it from t'interweb
         data_path <- file.path(downloadDIR, fname)
         # Clear cache if specified
-        if(use.cache && client@clearCache && file.exists(data_path) ){
+        if( use.cache && clear.cache && file.exists(data_path) ){
             message("clearCache is TRUE: deleting ", data_path)
             unlink(data_path)
         }
@@ -776,7 +808,7 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
     # I'm not really sure about but it seems to work...
     # thing'd be much easier if R passed objects
     # by reference.
-    if(client@useMemCache){
+    if( use.mem.cache ){
         mgnify_memory_cache[[cur_type]] <- list(
             data=tmp_df, fname=fname)
     }
@@ -837,7 +869,8 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
 mgnify_memory_cache <- list()
 
 # Which parser do you use for which type of output?
-# a list of parsers for each output type.
+# a list of parsers for each output type. If new output types come, add them to
+# here (and below) so that they are fetched from the database.
 .analyses_results_type_parsers <- list(
     `taxonomy` = .mgnify_parse_tax,
     `taxonomy-itsonedb` = .mgnify_parse_tax,
