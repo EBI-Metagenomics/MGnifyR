@@ -170,8 +170,8 @@ setMethod("searchFile", signature = c(x = "MgnifyClient"), function(
 # Download the specified files from the database
 .mgnify_download <- function(
         client, url, file, read.func, use.cache = useCache(client),
-        url.address = url(client), cache.dir = cacheDir(client),
-        show.warnings = warnings(client), clear.cache = clearCache(client),
+        url.address = databaseUrl(client), cache.dir = cacheDir(client),
+        show.warnings = showWarnings(client), clear.cache = clearCache(client),
         auth.tok = authTok(client), ...){
     # Input check
     if( !.is_non_empty_string(url.address) ){

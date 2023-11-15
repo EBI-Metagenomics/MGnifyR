@@ -146,8 +146,8 @@
 .mgnify_retrieve_json <- function(
         client, path = "biomes", complete_url = NULL, qopts = NULL,
         max.hits = 200, Debug = FALSE, use.cache = useCache(client),
-        show.warnings = warnings(client), clear.cache = clearCache(client),
-         url.address = url(client), auth.tok = authTok(client),
+        show.warnings = showWarnings(client), clear.cache = clearCache(client),
+        url.address = databaseUrl(client), auth.tok = authTok(client),
         cache.dir = cacheDir(client), ...){
     # Input check
     if( !.is_a_bool(Debug) ){

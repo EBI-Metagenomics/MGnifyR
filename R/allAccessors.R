@@ -13,8 +13,8 @@
 #' @examples
 #' mg <- MgnifyClient()
 #' 
-#' url(mg)
-#' warnings(mg) <- FALSE
+#' databaseUrl(mg)
+#' showWarnings(mg) <- FALSE
 #'
 #' @name MgnifyClient-accessors
 NULL
@@ -22,7 +22,9 @@ NULL
 #' @rdname MgnifyClient-accessors
 #' @include allClasses.R allGenerics.R MgnifyClient.R utils.R
 #' @export
-setMethod("url", signature = c(x = "MgnifyClient"), function(x){ x@url })
+setMethod(
+    "databaseUrl", signature = c(x = "MgnifyClient"),
+    function(x){ x@databaseUrl })
 
 #' @rdname MgnifyClient-accessors
 #' @include allClasses.R allGenerics.R MgnifyClient.R utils.R
@@ -47,7 +49,8 @@ setMethod(
 #' @include allClasses.R allGenerics.R MgnifyClient.R utils.R
 #' @export
 setMethod(
-    "warnings", signature = c(x = "MgnifyClient"), function(x){ x@warnings })
+    "showWarnings", signature = c(x = "MgnifyClient"),
+    function(x){ x@showWarnings })
 
 #' @rdname MgnifyClient-accessors
 #' @include allClasses.R allGenerics.R MgnifyClient.R utils.R
@@ -80,8 +83,8 @@ setMethod(
 #' @include allClasses.R allGenerics.R MgnifyClient.R utils.R
 #' @export
 setMethod(
-    "url<-", signature = c(x = "MgnifyClient"),
-    function(x, value){ BiocGenerics:::replaceSlots(x, url = value) })
+    "databaseUrl<-", signature = c(x = "MgnifyClient"),
+    function(x, value){ BiocGenerics:::replaceSlots(x, databaseUrl = value) })
 
 #' @rdname MgnifyClient-accessors
 #' @include allClasses.R allGenerics.R MgnifyClient.R utils.R
@@ -108,8 +111,8 @@ setMethod(
 #' @include allClasses.R allGenerics.R MgnifyClient.R utils.R
 #' @export
 setMethod(
-    "warnings<-", signature = c(x = "MgnifyClient"),
-    function(x, value){ BiocGenerics:::replaceSlots(x, warnings = value) })
+    "showWarnings<-", signature = c(x = "MgnifyClient"),
+    function(x, value){ BiocGenerics:::replaceSlots(x, showWarnings = value) })
 
 #' @rdname MgnifyClient-accessors
 #' @include allClasses.R allGenerics.R MgnifyClient.R utils.R

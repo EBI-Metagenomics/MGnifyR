@@ -2,92 +2,105 @@
 
 #' @rdname MgnifyClient-accessors
 #' @export
-setGeneric("url", signature = c("x"), function(x) standardGeneric("url"))
-
-#' @rdname MgnifyClient-accessors
-#' @export
-setGeneric("authTok", signature = c("x"), function(x)
-    standardGeneric("authTok"))
-
-#' @rdname MgnifyClient-accessors
-#' @export
-setGeneric("useCache", signature = c("x"), function(x)
-    standardGeneric("useCache"))
-
-#' @rdname MgnifyClient-accessors
-#' @export
-setGeneric("cacheDir", signature = c("x"), function(x)
-    standardGeneric("cacheDir"))
-
-#' @rdname MgnifyClient-accessors
-#' @export
-setGeneric("warnings", signature = c("x"), function(x)
-    standardGeneric("warnings"))
-
-#' @rdname MgnifyClient-accessors
-#' @export
-setGeneric("useMemCache", signature = c("x"), function(x)
-    standardGeneric("useMemCache"))
-
-#' @rdname MgnifyClient-accessors
-#' @export
-setGeneric("memCache", signature = c("x"), function(x)
-    standardGeneric("memCache"))
-
-#' @rdname MgnifyClient-accessors
-#' @export
-setGeneric("clearCache", signature = c("x"), function(x)
-    standardGeneric("clearCache"))
-
-#' @rdname MgnifyClient-accessors
-#' @export
-setGeneric("verbose", signature = c("x"), function(x)
-    standardGeneric("verbose"))
+setGeneric(
+    "databaseUrl", signature = c("x"), function(x)
+        standardGeneric("databaseUrl"))
 
 #' @rdname MgnifyClient-accessors
 #' @export
 setGeneric(
-    "url<-", signature = c("x"), function(x, value) standardGeneric("url<-"))
+    "authTok", signature = c("x"), function(x) standardGeneric("authTok"))
 
 #' @rdname MgnifyClient-accessors
 #' @export
-setGeneric("authTok<-", signature = c("x"), function(x, value)
-    standardGeneric("authTok<-"))
+setGeneric(
+    "useCache", signature = c("x"), function(x) standardGeneric("useCache"))
 
 #' @rdname MgnifyClient-accessors
 #' @export
-setGeneric("useCache<-", signature = c("x"), function(x, value)
-    standardGeneric("useCache<-"))
+setGeneric(
+    "cacheDir", signature = c("x"), function(x) standardGeneric("cacheDir"))
 
 #' @rdname MgnifyClient-accessors
 #' @export
-setGeneric("cacheDir<-", signature = c("x"), function(x, value)
-    standardGeneric("cacheDir<-"))
+setGeneric(
+    "showWarnings", signature = c("x"), function(x)
+        standardGeneric("showWarnings"))
 
 #' @rdname MgnifyClient-accessors
 #' @export
-setGeneric("warnings<-", signature = c("x"), function(x, value)
-    standardGeneric("warnings<-"))
+setGeneric(
+    "useMemCache", signature = c("x"), function(x)
+        standardGeneric("useMemCache"))
 
 #' @rdname MgnifyClient-accessors
 #' @export
-setGeneric("useMemCache<-", signature = c("x"), function(x, value)
-    standardGeneric("useMemCache<-"))
+setGeneric(
+    "memCache", signature = c("x"), function(x) standardGeneric("memCache"))
 
 #' @rdname MgnifyClient-accessors
 #' @export
-setGeneric("memCache<-", signature = c("x"), function(x, value)
-    standardGeneric("memCache<-"))
+setGeneric(
+    "clearCache", signature = c("x"), function(x) standardGeneric("clearCache"))
 
 #' @rdname MgnifyClient-accessors
 #' @export
-setGeneric("clearCache<-", signature = c("x"), function(x, value)
-    standardGeneric("clearCache<-"))
+setGeneric(
+    "verbose", signature = c("x"), function(x) standardGeneric("verbose"))
 
 #' @rdname MgnifyClient-accessors
 #' @export
-setGeneric("verbose<-", signature = c("x"), function(x, value)
-    standardGeneric("verbose<-"))
+setGeneric(
+    "databaseUrl<-", signature = c("x"), function(x, value)
+        standardGeneric("databaseUrl<-"))
+
+#' @rdname MgnifyClient-accessors
+#' @export
+setGeneric(
+    "authTok<-", signature = c("x"), function(x, value)
+        standardGeneric("authTok<-"))
+
+#' @rdname MgnifyClient-accessors
+#' @export
+setGeneric(
+    "useCache<-", signature = c("x"), function(x, value)
+        standardGeneric("useCache<-"))
+
+#' @rdname MgnifyClient-accessors
+#' @export
+setGeneric(
+    "cacheDir<-", signature = c("x"), function(x, value)
+        standardGeneric("cacheDir<-"))
+
+#' @rdname MgnifyClient-accessors
+#' @export
+setGeneric(
+    "showWarnings<-", signature = c("x"), function(x, value)
+        standardGeneric("showWarnings<-"))
+
+#' @rdname MgnifyClient-accessors
+#' @export
+setGeneric(
+    "useMemCache<-", signature = c("x"), function(x, value)
+        standardGeneric("useMemCache<-"))
+
+#' @rdname MgnifyClient-accessors
+#' @export
+setGeneric(
+    "memCache<-", signature = c("x"), function(x, value)
+        standardGeneric("memCache<-"))
+
+#' @rdname MgnifyClient-accessors
+#' @export
+setGeneric(
+    "clearCache<-", signature = c("x"), function(x, value)
+        standardGeneric("clearCache<-"))
+
+#' @rdname MgnifyClient-accessors
+#' @export
+setGeneric(
+    "verbose<-", signature = c("x"), function(x, value)
+        standardGeneric("verbose<-"))
 
 #' @rdname doQuery
 #' @export

@@ -374,7 +374,7 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
 .mgnify_get_single_analysis_treese <- function(
         client = NULL, accession, use.cache = useCache(client),
         downloadDIR = NULL, taxa.su = "SSU", get.tree = TRUE,
-        show.warnings = warnings(client), cache.dir = cacheDir(client),
+        show.warnings = showWarnings(client), cache.dir = cacheDir(client),
         clear.cache = clearCache(client), ...){
     ############################### INPUT CHECK ################################
     if( !.is_a_bool(get.tree) ){
@@ -630,8 +630,8 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
 .mgnify_get_single_analysis_results <- function(
         client, accession, retrievelist=c(),
         use.cache = useCache(client), clear.cache = clearCache(client),
-        max.hits = NULL, bulk.files = FALSE, show.warnings = warnings(client),
-        ...){
+        max.hits = NULL, bulk.files = FALSE,
+        show.warnings = showWarnings(client), ...){
     # Input check
     if( !.is_a_bool(clear.cache) ){
         stop(
@@ -711,6 +711,7 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
         # just return the list - don't do any processing...
         all_results <- lapply(
             names(.analyses_results_type_parsers), function(r) {
+                tmp <- NULL
                 if(r %in% retrievelist){
                     tmp <- .mgnify_retrieve_json(
                         client,
@@ -718,17 +719,17 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
                             r]]$links$related,
                         use.cache = use.cache,
                         max.hits = max.hits, ...)
-                } else{
-                    tmp <- NULL
                 }
                 return(tmp)
         })
         # Add data types as names
         names(all_results) <- names(.analyses_results_type_parsers)
+        # Get the data in correct format
         parsed_results <- lapply(names(all_results), function(x){
             # Get the specific type of data
             all_json <- all_results[[x]]
             # If specific type of data can be found
+            res_df <- NULL
             if( !is.null(all_json) && length(all_json) > 0 ){
                 # Get the specific type of data from all accessions
                 all_json <- lapply(
@@ -736,13 +737,12 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
                 # Combine
                 res_df <- do.call(bind_rows, all_json)
                 rownames(res_df) <- res_df$index_id
-            }else{
-                res_df <- NULL
             }
             return(res_df)
         })
-        parsed_results <- unlist(parsed_results)
+        names(parsed_results) <- names(all_results)
     }
+    # Return a list of data types, e.g., taxonomy, GO...
     return(parsed_results)
 }
 
@@ -768,9 +768,8 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
     #build the cache filename
     fname <- utils::tail(strsplit(data_url, '/')[[1]], n=1)
 
-    #At this point we might have alread got the data we want
+    # At this point we might have alread got the data we want
     # loaded. Check the memory cache object
-
     if( (use.mem.cache &&
         cur_type %in% names(mgnify_memory_cache) &&
         mgnify_memory_cache[cur_type]["fname"] == fname) ){
@@ -870,7 +869,8 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
 mgnify_memory_cache <- list()
 
 # Which parser do you use for which type of output?
-# a list of parsers for each output type.
+# a list of parsers for each output type. If new output types come, add them to
+# here (and below) so that they are fetched from the database.
 .analyses_results_type_parsers <- list(
     `taxonomy` = .mgnify_parse_tax,
     `taxonomy-itsonedb` = .mgnify_parse_tax,

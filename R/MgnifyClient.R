@@ -26,9 +26,9 @@
 #' directory will be created if it doesn't exist already.
 #' (By default: \code{cachedir = NULL})
 #'
-#' @param warnings A single boolean value specifying whether to print extra
+#' @param showWarnings A single boolean value specifying whether to print extra
 #' output during invocation of some MGnifyR functions.
-#' (By default: \code{warnings = FALSE})
+#' (By default: \code{showWarnings = FALSE})
 #'
 #' @param useMemCache A single boolean value specifying whether to indicate
 #' whether functional results obtained when \code{bulk_dl} is \code{TRUE}
@@ -72,7 +72,7 @@ NULL
 #' @export
 MgnifyClient <- function(
         username = NULL, password = NULL, useCache = FALSE, cacheDir = NULL,
-        warnings = FALSE, useMemCache = FALSE, clearCache = FALSE, ...){
+        showWarnings = FALSE, useMemCache = FALSE, clearCache = FALSE, ...){
     ############################### INPUT CHECK ################################
     if( !(is.null(username) || .is_non_empty_string(username)) ){
         stop(
@@ -94,7 +94,7 @@ MgnifyClient <- function(
             "'cacheDir' must be NULL or single character value specifying ",
             "the the directory for cache.", call. = FALSE)
     }
-    if( !.is_a_bool(warnings) ){
+    if( !.is_a_bool(showWarnings) ){
         stop(
             "'wanings' must be a boolean value specifying whether print ",
             "extra output during invocation of MGnifyR functions.",
@@ -145,11 +145,11 @@ MgnifyClient <- function(
     # Return the final object
     obj <- new(
         "MgnifyClient",
-        url = url,
+        databaseUrl = url,
         authTok = authtok,
         useCache = useCache,
         cacheDir = cachepath,
-        warnings = warnings,
+        showWarnings = showWarnings,
         memCache = list(),
         useMemCache = useMemCache,
         clearCache = clearCache

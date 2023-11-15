@@ -4,7 +4,8 @@
 #'
 #' @details An object that are required by functions of MGnifyR package.
 #'
-#' @slot url A single character value specifying an URL address of database.
+#' @slot databaseUrl A single character value specifying an URL address of
+#' database.
 #'
 #' @slot authTok A single character value specifying authentication token.
 #' 
@@ -12,7 +13,8 @@
 #'
 #' @slot cacheDir A single character value specifying cache directory.
 #'
-#' @slot warnings A single boolean value specifying whether to show warnings.
+#' @slot showWarnings A single boolean value specifying whether to show
+#' warnings.
 #'
 #' @slot useMemCache A single boolean value specifying whether to use on-disk
 #' memory.
@@ -38,17 +40,17 @@ NULL
 #' @exportClass MgnifyClient
 setClass(
     "MgnifyClient", representation(
-        url = "character",
+        databaseUrl = "character",
         authTok = "character",
         useCache = "logical",
         cacheDir = "character",
-        warnings = "logical",
+        showWarnings = "logical",
         useMemCache = "logical",
         memCache = "list",
         clearCache = "logical",
         verbose = "logical"),
     prototype = list(
-        url = "https://www.ebi.ac.uk/metagenomics/api/v1",
+        databaseUrl = "https://www.ebi.ac.uk/metagenomics/api/v1",
         authTok = NULL,
         useCache = FALSE,
         cacheDir = NULL,

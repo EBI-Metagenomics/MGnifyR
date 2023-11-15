@@ -12,7 +12,7 @@ MgnifyClient(
   password = NULL,
   useCache = FALSE,
   cacheDir = NULL,
-  warnings = FALSE,
+  showWarnings = FALSE,
   useMemCache = FALSE,
   clearCache = FALSE,
   ...
@@ -37,9 +37,9 @@ between sessions, taking advantage of previously downloaded results. The
 directory will be created if it doesn't exist already.
 (By default: \code{cachedir = NULL})}
 
-\item{warnings}{A single boolean value specifying whether to print extra
+\item{showWarnings}{A single boolean value specifying whether to print extra
 output during invocation of some MGnifyR functions.
-(By default: \code{warnings = FALSE})}
+(By default: \code{showWarnings = FALSE})}
 
 \item{useMemCache}{A single boolean value specifying whether to indicate
 whether functional results obtained when \code{bulk_dl} is \code{TRUE}
@@ -81,7 +81,8 @@ An object that are required by functions of MGnifyR package.
 \section{Slots}{
 
 \describe{
-\item{\code{url}}{A single character value specifying an URL address of database.}
+\item{\code{databaseUrl}}{A single character value specifying an URL address of
+database.}
 
 \item{\code{authTok}}{A single character value specifying authentication token.}
 
@@ -89,7 +90,8 @@ An object that are required by functions of MGnifyR package.
 
 \item{\code{cacheDir}}{A single character value specifying cache directory.}
 
-\item{\code{warnings}}{A single boolean value specifying whether to show warnings.}
+\item{\code{showWarnings}}{A single boolean value specifying whether to show
+warnings.}
 
 \item{\code{useMemCache}}{A single boolean value specifying whether to use on-disk
 memory.}
