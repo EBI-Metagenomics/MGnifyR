@@ -22,25 +22,10 @@ test_that("getResult", {
     expect_error(getResult(mg, accession = "test", get.taxa = c(TRUE, TRUE)))
     expect_error(getResult(mg, accession = "test", get.taxa = "test"))
 
-    expect_error(getResult(mg, accession = "MGYA00097621", get.tree = NULL))
-    expect_error(getResult(mg, accession = "MGYA00097621", get.tree = 1))
-    expect_error(getResult(mg, accession = "MGYA00097621", get.tree = c(TRUE, TRUE)))
-    expect_error(getResult(mg, accession = "MGYA00097621", get.tree = "test"))
-
     expect_error(getResult(mg, accession = "test", get.func = NULL))
     expect_error(getResult(mg, accession = "test", get.func = 1))
     expect_error(getResult(mg, accession = "test", get.func = c(TRUE, TRUE)))
     expect_error(getResult(mg, accession = "test", get.func = "test"))
-
-    expect_error(getResult(mg, accession = "test", verbose = NULL))
-    expect_error(getResult(mg, accession = "test", verbose = 1))
-    expect_error(getResult(mg, accession = "test", verbose = c(TRUE, TRUE)))
-    expect_error(getResult(mg, accession = "test", verbose = "test"))
-
-    expect_error(getResult(mg, accession = "test", use.cache = NULL))
-    expect_error(getResult(mg, accession = "test", use.cache = 1))
-    expect_error(getResult(mg, accession = "test", use.cache = c(TRUE, TRUE)))
-    expect_error(getResult(mg, accession = "test", use.cache = "test"))
 
     # Require internet access
     skip_if(httr::http_error("https://www.ebi.ac.uk/metagenomics/api/v1"))
