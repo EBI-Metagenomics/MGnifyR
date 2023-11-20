@@ -20,7 +20,7 @@ bibliography: references.bib
 library(knitr)
 knitr::opts_chunk$set(
     collapse = TRUE,
-    eval = TRUE,
+    eval = FALSE,
     comment = "#>",
     cache = TRUE
 )
@@ -131,12 +131,12 @@ are given in `help(doQuery)`. By way of example though, supposing we are
 interested in amplicon Illumina samples from the arctic, we might try the
 following query:
 
-```{r search_studiesE}
+```{r search_studies}
 northpolar <- doQuery(
     mg, "samples", latitude_gte=60.0, experiment_type="amplicon",
     biome_name="Soil", instrument_platform = "Illumina", max.hits = 10)
 
-northpolar[1:5,]
+northpolar[1:5, ]
 ```
 
 Specifying an `accession` parameter will restrict results to just those matching
@@ -298,12 +298,12 @@ the intention is only to demonstrate the functionality of the MGnifyR package,
 rather than produce scientifically rigorous results.
 
 ```{r get_analyses}
-soil <- searchAnalysis(mg, "studies", "MGYS00001447")[1:20]
-human <- searchAnalysis(mg, "studies", "MGYS00001442")[1:20]
-marine <- searchAnalysis(mg, "studies", "MGYS00001282")[1:20]
+soil <- searchAnalysis(mg, "studies", "MGYS00001447")
+human <- searchAnalysis(mg, "studies", "MGYS00001442")
+marine <- searchAnalysis(mg, "studies", "MGYS00001282")
 
 # Combine analyses
-all_accessions <- c(soil,human,marine)
+all_accessions <- c(soil, human, marine)
 # Subset the accessions by taking 5 random analyses
 set.seed(74)
 all_accessions <- sample(all_accessions, 5)
@@ -522,7 +522,7 @@ getAmoCseqs <- function(fname){
 ```
 
 Having defined the function, it just remains to include it in the call to
-`getFile()s`. 
+`getFile()`. 
 
 ```{r do_download_with_read}
 # Just download a single accession for demonstration, specifying a read_function

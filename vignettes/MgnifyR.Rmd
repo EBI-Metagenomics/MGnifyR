@@ -156,6 +156,7 @@ plotReducedDim(mae[[1]], "MDS", colour_by = "sample_environment.feature")
 ```
 
 ## Fetch sequence files
+
 Finally, we can use `searchFile()` and `getFile()` to retrieve other MGnify
 pipeline outputs such as merged sequence reads, assembled contigs, and details
 of the functional analyses.
