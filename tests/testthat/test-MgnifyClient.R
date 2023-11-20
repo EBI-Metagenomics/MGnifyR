@@ -8,6 +8,14 @@ test_that("MgnifyClient", {
     expect_error(MgnifyClient(useCache = "TRUE"))
     expect_error(MgnifyClient(useCache = c(TRUE, TRUE)))
     
+    expect_error(MgnifyClient(verbose = 1))
+    expect_error(MgnifyClient(verbose = "TRUE"))
+    expect_error(MgnifyClient(verbose = c(TRUE, TRUE)))
+    
+    expect_error(MgnifyClient(showWarnings = 1))
+    expect_error(MgnifyClient(showWarnings = "TRUE"))
+    expect_error(MgnifyClient(showWarnings = c(TRUE, TRUE)))
+    
     expect_error(MgnifyClient(clearCache = 1))
     expect_error(MgnifyClient(clearCache = "TRUE"))
     expect_error(MgnifyClient(clearCache = c(TRUE, TRUE)))

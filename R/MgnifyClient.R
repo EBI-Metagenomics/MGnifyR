@@ -26,9 +26,13 @@
 #' directory will be created if it doesn't exist already.
 #' (By default: \code{cachedir = NULL})
 #'
-#' @param showWarnings A single boolean value specifying whether to print extra
-#' output during invocation of some MGnifyR functions.
+#' @param showWarnings A single boolean value specifying whether to print
+#' warnings during invocation of some MGnifyR functions.
 #' (By default: \code{showWarnings = FALSE})
+#' 
+#' @param verbose A single boolean value specifying whether to print extra
+#' output during invocation of some MGnifyR functions.
+#' (By default: \code{verbose = FALSE})
 #'
 #' @param useMemCache A single boolean value specifying whether to indicate
 #' whether functional results obtained when \code{bulk_dl} is \code{TRUE}
@@ -72,7 +76,8 @@ NULL
 #' @export
 MgnifyClient <- function(
         username = NULL, password = NULL, useCache = FALSE, cacheDir = NULL,
-        showWarnings = FALSE, useMemCache = FALSE, clearCache = FALSE, ...){
+        showWarnings = FALSE, verbose = TRUE, useMemCache = FALSE,
+        clearCache = FALSE, ...){
     ############################### INPUT CHECK ################################
     if( !(is.null(username) || .is_non_empty_string(username)) ){
         stop(
@@ -96,7 +101,13 @@ MgnifyClient <- function(
     }
     if( !.is_a_bool(showWarnings) ){
         stop(
-            "'wanings' must be a boolean value specifying whether print ",
+            "'showWarnings' must be a boolean value specifying whether print ",
+            "warnings during invocation of MGnifyR functions.",
+            call. = FALSE)
+    }
+    if( !.is_a_bool(verbose) ){
+        stop(
+            "'verbose' must be a boolean value specifying whether print ",
             "extra output during invocation of MGnifyR functions.",
             call. = FALSE)
     }
@@ -152,7 +163,8 @@ MgnifyClient <- function(
         showWarnings = showWarnings,
         memCache = list(),
         useMemCache = useMemCache,
-        clearCache = clearCache
+        clearCache = clearCache,
+        verbose = verbose
     )
     return(obj)
 }
