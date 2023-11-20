@@ -213,6 +213,10 @@
     # Build up the cache name anyway - even if it's not ultimately used:
     fname_list <- c(path, names(unlist(full_qopts)), unlist(full_qopts))
     cache_fname <- paste(fname_list, collapse = "_")
+    # Because query options are collapsed to file name , they might include
+    # colons that are not supported in file names. Replace them with
+    # underscores.
+    cache_fname <- gsub(":", "_", cache_fname)
     cache_full_fname <- file.path(cache.dir, cache_fname, ".RDS")
 
     # Quick check to see if we should clear the disk cache  for this
