@@ -8,13 +8,21 @@ test_that("MgnifyClient", {
     expect_error(MgnifyClient(useCache = "TRUE"))
     expect_error(MgnifyClient(useCache = c(TRUE, TRUE)))
     
+    expect_error(MgnifyClient(verbose = 1))
+    expect_error(MgnifyClient(verbose = "TRUE"))
+    expect_error(MgnifyClient(verbose = c(TRUE, TRUE)))
+    
+    expect_error(MgnifyClient(showWarnings = 1))
+    expect_error(MgnifyClient(showWarnings = "TRUE"))
+    expect_error(MgnifyClient(showWarnings = c(TRUE, TRUE)))
+    
     expect_error(MgnifyClient(clearCache = 1))
     expect_error(MgnifyClient(clearCache = "TRUE"))
     expect_error(MgnifyClient(clearCache = c(TRUE, TRUE)))
 
-    expect_error(MgnifyClient(warnings = 1))
-    expect_error(MgnifyClient(warnings = "TRUE"))
-    expect_error(MgnifyClient(warnings = c(TRUE, TRUE)))
+    expect_error(MgnifyClient(showWarnings = 1))
+    expect_error(MgnifyClient(showWarnings = "TRUE"))
+    expect_error(MgnifyClient(showWarnings = c(TRUE, TRUE)))
 
     expect_error(MgnifyClient(useMemCache = 1))
     expect_error(MgnifyClient(useMemCache = "TRUE"))
@@ -37,22 +45,22 @@ test_that("MgnifyClient", {
     mg <- MgnifyClient(
         useCache = TRUE,
         cacheDir = "test",
-        warnings = FALSE,
+        showWarnings = FALSE,
         useMemCache = TRUE,
         url = "test"
     )
     expect_equal(mg@cacheDir, "test")
-    expect_equal(mg@warnings, FALSE)
+    expect_equal(mg@showWarnings, FALSE)
     expect_equal(mg@useMemCache, TRUE)
-    expect_equal(mg@url, "test")
+    expect_equal(mg@databaseUrl, "test")
     mg <- MgnifyClient(
         useCache = FALSE,
         cacheDir = "test",
-        warnings = TRUE,
+        showWarnings = TRUE,
         useMemCache = FALSE,
     )
     expect_true(!is.na(mg@cacheDir))
-    expect_equal(mg@warnings, TRUE)
+    expect_equal(mg@showWarnings, TRUE)
     expect_equal(mg@useMemCache, FALSE)
     # Require internet access
     skip_if(httr::http_error("https://www.ebi.ac.uk/metagenomics/api/v1"))

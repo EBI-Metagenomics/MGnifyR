@@ -13,6 +13,7 @@ MgnifyClient(
   useCache = FALSE,
   cacheDir = NULL,
   showWarnings = FALSE,
+  verbose = TRUE,
   useMemCache = FALSE,
   clearCache = FALSE,
   ...
@@ -37,9 +38,13 @@ between sessions, taking advantage of previously downloaded results. The
 directory will be created if it doesn't exist already.
 (By default: \code{cachedir = NULL})}
 
-\item{showWarnings}{A single boolean value specifying whether to print extra
-output during invocation of some MGnifyR functions.
+\item{showWarnings}{A single boolean value specifying whether to print
+warnings during invocation of some MGnifyR functions.
 (By default: \code{showWarnings = FALSE})}
+
+\item{verbose}{A single boolean value specifying whether to print extra
+output during invocation of some MGnifyR functions.
+(By default: \code{verbose = FALSE})}
 
 \item{useMemCache}{A single boolean value specifying whether to indicate
 whether functional results obtained when \code{bulk_dl} is \code{TRUE}

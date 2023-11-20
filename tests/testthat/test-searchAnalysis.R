@@ -18,14 +18,6 @@ test_that("searchAnalysis", {
     expect_error(searchAnalysis(mg, type = "studies", accession = 1))
     expect_error(searchAnalysis(mg, type = "studies", accession = c(TRUE, FALSE)))
 
-    expect_error(searchAnalysis(mg, type = "studies", accession = "test", use.cache = NULL))
-    expect_error(searchAnalysis(mg, type = "studies", accession = "test", use.cache = 1))
-    expect_error(searchAnalysis(mg, type = "studies", accession = "test", use.cache = "test"))
-
-    expect_error(searchAnalysis(mg, type = "studies", accession = "test", verbose = NULL))
-    expect_error(searchAnalysis(mg, type = "studies", accession = "test", verbose = 1))
-    expect_error(searchAnalysis(mg, type = "studies", accession = "test", verbose = "test"))
-
     # Require internet access
     skip_if(httr::http_error("https://www.ebi.ac.uk/metagenomics/api/v1"))
 

@@ -85,7 +85,7 @@ retrieving the files using \code{mgnify_download}
 }
 \examples{
 # Make a client object
-mg <- MgnifyClient(cache_dir="/tmp/mgcache")
+mg <- MgnifyClient(cacheDir="/tmp/mgcache")
 # Create a vector of accession ids - these happen to be \code{analysis}
 # accessions
 accession_vect <- c(
@@ -115,12 +115,12 @@ dna_seqs <- getFile(
     mg, url_list[[3]], read.func = readDNAStringSet)
 
 # Make a client object
-mg <- MgnifyClient(cache_dir="/tmp/mgcache", useCache = TRUE)
+mg <- MgnifyClient(useCache = TRUE)
 # Create a vector of accession ids - these happen to be \code{analysis}
 # accessions
 accession_vect <- c(
     "MGYA00563876", "MGYA00563877", "MGYA00563878",
     "MGYA00563879", "MGYA00563880" )
-downloads <- mgnify_get_download_urls(mg, accession_vect, "analyses")
+downloads <- searchFile(mg, accession_vect, "analyses")
 
 }

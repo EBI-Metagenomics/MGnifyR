@@ -51,7 +51,7 @@ thing to do when starting any analysis is to instantiate this object. The
 following snippet creates this.
 
 ```{r create_client, echo=TRUE, fig.keep='all', message = FALSE}
-mg <- MgnifyClient(useCache = TRUE, cacheDir = "../inst/extdata//mgnify_cache")
+mg <- MgnifyClient()
 ```
 
 # Functions for fetching the data
@@ -67,6 +67,10 @@ samples <- doQuery(
     type = "samples",
     biome_name = "root:Environmental:Aquatic:Freshwater:Drinking water",
     max.hits = 10)
+
+# For demonstrative purpose, take only few samples
+set.seed(595)
+samples <- samples[ sample(rownames(samples), 5), ]
 ```
 
 ## Find relevent **analyses** accessions
@@ -152,6 +156,7 @@ plotReducedDim(mae[[1]], "MDS", colour_by = "sample_environment.feature")
 ```
 
 ## Fetch sequence files
+
 Finally, we can use `searchFile()` and `getFile()` to retrieve other MGnify
 pipeline outputs such as merged sequence reads, assembled contigs, and details
 of the functional analyses.
@@ -171,10 +176,8 @@ head(target_urls)
 
 Finally, we can download the files with `getFile()`.
 
-```{r filter_dl_urls, echo=T, message=FALSE}
+```{r filter_dl_urls, message=FALSE}
 # Just select a single file from the target_urls list for demonstration.
-
-# Default behavior - use local cache.
 cached_location <- getFile(mg, target_urls$download_url[[1]])
 
 # Where are the files?
