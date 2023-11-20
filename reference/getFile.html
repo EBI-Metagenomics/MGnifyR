@@ -21,7 +21,7 @@ Listing files available for download"><!-- mathjax --><script src="https://cdnjs
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MGnifyR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.99.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.99.3</span>
       </span>
     </div>
 
@@ -75,15 +75,13 @@ identified protein sequences</p>
 <span><span class="fu">searchFile</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S4 method for MgnifyClient</span></span>
-<span><span class="fu">getFile</span><span class="op">(</span><span class="va">x</span>, <span class="va">url</span>, file <span class="op">=</span> <span class="cn">NULL</span>, read.func <span class="op">=</span> <span class="cn">NULL</span>, use.cache <span class="op">=</span> <span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span></span>
+<span><span class="fu">getFile</span><span class="op">(</span><span class="va">x</span>, <span class="va">url</span>, file <span class="op">=</span> <span class="cn">NULL</span>, read.func <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S4 method for MgnifyClient</span></span>
 <span><span class="fu">searchFile</span><span class="op">(</span></span>
 <span>  <span class="va">x</span>,</span>
 <span>  <span class="va">accession</span>,</span>
 <span>  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"studies"</span>, <span class="st">"samples"</span>, <span class="st">"analyses"</span>, <span class="st">"assemblies"</span>, <span class="st">"genomes"</span>, <span class="st">"run"</span><span class="op">)</span>,</span>
-<span>  use.cache <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -109,7 +107,7 @@ optional local filename to use for saving the file. If NULL (default),
 MGNify local cache settings will be used. If the file is intended to be
 processed in a separate program, it may be sensible to provide a
 meaningful <code>file</code>, rather than having to hunt through the
-cache folders. If <code>file</code> is NULL <em>and</em> <code>use.cache</code>
+cache folders. If <code>file</code> is NULL <em>and</em> <code>useCache(client)</code>
 is <code>FALSE</code>, the <code>read.func</code> parameter must be supplied or the
 file will be downloaded and then deleted.
 (By default: <code>file = NULL</code>)</p></dd>
@@ -125,11 +123,6 @@ filename, and may return any valid R object.
 (By default: <code>read.func = NULL</code>)</p></dd>
 
 
-<dt>use.cache</dt>
-<dd><p>A single boolean value specifying whether to use the
-on-disk cache to speed up queries. (By default: <code>use.cache = TRUE</code>)</p></dd>
-
-
 <dt>accession</dt>
 <dd><p>A single character value or a vector of character values
 specifying accession IDs to return results for.</p></dd>
@@ -140,11 +133,6 @@ specifying accession IDs to return results for.</p></dd>
 query. Must be one of the following options: <code>analysis</code>, <code>samples</code>,
 <code>studies</code>, <code>assembly</code>, <code>genome</code> or <code>run</code>.
 (By default: <code>type = "samples"</code>)</p></dd>
-
-
-<dt>verbose</dt>
-<dd><p>A single boolean value to specify whether to show
-the progress bar. (By default: <code>verbose = TRUE</code>)</p></dd>
 
 </dl></div>
     <div id="value">
@@ -177,7 +165,7 @@ retrieving the files using <code>mgnify_download</code></p>
     <div id="ref-examples">
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Make a client object</span></span></span>
-<span class="r-in"><span><span class="va">mg</span> <span class="op">&lt;-</span> <span class="fu"><a href="MgnifyClient.html">MgnifyClient</a></span><span class="op">(</span>cache_dir<span class="op">=</span><span class="st">"/tmp/mgcache"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">mg</span> <span class="op">&lt;-</span> <span class="fu"><a href="MgnifyClient.html">MgnifyClient</a></span><span class="op">(</span>cacheDir<span class="op">=</span><span class="st">"/tmp/mgcache"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="co"># Create a vector of accession ids - these happen to be \code{analysis}</span></span></span>
 <span class="r-in"><span><span class="co"># accessions</span></span></span>
 <span class="r-in"><span><span class="va">accession_vect</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
@@ -206,23 +194,18 @@ retrieving the files using <code>mgnify_download</code></p>
 <span class="r-in"><span><span class="co"># Using read.func to open the reads with readDNAStringSet from</span></span></span>
 <span class="r-in"><span><span class="co"># \code{biostrings}. Without retaining on disk</span></span></span>
 <span class="r-in"><span><span class="va">dna_seqs</span> <span class="op">&lt;-</span> <span class="fu">getFile</span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="va">mg</span>, <span class="va">url_list</span><span class="op">[[</span><span class="fl">3</span><span class="op">]</span><span class="op">]</span>, read.func <span class="op">=</span> <span class="va">readDNAStringSet</span>, use.cache <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="va">mg</span>, <span class="va">url_list</span><span class="op">[[</span><span class="fl">3</span><span class="op">]</span><span class="op">]</span>, read.func <span class="op">=</span> <span class="va">readDNAStringSet</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># \donttest{</span></span></span>
 <span class="r-in"><span><span class="co"># Make a client object</span></span></span>
-<span class="r-in"><span><span class="va">mg</span> <span class="op">&lt;-</span> <span class="fu"><a href="MgnifyClient.html">MgnifyClient</a></span><span class="op">(</span>cache_dir<span class="op">=</span><span class="st">"/tmp/mgcache"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">mg</span> <span class="op">&lt;-</span> <span class="fu"><a href="MgnifyClient.html">MgnifyClient</a></span><span class="op">(</span>useCache <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="co"># Create a vector of accession ids - these happen to be \code{analysis}</span></span></span>
 <span class="r-in"><span><span class="co"># accessions</span></span></span>
 <span class="r-in"><span><span class="va">accession_vect</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>    <span class="st">"MGYA00563876"</span>, <span class="st">"MGYA00563877"</span>, <span class="st">"MGYA00563878"</span>,</span></span>
 <span class="r-in"><span>    <span class="st">"MGYA00563879"</span>, <span class="st">"MGYA00563880"</span> <span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">downloads</span> <span class="op">&lt;-</span> <span class="fu"><a href="deprecate.html">mgnify_get_download_urls</a></span><span class="op">(</span><span class="va">mg</span>, <span class="va">accession_vect</span>, <span class="st">"analyses"</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>'mgnify_get_download_urls' is deprecated.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> Use 'searchFile' instead.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> See help("Deprecated")</span>
+<span class="r-in"><span><span class="va">downloads</span> <span class="op">&lt;-</span> <span class="fu">searchFile</span><span class="op">(</span><span class="va">mg</span>, <span class="va">accession_vect</span>, <span class="st">"analyses"</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Searching files...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |==============                                                        |  20%  |                                                                              |============================                                          |  40%  |                                                                              |==========================================                            |  60%  |                                                                              |========================================================              |  80%  |                                                                              |======================================================================| 100%</span>
-<span class="r-in"><span><span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

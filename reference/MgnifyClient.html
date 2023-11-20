@@ -21,7 +21,7 @@ A MgnifyClient object"><!-- mathjax --><script src="https://cdnjs.cloudflare.com
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MGnifyR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.99.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.99.3</span>
       </span>
     </div>
 
@@ -59,7 +59,7 @@ A MgnifyClient object"><!-- mathjax --><script src="https://cdnjs.cloudflare.com
     <div class="page-header">
     <h1>Constructor for creating a MgnifyClient object to allow the access to
 MGnify database.</h1>
-    <small class="dont-index">Source: <a href="https://github.com/EBI-Metagenomics/MGnifyR/blob/HEAD/R/MgnifyClient.R" class="external-link"><code>R/MgnifyClient.R</code></a>, <a href="https://github.com/EBI-Metagenomics/MGnifyR/blob/HEAD/R/allClass.R" class="external-link"><code>R/allClass.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/EBI-Metagenomics/MGnifyR/blob/HEAD/R/MgnifyClient.R" class="external-link"><code>R/MgnifyClient.R</code></a>, <a href="https://github.com/EBI-Metagenomics/MGnifyR/blob/HEAD/R/allClasses.R" class="external-link"><code>R/allClasses.R</code></a></small>
     <div class="hidden name"><code>MgnifyClient.Rd</code></div>
     </div>
 
@@ -75,7 +75,8 @@ MGnify database.</p>
 <span>  password <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  useCache <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  cacheDir <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  warnings <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  showWarnings <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  useMemCache <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  clearCache <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">...</span></span>
@@ -110,10 +111,16 @@ directory will be created if it doesn't exist already.
 (By default: <code>cachedir = NULL</code>)</p></dd>
 
 
-<dt>warnings</dt>
+<dt>showWarnings</dt>
+<dd><p>A single boolean value specifying whether to print
+warnings during invocation of some MGnifyR functions.
+(By default: <code>showWarnings = FALSE</code>)</p></dd>
+
+
+<dt>verbose</dt>
 <dd><p>A single boolean value specifying whether to print extra
 output during invocation of some MGnifyR functions.
-(By default: <code>warnings = FALSE</code>)</p></dd>
+(By default: <code>verbose = FALSE</code>)</p></dd>
 
 
 <dt>useMemCache</dt>
@@ -158,20 +165,26 @@ and local on-disk caching of results.</p>
     <h2>Slots</h2>
     
 
-<dl><dt><code>url</code></dt>
-<dd><p>A single character value specifying an URL address of database.</p></dd>
+<dl><dt><code>databaseUrl</code></dt>
+<dd><p>A single character value specifying an URL address of
+database.</p></dd>
 
 
 <dt><code>authTok</code></dt>
 <dd><p>A single character value specifying authentication token.</p></dd>
 
 
+<dt><code>useCache</code></dt>
+<dd><p>A single boolean value specifying whether to use cache.</p></dd>
+
+
 <dt><code>cacheDir</code></dt>
 <dd><p>A single character value specifying cache directory.</p></dd>
 
 
-<dt><code>warnings</code></dt>
-<dd><p>A single boolean value specifying whether to show warnings.</p></dd>
+<dt><code>showWarnings</code></dt>
+<dd><p>A single boolean value specifying whether to show
+warnings.</p></dd>
 
 
 <dt><code>useMemCache</code></dt>
@@ -185,6 +198,10 @@ memory.</p></dd>
 
 <dt><code>clearCache</code></dt>
 <dd><p>A single boolean value specifying whether to clear cache.</p></dd>
+
+
+<dt><code>verbose</code></dt>
+<dd><p>A single boolean value specifying whether to show messages.</p></dd>
 
 
 </dl></div>

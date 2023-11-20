@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MGnifyR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.99.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.99.3</span>
       </span>
     </div>
 
@@ -68,11 +68,10 @@
 <span><span class="co"># S4 method for MgnifyClient</span></span>
 <span><span class="fu">doQuery</span><span class="op">(</span></span>
 <span>  <span class="va">x</span>,</span>
-<span>  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"studies"</span>, <span class="st">"samples"</span>, <span class="st">"runs"</span>, <span class="st">"analyses"</span><span class="op">)</span>,</span>
+<span>  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"studies"</span>, <span class="st">"samples"</span>, <span class="st">"runs"</span>, <span class="st">"analyses"</span>, <span class="st">"biomes"</span><span class="op">)</span>,</span>
 <span>  accession <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  as.df <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  max.hits <span class="op">=</span> <span class="fl">200</span>,</span>
-<span>  use.cache <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -92,7 +91,8 @@ See discussion above for details.</p></dd>
 <dt>type</dt>
 <dd><p>A single character value specifying the type of objects to
 query. Must be one of the following options: <code>studies</code>, <code>samples</code>,
-<code>runs</code> or <code>analyses</code>. (By default: <code>type = "studies"</code>)</p></dd>
+<code>runs</code>, <code>analyses</code> or <code>biomes</code>.
+(By default: <code>type = "studies"</code>)</p></dd>
 
 
 <dt>accession</dt>
@@ -116,15 +116,6 @@ higher than <code>max.hits</code>, as clipping only occurs on pagination page
 boundaries. To disable the limit, set <code>max.hits = NULL</code>.
 (By default: <code>max.hits = 200</code>)</p></dd>
 
-
-<dt>use.cache</dt>
-<dd><p>A single boolean value specifying whether to cache the
-result -- and reuse any existing cache entry instead of issuing a new
-callout. In general the use of caching for queries is discouraged, as
-new data is being uploaded to MGnify all the time, which might potentially
-be missed. However, for some purposes (such as analysis reproducibility)
-caching makes sense. (By default: <code>use.cache = FALSE</code>)</p></dd>
-
 </dl></div>
     <div id="value">
     <h2>Value</h2>
@@ -140,15 +131,21 @@ by metadata value, associated study/sample/analyese etc. Details of the
 capabilities may be found
 [here](https://emg-docs.readthedocs.io/en/latest/api.html#customising-queries).
 Currently, the following filters are available (based on examination of the
-Python source code):</p><ul><li><p><strong>studies</strong>: accession, biome_name, lineage, centre_name</p></li>
+Python source code):</p><ul><li><p><strong>studies</strong>: accession, biome_name, lineage, centre_name,
+    include</p></li>
 <li><p><strong>samples</strong>: accession, experiment_type, biome_name,
-            lineage, geo_loc_name, latitude_gte, latitude_lte,
-            longitude_gte, longitude_lte, species, instrument_model,
-            instrument_platform, metadata_key, metadata_value_gte,
-            metadata_value_lte, metadata_value, environment_material,
-            environment_feature, study_accession</p></li>
+    lineage, geo_loc_name, latitude_gte, latitude_lte,
+    longitude_gte, longitude_lte, species, instrument_model,
+    instrument_platform, metadata_key, metadata_value_gte,
+    metadata_value_lte, metadata_value, environment_material,
+    environment_feature, study_accession, include</p></li>
 <li><p><strong>runs</strong>: accession, experiment_type, biome_name, lineage,
-           species, instrument_platform, instrument_model</p></li>
+    species, instrument_platform, instrument_model, metdata_key,
+    metadata_value_gte, metadata_value_lte, metadata_value, sample_accession,
+    study_accession, include</p></li>
+<li><p><strong>analyses</strong>: biome_name, lineage, experiment_type, species,
+    sample_accession, pipeline_version</p></li>
+<li><p><strong>biomes</strong>: depth_gte, depth_lte</p></li>
 </ul><p>Unfortunately it appears that in some cases, some of these filters don't work
 as expected, so it is important to check the results returned match up with
 what's expected. Even more unfortunately if there's an error in the parameter

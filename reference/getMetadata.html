@@ -20,7 +20,7 @@ accessions"><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MGnifyR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.99.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.99.3</span>
       </span>
     </div>
 
@@ -71,7 +71,7 @@ accessions</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">getMetadata</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S4 method for MgnifyClient</span></span>
-<span><span class="fu">getMetadata</span><span class="op">(</span><span class="va">x</span>, <span class="va">accession</span>, use.cache <span class="op">=</span> <span class="cn">TRUE</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">getMetadata</span><span class="op">(</span><span class="va">x</span>, <span class="va">accession</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -87,16 +87,6 @@ accessions</p>
 <dt>accession</dt>
 <dd><p>A single character value or a vector of analysis accession
 IDs specifying accessions to retrieve data for.</p></dd>
-
-
-<dt>use.cache</dt>
-<dd><p>A single boolean value specifying whether to use the disk
-based cache. (By default: <code>use.cache = TRUE</code>)</p></dd>
-
-
-<dt>verbose</dt>
-<dd><p>A single boolean value to specify whether to show
-the progress bar. (By default: <code>verbose = TRUE</code>)</p></dd>
 
 </dl></div>
     <div id="value">
@@ -115,13 +105,11 @@ metadata attributes as a list of analyses accessions.</p>
     <div id="ref-examples">
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Create a client object</span></span></span>
-<span class="r-in"><span><span class="va">mg</span> <span class="op">&lt;-</span> <span class="fu"><a href="MgnifyClient.html">MgnifyClient</a></span><span class="op">(</span>useache <span class="op">=</span> <span class="cn">TRUE</span>, cacheDir <span class="op">=</span> <span class="st">"~/.MGnify_cache"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">mg</span> <span class="op">&lt;-</span> <span class="fu"><a href="MgnifyClient.html">MgnifyClient</a></span><span class="op">(</span>useCache <span class="op">=</span> <span class="cn">TRUE</span>, cacheDir <span class="op">=</span> <span class="st">"~/.MGnify_cache"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Download all associated study/sample and analysis metadata</span></span></span>
 <span class="r-in"><span><span class="va">accession_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"MGYA00377505"</span>, <span class="st">"MGYA00377506"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">meta_dataframe</span> <span class="op">&lt;-</span> <span class="fu">getMetadata</span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="va">mg</span>, <span class="va">accession_list</span>, use.cache <span class="op">=</span> <span class="cn">TRUE</span></span></span>
-<span class="r-in"><span>    <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">meta_dataframe</span> <span class="op">&lt;-</span> <span class="fu">getMetadata</span><span class="op">(</span><span class="va">mg</span>, <span class="va">accession_list</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Fetching metadata...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |===================================                                   |  50%  |                                                                              |======================================================================| 100%</span>
 <span class="r-in"><span></span></span>
