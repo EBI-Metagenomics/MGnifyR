@@ -424,8 +424,7 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
         return(NULL)
     }
     group_type <- lapply(
-        available_biom_files, function(x){
-            x$attributes$`group-type`})
+        available_biom_files, function(x){ x$attributes$`group-type` } )
     group_type <- unlist(group_type)
     biom_position <- grepl(taxa.su, group_type)
     if( sum(biom_position) == 0 ){

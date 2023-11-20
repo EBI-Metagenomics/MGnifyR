@@ -72,7 +72,7 @@ thing to do when starting any analysis is to instantiate this object. The
 following snippet creates this.
 
 ```{r create_client}
-mg <- MgnifyClient(useCache = TRUE, cacheDir = "../inst/extdata//mgnify_cache")
+mg <- MgnifyClient()
 mg
 ```
 
@@ -134,7 +134,8 @@ following query:
 ```{r search_studiesE}
 northpolar <- doQuery(
     mg, "samples", latitude_gte=60.0, experiment_type="amplicon",
-    biome_name="Soil", instrument_platform = "Illumina")
+    biome_name="Soil", instrument_platform = "Illumina", max.hits = 10)
+
 northpolar[1:5,]
 ```
 
@@ -167,7 +168,12 @@ list of `study` accessions, so to convert to corresponding `analyses` we use:
 ```{r convert_to_analyses}
 analyses_accessions <- searchAnalysis(
     mg, type="studies", accession = study_samples$accession)
-analyses_accessions[1:20]
+
+# For demonstrative purpose, take only few samples
+set.seed(595)
+analyses_accessions <- sample(analyses_accessions, 5)
+
+analyses_accessions
 ```
 
 A useful side effect of the above call is that some attribute metadata for
@@ -213,7 +219,7 @@ make sure ostensibly numeric entries are converted properly.
 
 ```{r filter_show_metadata}
 known_depths <- analyses_metadata[
-    !is.na(as.numeric(analyses_metadata$sample_depth)),]
+    !is.na(as.numeric(analyses_metadata$sample_depth)), ]
 # How many are left?
 dim(known_depths)
 ```
@@ -241,7 +247,7 @@ include function predictions, `getResult()` method returns the dataset as a
 `TreeSE` by default. See other output types from the function documentation.
 
 ```{r get_TreeSE}
-tse <- getResult(mg, accession = analyses_accessions[1:10], get.func = FALSE)
+tse <- getResult(mg, accession = analyses_accessions, get.func = FALSE)
 tse
 ```
 
@@ -292,17 +298,15 @@ the intention is only to demonstrate the functionality of the MGnifyR package,
 rather than produce scientifically rigorous results.
 
 ```{r get_analyses}
-useCache(mg) <- FALSE
 soil <- searchAnalysis(mg, "studies", "MGYS00001447")[1:20]
 human <- searchAnalysis(mg, "studies", "MGYS00001442")[1:20]
 marine <- searchAnalysis(mg, "studies", "MGYS00001282")[1:20]
-useCache(mg) <- TRUE
 
 # Combine analyses
 all_accessions <- c(soil,human,marine)
-# Subset the accessions by taking 10 random analyses
+# Subset the accessions by taking 5 random analyses
 set.seed(74)
-all_accessions <- sample(all_accessions, 20)
+all_accessions <- sample(all_accessions, 5)
 all_accessions
 ```
 
@@ -440,7 +444,7 @@ the following might be useful.
 table(dl_urls$attributes.description.label)
 ```
 
-Unlike other `MGnifyR` functions, `searchFile` is not limited to
+Unlike other `MGnifyR` functions, `searchFile()` is not limited to
 `analyses`, and by specifying `accession_type` other results types may be
 found. For instance, while general `genome` functionality is not yet
 integrated into `MGnifyR`, we can retrieve associated files for a particular
@@ -476,7 +480,7 @@ cached_location = getFile(mg, target_urls$download_url[[1]])
 
 # Specifying a file
 specified_location <- getFile(
-    mg, target_urls$download_url[[1]], file = "Coding_Sequences_1.fasta.gz")
+    mg, target_urls$download_url[[1]])
 
 # Where are the files?
 c(cached_location,specified_location)
