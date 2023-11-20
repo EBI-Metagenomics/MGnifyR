@@ -513,7 +513,7 @@ oxidizing organisms, but any other filtering method could be used.
 ```{r simple_parse_function}
 library(Biostrings)
 
-#Simple function to a count of unique sequences matching PFAM amoC/mmoC motif
+# Simple function to a count of unique sequences matching PFAM amoC/mmoC motif
 getAmoCseqs <- function(fname){
     sequences <- readAAStringSet(fname)
     tgtvec <- grepl("PF04896", names(sequences))
