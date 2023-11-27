@@ -143,7 +143,7 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
     # Get functional data if user specified
     if( is.character(get.func) ){
         # If single value, create a vector from it
-        if( length(get.func) == 1){
+        if( length(get.func) == 1 ){
             get.func <- c(get.func)
         }
         func_res <- .mgnify_get_analyses_results(
