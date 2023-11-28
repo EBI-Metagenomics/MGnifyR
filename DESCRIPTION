@@ -1,6 +1,6 @@
 Package: MGnifyR
 Type: Package
-Version: 0.99.4
+Version: 0.99.5
 Authors@R:
     c(person(given = "Tuomas", family = "Borman", role = c("aut", "cre"),
              email = "tuomas.v.borman@utu.fi",
