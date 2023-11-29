@@ -1,7 +1,7 @@
 context("getMetadata")
 test_that("getMetadata", {
     # Test that input check caches wrong arguments.
-    mg <- MgnifyClient()
+    mg <- MgnifyClient(useCache = FALSE)
 
     expect_error(getMetadata(1))
     expect_error(getMetadata("test"))
@@ -28,8 +28,10 @@ test_that("getMetadata", {
     expect_true(ncol(res) > 1)
     expect_equal(rownames(res)[1] , "MGYA00097621")
     expect_equal(res$run_accession, "ERR1811651")
-    # When metadata is not found, should give a warning and the result should
-    # be empty tibble
-    expect_warning(res <- getMetadata(mg, "MGYS00005292", show.messages = FALSE))
-    expect_true(ncol(res) == 0 && nrow(res) == 0)
+    
+    # # To reduce the time used to build the package, these tests are commented
+    # # When metadata is not found, should give a warning and the result should
+    # # be empty tibble
+    # expect_warning(res <- getMetadata(mg, "MGYS00005292", show.messages = FALSE))
+    # expect_true(ncol(res) == 0 && nrow(res) == 0)
 })

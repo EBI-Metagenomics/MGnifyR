@@ -60,8 +60,9 @@ of the JSONAPI url, disk cache location and user access tokens. Thus the first
 thing to do when starting any analysis is to instantiate this object. The
 following snippet creates this.
 
-```{r create_client, echo=TRUE, fig.keep='all', message = FALSE}
+```{r create_client, message = FALSE}
 mg <- MgnifyClient()
+mg
 ```
 
 # Functions for fetching the data

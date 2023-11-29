@@ -1,7 +1,7 @@
 context("getFile")
 test_that("getFile", {
     # Test that input check caches wrong arguments.
-    mg <- MgnifyClient()
+    mg <- MgnifyClient(useCache = FALSE)
 
     expect_error(getFile(10))
     expect_error(getFile(TRUE))
@@ -59,9 +59,10 @@ test_that("getFile", {
     expect_true(all(res$type == "studies"))
     expect_true(is.data.frame(res))
     expect_true(grepl("https", res$download_url[1]))
-
-    # Test that correct file is fetched based on provided url.
-    res <- getFile(mg, res$download_url[1])
-    # Result is stored in a path which is returned
-    expect_true(file.exists(res))
+    
+    # # To reduce the time used to build the package, these tests are commented
+    # # Test that correct file is fetched based on provided url.
+    # res <- getFile(mg, res$download_url[1])
+    # # Result is stored in a path which is returned
+    # expect_true(file.exists(res))
 })

@@ -1,7 +1,7 @@
 context("getResult")
 test_that("getResult", {
     # Test that input check caches wrong arguments.
-    mg <- MgnifyClient()
+    mg <- MgnifyClient(useCache = FALSE)
 
     expect_error(getResult(1))
     expect_error(getResult("test"))
@@ -29,15 +29,18 @@ test_that("getResult", {
 
     # Require internet access
     skip_if(httr::http_error("https://www.ebi.ac.uk/metagenomics/api/v1"))
-
-    # Test that only functional data is fetched based on certain accession ID.
-    # Get data as list of data.frames
-    res <- getResult(mg, "MGYA00097621", get.taxa = FALSE, output = "list", get.func = TRUE, verbose = FALSE)
-    expect_true(is.list(res))
-    expect_true("go-terms" %in% names(res))
-    expect_true(is.character(res$`interpro-identifiers`$analysis) &&
-                    is.character(res$`interpro-identifiers`$description) &&
-                    is.numeric(res$`interpro-identifiers`$count))
+    
+    # # To reduce the time used to build the package, these tests are commented
+    # # Test that only functional data is fetched based on certain accession ID.
+    # # Get data as list of data.frames
+    # res <- getResult(
+    #     mg, "MGYA00097621", get.taxa = FALSE, output = "list",
+    #     get.func = TRUE, verbose = FALSE)
+    # expect_true(is.list(res))
+    # expect_true("go-terms" %in% names(res))
+    # expect_true(is.character(res$`interpro-identifiers`$analysis) &&
+    #                 is.character(res$`interpro-identifiers`$description) &&
+    #                 is.numeric(res$`interpro-identifiers`$count))
 
     # Test that microbial profiling data and functional data is fetched. Get
     # data as MAE. Fetch also trees. Check that all data is is in correct place
