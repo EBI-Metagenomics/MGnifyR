@@ -147,10 +147,10 @@
 #' @importFrom httr timeout
 .mgnify_retrieve_json <- function(
         client, path = "biomes", complete_url = NULL, qopts = NULL,
-        max.hits = 200, time.out = 10, Debug = FALSE, use.cache = useCache(client),
-        show.warnings = showWarnings(client), clear.cache = clearCache(client),
-        url.address = databaseUrl(client), auth.tok = authTok(client),
-        cache.dir = cacheDir(client), ...){
+        max.hits = 200, time.out = 60, Debug = FALSE,
+        use.cache = useCache(client), show.warnings = showWarnings(client),
+        clear.cache = clearCache(client), url.address = databaseUrl(client),
+        auth.tok = authTok(client), cache.dir = cacheDir(client), ...){
     # Input check
     if( !.is_an_integer(time.out) ){
         stop(
