@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MGnifyR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.99.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.99.7</span>
       </span>
     </div>
 
@@ -162,13 +162,14 @@ operations in R to get the desired behaviour.</p>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">mg</span> <span class="op">&lt;-</span> <span class="fu"><a href="MgnifyClient.html">MgnifyClient</a></span><span class="op">(</span>cache_dir<span class="op">=</span><span class="st">"/tmp/mgcache"</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">mg</span> <span class="op">&lt;-</span> <span class="fu"><a href="MgnifyClient.html">MgnifyClient</a></span><span class="op">(</span>useCache <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Get a list of studies from the Agricultural Wastewater :</span></span></span>
 <span class="r-in"><span><span class="va">agwaste_studies</span> <span class="op">&lt;-</span> <span class="fu">doQuery</span><span class="op">(</span></span></span>
 <span class="r-in"><span>    <span class="va">mg</span>, <span class="st">"studies"</span>, biome_name<span class="op">=</span><span class="st">"Agricultural wastewater"</span></span></span>
 <span class="r-in"><span>    <span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># \donttest{</span></span></span>
 <span class="r-in"><span><span class="co"># Get all samples from a particular study</span></span></span>
 <span class="r-in"><span><span class="va">samps</span> <span class="op">&lt;-</span> <span class="fu">doQuery</span><span class="op">(</span><span class="va">mg</span>, <span class="st">"samples"</span>, study_accession<span class="op">=</span><span class="st">"MGYS00004521"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
@@ -182,6 +183,7 @@ operations in R to get the desired behaviour.</p>
 <span class="r-in"><span>    type <span class="op">=</span> <span class="st">"studies"</span>,</span></span>
 <span class="r-in"><span>    biome_name <span class="op">=</span> <span class="st">"root:Environmental:Aquatic:Freshwater:Drinking water"</span>,</span></span>
 <span class="r-in"><span>    max.hits <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

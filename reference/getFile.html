@@ -21,7 +21,7 @@ Listing files available for download"><!-- mathjax --><script src="https://cdnjs
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MGnifyR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.99.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.99.7</span>
       </span>
     </div>
 
@@ -165,15 +165,14 @@ retrieving the files using <code>mgnify_download</code></p>
     <div id="ref-examples">
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Make a client object</span></span></span>
-<span class="r-in"><span><span class="va">mg</span> <span class="op">&lt;-</span> <span class="fu"><a href="MgnifyClient.html">MgnifyClient</a></span><span class="op">(</span>cacheDir<span class="op">=</span><span class="st">"/tmp/mgcache"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">mg</span> <span class="op">&lt;-</span> <span class="fu"><a href="MgnifyClient.html">MgnifyClient</a></span><span class="op">(</span>useCache <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Create a vector of accession ids - these happen to be \code{analysis}</span></span></span>
 <span class="r-in"><span><span class="co"># accessions</span></span></span>
-<span class="r-in"><span><span class="va">accession_vect</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="st">"MGYA00563876"</span>, <span class="st">"MGYA00563877"</span>, <span class="st">"MGYA00563878"</span>, <span class="st">"MGYA00563879"</span>,</span></span>
-<span class="r-in"><span>    <span class="st">"MGYA00563880"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">accession_vect</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"MGYA00563876"</span>, <span class="st">"MGYA00563877"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">downloads</span> <span class="op">&lt;-</span> <span class="fu">searchFile</span><span class="op">(</span><span class="va">mg</span>, <span class="va">accession_vect</span>, <span class="st">"analyses"</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Searching files...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |==============                                                        |  20%  |                                                                              |============================                                          |  40%  |                                                                              |==========================================                            |  60%  |                                                                              |========================================================              |  80%  |                                                                              |======================================================================| 100%</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |===================================                                   |  50%  |                                                                              |======================================================================| 100%</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Filter to find the urls of 16S encoding sequences</span></span></span>
 <span class="r-in"><span><span class="va">url_list</span> <span class="op">&lt;-</span> <span class="va">downloads</span><span class="op">[</span></span></span>
@@ -185,7 +184,7 @@ retrieving the files using <code>mgnify_download</code></p>
 <span class="r-in"><span><span class="va">supplied_filename</span> <span class="op">&lt;-</span> <span class="fu">getFile</span><span class="op">(</span></span></span>
 <span class="r-in"><span>    <span class="va">mg</span>, <span class="va">url_list</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, file<span class="op">=</span><span class="st">"SSU_file.fasta.gz"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># \donttest{</span></span></span>
 <span class="r-in"><span><span class="co"># Example 2:</span></span></span>
 <span class="r-in"><span><span class="co"># Just use local caching</span></span></span>
 <span class="r-in"><span><span class="va">cached_filename</span> <span class="op">&lt;-</span> <span class="fu">getFile</span><span class="op">(</span><span class="va">mg</span>, <span class="va">url_list</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
@@ -195,6 +194,8 @@ retrieving the files using <code>mgnify_download</code></p>
 <span class="r-in"><span><span class="co"># \code{biostrings}. Without retaining on disk</span></span></span>
 <span class="r-in"><span><span class="va">dna_seqs</span> <span class="op">&lt;-</span> <span class="fu">getFile</span><span class="op">(</span></span></span>
 <span class="r-in"><span>    <span class="va">mg</span>, <span class="va">url_list</span><span class="op">[[</span><span class="fl">3</span><span class="op">]</span><span class="op">]</span>, read.func <span class="op">=</span> <span class="va">readDNAStringSet</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in url_list[[3]]:</span> subscript out of bounds</span>
+<span class="r-in"><span><span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Make a client object</span></span></span>
 <span class="r-in"><span><span class="va">mg</span> <span class="op">&lt;-</span> <span class="fu"><a href="MgnifyClient.html">MgnifyClient</a></span><span class="op">(</span>useCache <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
