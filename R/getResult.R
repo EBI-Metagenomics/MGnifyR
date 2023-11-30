@@ -81,7 +81,7 @@
 #'
 #' @examples
 #' # Create a client object
-#' mg <- MgnifyClient(useache = TRUE, cacheDir = "~/.MGnify_cache")
+#' mg <- MgnifyClient(useCache = FALSE)
 #'
 #' # Get OTU tables as TreeSE
 #' accession_list <- c("MGYA00377505")

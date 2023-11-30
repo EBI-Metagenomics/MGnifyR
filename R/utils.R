@@ -134,6 +134,7 @@
 # but not for (filtered) queries - which are liable to change as new data is
 # added to MGnify. Also caching only works for the first page.
 # Debug Should we print out lots of information while doing the grabbing?
+# time.out How long should be waited server to respond?
 #
 # Return:
 # list of results after pagination is dealt with.
@@ -143,13 +144,18 @@
 #' @importFrom httr GET
 #' @importFrom httr config
 #' @importFrom httr content
+#' @importFrom httr timeout
 .mgnify_retrieve_json <- function(
         client, path = "biomes", complete_url = NULL, qopts = NULL,
-        max.hits = 200, Debug = FALSE, use.cache = useCache(client),
+        max.hits = 200, time.out = 10, Debug = FALSE, use.cache = useCache(client),
         show.warnings = showWarnings(client), clear.cache = clearCache(client),
         url.address = databaseUrl(client), auth.tok = authTok(client),
         cache.dir = cacheDir(client), ...){
     # Input check
+    if( !.is_an_integer(time.out) ){
+        stop(
+            "'time.out' must be a single integer value.", call. = FALSE)
+    }
     if( !.is_a_bool(Debug) ){
         stop(
             "'Debug' must be a single boolean value.", call. = FALSE)
@@ -238,7 +244,9 @@
                 .headers = c(Authorization = paste(
                     "Bearer", authTok(client), sep = " ")))
         }
-        res <- GET(url = fullurl, config(verbose = Debug), query = full_qopts )
+        res <- GET(
+            url = fullurl, config(verbose = Debug), query = full_qopts,
+            timeout(time.out))
         # Get the data
         data <- content(res, ...)
 
