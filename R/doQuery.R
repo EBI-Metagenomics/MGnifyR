@@ -69,13 +69,14 @@
 #' @return A nested list or data.frame containing the results of the query.
 #'
 #' @examples
-#' mg <- MgnifyClient(cache_dir="/tmp/mgcache")
+#' mg <- MgnifyClient(useCache = FALSE)
 #'
 #' # Get a list of studies from the Agricultural Wastewater :
 #' agwaste_studies <- doQuery(
 #'     mg, "studies", biome_name="Agricultural wastewater"
 #'     )
-#'
+#' 
+#' \donttest{
 #' # Get all samples from a particular study
 #' samps <- doQuery(mg, "samples", study_accession="MGYS00004521")
 #'
@@ -89,6 +90,7 @@
 #'     type = "studies",
 #'     biome_name = "root:Environmental:Aquatic:Freshwater:Drinking water",
 #'     max.hits = 10)
+#' }
 #'
 #' @name doQuery
 NULL

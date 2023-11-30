@@ -17,10 +17,10 @@
 #'
 #' @examples
 #' # Create a client object
-#' mg <- MgnifyClient(useCache = TRUE, cacheDir = "~/.MGnify_cache")
+#' mg <- MgnifyClient(useCache = FALSE)
 #'
 #' # Download all associated study/sample and analysis metadata
-#' accession_list <- c("MGYA00377505", "MGYA00377506")
+#' accession_list <- c("MGYA00377505")
 #' meta_dataframe <- getMetadata(mg, accession_list)
 #'
 #' @name getMetadata

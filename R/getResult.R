@@ -84,9 +84,10 @@
 #' mg <- MgnifyClient(useache = TRUE, cacheDir = "~/.MGnify_cache")
 #'
 #' # Get OTU tables as TreeSE
-#' accession_list <- c("MGYA00377505", "MGYA00377506")
+#' accession_list <- c("MGYA00377505")
 #' tse <- getResult(mg, accession_list, get.func=FALSE, get.taxa=TRUE)
-#'
+#' 
+#' \donttest{
 #' # Get functional data along with OTU tables as MAE
 #' mae <- getResult(mg, accession_list, get.func=TRUE, get.taxa=TRUE)
 #'
@@ -94,7 +95,8 @@
 #' list <- getResult(
 #'     mg, accession_list, get.func=TRUE, get.taxa=TRUE, output = "list",
 #'     as.df = TRUE, use.cache = TRUE)
-#'
+#' }
+#' 
 #' @name getResult
 NULL
 

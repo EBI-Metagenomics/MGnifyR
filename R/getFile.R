@@ -37,12 +37,11 @@
 #'
 #' @examples
 #' # Make a client object
-#' mg <- MgnifyClient(cacheDir="/tmp/mgcache")
+#' mg <- MgnifyClient(useCache = FALSE)
+#' 
 #' # Create a vector of accession ids - these happen to be \code{analysis}
 #' # accessions
-#' accession_vect <- c(
-#'     "MGYA00563876", "MGYA00563877", "MGYA00563878", "MGYA00563879",
-#'     "MGYA00563880")
+#' accession_vect <- c("MGYA00563876", "MGYA00563877")
 #' downloads <- searchFile(mg, accession_vect, "analyses")
 #'
 #' # Filter to find the urls of 16S encoding sequences
@@ -55,7 +54,7 @@
 #' supplied_filename <- getFile(
 #'     mg, url_list[[1]], file="SSU_file.fasta.gz")
 #'
-#'
+#' \donttest{
 #' # Example 2:
 #' # Just use local caching
 #' cached_filename <- getFile(mg, url_list[[2]])
@@ -65,6 +64,7 @@
 #' # \code{biostrings}. Without retaining on disk
 #' dna_seqs <- getFile(
 #'     mg, url_list[[3]], read.func = readDNAStringSet)
+#' }
 #'
 #' @name getFile
 NULL

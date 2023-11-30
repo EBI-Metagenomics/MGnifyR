@@ -90,13 +90,14 @@ it is possible to run multiple queries and combine the results using set
 operations in R to get the desired behaviour.
 }
 \examples{
-mg <- MgnifyClient(cache_dir="/tmp/mgcache")
+mg <- MgnifyClient(useCache = FALSE)
 
 # Get a list of studies from the Agricultural Wastewater :
 agwaste_studies <- doQuery(
     mg, "studies", biome_name="Agricultural wastewater"
     )
 
+\donttest{
 # Get all samples from a particular study
 samps <- doQuery(mg, "samples", study_accession="MGYS00004521")
 
@@ -110,5 +111,6 @@ tbl <- doQuery(
     type = "studies",
     biome_name = "root:Environmental:Aquatic:Freshwater:Drinking water",
     max.hits = 10)
+}
 
 }

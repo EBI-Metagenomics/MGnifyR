@@ -33,14 +33,16 @@ sample accession.
 }
 \examples{
 # Create a client object
-mg <- MgnifyClient(useache = TRUE, cacheDir = "~/.MGnify_cache")
+mg <- MgnifyClient(useCache = FALSE)
 
 # Retrieve all analysis ids from studies
 # MGYS00005058, MGYS00005058 and MGYS00005058
 result <- searchAnalysis(mg, "studies", c("MGYS00005058"))
 
+\donttest{
 # Retrieve all analysis ids from samples
 result <- searchAnalysis(
     mg, "samples", c("SRS4392730", "SRS4392743"))
+}
 
 }
