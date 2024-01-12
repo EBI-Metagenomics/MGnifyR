@@ -20,7 +20,7 @@ bibliography: references.bib
 library(knitr)
 knitr::opts_chunk$set(
     collapse = TRUE,
-    eval = FALSE,
+    eval = TRUE,
     comment = "#>",
     cache = TRUE
 )
