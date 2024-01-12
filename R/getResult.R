@@ -105,7 +105,7 @@ NULL
 #' @importFrom dplyr bind_rows
 #' @importFrom reshape2 dcast
 #' @importFrom stats as.formula
-#' @include allClasses.R allGenerics.R MgnifyClient.R utils.R
+#' @include AllClasses.R AllGenerics.R MgnifyClient.R utils.R
 #' @export
 setMethod("getResult", signature = c(x = "MgnifyClient"), function(
         x, accession, get.taxa = TRUE, get.func = TRUE, output = "TreeSE", ...){

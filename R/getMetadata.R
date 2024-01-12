@@ -29,7 +29,7 @@ NULL
 #' @rdname getMetadata
 #' @importFrom plyr llply
 #' @importFrom dplyr bind_rows
-#' @include allClasses.R allGenerics.R MgnifyClient.R utils.R
+#' @include AllClasses.R AllGenerics.R MgnifyClient.R utils.R
 #' @export
 setMethod("getMetadata", signature = c(x = "MgnifyClient"), function(
         x, accession, ...){

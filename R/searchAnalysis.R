@@ -36,7 +36,7 @@ NULL
 
 #' @rdname searchAnalysis
 #' @importFrom plyr llply
-#' @include allClasses.R allGenerics.R MgnifyClient.R utils.R
+#' @include AllClasses.R AllGenerics.R MgnifyClient.R utils.R
 #' @export
 setMethod("searchAnalysis", signature = c(x = "MgnifyClient"), function(
         x, type, accession, ...){

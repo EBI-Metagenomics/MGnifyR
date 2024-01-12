@@ -97,7 +97,7 @@ NULL
 
 #' @rdname doQuery
 #' @importFrom dplyr bind_rows
-#' @include allClasses.R allGenerics.R MgnifyClient.R utils.R
+#' @include AllClasses.R AllGenerics.R MgnifyClient.R utils.R
 #' @export
 setMethod("doQuery", signature = c(x = "MgnifyClient"), function(
         x, type = c("studies", "samples", "runs", "analyses", "biomes"),

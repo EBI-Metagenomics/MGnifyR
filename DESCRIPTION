@@ -56,12 +56,12 @@ BugReports: https://github.com/EBI-Metagenomics/MGnifyR/issues
 VignetteBuilder: knitr
 RoxygenNote: 7.2.3
 Collate:
-    'MGnifyR.R'
-    'MgnifyClient.R'
     'utils.R'
-    'allGenerics.R'
-    'allClasses.R'
-    'allAccessors.R'
+    'MgnifyClient.R'
+    'AllGenerics.R'
+    'AllClasses.R'
+    'AllAccessors.R'
+    'MGnifyR.R'
     'deprecate.R'
     'doQuery.R'
     'getFile.R'
