@@ -55,7 +55,7 @@ Search MGnify database for studies, samples and runs
 power of the JSONAPI MGnify search filters. Search results may be filtered
 by metadata value, associated study/sample/analyese etc. Details of the
 capabilities may be found
-[here](https://emg-docs.readthedocs.io/en/latest/api.html#customising-queries).
+\href{https://emg-docs.readthedocs.io/en/latest/api.html#customising-queries}{here}.
 Currently, the following filters are available (based on examination of the
 Python source code):
 \itemize{
