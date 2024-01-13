@@ -176,6 +176,9 @@ jobs:
           BiocManager::install("cran/densEstBayes")
           BiocManager::install("xml2")
           BiocManager::install("mia")
+          BiocManager::install("HDF5Array")
+          BiocManager::install("fionarhuang/TreeSummarizedExperiment")
+          BiocManager::install("microbiome/mia")
 
           # For loading data in test-3agglomerate.R
           remotes::install_github("microbiome/miaTime")
