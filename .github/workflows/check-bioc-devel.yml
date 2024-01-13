@@ -169,6 +169,7 @@ jobs:
           #install.packages("xml2", repos = "https://cran.rstudio.com/")
           # BiocManager::install("adw96/breakaway")
 
+          BiocManager::install(version = "devel", ask = FALSE)
           BiocManager::install("vegandevs/vegan")
           BiocManager::install("TreeSummarizedExperiment")
           BiocManager::install("stan-dev/rstantools")
@@ -176,9 +177,6 @@ jobs:
           BiocManager::install("cran/densEstBayes")
           BiocManager::install("xml2")
           BiocManager::install("mia")
-
-          # For loading data in test-3agglomerate.R
-          remotes::install_github("microbiome/miaTime")
           remotes::install_github("microbiome/mia")
 
           ## Pass #1 at installing dependencies
