@@ -126,6 +126,8 @@ jobs:
           sudo -s eval "$sysreqs"
           sudo apt-get install -y libcurl4-openssl-dev libglpk-dev
           sudo apt-get install libhdf5-dev
+          sudo apt-get install gfortran
+          sudo apt-get install r-base-dev
 
       - name: Install macOS system dependencies
         if: matrix.config.os == 'macOS-latest'
