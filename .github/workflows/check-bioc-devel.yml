@@ -105,16 +105,16 @@ jobs:
         uses: actions/cache@v1
         with:
           path: ${{ env.R_LIBS_USER }}
-          key: ${{ env.cache-version }}-${{ runner.os }}-biocversion-devel-r-4.4-new3-${{ hashFiles('.github/depends.Rds') }}
-          restore-keys: ${{ env.cache-version }}-${{ runner.os }}-biocversion-devel-r-4.4-new3-
+          key: ${{ env.cache-version }}-${{ runner.os }}-biocversion-devel-r-4.3-new3-${{ hashFiles('.github/depends.Rds') }}
+          restore-keys: ${{ env.cache-version }}-${{ runner.os }}-biocversion-devel-r-4.3-new3-
 
       - name: Cache R packages on Linux
         if: "!contains(github.event.head_commit.message, '/nocache') && runner.os == 'Linux' "
         uses: actions/cache@v1
         with:
           path: /home/runner/work/_temp/Library
-          key: ${{ env.cache-version }}-${{ runner.os }}-biocversion-devel-r-4.4-new3-${{ hashFiles('.github/depends.Rds') }}
-          restore-keys: ${{ env.cache-version }}-${{ runner.os }}-biocversion-devel-r-4.4-new3-
+          key: ${{ env.cache-version }}-${{ runner.os }}-biocversion-devel-r-4.3-new3-${{ hashFiles('.github/depends.Rds') }}
+          restore-keys: ${{ env.cache-version }}-${{ runner.os }}-biocversion-devel-r-4.3-new3-
 
       - name: Install Linux system dependencies
         if: runner.os == 'Linux'
@@ -125,8 +125,6 @@ jobs:
           sysreqs=$(Rscript -e "cat(sysreqs::sysreq_commands('DESCRIPTION'))")
           sudo -s eval "$sysreqs"
           sudo apt-get install -y libcurl4-openssl-dev libglpk-dev
-          sudo apt-get install build-essential
-          sudo apt-get install libsome-library-dev
 
       - name: Install macOS system dependencies
         if: matrix.config.os == 'macOS-latest'
@@ -171,7 +169,6 @@ jobs:
           #install.packages("xml2", repos = "https://cran.rstudio.com/")
           # BiocManager::install("adw96/breakaway")
 
-          BiocManager::install(version = "devel", ask = FALSE)
           BiocManager::install("vegandevs/vegan")
           BiocManager::install("TreeSummarizedExperiment")
           BiocManager::install("stan-dev/rstantools")
@@ -179,6 +176,9 @@ jobs:
           BiocManager::install("cran/densEstBayes")
           BiocManager::install("xml2")
           BiocManager::install("mia")
+
+          # For loading data in test-3agglomerate.R
+          remotes::install_github("microbiome/miaTime")
           remotes::install_github("microbiome/mia")
 
           ## Pass #1 at installing dependencies
@@ -283,5 +283,5 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@master
         with:
-          name: ${{ runner.os }}-biocversion-devel-r-4.4-results
+          name: ${{ runner.os }}-biocversion-devel-r-4.3-results
           path: check
