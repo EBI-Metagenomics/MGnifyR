@@ -23,10 +23,10 @@
 on:
   push:
     branches:
-      - master
+      # - master
   pull_request:
     branches:
-      - master
+      # - master
 
 name: R-CMD-check-bioc-devel
 
