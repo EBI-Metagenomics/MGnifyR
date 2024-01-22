@@ -205,6 +205,8 @@
         parameters(fullurl) <- NULL
         path <- substr(fullurl, nchar(url.address) + 2, nchar(fullurl))
     }
+    # Spaces are not allowed in url address. Convert spaces to %20.
+    fullurl <- gsub(" ", "%20", fullurl)
 
     # Convert to csv if filters are lists.
     # This doesn't check if they  can  be searched for in the API,

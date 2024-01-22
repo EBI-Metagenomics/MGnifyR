@@ -137,7 +137,7 @@ mae[[1]] <- estimateDiversity(mae[[1]], index = "shannon")
 
 library(scater)
 
-plotColData(mae[[1]], "shannon", x = "sample_environment.feature")
+plotColData(mae[[1]], "shannon", x = "sample_sample.desc")
 ```
 
 
@@ -157,13 +157,14 @@ utilizing miaverse tools.
 
 ```{r pcoa}
 # Apply relative transformation
-mae[[1]] <- transformCounts(mae[[1]], method = "relabundance")
+mae[[1]] <- transformAssay(mae[[1]], method = "relabundance")
 # Perform PCoA
 mae[[1]] <- runMDS(
     mae[[1]], assay.type = "relabundance",
     FUN = vegan::vegdist, method = "bray")
 # Plot
-plotReducedDim(mae[[1]], "MDS", colour_by = "sample_environment.feature")
+plotReducedDim(
+    mae[[1]], "MDS", colour_by = "sample_sample.desc")
 ```
 
 ## Fetch sequence files
@@ -181,7 +182,7 @@ dl_urls <- searchFile(mg, analyses_accessions, type = "analyses")
 
 ```{r show_tgt_urls}
 target_urls <- dl_urls[
-    dl_urls$attributes.description.label == "Predicted CDS with annotation", ]
+    dl_urls$attributes.description.label == "Predicted alpha tmRNA", ]
 head(target_urls)
 ```
 
@@ -189,7 +190,8 @@ Finally, we can download the files with `getFile()`.
 
 ```{r filter_dl_urls, message=FALSE}
 # Just select a single file from the target_urls list for demonstration.
-cached_location <- getFile(mg, target_urls$download_url[[1]])
+file_url <- target_urls$download_url[[1]]
+cached_location <- getFile(mg, file_url)
 
 # Where are the files?
 c(cached_location)

@@ -172,6 +172,10 @@ setMethod("searchAnalysis", signature = c(x = "MgnifyClient"), function(
         # Get data url of related analyses
         accurl <- .mgnify_get_x_for_y(
             client, z, "runs","analyses", use.cache = use.cache, ...)
+        # If no data was found, end the searching.
+        if( is.null(accurl) ){
+            return(accurl)
+        }
         # Get data of those analyses
         jsondat <- .mgnify_retrieve_json(
             client, complete_url = accurl, use.cache = use.cache, ...)
