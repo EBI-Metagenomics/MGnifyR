@@ -8,7 +8,7 @@
 #' details about the JSONAPI implementation,
 #' @name MGnifyR-package
 #' @aliases MGnifyR
-#' @docType package
+#' @docType _PACKAGE
 #' @seealso \link[TreeSummarizedExperiment:TreeSummarizedExperiment-class]{TreeSummarizedExperiment} class
 NULL
 
