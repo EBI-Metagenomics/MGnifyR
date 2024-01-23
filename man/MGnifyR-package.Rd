@@ -16,3 +16,13 @@ details about the JSONAPI implementation,
 \seealso{
 \link[TreeSummarizedExperiment:TreeSummarizedExperiment-class]{TreeSummarizedExperiment} class
 }
+\author{
+\strong{Maintainer}: Tuomas Borman \email{tuomas.v.borman@utu.fi} (\href{https://orcid.org/0000-0002-8563-8884}{ORCID})
+
+Authors:
+\itemize{
+  \item Ben Allen \email{ben.allen@ncl.ac.uk}
+  \item Leo Lahti \email{leo.lahti@iki.fi} (\href{https://orcid.org/0000-0001-5537-637X}{ORCID})
+}
+
+}

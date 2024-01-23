@@ -24,6 +24,7 @@
 #'     \item{\strong{analyses}: biome_name, lineage, experiment_type, species,
 #'     sample_accession, pipeline_version}
 #'     \item{\strong{biomes}: depth_gte, depth_lte}
+#'     \item{\strong{assemblies}: depth_gte, depth_lte}
 #'  }
 #' Unfortunately it appears that in some cases, some of these filters don't work
 #' as expected, so it is important to check the results returned match up with
@@ -43,7 +44,7 @@
 #'
 #' @param type A single character value specifying the type of objects to
 #' query. Must be one of the following options: \code{studies}, \code{samples},
-#' \code{runs}, \code{analyses} or \code{biomes}.
+#' \code{runs}, \code{analyses}, \code{biomes} or \code{assemblies}.
 #' (By default: \code{type = "studies"})
 #'
 #' @param accession A single character value or a vector of character values
@@ -78,7 +79,7 @@
 #' 
 #' \donttest{
 #' # Get all samples from a particular study
-#' samps <- doQuery(mg, "samples", study_accession="MGYS00004521")
+#' samps <- doQuery(mg, "samples", accession="MGYS00004521")
 #'
 #' # Search polar samples
 #' samps_np <- doQuery(mg, "samples", latitude_gte=66, max.hits=10)
@@ -100,7 +101,8 @@ NULL
 #' @include allClasses.R allGenerics.R MgnifyClient.R utils.R
 #' @export
 setMethod("doQuery", signature = c(x = "MgnifyClient"), function(
-        x, type = c("studies", "samples", "runs", "analyses", "biomes"),
+        x, type = c(
+            "studies", "samples", "runs", "analyses", "biomes", "assemblies"),
         accession = NULL, as.df = TRUE, max.hits = 200, ...){
     ############################### INPUT CHECK ################################
     if( !(.is_non_empty_string(type)) ){
