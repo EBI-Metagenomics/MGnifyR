@@ -136,7 +136,14 @@ setMethod("doQuery", signature = c(x = "MgnifyClient"), function(
         ...)
     # Convert list to data.frame if specified
     if(as.df){
-        result <- .list_to_dataframe(result)
+        # Turn lists to dfs
+        result <- lapply(result, .list_to_dataframe)
+        # Combine dfs
+        result <- bind_rows(result)
+    }
+    # If the result is a list and it has only one element
+    if( !is.data.frame(result) && length(result) == 1 ){
+        result <- result[[1]]
     }
     return(result)
 })
@@ -144,6 +151,21 @@ setMethod("doQuery", signature = c(x = "MgnifyClient"), function(
 ################################ HELP FUNCTIONS ################################
 
 .perform_query <- function(
+        client, type, accession, max.hits,
+        show.messages = verbose(client), ...){
+    # The correct options of llply
+    show.messages <- ifelse(show.messages, "text", "none")
+    # Perform query for each accession one by one.
+    result <- llply(accession, function(x) {
+        .perform_query_for_single(
+            client = client, type = type, accession = x, max.hits = max.hits,
+            ...)
+    }, .progress = show.messages)
+    names(result) <- accession
+    return(result)
+}
+
+.perform_query_for_single <- function(
         client, type, accession, max.hits, use.cache = useCache(client), ...){
     # Input check
     if( !.is_a_bool(use.cache) ){

@@ -262,7 +262,9 @@
         } else{
             final_data <- NULL
             if( res$status_code != 200 ){
-                warning_msg <- paste0(path, ": ", data$errors[[1]]$detail)
+                warning_msg <- paste0(
+                    path, " (", res$status_code, " error): ",
+                    data$errors[[1]]$detail)
             }
         }
         # Save the result to file if specified
