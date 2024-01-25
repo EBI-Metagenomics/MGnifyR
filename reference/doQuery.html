@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MGnifyR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.99.12</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.99.13</span>
       </span>
     </div>
 
@@ -169,13 +169,13 @@ operations in R to get the desired behaviour.</p>
 <span class="r-in"><span><span class="va">agwaste_studies</span> <span class="op">&lt;-</span> <span class="fu">doQuery</span><span class="op">(</span></span></span>
 <span class="r-in"><span>    <span class="va">mg</span>, <span class="st">"studies"</span>, biome_name<span class="op">=</span><span class="st">"Agricultural wastewater"</span></span></span>
 <span class="r-in"><span>    <span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> No encoding supplied: defaulting to UTF-8.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>studies: </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># \donttest{</span></span></span>
 <span class="r-in"><span><span class="co"># Get all samples from a particular study</span></span></span>
 <span class="r-in"><span><span class="va">samps</span> <span class="op">&lt;-</span> <span class="fu">doQuery</span><span class="op">(</span><span class="va">mg</span>, <span class="st">"samples"</span>, accession<span class="op">=</span><span class="st">"MGYS00004521"</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>samples: Select a valid choice. MGYS00004521 is not one of the available choices.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>samples (400 error): Select a valid choice. MGYS00004521 is not one of the available choices.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |======================================================================| 100%</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Search polar samples</span></span></span>
 <span class="r-in"><span><span class="va">samps_np</span> <span class="op">&lt;-</span> <span class="fu">doQuery</span><span class="op">(</span><span class="va">mg</span>, <span class="st">"samples"</span>, latitude_gte<span class="op">=</span><span class="fl">66</span>, max.hits<span class="op">=</span><span class="fl">10</span><span class="op">)</span></span></span>
@@ -187,7 +187,6 @@ operations in R to get the desired behaviour.</p>
 <span class="r-in"><span>    type <span class="op">=</span> <span class="st">"studies"</span>,</span></span>
 <span class="r-in"><span>    biome_name <span class="op">=</span> <span class="st">"root:Environmental:Aquatic:Freshwater:Drinking water"</span>,</span></span>
 <span class="r-in"><span>    max.hits <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in curl::curl_fetch_memory(url, handle = handle):</span> Timeout was reached: [www.ebi.ac.uk] Operation timed out after 60001 milliseconds with 0 bytes received</span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
