@@ -34,9 +34,9 @@
 #' output during invocation of some MGnifyR functions.
 #' (By default: \code{verbose = FALSE})
 #'
-#' @param useMemCache A single boolean value specifying whether to indicate
-#' whether functional results obtained when \code{bulk_dl} is \code{TRUE}
-#' in \code{mgnify_get_analyses_results} should be stored in an in-memory
+#' @param useMemCache A single boolean value specifying whether to store
+#' functional results obtained when \code{bulk_dl} is \code{TRUE}
+#' in \code{mgnify_get_analyses_results} in in-memory
 #' cache, rather than the cached input being re-read for each accession. this
 #' is currently NOT working properly and should therefore be set \code{FALSE}.
 #' It has the potential to speed up searches considerably though, especially

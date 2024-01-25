@@ -769,7 +769,7 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
     #build the cache filename
     fname <- utils::tail(strsplit(data_url, '/')[[1]], n=1)
 
-    # At this point we might have alread got the data we want
+    # At this point we might have already got the data we want
     # loaded. Check the memory cache object
     if( (use.mem.cache &&
         cur_type %in% names(mgnify_memory_cache) &&

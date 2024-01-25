@@ -46,8 +46,8 @@ test_that("getResult", {
     # data as MAE. Fetch also trees. Check that all data is is in correct place
     # and is correct.
     res <- getResult(mg, "MGYA00097621", get.func = TRUE, verbose = FALSE)
-    expect_is(res, "MultiAssayExperiment")
-    expect_is(res, "TreeSummarizedExperiment")
+    expect_true(class(res) == "MultiAssayExperiment")
+    expect_true(class(res[[1]]) == "TreeSummarizedExperiment")
     expect_true(!is.null(rowTree(res[["microbiota"]])))
     expect_true(is.matrix(assay(res[[1]])))
     expect_true("microbiota" %in% names(res) &&
