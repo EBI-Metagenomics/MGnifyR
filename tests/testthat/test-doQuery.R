@@ -38,7 +38,7 @@ test_that("doQuery", {
     query <- doQuery(mg, "studies", "MGYS00005292", max.hits = 1, as.df = FALSE)
     expect_true(is.list(query))
     expect_true(names(query) %in% "MGYS00005292")
-    expect_true(query$MGYS00005292$MGYS00005292type == "studies")
+    expect_true(query$MGYS00005292$type == "studies")
     
     # # To reduce the time used to build the package, these tests are commented
     # # Test that runs are searched, get result as df, choose max hits
