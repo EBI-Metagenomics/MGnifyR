@@ -76,7 +76,7 @@
 #' agwaste_studies <- doQuery(
 #'     mg, "studies", biome_name="Agricultural wastewater"
 #'     )
-#' 
+#'
 #' \donttest{
 #' # Get all samples from a particular study
 #' samps <- doQuery(mg, "samples", accession="MGYS00004521")
@@ -126,7 +126,7 @@ setMethod("doQuery", signature = c(x = "MgnifyClient"), function(
     if( !((.is_an_integer(max.hits) && (max.hits > 0 || max.hits == -1) ) ||
         is.null(max.hits) )  ){
         stop(
-            "'max.hits' must be a single integer value specifying the ", 
+            "'max.hits' must be a single integer value specifying the ",
             "maximum number of results to return or NULL.", call. = FALSE)
     }
     ############################# INPUT CHECK END ##############################
@@ -153,15 +153,23 @@ setMethod("doQuery", signature = c(x = "MgnifyClient"), function(
 .perform_query <- function(
         client, type, accession, max.hits,
         show.messages = verbose(client), ...){
-    # The correct options of llply
-    show.messages <- ifelse(show.messages, "text", "none")
-    # Perform query for each accession one by one.
-    result <- llply(accession, function(x) {
-        .perform_query_for_single(
-            client = client, type = type, accession = x, max.hits = max.hits,
-            ...)
-    }, .progress = show.messages)
-    names(result) <- accession
+    # If there is no accession IDs
+    if( is.null(accession) ){
+        result <- .perform_query_for_single(
+            client = client, type = type, accession = accession,
+            max.hits = max.hits, ...)
+    } else{
+        # If there is multiple accessions
+        # The correct options of llply
+        show.messages <- ifelse(show.messages, "text", "none")
+        # Perform query for each accession one by one.
+        result <- llply(accession, function(x) {
+            .perform_query_for_single(
+                client = client, type = type, accession = x,
+                max.hits = max.hits, ...)
+        }, .progress = show.messages)
+        names(result) <- accession
+    }
     return(result)
 }
 
