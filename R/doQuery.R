@@ -1,4 +1,5 @@
-#' Search MGnify database for studies, samples and runs
+#' Search MGnify database for studies, samples, runs, analyses, biomes, and
+#' assemblies.
 #'
 #' @details
 #' \code{doQuery} is a flexible query function, harnessing the "full"
