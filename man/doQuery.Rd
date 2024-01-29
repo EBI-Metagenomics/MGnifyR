@@ -3,7 +3,8 @@
 \name{doQuery}
 \alias{doQuery}
 \alias{doQuery,MgnifyClient-method}
-\title{Search MGnify database for studies, samples and runs}
+\title{Search MGnify database for studies, samples, runs, analyses, biomes, and
+assemblies.}
 \usage{
 doQuery(x, ...)
 
@@ -48,7 +49,8 @@ boundaries. To disable the limit, set \code{max.hits = NULL}.
 A nested list or data.frame containing the results of the query.
 }
 \description{
-Search MGnify database for studies, samples and runs
+Search MGnify database for studies, samples, runs, analyses, biomes, and
+assemblies.
 }
 \details{
 \code{doQuery} is a flexible query function, harnessing the "full"
