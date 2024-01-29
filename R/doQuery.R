@@ -158,6 +158,8 @@ setMethod("doQuery", signature = c(x = "MgnifyClient"), function(
         result <- .perform_query_for_single(
             client = client, type = type, accession = accession,
             max.hits = max.hits, ...)
+        # Convert to list
+        result <- list(result)
     } else{
         # If there is multiple accessions
         # The correct options of llply
@@ -168,8 +170,8 @@ setMethod("doQuery", signature = c(x = "MgnifyClient"), function(
                 client = client, type = type, accession = x,
                 max.hits = max.hits, ...)
         }, .progress = show.messages)
-        names(result) <- accession
     }
+    names(result) <- accession
     return(result)
 }
 
