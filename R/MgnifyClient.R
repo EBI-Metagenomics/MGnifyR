@@ -29,20 +29,11 @@
 #' @param showWarnings A single boolean value specifying whether to print
 #' warnings during invocation of some MGnifyR functions.
 #' (By default: \code{showWarnings = FALSE})
-#' 
+#'
 #' @param verbose A single boolean value specifying whether to print extra
 #' output during invocation of some MGnifyR functions.
 #' (By default: \code{verbose = FALSE})
 #'
-#' @param useMemCache A single boolean value specifying whether to store
-#' functional results obtained when \code{bulk_dl} is \code{TRUE}
-#' in \code{mgnify_get_analyses_results} in in-memory
-#' cache, rather than the cached input being re-read for each accession. this
-#' is currently NOT working properly and should therefore be set \code{FALSE}.
-#' It has the potential to speed up searches considerably though, especially
-#' for studies with a large number of samples, so will be implemented properly
-#' in the future. (By default: \code{useMemCache = FALSE})
-#' 
 #' @param clearCache A single boolean value specifying whether to clear the
 #' cache. (By default: \code{clearCache = FALSE})
 #'
@@ -76,8 +67,7 @@ NULL
 #' @export
 MgnifyClient <- function(
         username = NULL, password = NULL, useCache = FALSE, cacheDir = NULL,
-        showWarnings = FALSE, verbose = TRUE, useMemCache = FALSE,
-        clearCache = FALSE, ...){
+        showWarnings = FALSE, verbose = TRUE, clearCache = FALSE, ...){
     ############################### INPUT CHECK ################################
     if( !(is.null(username) || .is_non_empty_string(username)) ){
         stop(
@@ -110,11 +100,6 @@ MgnifyClient <- function(
             "'verbose' must be a boolean value specifying whether print ",
             "extra output during invocation of MGnifyR functions.",
             call. = FALSE)
-    }
-    if( !.is_a_bool(useMemCache) ){
-        stop(
-            "'useMemCache' must be a boolean value specifying whether use ",
-            "on-disk memory.", call. = FALSE)
     }
     if( !.is_a_bool(clearCache) ){
         stop(
@@ -161,8 +146,6 @@ MgnifyClient <- function(
         useCache = useCache,
         cacheDir = cachepath,
         showWarnings = showWarnings,
-        memCache = list(),
-        useMemCache = useMemCache,
         clearCache = clearCache,
         verbose = verbose
     )

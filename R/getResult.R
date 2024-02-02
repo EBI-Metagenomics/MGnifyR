@@ -86,7 +86,7 @@
 #' # Get OTU tables as TreeSE
 #' accession_list <- c("MGYA00377505")
 #' tse <- getResult(mg, accession_list, get.func=FALSE, get.taxa=TRUE)
-#' 
+#'
 #' \donttest{
 #' # Get functional data along with OTU tables as MAE
 #' mae <- getResult(mg, accession_list, get.func=TRUE, get.taxa=TRUE)
@@ -96,7 +96,7 @@
 #'     mg, accession_list, get.func=TRUE, get.taxa=TRUE, output = "list",
 #'     as.df = TRUE, use.cache = TRUE)
 #' }
-#' 
+#'
 #' @name getResult
 NULL
 
@@ -751,7 +751,7 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
 .get_bulk_files <- function(
         cur_type, client, r, metadata_df, downloadDIR,
         use.cache, clear.cache = clearCache(client),
-        use.mem.cache = useMemCache(client), ...){
+        use.mem.cache = FALSE, mem.cache.name = "mgnify_memory_cache", ...){
     # Input check
     if( !.is_a_bool(clear.cache) ){
         stop(
@@ -760,6 +760,18 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
     if( !.is_a_bool(use.mem.cache) ){
         stop(
             "'use.mem.cache' must be a single boolean value.", call. = FALSE)
+    }
+    # Check mem.cache.name
+    if( !( length(mem.cache.name) == 1 && is.character(mem.cache.name) ) ){
+      stop("'mem.cache.name' must be a single character value.", call. = FALSE)
+    }
+    if( exists(mem.cache.name) && use.mem.cache ){
+        mgnify_memory_cache <- get(mem.cache.name)
+        if( !is.list(mgnify_memory_cache) ){
+            stop("'mem.cache.name' must specify a list object.", call. = FALSE)
+        }
+    } else if(use.mem.cache){
+        mgnify_memory_cache <- list()
     }
     #
     # Get the url
@@ -812,6 +824,8 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
     if( use.mem.cache ){
         mgnify_memory_cache[[cur_type]] <- list(
             data=tmp_df, fname=fname)
+        # Assign to global variable so it is visible for user
+        assign(mem.cache.name, mgnify_memory_cache, envir = .GlobalEnv)
     }
 
     # Because there seem to be "mismatches" between the
@@ -865,9 +879,6 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
     rownames(tmp_df) <- tmp_df$accession
     return(tmp_df)
 }
-
-# Result table caching
-mgnify_memory_cache <- list()
 
 # Which parser do you use for which type of output?
 # a list of parsers for each output type. If new output types come, add them to

@@ -12,7 +12,7 @@
 #'
 #' @examples
 #' mg <- MgnifyClient()
-#' 
+#'
 #' databaseUrl(mg)
 #' showWarnings(mg) <- FALSE
 #'
@@ -51,19 +51,6 @@ setMethod(
 setMethod(
     "showWarnings", signature = c(x = "MgnifyClient"),
     function(x){ x@showWarnings })
-
-#' @rdname MgnifyClient-accessors
-#' @include AllClasses.R AllGenerics.R MgnifyClient.R utils.R
-#' @export
-setMethod(
-    "useMemCache", signature = c(x = "MgnifyClient"),
-    function(x){ x@useMemCache })
-
-#' @rdname MgnifyClient-accessors
-#' @include AllClasses.R AllGenerics.R MgnifyClient.R utils.R
-#' @export
-setMethod(
-    "memCache", signature = c(x = "MgnifyClient"), function(x){ x@memCache })
 
 #' @rdname MgnifyClient-accessors
 #' @include AllClasses.R AllGenerics.R MgnifyClient.R utils.R
@@ -113,20 +100,6 @@ setMethod(
 setMethod(
     "showWarnings<-", signature = c(x = "MgnifyClient"),
     function(x, value){ BiocGenerics:::replaceSlots(x, showWarnings = value) })
-
-#' @rdname MgnifyClient-accessors
-#' @include AllClasses.R AllGenerics.R MgnifyClient.R utils.R
-#' @export
-setMethod(
-    "useMemCache<-", signature = c(x = "MgnifyClient"),
-    function(x, value){ BiocGenerics:::replaceSlots(x, useMemCache = value) })
-
-#' @rdname MgnifyClient-accessors
-#' @include AllClasses.R AllGenerics.R MgnifyClient.R utils.R
-#' @export
-setMethod(
-    "memCache<-", signature = c(x = "MgnifyClient"),
-    function(x, value){ BiocGenerics:::replaceSlots(x, memCache = value) })
 
 #' @rdname MgnifyClient-accessors
 #' @include AllClasses.R AllGenerics.R MgnifyClient.R utils.R

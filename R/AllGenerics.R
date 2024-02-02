@@ -30,17 +30,6 @@ setGeneric(
 #' @rdname MgnifyClient-accessors
 #' @export
 setGeneric(
-    "useMemCache", signature = c("x"), function(x)
-        standardGeneric("useMemCache"))
-
-#' @rdname MgnifyClient-accessors
-#' @export
-setGeneric(
-    "memCache", signature = c("x"), function(x) standardGeneric("memCache"))
-
-#' @rdname MgnifyClient-accessors
-#' @export
-setGeneric(
     "clearCache", signature = c("x"), function(x) standardGeneric("clearCache"))
 
 #' @rdname MgnifyClient-accessors
@@ -77,18 +66,6 @@ setGeneric(
 setGeneric(
     "showWarnings<-", signature = c("x"), function(x, value)
         standardGeneric("showWarnings<-"))
-
-#' @rdname MgnifyClient-accessors
-#' @export
-setGeneric(
-    "useMemCache<-", signature = c("x"), function(x, value)
-        standardGeneric("useMemCache<-"))
-
-#' @rdname MgnifyClient-accessors
-#' @export
-setGeneric(
-    "memCache<-", signature = c("x"), function(x, value)
-        standardGeneric("memCache<-"))
 
 #' @rdname MgnifyClient-accessors
 #' @export

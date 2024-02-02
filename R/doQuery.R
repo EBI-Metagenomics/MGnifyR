@@ -1,4 +1,5 @@
-#' Search MGnify database for studies, samples and runs
+#' Search MGnify database for studies, samples, runs, analyses, biomes, and
+#' assemblies.
 #'
 #' @details
 #' \code{doQuery} is a flexible query function, harnessing the "full"
@@ -24,6 +25,7 @@
 #'     \item{\strong{analyses}: biome_name, lineage, experiment_type, species,
 #'     sample_accession, pipeline_version}
 #'     \item{\strong{biomes}: depth_gte, depth_lte}
+#'     \item{\strong{assemblies}: depth_gte, depth_lte}
 #'  }
 #' Unfortunately it appears that in some cases, some of these filters don't work
 #' as expected, so it is important to check the results returned match up with
@@ -43,7 +45,7 @@
 #'
 #' @param type A single character value specifying the type of objects to
 #' query. Must be one of the following options: \code{studies}, \code{samples},
-#' \code{runs}, \code{analyses} or \code{biomes}.
+#' \code{runs}, \code{analyses}, \code{biomes} or \code{assemblies}.
 #' (By default: \code{type = "studies"})
 #'
 #' @param accession A single character value or a vector of character values
@@ -75,10 +77,10 @@
 #' agwaste_studies <- doQuery(
 #'     mg, "studies", biome_name="Agricultural wastewater"
 #'     )
-#' 
+#'
 #' \donttest{
 #' # Get all samples from a particular study
-#' samps <- doQuery(mg, "samples", study_accession="MGYS00004521")
+#' samps <- doQuery(mg, "samples", accession="MGYS00004521")
 #'
 #' # Search polar samples
 #' samps_np <- doQuery(mg, "samples", latitude_gte=66, max.hits=10)
@@ -100,7 +102,8 @@ NULL
 #' @include AllClasses.R AllGenerics.R MgnifyClient.R utils.R
 #' @export
 setMethod("doQuery", signature = c(x = "MgnifyClient"), function(
-        x, type = c("studies", "samples", "runs", "analyses", "biomes"),
+        x, type = c(
+            "studies", "samples", "runs", "analyses", "biomes", "assemblies"),
         accession = NULL, as.df = TRUE, max.hits = 200, ...){
     ############################### INPUT CHECK ################################
     if( !(.is_non_empty_string(type)) ){
@@ -124,7 +127,7 @@ setMethod("doQuery", signature = c(x = "MgnifyClient"), function(
     if( !((.is_an_integer(max.hits) && (max.hits > 0 || max.hits == -1) ) ||
         is.null(max.hits) )  ){
         stop(
-            "'max.hits' must be a single integer value specifying the ", 
+            "'max.hits' must be a single integer value specifying the ",
             "maximum number of results to return or NULL.", call. = FALSE)
     }
     ############################# INPUT CHECK END ##############################
@@ -134,7 +137,14 @@ setMethod("doQuery", signature = c(x = "MgnifyClient"), function(
         ...)
     # Convert list to data.frame if specified
     if(as.df){
-        result <- .list_to_dataframe(result)
+        # Turn lists to dfs
+        result <- lapply(result, .list_to_dataframe)
+        # Combine dfs
+        result <- bind_rows(result)
+    }
+    # If the result is a list and it has only one element
+    if( !is.data.frame(result) && length(result) == 1 ){
+        result <- result[[1]]
     }
     return(result)
 })
@@ -142,6 +152,31 @@ setMethod("doQuery", signature = c(x = "MgnifyClient"), function(
 ################################ HELP FUNCTIONS ################################
 
 .perform_query <- function(
+        client, type, accession, max.hits,
+        show.messages = verbose(client), ...){
+    # If there is no accession IDs
+    if( is.null(accession) ){
+        result <- .perform_query_for_single(
+            client = client, type = type, accession = accession,
+            max.hits = max.hits, ...)
+        # Convert to list
+        result <- list(result)
+    } else{
+        # If there is multiple accessions
+        # The correct options of llply
+        show.messages <- ifelse(show.messages, "text", "none")
+        # Perform query for each accession one by one.
+        result <- llply(accession, function(x) {
+            .perform_query_for_single(
+                client = client, type = type, accession = x,
+                max.hits = max.hits, ...)
+        }, .progress = show.messages)
+    }
+    names(result) <- accession
+    return(result)
+}
+
+.perform_query_for_single <- function(
         client, type, accession, max.hits, use.cache = useCache(client), ...){
     # Input check
     if( !.is_a_bool(use.cache) ){

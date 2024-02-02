@@ -3,13 +3,14 @@
 \name{doQuery}
 \alias{doQuery}
 \alias{doQuery,MgnifyClient-method}
-\title{Search MGnify database for studies, samples and runs}
+\title{Search MGnify database for studies, samples, runs, analyses, biomes, and
+assemblies.}
 \usage{
 doQuery(x, ...)
 
 \S4method{doQuery}{MgnifyClient}(
   x,
-  type = c("studies", "samples", "runs", "analyses", "biomes"),
+  type = c("studies", "samples", "runs", "analyses", "biomes", "assemblies"),
   accession = NULL,
   as.df = TRUE,
   max.hits = 200,
@@ -25,7 +26,7 @@ See discussion above for details.}
 
 \item{type}{A single character value specifying the type of objects to
 query. Must be one of the following options: \code{studies}, \code{samples},
-\code{runs}, \code{analyses} or \code{biomes}.
+\code{runs}, \code{analyses}, \code{biomes} or \code{assemblies}.
 (By default: \code{type = "studies"})}
 
 \item{accession}{A single character value or a vector of character values
@@ -48,7 +49,8 @@ boundaries. To disable the limit, set \code{max.hits = NULL}.
 A nested list or data.frame containing the results of the query.
 }
 \description{
-Search MGnify database for studies, samples and runs
+Search MGnify database for studies, samples, runs, analyses, biomes, and
+assemblies.
 }
 \details{
 \code{doQuery} is a flexible query function, harnessing the "full"
@@ -74,6 +76,7 @@ Python source code):
     \item{\strong{analyses}: biome_name, lineage, experiment_type, species,
     sample_accession, pipeline_version}
     \item{\strong{biomes}: depth_gte, depth_lte}
+    \item{\strong{assemblies}: depth_gte, depth_lte}
  }
 Unfortunately it appears that in some cases, some of these filters don't work
 as expected, so it is important to check the results returned match up with
@@ -99,7 +102,7 @@ agwaste_studies <- doQuery(
 
 \donttest{
 # Get all samples from a particular study
-samps <- doQuery(mg, "samples", study_accession="MGYS00004521")
+samps <- doQuery(mg, "samples", accession="MGYS00004521")
 
 # Search polar samples
 samps_np <- doQuery(mg, "samples", latitude_gte=66, max.hits=10)
