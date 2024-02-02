@@ -21,7 +21,7 @@ A MgnifyClient object"><!-- mathjax --><script src="https://cdnjs.cloudflare.com
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MGnifyR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.99.14</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.99.15</span>
       </span>
     </div>
 
@@ -77,7 +77,6 @@ MGnify database.</p>
 <span>  cacheDir <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  showWarnings <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  useMemCache <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  clearCache <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -121,17 +120,6 @@ warnings during invocation of some MGnifyR functions.
 <dd><p>A single boolean value specifying whether to print extra
 output during invocation of some MGnifyR functions.
 (By default: <code>verbose = FALSE</code>)</p></dd>
-
-
-<dt>useMemCache</dt>
-<dd><p>A single boolean value specifying whether to indicate
-whether functional results obtained when <code>bulk_dl</code> is <code>TRUE</code>
-in <code>mgnify_get_analyses_results</code> should be stored in an in-memory
-cache, rather than the cached input being re-read for each accession. this
-is currently NOT working properly and should therefore be set <code>FALSE</code>.
-It has the potential to speed up searches considerably though, especially
-for studies with a large number of samples, so will be implemented properly
-in the future. (By default: <code>useMemCache = FALSE</code>)</p></dd>
 
 
 <dt>clearCache</dt>
@@ -185,15 +173,6 @@ database.</p></dd>
 <dt><code>showWarnings</code></dt>
 <dd><p>A single boolean value specifying whether to show
 warnings.</p></dd>
-
-
-<dt><code>useMemCache</code></dt>
-<dd><p>A single boolean value specifying whether to use on-disk
-memory.</p></dd>
-
-
-<dt><code>memCache</code></dt>
-<dd><p>A single character value specifying on-disk memory directory.</p></dd>
 
 
 <dt><code>clearCache</code></dt>
