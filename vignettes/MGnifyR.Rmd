@@ -24,6 +24,10 @@ knitr::opts_chunk$set(
     comment = "#>",
     cache = TRUE
 )
+
+# Get already loaded results
+path <- system.file("extdata", "vignette_MGnifyR", package = "MGnifyR")
+vignette_MGnifyR <- readRDS(path)
 ```
 
 # Introduction
@@ -71,7 +75,7 @@ mg
 
 Below, we fetch information on samples of drinking water.
 
-```{r search_studies}
+```{r search_studies1, eval=FALSE}
 # Fetch studies
 samples <- doQuery(
     mg,
@@ -84,15 +88,29 @@ set.seed(595)
 samples <- samples[ sample(rownames(samples), 5), ]
 ```
 
+```{r search_studies2, eval=TRUE, include=FALSE}
+samples <- vignette_MGnifyR[["samples"]]
+```
+
+```{r search_studies3}
+samples
+```
+
 ## Find relevent **analyses** accessions
 
 Now we want to find analysis accessions. Each sample might have multiple
 analyses. Each analysis ID corresponds to a single run of a particular pipeline
 on a single sample in a single study.
 
-```{r convert_to_analyses}
+```{r convert_to_analyses1, eval=FALSE}
 analyses_accessions <- searchAnalysis(mg, "samples", samples$accession)
+```
 
+```{r convert_to_analyses2, eval=TRUE, include=FALSE}
+analyses_accessions <- vignette_MGnifyR[["analyses_accessions"]]
+```
+
+```{r convert_to_analyses3}
 head(analyses_accessions)
 ```
 
@@ -100,11 +118,18 @@ head(analyses_accessions)
 
 We can now check the metadata to get hint of what kind of data we have.
 
-```{r get_metadata}
+```{r get_metadata1, eval=FALSE}
 analyses_metadata <- getMetadata(mg, analyses_accessions)
+```
 
+```{r get_metadata2, eval=TRUE, include=FALSE}
+analyses_metadata <- vignette_MGnifyR[["analyses_metadata"]]
+```
+
+```{r get_metadata3}
 head(analyses_metadata)
 ```
+
 
 ## Fetch microbiome data
 
@@ -116,8 +141,15 @@ If the dataset includes only taxonomic profiling data, the output is a single
 `TreeSE`. If dataset includes also functional data, the output is multiple
 `TreeSE` objects that are linked together by utilizing `MAE`.
 
-```{r get_mae}
+```{r get_mae1, eval=FALSE}
 mae <- getResult(mg, accession = analyses_accessions)
+```
+
+```{r get_mae2, eval=TRUE, include=FALSE}
+mae <- vignette_MGnifyR[["mae"]]
+```
+
+```{r get_mae3}
 mae
 ```
 
@@ -175,12 +207,17 @@ of the functional analyses.
 
 With `searchFile()`, we can search files from the database.
 
-```{r get_download_urls}
+```{r get_download_urls1, eval=FALSE}
 # Find list of available downloads, and filter for 
 dl_urls <- searchFile(mg, analyses_accessions, type = "analyses")
 ```
 
-```{r show_tgt_urls}
+```{r get_download_urls2, eval=TRUE, include=FALSE}
+dl_urls <- vignette_MGnifyR[["dl_urls"]]
+```
+
+
+```{r get_download_urls3}
 target_urls <- dl_urls[
     dl_urls$attributes.description.label == "Predicted alpha tmRNA", ]
 head(target_urls)
@@ -188,13 +225,19 @@ head(target_urls)
 
 Finally, we can download the files with `getFile()`.
 
-```{r filter_dl_urls, message=FALSE}
+```{r download_file1, eval=FALSE}
 # Just select a single file from the target_urls list for demonstration.
 file_url <- target_urls$download_url[[1]]
 cached_location <- getFile(mg, file_url)
+```
 
+```{r download_file2, eval=TRUE, include=FALSE}
+cached_location <- vignette_MGnifyR[["cached_location"]]
+```
+
+```{r download_file3}
 # Where are the files?
-c(cached_location)
+cached_location
 ```
 
 ```{r session_info}
