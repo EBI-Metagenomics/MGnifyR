@@ -14,7 +14,6 @@ MgnifyClient(
   cacheDir = NULL,
   showWarnings = FALSE,
   verbose = TRUE,
-  useMemCache = FALSE,
   clearCache = FALSE,
   ...
 )
@@ -45,15 +44,6 @@ warnings during invocation of some MGnifyR functions.
 \item{verbose}{A single boolean value specifying whether to print extra
 output during invocation of some MGnifyR functions.
 (By default: \code{verbose = FALSE})}
-
-\item{useMemCache}{A single boolean value specifying whether to indicate
-whether functional results obtained when \code{bulk_dl} is \code{TRUE}
-in \code{mgnify_get_analyses_results} should be stored in an in-memory
-cache, rather than the cached input being re-read for each accession. this
-is currently NOT working properly and should therefore be set \code{FALSE}.
-It has the potential to speed up searches considerably though, especially
-for studies with a large number of samples, so will be implemented properly
-in the future. (By default: \code{useMemCache = FALSE})}
 
 \item{clearCache}{A single boolean value specifying whether to clear the
 cache. (By default: \code{clearCache = FALSE})}
@@ -97,11 +87,6 @@ database.}
 
 \item{\code{showWarnings}}{A single boolean value specifying whether to show
 warnings.}
-
-\item{\code{useMemCache}}{A single boolean value specifying whether to use on-disk
-memory.}
-
-\item{\code{memCache}}{A single character value specifying on-disk memory directory.}
 
 \item{\code{clearCache}}{A single boolean value specifying whether to clear cache.}
 
