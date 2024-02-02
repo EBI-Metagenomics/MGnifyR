@@ -67,7 +67,7 @@ mgnify_client <- function(
         url = url,
         username = username, password = password,
         useCache = usecache, cacheDir = cache_dir, warnings = warnings,
-        useMemCache = use_memcache)
+        use.mem.cache = use_memcache)
 }
 
 #' @rdname deprecate

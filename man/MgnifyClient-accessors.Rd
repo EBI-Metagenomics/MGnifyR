@@ -6,8 +6,6 @@
 \alias{useCache}
 \alias{cacheDir}
 \alias{showWarnings}
-\alias{useMemCache}
-\alias{memCache}
 \alias{clearCache}
 \alias{verbose}
 \alias{databaseUrl<-}
@@ -15,8 +13,6 @@
 \alias{useCache<-}
 \alias{cacheDir<-}
 \alias{showWarnings<-}
-\alias{useMemCache<-}
-\alias{memCache<-}
 \alias{clearCache<-}
 \alias{verbose<-}
 \alias{MgnifyClient-accessors}
@@ -25,8 +21,6 @@
 \alias{useCache,MgnifyClient-method}
 \alias{cacheDir,MgnifyClient-method}
 \alias{showWarnings,MgnifyClient-method}
-\alias{useMemCache,MgnifyClient-method}
-\alias{memCache,MgnifyClient-method}
 \alias{clearCache,MgnifyClient-method}
 \alias{verbose,MgnifyClient-method}
 \alias{databaseUrl<-,MgnifyClient-method}
@@ -34,8 +28,6 @@
 \alias{useCache<-,MgnifyClient-method}
 \alias{cacheDir<-,MgnifyClient-method}
 \alias{showWarnings<-,MgnifyClient-method}
-\alias{useMemCache<-,MgnifyClient-method}
-\alias{memCache<-,MgnifyClient-method}
 \alias{clearCache<-,MgnifyClient-method}
 \alias{verbose<-,MgnifyClient-method}
 \title{MgnifyClient accessors and mutators}
@@ -49,10 +41,6 @@ useCache(x)
 cacheDir(x)
 
 showWarnings(x)
-
-useMemCache(x)
-
-memCache(x)
 
 clearCache(x)
 
@@ -68,10 +56,6 @@ cacheDir(x) <- value
 
 showWarnings(x) <- value
 
-useMemCache(x) <- value
-
-memCache(x) <- value
-
 clearCache(x) <- value
 
 verbose(x) <- value
@@ -86,10 +70,6 @@ verbose(x) <- value
 
 \S4method{showWarnings}{MgnifyClient}(x)
 
-\S4method{useMemCache}{MgnifyClient}(x)
-
-\S4method{memCache}{MgnifyClient}(x)
-
 \S4method{clearCache}{MgnifyClient}(x)
 
 \S4method{verbose}{MgnifyClient}(x)
@@ -103,10 +83,6 @@ verbose(x) <- value
 \S4method{cacheDir}{MgnifyClient}(x) <- value
 
 \S4method{showWarnings}{MgnifyClient}(x) <- value
-
-\S4method{useMemCache}{MgnifyClient}(x) <- value
-
-\S4method{memCache}{MgnifyClient}(x) <- value
 
 \S4method{clearCache}{MgnifyClient}(x) <- value
 
