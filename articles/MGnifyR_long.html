@@ -40,6 +40,9 @@
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li>
+  <a href="../articles/MGnifyR.html">Get started</a>
+</li>
+<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
@@ -51,9 +54,6 @@
   <ul class="dropdown-menu" role="menu">
 <li>
       <a href="../articles/MGnifyR_long.html">MGnifyR: interface to MGnify database</a>
-    </li>
-    <li>
-      <a href="../articles/MgnifyR.html">MGnifyR: interface to MGnify database</a>
     </li>
   </ul>
 </li>
@@ -202,15 +202,16 @@ the following query:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">northpolar</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/doQuery.html">doQuery</a></span><span class="op">(</span></span>
 <span>    <span class="va">mg</span>, <span class="st">"samples"</span>, latitude_gte<span class="op">=</span><span class="fl">60.0</span>, experiment_type<span class="op">=</span><span class="st">"amplicon"</span>,</span>
-<span>    biome_name<span class="op">=</span><span class="st">"Soil"</span>, instrument_platform <span class="op">=</span> <span class="st">"Illumina"</span>, max.hits <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">northpolar</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="op">]</span></span></code></pre></div>
+<span>    biome_name<span class="op">=</span><span class="st">"Soil"</span>, instrument_platform <span class="op">=</span> <span class="st">"Illumina"</span>, max.hits <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">northpolar</span><span class="op">)</span></span></code></pre></div>
 <p>Specifying an <code>accession</code> parameter will restrict results
 to just those matching that particular entry, be it a study, sample or
 run. For example, to retrieve information for study “MGYS00002891”:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">study_samples</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/doQuery.html">doQuery</a></span><span class="op">(</span><span class="va">mg</span>, <span class="st">"studies"</span>, accession<span class="op">=</span><span class="st">"MGYS00002891"</span><span class="op">)</span></span>
-<span><span class="va">study_samples</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">study_samples</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/doQuery.html">doQuery</a></span><span class="op">(</span><span class="va">mg</span>, <span class="st">"studies"</span>, accession<span class="op">=</span><span class="st">"MGYS00002891"</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">study_samples</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="find-relevent-analyses-accessions">Find relevent <strong>analyses</strong> accessions<a class="anchor" aria-label="anchor" href="#find-relevent-analyses-accessions"></a>
@@ -232,11 +233,11 @@ accessions need converting to the corresponding
 this conversion - <code><a href="../reference/searchAnalysis.html">searchAnalysis()</a></code>. Following on from our
 previous search, we have a list of <code>study</code> accessions, so to
 convert to corresponding <code>analyses</code> we use:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">analyses_accessions</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/searchAnalysis.html">searchAnalysis</a></span><span class="op">(</span></span>
-<span>    <span class="va">mg</span>, type<span class="op">=</span><span class="st">"studies"</span>, accession <span class="op">=</span> <span class="va">study_samples</span><span class="op">$</span><span class="va">accession</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># For demonstrative purpose, take only few samples</span></span>
+<span>    <span class="va">mg</span>, type<span class="op">=</span><span class="st">"studies"</span>, accession <span class="op">=</span> <span class="va">study_samples</span><span class="op">$</span><span class="va">accession</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># For demonstrative purpose, take only few samples</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">595</span><span class="op">)</span></span>
 <span><span class="va">analyses_accessions</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">analyses_accessions</span>, <span class="fl">5</span><span class="op">)</span></span>
 <span></span>
@@ -262,9 +263,10 @@ use the <code>getMetadata</code> function to download and combine all
 associated <code>sample</code>, <code>run</code> and <code>study</code>
 metadata, which we then filter as required to include only the rows we
 want.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">analyses_metadata</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getMetadata.html">getMetadata</a></span><span class="op">(</span><span class="va">mg</span>, <span class="va">analyses_accessions</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">analyses_metadata</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">analyses_metadata</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getMetadata.html">getMetadata</a></span><span class="op">(</span><span class="va">mg</span>, <span class="va">analyses_accessions</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">analyses_metadata</span><span class="op">)</span></span></code></pre></div>
 <p>The resulting data.frame has columns with names prefixed with their
 source type. For example, “sample_xxx” columns correspond to metadata
 gleaned from querying an accession’s <code>sample</code> entry. MGnify
@@ -284,7 +286,7 @@ call to ensure the column is converted to <code>numeric</code> type
 before it is checked. <em>All</em> sample data from MGnifyR is initially
 retrieved as type <code>character</code>, and it’s up to the user to
 make sure ostensibly numeric entries are converted properly.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">known_depths</span> <span class="op">&lt;-</span> <span class="va">analyses_metadata</span><span class="op">[</span></span>
 <span>    <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">analyses_metadata</span><span class="op">$</span><span class="va">sample_depth</span><span class="op">)</span><span class="op">)</span>, <span class="op">]</span></span>
 <span><span class="co"># How many are left?</span></span>
@@ -314,26 +316,27 @@ called <a href="https://microbiome.github.io/OMA/" class="external-link">OMA</a>
 does not include function predictions, <code><a href="../reference/getResult.html">getResult()</a></code> method
 returns the dataset as a <code>TreeSE</code> by default. See other
 output types from the function documentation.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">tse</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getResult.html">getResult</a></span><span class="op">(</span><span class="va">mg</span>, accession <span class="op">=</span> <span class="va">analyses_accessions</span>, get.func <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="va">tse</span></span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">tse</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getResult.html">getResult</a></span><span class="op">(</span><span class="va">mg</span>, accession <span class="op">=</span> <span class="va">analyses_accessions</span>, get.func <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">tse</span></span></code></pre></div>
 <p><code>TreeSE</code> object is uniquely positioned to support <em><a href="https://bioconductor.org/packages/3.19/SummarizedExperiment" class="external-link">SummarizedExperiment</a></em>-based
 microbiome data manipulation and visualization. Moreover, it enables
 access to <code>miaverse</code> tools. For example, we can estimate
 diversity of samples.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">tse</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/mia/man/estimateDiversity.html" class="external-link">estimateDiversity</a></span><span class="op">(</span><span class="va">tse</span>, index <span class="op">=</span> <span class="st">"shannon"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://bioconductor.org/packages/scater/" class="external-link">scater</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/scater/man/plotColData.html" class="external-link">plotColData</a></span><span class="op">(</span><span class="va">tse</span>, <span class="st">"shannon"</span>, x <span class="op">=</span> <span class="st">"sample_geo.loc.name"</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">miaViz</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/miaViz/man/plotAbundance.html" class="external-link">plotAbundance</a></span><span class="op">(</span><span class="va">tse</span><span class="op">)</span></span></code></pre></div>
 <p>If needed, <code>TreeSE</code> can be converted to
 <code>phyloseq</code>.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pseq</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/mia/man/makePhyloseqFromTreeSE.html" class="external-link">makePhyloseqFromTreeSE</a></span><span class="op">(</span><span class="va">tse</span><span class="op">)</span></span>
 <span><span class="va">pseq</span></span></code></pre></div>
 </div>
@@ -359,14 +362,15 @@ the Carribbean Sea. To simplify things, only the first 20 samples from
 each study will be used. Furthermore, the intention is only to
 demonstrate the functionality of the MGnifyR package, rather than
 produce scientifically rigorous results.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">soil</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/searchAnalysis.html">searchAnalysis</a></span><span class="op">(</span><span class="va">mg</span>, <span class="st">"studies"</span>, <span class="st">"MGYS00001447"</span><span class="op">)</span></span>
 <span><span class="va">human</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/searchAnalysis.html">searchAnalysis</a></span><span class="op">(</span><span class="va">mg</span>, <span class="st">"studies"</span>, <span class="st">"MGYS00001442"</span><span class="op">)</span></span>
 <span><span class="va">marine</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/searchAnalysis.html">searchAnalysis</a></span><span class="op">(</span><span class="va">mg</span>, <span class="st">"studies"</span>, <span class="st">"MGYS00001282"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Combine analyses</span></span>
-<span><span class="va">all_accessions</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">soil</span>, <span class="va">human</span>, <span class="va">marine</span><span class="op">)</span></span>
-<span><span class="co"># Subset the accessions by taking 5 random analyses</span></span>
+<span><span class="va">all_accessions</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">soil</span>, <span class="va">human</span>, <span class="va">marine</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Subset the accessions by taking 5 random analyses</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">74</span><span class="op">)</span></span>
 <span><span class="va">all_accessions</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">all_accessions</span>, <span class="fl">5</span><span class="op">)</span></span>
 <span><span class="va">all_accessions</span></span></code></pre></div>
@@ -377,9 +381,9 @@ as seen with the <code><a href="../reference/doQuery.html">doQuery()</a></code> 
 autogenerated and flexible, the column names can be a little difficult
 to predict, but examining <code>colnames(full_metadata)</code> should
 make things clearer.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">full_metadata</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getMetadata.html">getMetadata</a></span><span class="op">(</span><span class="va">mg</span>, <span class="va">all_accessions</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">full_metadata</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">full_metadata</span><span class="op">)</span></span></code></pre></div>
 <p>From <code>full_metadata</code> we get an idea of the type of data
@@ -390,7 +394,7 @@ indicates that while within study read counts are similar, we probably
 need to use some sort of normalization procedure when comparing across
 samples. We might also want to drop particularly low read coverage
 samples from further analysis.</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Load ggplot2 </span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span></span>
@@ -437,9 +441,10 @@ analysis to continue. It might take a while though. Hopefully in the
 future the sample/analysis correspondence mismatches will be fixed and
 the default <code>bulk.dl</code> will be switch to
 <code>TRUE</code>.</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">mae</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getResult.html">getResult</a></span><span class="op">(</span><span class="va">mg</span>, <span class="va">all_accessions</span>, bulk.dl <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="va">mae</span></span></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">mae</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getResult.html">getResult</a></span><span class="op">(</span><span class="va">mg</span>, <span class="va">all_accessions</span>, bulk.dl <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">mae</span></span></code></pre></div>
 <p>For metagenomic samples, the result is <em><a href="https://bioconductor.org/packages/3.19/MultiAssayExperiment" class="external-link">MultiAssayExperiment</a></em>
 (<code>MAE</code>) which links multiple <code>TreeSE</code> objects into
 one dataset. These <code>TreeSE</code> objects include taxonomic
@@ -447,11 +452,11 @@ profiling data along with functional data in unique objects. Each
 objects is linked with each other by their sample names. You can get
 access to individual object or experiment by specifying index or
 name.</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mae</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span></span></code></pre></div>
 <p>We can perform principal component analysis to microbial profiling
 data by utilizing miaverse tools.</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Apply relative transformation</span></span>
 <span><span class="va">mae</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/mia/man/transformAssay.html" class="external-link">transformAssay</a></span><span class="op">(</span><span class="va">mae</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, method <span class="op">=</span> <span class="st">"relabundance"</span><span class="op">)</span></span>
 <span><span class="co"># Perform PCoA</span></span>
@@ -481,17 +486,18 @@ below retrieves a data.frame containing all available downloads for each
 accession we’ve been examining previously. It then filters this to
 retain only those files corresponding retain the annotated amino acid
 sequence files.</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#Find list of available downloads, and filter for </span></span>
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Find list of available downloads</span></span>
 <span><span class="va">dl_urls</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getFile.html">searchFile</a></span><span class="op">(</span></span>
 <span>    <span class="va">mg</span>, <span class="va">full_metadata</span><span class="op">$</span><span class="va">analysis_accession</span>, type <span class="op">=</span> <span class="st">"analyses"</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">target_urls</span> <span class="op">&lt;-</span> <span class="va">dl_urls</span><span class="op">[</span></span>
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Filter table</span></span>
+<span><span class="va">target_urls</span> <span class="op">&lt;-</span> <span class="va">dl_urls</span><span class="op">[</span></span>
 <span>    <span class="va">dl_urls</span><span class="op">$</span><span class="va">attributes.description.label</span> <span class="op">==</span> <span class="st">"Predicted CDS with annotation"</span>,<span class="op">]</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">target_urls</span><span class="op">)</span></span></code></pre></div>
 <p>To list the types of available files, and guide the filtering,
 something like the following might be useful.</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">dl_urls</span><span class="op">$</span><span class="va">attributes.description.label</span><span class="op">)</span></span></code></pre></div>
 <p>Unlike other <code>MGnifyR</code> functions,
 <code><a href="../reference/getFile.html">searchFile()</a></code> is not limited to <code>analyses</code>, and
@@ -500,10 +506,10 @@ found. For instance, while general <code>genome</code> functionality is
 not yet integrated into <code>MGnifyR</code>, we can retrieve associated
 files for a particular <code>genome</code> accession with the
 following:</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># FIXME</span></span>
 <span><span class="va">genome_urls</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getFile.html">searchFile</a></span><span class="op">(</span><span class="va">mg</span>, <span class="st">"MGYS00005650"</span>, type <span class="op">=</span> <span class="st">"genomes"</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">genome_urls</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"id"</span>,<span class="st">"attributes.file.format.name"</span>,<span class="st">"download_url"</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
 <p>Having found the a set of target urls, the final step is to use
 <code><a href="../reference/getFile.html">getFile()</a></code> to actually retrieve the file. Unlike other
@@ -519,18 +525,20 @@ the file afterwards more awkward. Regardless, the default behaviour of
 <code><a href="../reference/getFile.html">getFile()</a></code> is to retrieve the file specified in the
 parameter <code>url</code>, save it to disk, and return the filepath it
 was saved to.</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Just select a single file from the target_urls list for demonstration.</span></span>
 <span></span>
 <span><span class="co"># Default behavior - use local cache.</span></span>
-<span><span class="va">cached_location</span> <span class="op">=</span> <span class="fu"><a href="../reference/getFile.html">getFile</a></span><span class="op">(</span><span class="va">mg</span>, <span class="va">target_urls</span><span class="op">$</span><span class="va">download_url</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="va">cached_location1</span> <span class="op">=</span> <span class="fu"><a href="../reference/getFile.html">getFile</a></span><span class="op">(</span><span class="va">mg</span>, <span class="va">target_urls</span><span class="op">$</span><span class="va">download_url</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Specifying a file</span></span>
-<span><span class="va">specified_location</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getFile.html">getFile</a></span><span class="op">(</span></span>
+<span><span class="va">cached_location2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getFile.html">getFile</a></span><span class="op">(</span></span>
 <span>    <span class="va">mg</span>, <span class="va">target_urls</span><span class="op">$</span><span class="va">download_url</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Where are the files?</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">cached_location</span>,<span class="va">specified_location</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">cached_location</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">cached_location1</span>, <span class="va">cached_location2</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Where are the files?</span></span>
+<span><span class="va">cached_location</span></span></code></pre></div>
 <p>A second download option is available, which allows built-in parsing
 of the file. If we know ahead of time what processing will be performed,
 it may be possible to integrate it into a function, pass this function
@@ -555,7 +563,7 @@ sequence name, and then tallies up the unique sequences into a single
 data.frame row. In this case the PFAM motif identifies sequences coding
 for the amoC gene, found in both ammonia and methane oxidizing
 organisms, but any other filtering method could be used.</p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://bioconductor.org/packages/Biostrings" class="external-link">Biostrings</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Simple function to a count of unique sequences matching PFAM amoC/mmoC motif</span></span>
@@ -566,13 +574,13 @@ organisms, but any other filtering method could be used.</p>
 <span><span class="op">}</span></span></code></pre></div>
 <p>Having defined the function, it just remains to include it in the
 call to <code><a href="../reference/getFile.html">getFile()</a></code>.</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Just download a single accession for demonstration, specifying a read_function</span></span>
 <span><span class="va">amoC_seq_counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getFile.html">getFile</a></span><span class="op">(</span></span>
-<span>    <span class="va">mg</span>, <span class="va">target_urls</span><span class="op">$</span><span class="va">download_url</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, read_func <span class="op">=</span> <span class="va">getAmoCseqs</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">amoC_seq_counts</span></span></code></pre></div>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<span>    <span class="va">mg</span>, <span class="va">target_urls</span><span class="op">$</span><span class="va">download_url</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, read_func <span class="op">=</span> <span class="va">getAmoCseqs</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">amoC_seq_counts</span></span></code></pre></div>
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
