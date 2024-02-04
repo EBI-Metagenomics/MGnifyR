@@ -16,11 +16,10 @@ vignette: >
 bibliography: references.bib
 ---
 
-```{r, include = FALSE}
+```{r include = FALSE}
 library(knitr)
 knitr::opts_chunk$set(
     collapse = TRUE,
-    eval = FALSE,
     comment = "#>",
     cache = TRUE
 )
@@ -187,7 +186,6 @@ list of `study` accessions, so to convert to corresponding `analyses` we use:
 ```{r convert_to_analyses1, eval=FALSE}
 analyses_accessions <- searchAnalysis(
     mg, type="studies", accession = study_samples$accession)
-
 ```
 
 ```{r convert_to_analyses2, eval=TRUE, include=FALSE}
@@ -196,10 +194,6 @@ analyses_accessions <- vignette_MGnifyR_long[["analyses_accessions"]]
 
 
 ```{r convert_to_analyses3}
-# For demonstrative purpose, take only few samples
-set.seed(595)
-analyses_accessions <- sample(analyses_accessions, 5)
-
 analyses_accessions
 ```
 
@@ -252,7 +246,7 @@ is converted to `numeric` type before it is checked. *All* sample data from
 MGnifyR is initially retrieved as type `character`, and it's up to the user to
 make sure ostensibly numeric entries are converted properly.
 
-```{r filter_show_metadata}
+```{r filter_metadata}
 known_depths <- analyses_metadata[
     !is.na(as.numeric(analyses_metadata$sample_depth)), ]
 # How many are left?
@@ -281,18 +275,17 @@ When the dataset includes amplicon sequencing data, i.e., the dataset does not
 include function predictions, `getResult()` method returns the dataset as a
 `TreeSE` by default. See other output types from the function documentation.
 
-```{r get_TreeSE1, eval=FALSE}
+```{r get_treese1, eval=FALSE}
 tse <- getResult(mg, accession = analyses_accessions, get.func = FALSE)
 ```
 
-```{r get_TreeSE2, eval=TRUE, include=FALSE}
+```{r get_treese2, eval=TRUE, include=FALSE}
 tse <- vignette_MGnifyR_long[["tse"]]
 ```
 
-```{r get_TreeSE3}
+```{r get_treese3}
 tse
 ```
-
 
 `TreeSE` object is uniquely positioned to support
 `r BiocStyle::Biocpkg("SummarizedExperiment")`-based
@@ -310,7 +303,7 @@ plotColData(tse, "shannon", x = "sample_geo.loc.name")
 ```{r plot_abundance}
 library(miaViz)
 
-plotAbundance(tse)
+plotAbundance(tse[!is.na( rowData(tse)[["Kingdom"]] ), ], rank = "Kingdom")
 ```
 
 If needed, `TreeSE` can be converted to `phyloseq`.
@@ -355,12 +348,8 @@ all_accessions <- vignette_MGnifyR_long[["all_accessions"]]
 
 
 ```{r get_analyses3}
-# Subset the accessions by taking 5 random analyses
-set.seed(74)
-all_accessions <- sample(all_accessions, 5)
-all_accessions
+head(all_accessions)
 ```
-
 
 The first step with this new accession list is, as previously, to retrieve the
 associated metadata using `getMetadata()`, and as seen with the
@@ -378,7 +367,7 @@ full_metadata <- vignette_MGnifyR_long[["full_metadata"]]
 ```
 
 
-```{r show_new_metadata}
+```{r get_new_metadata3}
 colnames(full_metadata)
 head(full_metadata)
 ```
@@ -511,7 +500,7 @@ head(target_urls)
 To list the types of available files, and guide the filtering, something like
 the following might be useful.
 
-```{r, list_descriptions}
+```{r list_descriptions}
 table(dl_urls$attributes.description.label)
 ```
 
@@ -543,7 +532,7 @@ cache, which can make getting to the file afterwards more awkward. Regardless,
 the default behaviour of `getFile()` is to retrieve the file specified in the
 parameter `url`, save it to disk, and return the filepath it was saved to. 
 
-```{r filter_dl_urls1, eval=FALSE}
+```{r get_files1, eval=FALSE}
 # Just select a single file from the target_urls list for demonstration.
 
 # Default behavior - use local cache.
@@ -556,12 +545,12 @@ cached_location2 <- getFile(
 cached_location <- c(cached_location1, cached_location2)
 ```
 
-```{r filter_dl_urls2, eval=TRUE, include=FALSE}
+```{r get_files2, eval=TRUE, include=FALSE}
 cached_location <- vignette_MGnifyR_long[["cached_location"]]
 ```
 
 
-```{r filter_dl_urls3}
+```{r get_files3}
 # Where are the files?
 cached_location
 ```
@@ -604,7 +593,7 @@ getAmoCseqs <- function(fname){
 Having defined the function, it just remains to include it in the call to
 `getFile()`. 
 
-```{r do_download_with_read1, eval=FALSE}
+```{r download_with_read1, eval=FALSE}
 # Just download a single accession for demonstration, specifying a read_function
 amoC_seq_counts <- getFile(
     mg, target_urls$download_url[[1]], read_func = getAmoCseqs)
@@ -615,7 +604,7 @@ amoC_seq_counts <- vignette_MGnifyR_long[["amoC_seq_counts"]]
 ```
 
 
-```{r do_download_with_read3}
+```{r download_with_read3}
 amoC_seq_counts
 ```
 

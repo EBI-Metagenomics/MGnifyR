@@ -20,7 +20,6 @@ bibliography: references.bib
 library(knitr)
 knitr::opts_chunk$set(
     collapse = TRUE,
-    eval = TRUE,
     comment = "#>",
     cache = TRUE
 )
@@ -65,7 +64,7 @@ thing to do when starting any analysis is to instantiate this object. The
 following snippet creates this.
 
 ```{r create_client, message = FALSE}
-mg <- MgnifyClient()
+mg <- MgnifyClient(useCache = TRUE)
 mg
 ```
 
@@ -82,10 +81,6 @@ samples <- doQuery(
     type = "samples",
     biome_name = "root:Environmental:Aquatic:Freshwater:Drinking water",
     max.hits = 10)
-
-# For demonstrative purpose, take only few samples
-set.seed(595)
-samples <- samples[ sample(rownames(samples), 5), ]
 ```
 
 ```{r search_studies2, eval=TRUE, include=FALSE}
@@ -93,7 +88,7 @@ samples <- vignette_MGnifyR[["samples"]]
 ```
 
 ```{r search_studies3}
-samples
+head(samples)
 ```
 
 ## Find relevent **analyses** accessions
@@ -130,7 +125,6 @@ analyses_metadata <- vignette_MGnifyR[["analyses_metadata"]]
 head(analyses_metadata)
 ```
 
-
 ## Fetch microbiome data
 
 After we have selected the data to fetch, we can use `getResult()`
@@ -164,14 +158,13 @@ mae[[1]]
 microbiome data manipulation and visualization. Moreover, it enables access
 to `miaverse` tools. For example, we can estimate diversity of samples.
 
-```{r calculate_diversity}
+```{r calculate_diversity, fig.width=9}
 mae[[1]] <- estimateDiversity(mae[[1]], index = "shannon")
 
 library(scater)
 
-plotColData(mae[[1]], "shannon", x = "sample_sample.desc")
+plotColData(mae[[1]], "shannon", x = "sample_environment..biome.")
 ```
-
 
 ```{r plot_abundance}
 # Agglomerate data
@@ -196,7 +189,7 @@ mae[[1]] <- runMDS(
     FUN = vegan::vegdist, method = "bray")
 # Plot
 plotReducedDim(
-    mae[[1]], "MDS", colour_by = "sample_sample.desc")
+    mae[[1]], "MDS", colour_by = "sample_environment..biome.")
 ```
 
 ## Fetch sequence files
