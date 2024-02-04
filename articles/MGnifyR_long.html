@@ -1280,95 +1280,106 @@ sequence files.</p>
 <span><span class="va">target_urls</span> <span class="op">&lt;-</span> <span class="va">dl_urls</span><span class="op">[</span></span>
 <span>    <span class="va">dl_urls</span><span class="op">$</span><span class="va">attributes.description.label</span> <span class="op">==</span> <span class="st">"Predicted CDS with annotation"</span>,<span class="op">]</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">target_urls</span><span class="op">)</span></span>
-<span><span class="co">#&gt;        type                                           id</span></span>
-<span><span class="co">#&gt; 2  analyses ERR1662433_MERGED_FASTQ_CDS_annotated.faa.gz</span></span>
-<span><span class="co">#&gt; 21 analyses ERR1662523_MERGED_FASTQ_CDS_annotated.faa.gz</span></span>
-<span><span class="co">#&gt; 40 analyses ERR1809146_MERGED_FASTQ_CDS_annotated.faa.gz</span></span>
-<span><span class="co">#&gt; 59 analyses ERR1662188_MERGED_FASTQ_CDS_annotated.faa.gz</span></span>
-<span><span class="co">#&gt; 78 analyses ERR1662459_MERGED_FASTQ_CDS_annotated.faa.gz</span></span>
-<span><span class="co">#&gt;                                attributes.alias attributes.file.format.name</span></span>
-<span><span class="co">#&gt; 2  ERR1662433_MERGED_FASTQ_CDS_annotated.faa.gz                       FASTA</span></span>
-<span><span class="co">#&gt; 21 ERR1662523_MERGED_FASTQ_CDS_annotated.faa.gz                       FASTA</span></span>
-<span><span class="co">#&gt; 40 ERR1809146_MERGED_FASTQ_CDS_annotated.faa.gz                       FASTA</span></span>
-<span><span class="co">#&gt; 59 ERR1662188_MERGED_FASTQ_CDS_annotated.faa.gz                       FASTA</span></span>
-<span><span class="co">#&gt; 78 ERR1662459_MERGED_FASTQ_CDS_annotated.faa.gz                       FASTA</span></span>
-<span><span class="co">#&gt;    attributes.file.format.extension attributes.file.format.compression</span></span>
-<span><span class="co">#&gt; 2                             fasta                               TRUE</span></span>
-<span><span class="co">#&gt; 21                            fasta                               TRUE</span></span>
-<span><span class="co">#&gt; 40                            fasta                               TRUE</span></span>
-<span><span class="co">#&gt; 59                            fasta                               TRUE</span></span>
-<span><span class="co">#&gt; 78                            fasta                               TRUE</span></span>
-<span><span class="co">#&gt;     attributes.description.label</span></span>
-<span><span class="co">#&gt; 2  Predicted CDS with annotation</span></span>
-<span><span class="co">#&gt; 21 Predicted CDS with annotation</span></span>
-<span><span class="co">#&gt; 40 Predicted CDS with annotation</span></span>
-<span><span class="co">#&gt; 59 Predicted CDS with annotation</span></span>
-<span><span class="co">#&gt; 78 Predicted CDS with annotation</span></span>
-<span><span class="co">#&gt;                        attributes.description.description attributes.group.type</span></span>
-<span><span class="co">#&gt; 2  Predicted coding sequences with InterPro match (FASTA)         Sequence data</span></span>
-<span><span class="co">#&gt; 21 Predicted coding sequences with InterPro match (FASTA)         Sequence data</span></span>
-<span><span class="co">#&gt; 40 Predicted coding sequences with InterPro match (FASTA)         Sequence data</span></span>
-<span><span class="co">#&gt; 59 Predicted coding sequences with InterPro match (FASTA)         Sequence data</span></span>
-<span><span class="co">#&gt; 78 Predicted coding sequences with InterPro match (FASTA)         Sequence data</span></span>
-<span><span class="co">#&gt;    attributes.file.checksum.checksum</span></span>
-<span><span class="co">#&gt; 2                                   </span></span>
-<span><span class="co">#&gt; 21                                  </span></span>
-<span><span class="co">#&gt; 40                                  </span></span>
-<span><span class="co">#&gt; 59                                  </span></span>
-<span><span class="co">#&gt; 78                                  </span></span>
-<span><span class="co">#&gt;    attributes.file.checksum.checksum.algorithm relationships.pipeline.data.type</span></span>
-<span><span class="co">#&gt; 2                                                                     pipelines</span></span>
-<span><span class="co">#&gt; 21                                                                    pipelines</span></span>
-<span><span class="co">#&gt; 40                                                                    pipelines</span></span>
-<span><span class="co">#&gt; 59                                                                    pipelines</span></span>
-<span><span class="co">#&gt; 78                                                                    pipelines</span></span>
-<span><span class="co">#&gt;    relationships.pipeline.data.id</span></span>
-<span><span class="co">#&gt; 2                             3.0</span></span>
-<span><span class="co">#&gt; 21                            3.0</span></span>
-<span><span class="co">#&gt; 40                            3.0</span></span>
-<span><span class="co">#&gt; 59                            3.0</span></span>
-<span><span class="co">#&gt; 78                            3.0</span></span>
-<span><span class="co">#&gt;                                         relationships.pipeline.related</span></span>
-<span><span class="co">#&gt; 2  https://www.ebi.ac.uk/metagenomics/api/v1/pipelines/3.0?format=json</span></span>
-<span><span class="co">#&gt; 21 https://www.ebi.ac.uk/metagenomics/api/v1/pipelines/3.0?format=json</span></span>
-<span><span class="co">#&gt; 40 https://www.ebi.ac.uk/metagenomics/api/v1/pipelines/3.0?format=json</span></span>
-<span><span class="co">#&gt; 59 https://www.ebi.ac.uk/metagenomics/api/v1/pipelines/3.0?format=json</span></span>
-<span><span class="co">#&gt; 78 https://www.ebi.ac.uk/metagenomics/api/v1/pipelines/3.0?format=json</span></span>
-<span><span class="co">#&gt;                                                                                                         download_url</span></span>
-<span><span class="co">#&gt; 2  https://www.ebi.ac.uk/metagenomics/api/v1/analyses/MGYA00083117/file/ERR1662433_MERGED_FASTQ_CDS_annotated.faa.gz</span></span>
-<span><span class="co">#&gt; 21 https://www.ebi.ac.uk/metagenomics/api/v1/analyses/MGYA00083245/file/ERR1662523_MERGED_FASTQ_CDS_annotated.faa.gz</span></span>
-<span><span class="co">#&gt; 40 https://www.ebi.ac.uk/metagenomics/api/v1/analyses/MGYA00096984/file/ERR1809146_MERGED_FASTQ_CDS_annotated.faa.gz</span></span>
-<span><span class="co">#&gt; 59 https://www.ebi.ac.uk/metagenomics/api/v1/analyses/MGYA00083497/file/ERR1662188_MERGED_FASTQ_CDS_annotated.faa.gz</span></span>
-<span><span class="co">#&gt; 78 https://www.ebi.ac.uk/metagenomics/api/v1/analyses/MGYA00083193/file/ERR1662459_MERGED_FASTQ_CDS_annotated.faa.gz</span></span>
-<span><span class="co">#&gt;       accession</span></span>
-<span><span class="co">#&gt; 2  MGYA00083117</span></span>
-<span><span class="co">#&gt; 21 MGYA00083245</span></span>
-<span><span class="co">#&gt; 40 MGYA00096984</span></span>
-<span><span class="co">#&gt; 59 MGYA00083497</span></span>
-<span><span class="co">#&gt; 78 MGYA00083193</span></span></code></pre></div>
+<span><span class="co">#&gt;         type                                           id</span></span>
+<span><span class="co">#&gt; 3   analyses ERR1811630_MERGED_FASTQ_CDS_annotated.faa.gz</span></span>
+<span><span class="co">#&gt; 24  analyses ERR1811632_MERGED_FASTQ_CDS_annotated.faa.gz</span></span>
+<span><span class="co">#&gt; 45  analyses ERR1811642_MERGED_FASTQ_CDS_annotated.faa.gz</span></span>
+<span><span class="co">#&gt; 68  analyses ERR1811636_MERGED_FASTQ_CDS_annotated.faa.gz</span></span>
+<span><span class="co">#&gt; 90  analyses ERR1811628_MERGED_FASTQ_CDS_annotated.faa.gz</span></span>
+<span><span class="co">#&gt; 115 analyses ERR1811635_MERGED_FASTQ_CDS_annotated.faa.gz</span></span>
+<span><span class="co">#&gt;                                 attributes.alias attributes.file.format.name</span></span>
+<span><span class="co">#&gt; 3   ERR1811630_MERGED_FASTQ_CDS_annotated.faa.gz                       FASTA</span></span>
+<span><span class="co">#&gt; 24  ERR1811632_MERGED_FASTQ_CDS_annotated.faa.gz                       FASTA</span></span>
+<span><span class="co">#&gt; 45  ERR1811642_MERGED_FASTQ_CDS_annotated.faa.gz                       FASTA</span></span>
+<span><span class="co">#&gt; 68  ERR1811636_MERGED_FASTQ_CDS_annotated.faa.gz                       FASTA</span></span>
+<span><span class="co">#&gt; 90  ERR1811628_MERGED_FASTQ_CDS_annotated.faa.gz                       FASTA</span></span>
+<span><span class="co">#&gt; 115 ERR1811635_MERGED_FASTQ_CDS_annotated.faa.gz                       FASTA</span></span>
+<span><span class="co">#&gt;     attributes.file.format.extension attributes.file.format.compression</span></span>
+<span><span class="co">#&gt; 3                              fasta                               TRUE</span></span>
+<span><span class="co">#&gt; 24                             fasta                               TRUE</span></span>
+<span><span class="co">#&gt; 45                             fasta                               TRUE</span></span>
+<span><span class="co">#&gt; 68                             fasta                               TRUE</span></span>
+<span><span class="co">#&gt; 90                             fasta                               TRUE</span></span>
+<span><span class="co">#&gt; 115                            fasta                               TRUE</span></span>
+<span><span class="co">#&gt;      attributes.description.label</span></span>
+<span><span class="co">#&gt; 3   Predicted CDS with annotation</span></span>
+<span><span class="co">#&gt; 24  Predicted CDS with annotation</span></span>
+<span><span class="co">#&gt; 45  Predicted CDS with annotation</span></span>
+<span><span class="co">#&gt; 68  Predicted CDS with annotation</span></span>
+<span><span class="co">#&gt; 90  Predicted CDS with annotation</span></span>
+<span><span class="co">#&gt; 115 Predicted CDS with annotation</span></span>
+<span><span class="co">#&gt;                         attributes.description.description</span></span>
+<span><span class="co">#&gt; 3   Predicted coding sequences with InterPro match (FASTA)</span></span>
+<span><span class="co">#&gt; 24  Predicted coding sequences with InterPro match (FASTA)</span></span>
+<span><span class="co">#&gt; 45  Predicted coding sequences with InterPro match (FASTA)</span></span>
+<span><span class="co">#&gt; 68  Predicted coding sequences with InterPro match (FASTA)</span></span>
+<span><span class="co">#&gt; 90  Predicted coding sequences with InterPro match (FASTA)</span></span>
+<span><span class="co">#&gt; 115 Predicted coding sequences with InterPro match (FASTA)</span></span>
+<span><span class="co">#&gt;     attributes.group.type attributes.file.checksum.checksum</span></span>
+<span><span class="co">#&gt; 3           Sequence data                                  </span></span>
+<span><span class="co">#&gt; 24          Sequence data                                  </span></span>
+<span><span class="co">#&gt; 45          Sequence data                                  </span></span>
+<span><span class="co">#&gt; 68          Sequence data                                  </span></span>
+<span><span class="co">#&gt; 90          Sequence data                                  </span></span>
+<span><span class="co">#&gt; 115         Sequence data                                  </span></span>
+<span><span class="co">#&gt;     attributes.file.checksum.checksum.algorithm</span></span>
+<span><span class="co">#&gt; 3                                              </span></span>
+<span><span class="co">#&gt; 24                                             </span></span>
+<span><span class="co">#&gt; 45                                             </span></span>
+<span><span class="co">#&gt; 68                                             </span></span>
+<span><span class="co">#&gt; 90                                             </span></span>
+<span><span class="co">#&gt; 115                                            </span></span>
+<span><span class="co">#&gt;     relationships.pipeline.data.type relationships.pipeline.data.id</span></span>
+<span><span class="co">#&gt; 3                          pipelines                            3.0</span></span>
+<span><span class="co">#&gt; 24                         pipelines                            3.0</span></span>
+<span><span class="co">#&gt; 45                         pipelines                            3.0</span></span>
+<span><span class="co">#&gt; 68                         pipelines                            3.0</span></span>
+<span><span class="co">#&gt; 90                         pipelines                            3.0</span></span>
+<span><span class="co">#&gt; 115                        pipelines                            3.0</span></span>
+<span><span class="co">#&gt;                                          relationships.pipeline.related</span></span>
+<span><span class="co">#&gt; 3   https://www.ebi.ac.uk/metagenomics/api/v1/pipelines/3.0?format=json</span></span>
+<span><span class="co">#&gt; 24  https://www.ebi.ac.uk/metagenomics/api/v1/pipelines/3.0?format=json</span></span>
+<span><span class="co">#&gt; 45  https://www.ebi.ac.uk/metagenomics/api/v1/pipelines/3.0?format=json</span></span>
+<span><span class="co">#&gt; 68  https://www.ebi.ac.uk/metagenomics/api/v1/pipelines/3.0?format=json</span></span>
+<span><span class="co">#&gt; 90  https://www.ebi.ac.uk/metagenomics/api/v1/pipelines/3.0?format=json</span></span>
+<span><span class="co">#&gt; 115 https://www.ebi.ac.uk/metagenomics/api/v1/pipelines/3.0?format=json</span></span>
+<span><span class="co">#&gt;                                                                                                          download_url</span></span>
+<span><span class="co">#&gt; 3   https://www.ebi.ac.uk/metagenomics/api/v1/analyses/MGYA00097631/file/ERR1811630_MERGED_FASTQ_CDS_annotated.faa.gz</span></span>
+<span><span class="co">#&gt; 24  https://www.ebi.ac.uk/metagenomics/api/v1/analyses/MGYA00097632/file/ERR1811632_MERGED_FASTQ_CDS_annotated.faa.gz</span></span>
+<span><span class="co">#&gt; 45  https://www.ebi.ac.uk/metagenomics/api/v1/analyses/MGYA00097633/file/ERR1811642_MERGED_FASTQ_CDS_annotated.faa.gz</span></span>
+<span><span class="co">#&gt; 68  https://www.ebi.ac.uk/metagenomics/api/v1/analyses/MGYA00097634/file/ERR1811636_MERGED_FASTQ_CDS_annotated.faa.gz</span></span>
+<span><span class="co">#&gt; 90  https://www.ebi.ac.uk/metagenomics/api/v1/analyses/MGYA00097635/file/ERR1811628_MERGED_FASTQ_CDS_annotated.faa.gz</span></span>
+<span><span class="co">#&gt; 115 https://www.ebi.ac.uk/metagenomics/api/v1/analyses/MGYA00097636/file/ERR1811635_MERGED_FASTQ_CDS_annotated.faa.gz</span></span>
+<span><span class="co">#&gt;        accession</span></span>
+<span><span class="co">#&gt; 3   MGYA00097631</span></span>
+<span><span class="co">#&gt; 24  MGYA00097632</span></span>
+<span><span class="co">#&gt; 45  MGYA00097633</span></span>
+<span><span class="co">#&gt; 68  MGYA00097634</span></span>
+<span><span class="co">#&gt; 90  MGYA00097635</span></span>
+<span><span class="co">#&gt; 115 MGYA00097636</span></span></code></pre></div>
 <p>To list the types of available files, and guide the filtering,
 something like the following might be useful.</p>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">dl_urls</span><span class="op">$</span><span class="va">attributes.description.label</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;                 Complete GO annotation                     GO slim annotation </span></span>
-<span><span class="co">#&gt;                                      5                                      5 </span></span>
+<span><span class="co">#&gt;                                    478                                    478 </span></span>
 <span><span class="co">#&gt;                       InterPro matches OTUs, counts and taxonomic assignments </span></span>
-<span><span class="co">#&gt;                                      5                                     15 </span></span>
+<span><span class="co">#&gt;                                    483                                   1434 </span></span>
 <span><span class="co">#&gt;                      Phylogenetic tree          Predicted CDS with annotation </span></span>
-<span><span class="co">#&gt;                                      5                                      5 </span></span>
+<span><span class="co">#&gt;                                    478                                    477 </span></span>
 <span><span class="co">#&gt;       Predicted CDS without annotation       Predicted ORF without annotation </span></span>
-<span><span class="co">#&gt;                                      5                                      5 </span></span>
+<span><span class="co">#&gt;                                    480                                    488 </span></span>
 <span><span class="co">#&gt;                        Predicted tRNAs             Processed nucleotide reads </span></span>
-<span><span class="co">#&gt;                                      5                                      5 </span></span>
+<span><span class="co">#&gt;                                    478                                    508 </span></span>
 <span><span class="co">#&gt;        Processed reads with annotation              Processed reads with pCDS </span></span>
-<span><span class="co">#&gt;                                      5                                      5 </span></span>
+<span><span class="co">#&gt;                                    477                                    508 </span></span>
 <span><span class="co">#&gt;     Processed reads without annotation                Reads encoding 16S rRNA </span></span>
-<span><span class="co">#&gt;                                      5                                      5 </span></span>
+<span><span class="co">#&gt;                                    488                                    478 </span></span>
 <span><span class="co">#&gt;                Reads encoding 23S rRNA                 Reads encoding 5S rRNA </span></span>
-<span><span class="co">#&gt;                                      5                                      5 </span></span>
+<span><span class="co">#&gt;                                    478                                    478 </span></span>
 <span><span class="co">#&gt;            Taxa abundance distribution </span></span>
-<span><span class="co">#&gt;                                      5</span></span></code></pre></div>
+<span><span class="co">#&gt;                                    475</span></span></code></pre></div>
 <p>Unlike other <code>MGnifyR</code> functions,
 <code><a href="../reference/getFile.html">searchFile()</a></code> is not limited to <code>analyses</code>, and
 by specifying <code>accession_type</code> other results types may be
@@ -1409,7 +1420,7 @@ was saved to.</p>
 <div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Where are the files?</span></span>
 <span><span class="va">cached_location</span></span>
-<span><span class="co">#&gt; [1] "/tmp/RtmpeKYwQ1/file4c191e04bb83" "/tmp/RtmpeKYwQ1/file4c1921132881"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "/tmp/RtmpeKYwQ1/file4c1937cbdfd5" "/tmp/RtmpeKYwQ1/file4c19a3b3548"</span></span></code></pre></div>
 <p>A second download option is available, which allows built-in parsing
 of the file. If we know ahead of time what processing will be performed,
 it may be possible to integrate it into a function, pass this function
