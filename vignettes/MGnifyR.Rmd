@@ -25,7 +25,7 @@ knitr::opts_chunk$set(
 )
 
 # Get already loaded results
-path <- system.file("extdata", "vignette_MGnifyR", package = "MGnifyR")
+path <- system.file("extdata", "vignette_MGnifyR.rds", package = "MGnifyR")
 vignette_MGnifyR <- readRDS(path)
 ```
 

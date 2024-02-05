@@ -3,14 +3,14 @@
 \name{doQuery}
 \alias{doQuery}
 \alias{doQuery,MgnifyClient-method}
-\title{Search MGnify database for studies, samples, runs, analyses, biomes, and
-assemblies.}
+\title{Search MGnify database for studies, samples, runs, analyses, biomes,
+assemblies, and genomes.}
 \usage{
 doQuery(x, ...)
 
 \S4method{doQuery}{MgnifyClient}(
   x,
-  type = c("studies", "samples", "runs", "analyses", "biomes", "assemblies"),
+  type = c("studies", "samples", "runs", "analyses", "biomes", "assemblies", "genomes"),
   accession = NULL,
   as.df = TRUE,
   max.hits = 200,
@@ -49,13 +49,13 @@ boundaries. To disable the limit, set \code{max.hits = NULL}.
 A nested list or data.frame containing the results of the query.
 }
 \description{
-Search MGnify database for studies, samples, runs, analyses, biomes, and
-assemblies.
+Search MGnify database for studies, samples, runs, analyses, biomes,
+assemblies, and genomes.
 }
 \details{
 \code{doQuery} is a flexible query function, harnessing the "full"
 power of the JSONAPI MGnify search filters. Search results may be filtered
-by metadata value, associated study/sample/analyese etc. Details of the
+by metadata value, associated study/sample/analyse etc. Details of the
 capabilities may be found
 \href{https://emg-docs.readthedocs.io/en/latest/api.html#customising-queries}{here}.
 Currently, the following filters are available (based on examination of the
