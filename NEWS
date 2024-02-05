@@ -1,3 +1,7 @@
-Changes in version 0.99.0
+Version: 0.99.15
+Date: 2024-02-05
++ Last modification for Biocondutor submission
+
+Version: 0.99.0
 + Support for TreeSummarizedExperiment and MultiAssayExperiment
 + Submitted to Bioconductor
