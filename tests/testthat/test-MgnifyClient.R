@@ -44,20 +44,22 @@ test_that("MgnifyClient", {
         showWarnings = FALSE,
         url = "test"
     )
-    expect_equal(mg@cacheDir, "test")
-    expect_equal(mg@showWarnings, FALSE)
-    expect_equal(mg@databaseUrl, "test")
+    expect_equal(cacheDir(mg), "test")
+    expect_equal(showWarnings(mg), FALSE)
+    expect_equal(databaseUrl(mg), "test")
     mg <- MgnifyClient(
         useCache = FALSE,
         cacheDir = "test",
         showWarnings = TRUE
     )
-    expect_true(!is.na(mg@cacheDir))
-    expect_equal(mg@showWarnings, TRUE)
+    expect_true(!is.na(cacheDir(mg)))
+    expect_equal(showWarnings(mg), TRUE)
     # Require internet access
     skip_if(httr::http_error("https://www.ebi.ac.uk/metagenomics/api/v1"))
     # Test that error occurs when wrong username/password is used in
     # authentication
     expect_error(MgnifyClient(username = "not_work", password = "not_work"))
-    expect_error(MgnifyClient(username = "not_work", password = "not_work", url = "not_work"))
+    expect_error(
+        MgnifyClient(
+            username = "not_work", password = "not_work", url = "not_work"))
 })
