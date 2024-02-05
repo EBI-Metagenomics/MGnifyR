@@ -80,7 +80,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>MGnifyR: interface to MGnify database</h1>
             
-            <h4 data-toc-skip class="date">2024-02-04</h4>
+            <h4 data-toc-skip class="date">2024-02-05</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/EBI-Metagenomics/MGnifyR/blob/HEAD/vignettes/MGnifyR_long.Rmd" class="external-link"><code>vignettes/MGnifyR_long.Rmd</code></a></small>
       <div class="hidden name"><code>MGnifyR_long.Rmd</code></div>
@@ -1388,10 +1388,45 @@ not yet integrated into <code>MGnifyR</code>, we can retrieve associated
 files for a particular <code>genome</code> accession with the
 following:</p>
 <div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># FIXME</span></span>
-<span><span class="va">genome_urls</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getFile.html">searchFile</a></span><span class="op">(</span><span class="va">mg</span>, <span class="st">"MGYS00005650"</span>, type <span class="op">=</span> <span class="st">"genomes"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">genome_urls</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getFile.html">searchFile</a></span><span class="op">(</span><span class="va">mg</span>, <span class="st">"MGYG000433953"</span>, type <span class="op">=</span> <span class="st">"genomes"</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">genome_urls</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"id"</span>,<span class="st">"attributes.file.format.name"</span>,<span class="st">"download_url"</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">genome_urls</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"id"</span>,<span class="st">"attributes.file.format.name"</span>,<span class="st">"download_url"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt;                                   id attributes.file.format.name</span></span>
+<span><span class="co">#&gt; 1                     core_genes.txt                         TAB</span></span>
+<span><span class="co">#&gt; 2          gene_presence_absence.csv                         CSV</span></span>
+<span><span class="co">#&gt; 3         gene_presence_absence.Rtab                         TSV</span></span>
+<span><span class="co">#&gt; 4                       mashtree.nwk               Newick format</span></span>
+<span><span class="co">#&gt; 5                  MGYG000433953.faa                       FASTA</span></span>
+<span><span class="co">#&gt; 6                  MGYG000433953.fna                       FASTA</span></span>
+<span><span class="co">#&gt; 7              MGYG000433953.fna.fai                         FAI</span></span>
+<span><span class="co">#&gt; 8                  MGYG000433953.gff                         GFF</span></span>
+<span><span class="co">#&gt; 9    MGYG000433953_amrfinderplus.tsv                         TSV</span></span>
+<span><span class="co">#&gt; 10 MGYG000433953_crisprcasfinder.gff                         GFF</span></span>
+<span><span class="co">#&gt; 11 MGYG000433953_crisprcasfinder.tsv                         TSV</span></span>
+<span><span class="co">#&gt; 12          MGYG000433953_eggNOG.tsv                         TSV</span></span>
+<span><span class="co">#&gt; 13    MGYG000433953_InterProScan.tsv                         TSV</span></span>
+<span><span class="co">#&gt; 14        MGYG000433953_mobilome.gff                         GFF</span></span>
+<span><span class="co">#&gt; 15         MGYG000433953_rRNAs.fasta                       FASTA</span></span>
+<span><span class="co">#&gt; 16         MGYG000433953_sanntis.gff                         GFF</span></span>
+<span><span class="co">#&gt; 17                    pan-genome.fna                       FASTA</span></span>
+<span><span class="co">#&gt;                                                                                                   download_url</span></span>
+<span><span class="co">#&gt; 1                     https://www.ebi.ac.uk/metagenomics/api/v1/genomes/MGYG000433953/downloads/core_genes.txt</span></span>
+<span><span class="co">#&gt; 2          https://www.ebi.ac.uk/metagenomics/api/v1/genomes/MGYG000433953/downloads/gene_presence_absence.csv</span></span>
+<span><span class="co">#&gt; 3         https://www.ebi.ac.uk/metagenomics/api/v1/genomes/MGYG000433953/downloads/gene_presence_absence.Rtab</span></span>
+<span><span class="co">#&gt; 4                       https://www.ebi.ac.uk/metagenomics/api/v1/genomes/MGYG000433953/downloads/mashtree.nwk</span></span>
+<span><span class="co">#&gt; 5                  https://www.ebi.ac.uk/metagenomics/api/v1/genomes/MGYG000433953/downloads/MGYG000433953.faa</span></span>
+<span><span class="co">#&gt; 6                  https://www.ebi.ac.uk/metagenomics/api/v1/genomes/MGYG000433953/downloads/MGYG000433953.fna</span></span>
+<span><span class="co">#&gt; 7              https://www.ebi.ac.uk/metagenomics/api/v1/genomes/MGYG000433953/downloads/MGYG000433953.fna.fai</span></span>
+<span><span class="co">#&gt; 8                  https://www.ebi.ac.uk/metagenomics/api/v1/genomes/MGYG000433953/downloads/MGYG000433953.gff</span></span>
+<span><span class="co">#&gt; 9    https://www.ebi.ac.uk/metagenomics/api/v1/genomes/MGYG000433953/downloads/MGYG000433953_amrfinderplus.tsv</span></span>
+<span><span class="co">#&gt; 10 https://www.ebi.ac.uk/metagenomics/api/v1/genomes/MGYG000433953/downloads/MGYG000433953_crisprcasfinder.gff</span></span>
+<span><span class="co">#&gt; 11 https://www.ebi.ac.uk/metagenomics/api/v1/genomes/MGYG000433953/downloads/MGYG000433953_crisprcasfinder.tsv</span></span>
+<span><span class="co">#&gt; 12          https://www.ebi.ac.uk/metagenomics/api/v1/genomes/MGYG000433953/downloads/MGYG000433953_eggNOG.tsv</span></span>
+<span><span class="co">#&gt; 13    https://www.ebi.ac.uk/metagenomics/api/v1/genomes/MGYG000433953/downloads/MGYG000433953_InterProScan.tsv</span></span>
+<span><span class="co">#&gt; 14        https://www.ebi.ac.uk/metagenomics/api/v1/genomes/MGYG000433953/downloads/MGYG000433953_mobilome.gff</span></span>
+<span><span class="co">#&gt; 15         https://www.ebi.ac.uk/metagenomics/api/v1/genomes/MGYG000433953/downloads/MGYG000433953_rRNAs.fasta</span></span>
+<span><span class="co">#&gt; 16         https://www.ebi.ac.uk/metagenomics/api/v1/genomes/MGYG000433953/downloads/MGYG000433953_sanntis.gff</span></span>
+<span><span class="co">#&gt; 17                    https://www.ebi.ac.uk/metagenomics/api/v1/genomes/MGYG000433953/downloads/pan-genome.fna</span></span></code></pre></div>
 <p>Having found the a set of target urls, the final step is to use
 <code><a href="../reference/getFile.html">getFile()</a></code> to actually retrieve the file. Unlike other
 functions, this only works with a single url location at once, so each
