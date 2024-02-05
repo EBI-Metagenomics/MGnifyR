@@ -510,12 +510,15 @@ found. For instance, while general `genome` functionality is not yet
 integrated into `MGnifyR`, we can retrieve associated files for a particular
 `genome` accession with the following:
 
-```{r get_genome_urls, results='hide', eval=FALSE}
-# FIXME
-genome_urls <- searchFile(mg, "MGYS00005650", type = "genomes")
+```{r get_genome_urls1, eval=FALSE}
+genome_urls <- searchFile(mg, "MGYG000433953", type = "genomes")
 ```
 
-```{r show_genome_urls, eval=FALSE}
+```{r get_genome_urls2, eval=TRUE, include=FALSE}
+genome_urls <- vignette_MGnifyR_long[["genome_urls"]]
+```
+
+```{r get_genome_urls3}
 genome_urls[c("id","attributes.file.format.name","download_url")]
 ```
 
