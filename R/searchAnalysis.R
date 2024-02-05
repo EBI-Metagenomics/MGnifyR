@@ -98,7 +98,7 @@ setMethod("searchAnalysis", signature = c(x = "MgnifyClient"), function(
             res <- lapply(jsondat, function(x) x$id)
         } else {
             res <- accurl
-            warning("Analyses not found for studies ", x, call. = FALSE)
+            warning("\nAnalyses not found for studies ", x, call. = FALSE)
         }
         return(res)
     }, .progress=show.messages)
@@ -159,7 +159,7 @@ setMethod("searchAnalysis", signature = c(x = "MgnifyClient"), function(
     runurl <- .mgnify_get_x_for_y(
         client, x, "samples","runs", use.cache = use.cache, ...)
     if(is.null(runurl)){
-        warning("Analyses not found for samples ", x, call. = FALSE)
+        warning("\nAnalyses not found for samples ", x, call. = FALSE)
         return(runurl)
     }
     # If found, get data for runs
@@ -207,7 +207,8 @@ setMethod("searchAnalysis", signature = c(x = "MgnifyClient"), function(
                 # If we've got to this point, I give up - just return an empty
                 # list...
                 warning(
-                    "Failed to find an analysis for sample ", x, call. = FALSE)
+                    "\nFailed to find an analysis for sample ", x,
+                    call. = FALSE)
             }
         }
         # Get analyses IDs

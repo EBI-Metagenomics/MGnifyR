@@ -280,7 +280,7 @@
     }
     # Give warning if data is not found.
     if( is.null(final_data) ){
-        warning(warning_msg, call. = FALSE)
+        warning("\n", warning_msg, call. = FALSE)
     }
     return(final_data)
 }
