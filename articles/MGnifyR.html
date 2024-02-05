@@ -102,9 +102,8 @@ access to cutting-edge tools in microbiome down-stream analytics.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p><code>MGnifyR</code> is currently hosted on GitHub, and can be
-installed using via <code>devtools</code>. <code>MGnifyR</code> should
-be built using the following snippet.</p>
+<p><code>MGnifyR</code> is hosted on Bioconductor, and can be installed
+using via <code>BiocManager</code>.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">install</a></span><span class="op">(</span><span class="va">MGnifyR</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -230,7 +229,9 @@ snippet creates this.</p>
 <div class="section level3">
 <h3 id="search-data">Search data<a class="anchor" aria-label="anchor" href="#search-data"></a>
 </h3>
-<p>Below, we fetch information on samples of drinking water.</p>
+<p><code><a href="../reference/doQuery.html">doQuery()</a></code> function can be utilized to search results
+such as samples and studies from MGnify database. Below, we fetch
+information drinking water samples.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Fetch studies</span></span>
 <span><span class="va">samples</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/doQuery.html">doQuery</a></span><span class="op">(</span></span>
@@ -238,6 +239,8 @@ snippet creates this.</p>
 <span>    type <span class="op">=</span> <span class="st">"samples"</span>,</span>
 <span>    biome_name <span class="op">=</span> <span class="st">"root:Environmental:Aquatic:Freshwater:Drinking water"</span>,</span>
 <span>    max.hits <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
+<p>The result is a table containing accession IDs and description – in
+this case – on samples.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">samples</span><span class="op">)</span></span>
 <span><span class="co">#&gt;                  biosample   accession sample-desc</span></span>
@@ -347,6 +350,8 @@ multiple analyses. Each analysis ID corresponds to a single run of a
 particular pipeline on a single sample in a single study.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">analyses_accessions</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/searchAnalysis.html">searchAnalysis</a></span><span class="op">(</span><span class="va">mg</span>, <span class="st">"samples"</span>, <span class="va">samples</span><span class="op">$</span><span class="va">accession</span><span class="op">)</span></span></code></pre></div>
+<p>By running the <code><a href="../reference/searchAnalysis.html">searchAnalysis()</a></code> function, we get
+analysis IDs of samples that we fed as an input.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">analyses_accessions</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "MGYA00652201" "MGYA00652185" "MGYA00643487" "MGYA00643486" "MGYA00643485"</span></span>
@@ -356,9 +361,12 @@ particular pipeline on a single sample in a single study.</p>
 <h3 id="fetch-metadata">Fetch metadata<a class="anchor" aria-label="anchor" href="#fetch-metadata"></a>
 </h3>
 <p>We can now check the metadata to get hint of what kind of data we
-have.</p>
+have. We use <code><a href="../reference/getMetadata.html">getMetadata()</a></code> function to fetch data based on
+analysis IDs.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">analyses_metadata</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getMetadata.html">getMetadata</a></span><span class="op">(</span><span class="va">mg</span>, <span class="va">analyses_accessions</span><span class="op">)</span></span></code></pre></div>
+<p>Metadata includes for example information on how analysis was
+conducted and what kind of samples were analyzed.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">analyses_metadata</span><span class="op">)</span></span>
 <span><span class="co">#&gt;              analysis_analysis-status analysis_pipeline-version</span></span>
@@ -684,7 +692,7 @@ by utilizing <code>MAE</code>.</p>
 <p><code>TreeSE</code> object is uniquely positioned to support
 <code>SummarizedExperiment</code>-based microbiome data manipulation and
 visualization. Moreover, it enables access to <code>miaverse</code>
-tools. For example, we can estimate diversity of samples.</p>
+tools. For example, we can estimate diversity of samples…</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mae</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/mia/man/estimateDiversity.html" class="external-link">estimateDiversity</a></span><span class="op">(</span><span class="va">mae</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, index <span class="op">=</span> <span class="st">"shannon"</span><span class="op">)</span></span>
 <span></span>
@@ -694,6 +702,7 @@ tools. For example, we can estimate diversity of samples.</p>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/scater/man/plotColData.html" class="external-link">plotColData</a></span><span class="op">(</span><span class="va">mae</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, <span class="st">"shannon"</span>, x <span class="op">=</span> <span class="st">"sample_environment..biome."</span><span class="op">)</span></span></code></pre></div>
 <p><img src="MGnifyR_files/figure-html/calculate_diversity-1.png" width="864"></p>
+<p>… and plot abundances of most abundant phyla.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Agglomerate data</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/SingleCellExperiment/man/altExps.html" class="external-link">altExps</a></span><span class="op">(</span><span class="va">mae</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/mia/man/splitByRanks.html" class="external-link">splitByRanks</a></span><span class="op">(</span><span class="va">mae</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
@@ -705,8 +714,8 @@ tools. For example, we can estimate diversity of samples.</p>
 <span><span class="va">top_taxa</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/mia/man/summaries.html" class="external-link">getTopFeatures</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SingleCellExperiment/man/altExps.html" class="external-link">altExp</a></span><span class="op">(</span><span class="va">mae</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, <span class="st">"Phylum"</span><span class="op">)</span>, <span class="fl">10</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/miaViz/man/plotAbundance.html" class="external-link">plotAbundance</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SingleCellExperiment/man/altExps.html" class="external-link">altExp</a></span><span class="op">(</span><span class="va">mae</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, <span class="st">"Phylum"</span><span class="op">)</span><span class="op">[</span><span class="va">top_taxa</span>, <span class="op">]</span>, rank <span class="op">=</span> <span class="st">"Phylum"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="MGnifyR_files/figure-html/plot_abundance-1.png" width="700"></p>
-<p>We can perform principal component analysis to microbial profiling
-data by utilizing miaverse tools.</p>
+<p>We can also perform other analyses such as principal component
+analysis to microbial profiling data by utilizing miaverse tools.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Apply relative transformation</span></span>
 <span><span class="va">mae</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/mia/man/transformAssay.html" class="external-link">transformAssay</a></span><span class="op">(</span><span class="va">mae</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, method <span class="op">=</span> <span class="st">"relabundance"</span><span class="op">)</span></span>
@@ -729,8 +738,10 @@ analyses.</p>
 <p>With <code><a href="../reference/getFile.html">searchFile()</a></code>, we can search files from the
 database.</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Find list of available downloads, and filter for </span></span>
-<span><span class="va">dl_urls</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getFile.html">searchFile</a></span><span class="op">(</span><span class="va">mg</span>, <span class="va">analyses_accessions</span>, type <span class="op">=</span> <span class="st">"analyses"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">dl_urls</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getFile.html">searchFile</a></span><span class="op">(</span><span class="va">mg</span>, <span class="va">analyses_accessions</span>, type <span class="op">=</span> <span class="st">"analyses"</span><span class="op">)</span></span></code></pre></div>
+<p>The returned table contains search results related to analyses that
+we fed as an input. The table contains information on file and also URL
+address from where the file can be loaded.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">target_urls</span> <span class="op">&lt;-</span> <span class="va">dl_urls</span><span class="op">[</span></span>
 <span>    <span class="va">dl_urls</span><span class="op">$</span><span class="va">attributes.description.label</span> <span class="op">==</span> <span class="st">"Predicted alpha tmRNA"</span>, <span class="op">]</span></span>
@@ -817,6 +828,7 @@ database.</p>
 <code class="sourceCode R"><span><span class="co"># Just select a single file from the target_urls list for demonstration.</span></span>
 <span><span class="va">file_url</span> <span class="op">&lt;-</span> <span class="va">target_urls</span><span class="op">$</span><span class="va">download_url</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
 <span><span class="va">cached_location</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getFile.html">getFile</a></span><span class="op">(</span><span class="va">mg</span>, <span class="va">file_url</span><span class="op">)</span></span></code></pre></div>
+<p>The function returns a path where the file is stored.</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Where are the files?</span></span>
 <span><span class="va">cached_location</span></span>
