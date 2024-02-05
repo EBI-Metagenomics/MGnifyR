@@ -41,8 +41,8 @@ cutting-edge tools in microbiome down-stream analytics.
 
 # Installation
 
-`MGnifyR` is currently hosted on GitHub, and can be installed using via
-`devtools`. `MGnifyR` should be built using the following snippet.
+`MGnifyR` is hosted on Bioconductor, and can be installed using via
+`BiocManager`.
 
 ```{r install, eval=FALSE}
 BiocManager::install(MGnifyR)
@@ -72,7 +72,9 @@ mg
 
 ## Search data
 
-Below, we fetch information on samples of drinking water.
+`doQuery()` function can be utilized to search results such as samples and
+studies from MGnify database. Below, we fetch information drinking water
+samples.
 
 ```{r search_studies1, eval=FALSE}
 # Fetch studies
@@ -86,6 +88,9 @@ samples <- doQuery(
 ```{r search_studies2, eval=TRUE, include=FALSE}
 samples <- vignette_MGnifyR[["samples"]]
 ```
+
+The result is a table containing accession IDs and description -- in this case
+-- on samples.
 
 ```{r search_studies3}
 head(samples)
@@ -105,13 +110,17 @@ analyses_accessions <- searchAnalysis(mg, "samples", samples$accession)
 analyses_accessions <- vignette_MGnifyR[["analyses_accessions"]]
 ```
 
+By running the `searchAnalysis()` function, we get analysis IDs of samples that
+we fed as an input.
+
 ```{r convert_to_analyses3}
 head(analyses_accessions)
 ```
 
 ## Fetch metadata
 
-We can now check the metadata to get hint of what kind of data we have.
+We can now check the metadata to get hint of what kind of data we have. We use
+`getMetadata()` function to fetch data based on analysis IDs.
 
 ```{r get_metadata1, eval=FALSE}
 analyses_metadata <- getMetadata(mg, analyses_accessions)
@@ -120,6 +129,9 @@ analyses_metadata <- getMetadata(mg, analyses_accessions)
 ```{r get_metadata2, eval=TRUE, include=FALSE}
 analyses_metadata <- vignette_MGnifyR[["analyses_metadata"]]
 ```
+
+Metadata includes for example information on how analysis was conducted and
+what kind of samples were analyzed.
 
 ```{r get_metadata3}
 head(analyses_metadata)
@@ -156,7 +168,7 @@ mae[[1]]
 
 `TreeSE` object is uniquely positioned to support `SummarizedExperiment`-based
 microbiome data manipulation and visualization. Moreover, it enables access
-to `miaverse` tools. For example, we can estimate diversity of samples.
+to `miaverse` tools. For example, we can estimate diversity of samples...
 
 ```{r calculate_diversity, fig.width=9}
 mae[[1]] <- estimateDiversity(mae[[1]], index = "shannon")
@@ -165,6 +177,8 @@ library(scater)
 
 plotColData(mae[[1]], "shannon", x = "sample_environment..biome.")
 ```
+
+... and plot abundances of most abundant phyla.
 
 ```{r plot_abundance}
 # Agglomerate data
@@ -177,8 +191,8 @@ top_taxa <- getTopFeatures(altExp(mae[[1]], "Phylum"), 10)
 plotAbundance(altExp(mae[[1]], "Phylum")[top_taxa, ], rank = "Phylum")
 ```
 
-We can perform principal component analysis to microbial profiling data by
-utilizing miaverse tools.
+We can also perform other analyses such as principal component analysis to
+microbial profiling data by utilizing miaverse tools.
 
 ```{r pcoa}
 # Apply relative transformation
@@ -201,7 +215,6 @@ of the functional analyses.
 With `searchFile()`, we can search files from the database.
 
 ```{r get_download_urls1, eval=FALSE}
-# Find list of available downloads, and filter for 
 dl_urls <- searchFile(mg, analyses_accessions, type = "analyses")
 ```
 
@@ -209,6 +222,9 @@ dl_urls <- searchFile(mg, analyses_accessions, type = "analyses")
 dl_urls <- vignette_MGnifyR[["dl_urls"]]
 ```
 
+The returned table contains search results related to analyses that we fed as
+an input. The table contains information on file and also URL address from
+where the file can be loaded.
 
 ```{r get_download_urls3}
 target_urls <- dl_urls[
@@ -227,6 +243,8 @@ cached_location <- getFile(mg, file_url)
 ```{r download_file2, eval=TRUE, include=FALSE}
 cached_location <- vignette_MGnifyR[["cached_location"]]
 ```
+
+The function returns a path where the file is stored.
 
 ```{r download_file3}
 # Where are the files?
