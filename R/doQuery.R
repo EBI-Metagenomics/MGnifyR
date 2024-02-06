@@ -136,7 +136,7 @@ setMethod("doQuery", signature = c(x = "MgnifyClient"), function(
         client = x, type = type, accession = accession, max.hits = max.hits,
         ...)
     # Convert list to data.frame if specified
-    if(as.df){
+    if( as.df && length(result) > 0 ){
         # Turn lists to dfs
         result <- lapply(result, .list_to_dataframe)
         # Combine dfs
@@ -152,32 +152,8 @@ setMethod("doQuery", signature = c(x = "MgnifyClient"), function(
 ################################ HELP FUNCTIONS ################################
 
 .perform_query <- function(
-        client, type, accession, max.hits,
+        client, type, accession, max.hits, use.cache = useCache(client),
         show.messages = verbose(client), ...){
-    # If there is no accession IDs
-    if( is.null(accession) ){
-        result <- .perform_query_for_single(
-            client = client, type = type, accession = accession,
-            max.hits = max.hits, ...)
-        # Convert to list
-        result <- list(result)
-    } else{
-        # If there is multiple accessions
-        # The correct options of llply
-        show.messages <- ifelse(show.messages, "text", "none")
-        # Perform query for each accession one by one.
-        result <- llply(accession, function(x) {
-            .perform_query_for_single(
-                client = client, type = type, accession = x,
-                max.hits = max.hits, ...)
-        }, .progress = show.messages)
-    }
-    names(result) <- accession
-    return(result)
-}
-
-.perform_query_for_single <- function(
-        client, type, accession, max.hits, use.cache = useCache(client), ...){
     # Input check
     if( !.is_a_bool(use.cache) ){
         stop(
@@ -206,49 +182,40 @@ setMethod("doQuery", signature = c(x = "MgnifyClient"), function(
 }
 
 .list_to_dataframe <- function(result){
-    dflist <- list()
-    # Because metadata might not match across studies, the full dataframe
-    # is built by first building per-sample dataframes, then using
-    # rbind. fill from plyr to combine. For most use cases the number of
-    # empty columns will hopefully be minimal... because who's going to
-    # want cross study grabbing (?)
-    for(r in result){
-        df2 <- .mgnify_attr_list_to_df_row(
-            json = r, metadata_key = "sample-metadata")
-        # Loop through different datasets (e.g., biomes) that are related
-        # to data
-        for(rn in seq_len(length(r$relationships))){
-            # Get specific relationship
-            temp <- r$relationships[[rn]]
-            # Get only data of it
-            temp_data <- temp$data
-            # If there is data, include it
-            # names(temp_data) %in% "id"
-            if( !is.null(temp_data) && length(temp_data) > 0 ){
-                # Take all "id" values. Some data can also include list of
-                # lists. --> unlist and take "id" values
-                temp_data <- unlist(temp_data)
-                temp_data <- temp_data[names(temp_data) %in% "id"]
-                temp_names <- rep(
-                    names(r$relationships)[rn], length(temp_data))
-                # Get all column names and make them unique
-                colnames <- append(colnames(df2), temp_names)
-                colnames <- make.unique(colnames)
-                # Get only column values that are being added
-                temp_names <- colnames[
-                    (length(colnames)-length(temp_names)+1):
-                        length(colnames)]
-                # Add new data to dataset
-                df2[temp_names] <- temp_data
-            }
+    # Get attributes
+    df <- .mgnify_attr_list_to_df_row(
+      json = result, metadata_key = "sample-metadata")
+
+    # Loop through relationships, i.e., this data might be related to specific
+    # samples, analyses... --> get that info
+    relationships <- result[["relationships"]]
+    for( i in seq_len(length(relationships)) ){
+        # Get specific relationship, e.g., this data vs related runs
+        relationship_type <- names(result$relationships)[[i]]
+        relationship <- result$relationships[[i]]
+        # Get only data (temp is list of lists and only data element contains
+        # relevant info)
+        rel_data <- relationship[["data"]]
+        # If there is data, include it
+        if( !is.null(rel_data) && length(rel_data) > 0 ){
+            # Take all "id" values. Some data can also include list of
+            # lists. --> unlist and take "id" values. Based on this ID (such
+            # as "runs" ID) user can fetch specific relationship
+            rel_data <- unlist(rel_data)
+            rel_data <- rel_data[names(rel_data) %in% "id"]
+            temp_names <- rep(relationship_type, length(rel_data))
+            # Get all column names and make them unique
+            colnames <- append(colnames(df), temp_names)
+            colnames <- make.unique(colnames)
+            # Get only column values that are being added
+            temp_names <- colnames[
+                (length(colnames)-length(temp_names)+1):length(colnames)]
+            # Add new data to dataset
+            df[temp_names] <- rel_data
         }
-        # Add type of data that is being queried and accession code
-        df2$type <- r$type
-        rownames(df2) <- df2$accession
-        # Add data to list
-        dflist[[df2$accession]] <- df2
     }
-    # Combine all data frames together
-    result <- bind_rows(dflist)
-    return(result)
+    # Add type of data that is being queried and accession code
+    df[["type"]] <- result[["type"]]
+    rownames(df) <- df[["accession"]]
+    return(df)
 }
