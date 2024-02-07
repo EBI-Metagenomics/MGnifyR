@@ -160,19 +160,17 @@ setMethod("doQuery", signature = c(x = "MgnifyClient"), function(
             "'use.cache' must be a single boolean value.", call. = FALSE)
     }
     #
-    # Get optional arguments that were passed with ...
-    qopt_list <- c(list(...), accession = accession)
-    # Combine all arguments together
-    all_query_params <- unlist(list(c(list(
-        client = client,
-        max.hits = max.hits,
-        path = type,
-        use.cache = use.cache,
-        qopts = qopt_list
-    ))), recursive = FALSE)
+    # Get parameters that are passed to do the query from database
+    query_params <- list(...)
+    query_params[["accession"]] <- accession
     # Get results from the database
-    result <- do.call(".mgnify_retrieve_json", all_query_params)
-
+    result <- .mgnify_retrieve_json(
+        client = client,
+        path = type,
+        max.hits = max.hits,
+        use.cache = use.cache,
+        qopts = query_params
+        )
     # Rename entries by accession
     id_list <- lapply(result, function(res) res$id)
     if( !is.null(result) ){
