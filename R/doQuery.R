@@ -4,11 +4,14 @@
 #' @details
 #' \code{doQuery} is a flexible query function, harnessing the "full"
 #' power of the JSONAPI MGnify search filters. Search results may be filtered
-#' by metadata value, associated study/sample/analyese etc. Details of the
-#' capabilities may be found
+#' by metadata value, associated study/sample/analyse etc.
+#'
+#' See [Api browser](https://www.ebi.ac.uk/metagenomics/api/v1/) for
+#' information on MGnify database filters.
+#' You can find help on customizing queries from
 #' [here](https://emg-docs.readthedocs.io/en/latest/api.html#customising-queries).
-#' Currently, the following filters are available (based on examination of the
-#' Python source code):
+#'
+#' For example the following filters are available:
 #' \itemize{
 #'     \item{\strong{studies}: accession, biome_name, lineage, centre_name,
 #'     include}
@@ -45,7 +48,17 @@
 #'
 #' @param type A single character value specifying the type of objects to
 #' query. Must be one of the following options: \code{studies}, \code{samples},
-#' \code{runs}, \code{analyses}, \code{biomes} or \code{assemblies}.
+#' \code{runs}, \code{analyses}, \code{biomes}, \code{assemblies},
+#' \code{super-studies}, \code{experiment-types}, \code{pipelines},
+#' \code{pipeline-tools}, \code{publications}, \code{genomes},
+#' \code{genome-search}, \code{genome-search/gather}, \code{genome-catalogues},
+#' \code{genomeset}, \code{cogs}, \code{kegg-modules}, \code{kegg-classes},
+#' \code{antismash-geneclusters}, \code{annotations/go-terms},
+#' \code{annotations/interpro-identifiers}, \code{annotations/kegg-modules},
+#' \code{annotations/pfam-entries}, \code{annotations/kegg-orthologs},
+#' \code{annotations/genome-properties},
+#' \code{annotations/antismash-gene-clusters}, \code{annotations/organisms}, or
+#' \code{mydata}.
 #' (By default: \code{type = "studies"})
 #'
 #' @param accession A single character value or a vector of character values
@@ -102,16 +115,27 @@ NULL
 #' @include allClasses.R allGenerics.R MgnifyClient.R utils.R
 #' @export
 setMethod("doQuery", signature = c(x = "MgnifyClient"), function(
-        x, type = c(
-            "studies", "samples", "runs", "analyses", "biomes", "assemblies"),
-        accession = NULL, as.df = TRUE, max.hits = 200, ...){
+        x, type = "studies", accession = NULL, as.df = TRUE, max.hits = 200,
+        ...){
     ############################### INPUT CHECK ################################
-    if( !(.is_non_empty_string(type)) ){
+    available_types <- c(
+      "studies", "samples", "runs", "analyses", "biomes", "assemblies",
+      "super-studies", "experiment-types", "pipelines", "pipeline-tools",
+      "publications", "genomes", "genome-search", "genome-search/gather",
+      "genome-catalogues", "genomeset", "cogs", "kegg-modules", "kegg-classes",
+      "antismash-geneclusters", "annotations/go-terms",
+      "annotations/interpro-identifiers", "annotations/kegg-modules",
+      "annotations/pfam-entries", "annotations/kegg-orthologs",
+      "annotations/genome-properties", "annotations/antismash-gene-clusters",
+      "annotations/organisms", "mydata")
+    if( !(.is_non_empty_string(type) && type %in% available_types) ){
         stop(
             "'type' must be a single character value specifying ",
-            "the type of instance to query.", call. = FALSE)
+            "the type of instance to query. The value must be on of the ",
+            "following options: ",
+            paste0("'", paste(available_types, collapse = "', '"), "'"),
+            call. = FALSE)
     }
-    type <- match.arg(type, several.ok = FALSE)
     if( !(.is_non_empty_character(accession) || is.null(accession)) ){
         stop(
             "'accession' must be a single character value or vector of ",
