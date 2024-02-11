@@ -64,6 +64,7 @@ Collate:
     'allAccessors.R'
     'deprecate.R'
     'doQuery.R'
+    'getData.R'
     'getFile.R'
     'getMetadata.R'
     'getResult.R'

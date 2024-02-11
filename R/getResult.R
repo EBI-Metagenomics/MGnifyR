@@ -116,10 +116,6 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
             "character values specifying the MGnify accession identifier.",
             call. = FALSE)
     }
-    # If only one value, create a vector from it
-    if( length(accession) == 1 ){
-        accession <- c(accession)
-    }
     if( !.is_a_bool(get.taxa) ){
         stop(
             "'get.taxa' must be TRUE or FALSE.",
