@@ -131,7 +131,7 @@ setMethod("doQuery", signature = c(x = "MgnifyClient"), function(
     if( !(.is_non_empty_string(type) && type %in% available_types) ){
         stop(
             "'type' must be a single character value specifying ",
-            "the type of instance to query. The value must be on of the ",
+            "the type of instance to query. The value must be one of the ",
             "following options: ",
             paste0("'", paste(available_types, collapse = "', '"), "'"),
             call. = FALSE)
