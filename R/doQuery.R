@@ -119,15 +119,15 @@ setMethod("doQuery", signature = c(x = "MgnifyClient"), function(
         ...){
     ############################### INPUT CHECK ################################
     available_types <- c(
-      "studies", "samples", "runs", "analyses", "biomes", "assemblies",
-      "super-studies", "experiment-types", "pipelines", "pipeline-tools",
-      "publications", "genomes", "genome-search", "genome-search/gather",
-      "genome-catalogues", "genomeset", "cogs", "kegg-modules", "kegg-classes",
-      "antismash-geneclusters", "annotations/go-terms",
-      "annotations/interpro-identifiers", "annotations/kegg-modules",
-      "annotations/pfam-entries", "annotations/kegg-orthologs",
-      "annotations/genome-properties", "annotations/antismash-gene-clusters",
-      "annotations/organisms", "mydata")
+        "studies", "samples", "runs", "analyses", "biomes", "assemblies",
+        "super-studies", "experiment-types", "pipelines", "pipeline-tools",
+        "publications", "genomes", "genome-search", "genome-search/gather",
+        "genome-catalogues", "genomeset", "cogs", "kegg-modules",
+        "kegg-classes", "antismash-geneclusters", "annotations/go-terms",
+        "annotations/interpro-identifiers", "annotations/kegg-modules",
+        "annotations/pfam-entries", "annotations/kegg-orthologs",
+        "annotations/genome-properties", "annotations/antismash-gene-clusters",
+        "annotations/organisms", "mydata")
     if( !(.is_non_empty_string(type) && type %in% available_types) ){
         stop(
             "'type' must be a single character value specifying ",
