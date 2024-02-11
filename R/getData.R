@@ -25,17 +25,30 @@ setMethod(
     "getData", signature = c(x = "MgnifyClient"), function(
     x, type, accession.type = NULL, accession = NULL, as.df = TRUE, ...){
     ############################### INPUT CHECK ################################
-    if( !(.is_non_empty_character(accession)) || is.null(accession) ){
+    if( !(.is_non_empty_character(type) && length(type) == 1) ){
         stop(
-            "'accession' must be a single character value or list of ",
+            "'type' must be a single character value specifying the ",
+            " type of data retrieved from the database.",
+            call. = FALSE)
+    }
+    if( !(.is_non_empty_character(accession) || is.null(accession)) ){
+        stop(
+            "'accession' must be a single character value or vector of ",
             "character values specifying the MGnify accession identifier.",
             call. = FALSE)
     }
-    if( !(.is_non_empty_character(accession.type)) || is.null(accession.type) ){
+    if( !(.is_non_empty_character(accession.type) || is.null(accession.type)) ){
         stop(
-            "'accession' must be a single character value or list of ",
-            "character values specifying the MGnify accession identifier.",
-            call. = FALSE)
+            "'accession.type' must be a single character value or vector of ",
+            "character values specifying the type of MGnify accession ",
+            "identifier.", call. = FALSE)
+    }
+    if(
+        (is.null(accession) && !is.null(accession.type)) ||
+        (is.null(accession.type) && !is.null(accession)) ){
+        stop(
+          "Both 'accession' and 'accession.type' must be specified or they ",
+          "must be NULL.", call. = FALSE)
     }
     ############################# INPUT CHECK END ##############################
     result <- .get_results_as_json_list(x, type, accession.type, accession, ...)
@@ -69,7 +82,12 @@ setMethod(
 #' @importFrom dplyr bind_rows
 .convert_json_list_to_df <- function(result){
     # Create data.frames from individual search results
-    result <- lapply(result, function(x) as.data.frame(spread_all(x)))
+    result <- lapply(result, function(x){
+        if( !is.null(x) ){
+            x <- as.data.frame(spread_all(x))
+        }
+        return(x)
+    })
     # Merge individual data.frames to one
     result <- bind_rows(result)
     # Remove duplicate rows

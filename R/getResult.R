@@ -112,7 +112,7 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
     ############################### INPUT CHECK ################################
     if( !(.is_non_empty_character(accession)) ){
         stop(
-            "'accession' must be a single character value or list of ",
+            "'accession' must be a single character value or vector of ",
             "character values specifying the MGnify accession identifier.",
             call. = FALSE)
     }

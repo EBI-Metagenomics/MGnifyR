@@ -114,7 +114,7 @@ setMethod("doQuery", signature = c(x = "MgnifyClient"), function(
     type <- match.arg(type, several.ok = FALSE)
     if( !(.is_non_empty_character(accession) || is.null(accession)) ){
         stop(
-            "'accession' must be a single character value or list of ",
+            "'accession' must be a single character value or vector of ",
             "character values specifying the MGnify accession identifier ",
             "or NULL.",
             call. = FALSE)
