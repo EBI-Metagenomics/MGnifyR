@@ -166,10 +166,6 @@ setMethod("doQuery", signature = c(x = "MgnifyClient"), function(
         # Combine dfs
         result <- bind_rows(result)
     }
-    # If the result is a list and it has only one element
-    if( !is.data.frame(result) && length(result) == 1 ){
-        result <- result[[1]]
-    }
     return(result)
 })
 
