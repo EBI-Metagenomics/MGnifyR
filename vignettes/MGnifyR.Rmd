@@ -217,7 +217,7 @@ publications <- getData(mg, type = "publications")
 ```
 
 ```{r fetch_data2, eval=TRUE, include=FALSE}
-publications <- vignette_MGnifyR[["publications"]] <- publications
+publications <- vignette_MGnifyR[["publications"]]
 ```
 
 ```{r fetch_data3}
