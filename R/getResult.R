@@ -104,7 +104,6 @@ NULL
 #' @importFrom plyr llply
 #' @importFrom dplyr bind_rows
 #' @importFrom reshape2 dcast
-#' @importFrom stats as.formula
 #' @include allClasses.R allGenerics.R MgnifyClient.R utils.R
 #' @export
 setMethod("getResult", signature = c(x = "MgnifyClient"), function(

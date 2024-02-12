@@ -4,11 +4,14 @@
 #' @details
 #' \code{doQuery} is a flexible query function, harnessing the "full"
 #' power of the JSONAPI MGnify search filters. Search results may be filtered
-#' by metadata value, associated study/sample/analyese etc. Details of the
-#' capabilities may be found
+#' by metadata value, associated study/sample/analyse etc.
+#'
+#' See [Api browser](https://www.ebi.ac.uk/metagenomics/api/v1/) for
+#' information on MGnify database filters.
+#' You can find help on customizing queries from
 #' [here](https://emg-docs.readthedocs.io/en/latest/api.html#customising-queries).
-#' Currently, the following filters are available (based on examination of the
-#' Python source code):
+#'
+#' For example the following filters are available:
 #' \itemize{
 #'     \item{\strong{studies}: accession, biome_name, lineage, centre_name,
 #'     include}
@@ -45,7 +48,17 @@
 #'
 #' @param type A single character value specifying the type of objects to
 #' query. Must be one of the following options: \code{studies}, \code{samples},
-#' \code{runs}, \code{analyses}, \code{biomes} or \code{assemblies}.
+#' \code{runs}, \code{analyses}, \code{biomes}, \code{assemblies},
+#' \code{super-studies}, \code{experiment-types}, \code{pipelines},
+#' \code{pipeline-tools}, \code{publications}, \code{genomes},
+#' \code{genome-search}, \code{genome-search/gather}, \code{genome-catalogues},
+#' \code{genomeset}, \code{cogs}, \code{kegg-modules}, \code{kegg-classes},
+#' \code{antismash-geneclusters}, \code{annotations/go-terms},
+#' \code{annotations/interpro-identifiers}, \code{annotations/kegg-modules},
+#' \code{annotations/pfam-entries}, \code{annotations/kegg-orthologs},
+#' \code{annotations/genome-properties},
+#' \code{annotations/antismash-gene-clusters}, \code{annotations/organisms}, or
+#' \code{mydata}.
 #' (By default: \code{type = "studies"})
 #'
 #' @param accession A single character value or a vector of character values
@@ -102,19 +115,30 @@ NULL
 #' @include allClasses.R allGenerics.R MgnifyClient.R utils.R
 #' @export
 setMethod("doQuery", signature = c(x = "MgnifyClient"), function(
-        x, type = c(
-            "studies", "samples", "runs", "analyses", "biomes", "assemblies"),
-        accession = NULL, as.df = TRUE, max.hits = 200, ...){
+        x, type = "studies", accession = NULL, as.df = TRUE, max.hits = 200,
+        ...){
     ############################### INPUT CHECK ################################
-    if( !(.is_non_empty_string(type)) ){
+    available_types <- c(
+        "studies", "samples", "runs", "analyses", "biomes", "assemblies",
+        "super-studies", "experiment-types", "pipelines", "pipeline-tools",
+        "publications", "genomes", "genome-search", "genome-search/gather",
+        "genome-catalogues", "genomeset", "cogs", "kegg-modules",
+        "kegg-classes", "antismash-geneclusters", "annotations/go-terms",
+        "annotations/interpro-identifiers", "annotations/kegg-modules",
+        "annotations/pfam-entries", "annotations/kegg-orthologs",
+        "annotations/genome-properties", "annotations/antismash-gene-clusters",
+        "annotations/organisms", "mydata")
+    if( !(.is_non_empty_string(type) && type %in% available_types) ){
         stop(
             "'type' must be a single character value specifying ",
-            "the type of instance to query.", call. = FALSE)
+            "the type of instance to query. The value must be one of the ",
+            "following options: ",
+            paste0("'", paste(available_types, collapse = "', '"), "'"),
+            call. = FALSE)
     }
-    type <- match.arg(type, several.ok = FALSE)
     if( !(.is_non_empty_character(accession) || is.null(accession)) ){
         stop(
-            "'accession' must be a single character value or list of ",
+            "'accession' must be a single character value or vector of ",
             "character values specifying the MGnify accession identifier ",
             "or NULL.",
             call. = FALSE)
@@ -136,15 +160,11 @@ setMethod("doQuery", signature = c(x = "MgnifyClient"), function(
         client = x, type = type, accession = accession, max.hits = max.hits,
         ...)
     # Convert list to data.frame if specified
-    if(as.df){
+    if( as.df && length(result) > 0 ){
         # Turn lists to dfs
         result <- lapply(result, .list_to_dataframe)
         # Combine dfs
         result <- bind_rows(result)
-    }
-    # If the result is a list and it has only one element
-    if( !is.data.frame(result) && length(result) == 1 ){
-        result <- result[[1]]
     }
     return(result)
 })
@@ -152,51 +172,25 @@ setMethod("doQuery", signature = c(x = "MgnifyClient"), function(
 ################################ HELP FUNCTIONS ################################
 
 .perform_query <- function(
-        client, type, accession, max.hits,
+        client, type, accession, max.hits, use.cache = useCache(client),
         show.messages = verbose(client), ...){
-    # If there is no accession IDs
-    if( is.null(accession) ){
-        result <- .perform_query_for_single(
-            client = client, type = type, accession = accession,
-            max.hits = max.hits, ...)
-        # Convert to list
-        result <- list(result)
-    } else{
-        # If there is multiple accessions
-        # The correct options of llply
-        show.messages <- ifelse(show.messages, "text", "none")
-        # Perform query for each accession one by one.
-        result <- llply(accession, function(x) {
-            .perform_query_for_single(
-                client = client, type = type, accession = x,
-                max.hits = max.hits, ...)
-        }, .progress = show.messages)
-    }
-    names(result) <- accession
-    return(result)
-}
-
-.perform_query_for_single <- function(
-        client, type, accession, max.hits, use.cache = useCache(client), ...){
     # Input check
     if( !.is_a_bool(use.cache) ){
         stop(
             "'use.cache' must be a single boolean value.", call. = FALSE)
     }
     #
-    # Get optional arguments that were passed with ...
-    qopt_list <- c(list(...), accession = accession)
-    # Combine all arguments together
-    all_query_params <- unlist(list(c(list(
-        client = client,
-        max.hits = max.hits,
-        path = type,
-        use.cache = use.cache,
-        qopts = qopt_list
-    ))), recursive = FALSE)
+    # Get parameters that are passed to do the query from database
+    query_params <- list(...)
+    query_params[["accession"]] <- accession
     # Get results from the database
-    result <- do.call(".mgnify_retrieve_json", all_query_params)
-
+    result <- .mgnify_retrieve_json(
+        client = client,
+        path = type,
+        max.hits = max.hits,
+        use.cache = use.cache,
+        qopts = query_params
+        )
     # Rename entries by accession
     id_list <- lapply(result, function(res) res$id)
     if( !is.null(result) ){
@@ -206,49 +200,40 @@ setMethod("doQuery", signature = c(x = "MgnifyClient"), function(
 }
 
 .list_to_dataframe <- function(result){
-    dflist <- list()
-    # Because metadata might not match across studies, the full dataframe
-    # is built by first building per-sample dataframes, then using
-    # rbind. fill from plyr to combine. For most use cases the number of
-    # empty columns will hopefully be minimal... because who's going to
-    # want cross study grabbing (?)
-    for(r in result){
-        df2 <- .mgnify_attr_list_to_df_row(
-            json = r, metadata_key = "sample-metadata")
-        # Loop through different datasets (e.g., biomes) that are related
-        # to data
-        for(rn in seq_len(length(r$relationships))){
-            # Get specific relationship
-            temp <- r$relationships[[rn]]
-            # Get only data of it
-            temp_data <- temp$data
-            # If there is data, include it
-            # names(temp_data) %in% "id"
-            if( !is.null(temp_data) && length(temp_data) > 0 ){
-                # Take all "id" values. Some data can also include list of
-                # lists. --> unlist and take "id" values
-                temp_data <- unlist(temp_data)
-                temp_data <- temp_data[names(temp_data) %in% "id"]
-                temp_names <- rep(
-                    names(r$relationships)[rn], length(temp_data))
-                # Get all column names and make them unique
-                colnames <- append(colnames(df2), temp_names)
-                colnames <- make.unique(colnames)
-                # Get only column values that are being added
-                temp_names <- colnames[
-                    (length(colnames)-length(temp_names)+1):
-                        length(colnames)]
-                # Add new data to dataset
-                df2[temp_names] <- temp_data
-            }
+    # Get attributes
+    df <- .mgnify_attr_list_to_df_row(
+      json = result, metadata_key = "sample-metadata")
+
+    # Loop through relationships, i.e., this data might be related to specific
+    # samples, analyses... --> get that info
+    relationships <- result[["relationships"]]
+    for( i in seq_len(length(relationships)) ){
+        # Get specific relationship, e.g., this data vs related runs
+        relationship_type <- names(result$relationships)[[i]]
+        relationship <- result$relationships[[i]]
+        # Get only data (temp is list of lists and only data element contains
+        # relevant info)
+        rel_data <- relationship[["data"]]
+        # If there is data, include it
+        if( !is.null(rel_data) && length(rel_data) > 0 ){
+            # Take all "id" values. Some data can also include list of
+            # lists. --> unlist and take "id" values. Based on this ID (such
+            # as "runs" ID) user can fetch specific relationship
+            rel_data <- unlist(rel_data)
+            rel_data <- rel_data[names(rel_data) %in% "id"]
+            temp_names <- rep(relationship_type, length(rel_data))
+            # Get all column names and make them unique
+            colnames <- append(colnames(df), temp_names)
+            colnames <- make.unique(colnames)
+            # Get only column values that are being added
+            temp_names <- colnames[
+                (length(colnames)-length(temp_names)+1):length(colnames)]
+            # Add new data to dataset
+            df[temp_names] <- rel_data
         }
-        # Add type of data that is being queried and accession code
-        df2$type <- r$type
-        rownames(df2) <- df2$accession
-        # Add data to list
-        dflist[[df2$accession]] <- df2
     }
-    # Combine all data frames together
-    result <- bind_rows(dflist)
-    return(result)
+    # Add type of data that is being queried and accession code
+    df[["type"]] <- result[["type"]]
+    rownames(df) <- df[["accession"]]
+    return(df)
 }
