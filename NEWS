@@ -1,7 +1,10 @@
-Version: 0.99.15
-Date: 2024-02-05
+Version: 0.99.18
+Date: 2024-02-12
 + Last modification for Biocondutor submission
 
-Version: 0.99.0
+Changes in version 0.99.17
++ Added getData function for fetching raw data from the database
+
+Version 0.99.0
 + Support for TreeSummarizedExperiment and MultiAssayExperiment
 + Submitted to Bioconductor

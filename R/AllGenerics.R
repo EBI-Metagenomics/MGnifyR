@@ -107,6 +107,12 @@ setGeneric(
     "getResult", signature = c("x"), function(x, ...)
         standardGeneric("getResult"))
 
+#' @rdname getData
+#' @export
+setGeneric(
+    "getData", signature = c("x"), function(x, ...)
+        standardGeneric("getData"))
+
 #' @rdname searchAnalysis
 #' @export
 setGeneric(

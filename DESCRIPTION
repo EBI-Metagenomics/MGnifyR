@@ -1,6 +1,6 @@
 Package: MGnifyR
 Type: Package
-Version: 0.99.15
+Version: 0.99.18
 Authors@R:
     c(person(given = "Tuomas", family = "Borman", role = c("aut", "cre"),
              email = "tuomas.v.borman@utu.fi",
@@ -37,7 +37,8 @@ Imports:
     S4Vectors,
     stats,
     urltools,
-    utils
+    utils,
+    tidyjson
 Suggests:
     broom,
     ggplot2,
@@ -64,6 +65,7 @@ Collate:
     'MGnifyR.R'
     'deprecate.R'
     'doQuery.R'
+    'getData.R'
     'getFile.R'
     'getMetadata.R'
     'getResult.R'

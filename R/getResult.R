@@ -1,8 +1,11 @@
-#' Get functional and/or taxonomic information for a list of accessions
+#' Get microbial and/or functional profiling data for a list of accessions
 #'
 #' @details
 #' Given a set of analysis accessions and collection of annotation types,
-#' the function queries the MGNify API and returns the results.
+#' the function queries the MGNify API and returns the results. This function
+#' is convenient for retrieving highly structured (analysis vs counts) data on
+#' certain instances. For example, BIOM files are downloaded automatically.
+#' If you want just to retrieve raw data from the database, see \code{getData}.
 #'
 #' @param x A \code{MgnifyClient} object.
 #'
@@ -97,6 +100,9 @@
 #'     as.df = TRUE, use.cache = TRUE)
 #' }
 #'
+#' @seealso
+#' \code{\link[MGnifyR:getData]{getData}}
+#'
 #' @name getResult
 NULL
 
@@ -104,7 +110,6 @@ NULL
 #' @importFrom plyr llply
 #' @importFrom dplyr bind_rows
 #' @importFrom reshape2 dcast
-#' @importFrom stats as.formula
 #' @include AllClasses.R AllGenerics.R MgnifyClient.R utils.R
 #' @export
 setMethod("getResult", signature = c(x = "MgnifyClient"), function(
@@ -112,13 +117,9 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
     ############################### INPUT CHECK ################################
     if( !(.is_non_empty_character(accession)) ){
         stop(
-            "'accession' must be a single character value or list of ",
+            "'accession' must be a single character value or vector of ",
             "character values specifying the MGnify accession identifier.",
             call. = FALSE)
-    }
-    # If only one value, create a vector from it
-    if( length(accession) == 1 ){
-        accession <- c(accession)
     }
     if( !.is_a_bool(get.taxa) ){
         stop(

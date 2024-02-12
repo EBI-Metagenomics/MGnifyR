@@ -10,7 +10,7 @@ doQuery(x, ...)
 
 \S4method{doQuery}{MgnifyClient}(
   x,
-  type = c("studies", "samples", "runs", "analyses", "biomes", "assemblies", "genomes"),
+  type = "studies",
   accession = NULL,
   as.df = TRUE,
   max.hits = 200,
@@ -26,7 +26,17 @@ See discussion above for details.}
 
 \item{type}{A single character value specifying the type of objects to
 query. Must be one of the following options: \code{studies}, \code{samples},
-\code{runs}, \code{analyses}, \code{biomes} or \code{assemblies}.
+\code{runs}, \code{analyses}, \code{biomes}, \code{assemblies},
+\code{super-studies}, \code{experiment-types}, \code{pipelines},
+\code{pipeline-tools}, \code{publications}, \code{genomes},
+\code{genome-search}, \code{genome-search/gather}, \code{genome-catalogues},
+\code{genomeset}, \code{cogs}, \code{kegg-modules}, \code{kegg-classes},
+\code{antismash-geneclusters}, \code{annotations/go-terms},
+\code{annotations/interpro-identifiers}, \code{annotations/kegg-modules},
+\code{annotations/pfam-entries}, \code{annotations/kegg-orthologs},
+\code{annotations/genome-properties},
+\code{annotations/antismash-gene-clusters}, \code{annotations/organisms}, or
+\code{mydata}.
 (By default: \code{type = "studies"})}
 
 \item{accession}{A single character value or a vector of character values
@@ -55,11 +65,14 @@ assemblies, and genomes.
 \details{
 \code{doQuery} is a flexible query function, harnessing the "full"
 power of the JSONAPI MGnify search filters. Search results may be filtered
-by metadata value, associated study/sample/analyse etc. Details of the
-capabilities may be found
-\href{https://emg-docs.readthedocs.io/en/latest/api.html#customising-queries}{here}.
-Currently, the following filters are available (based on examination of the
-Python source code):
+by metadata value, associated study/sample/analyse etc.
+
+See [Api browser](https://www.ebi.ac.uk/metagenomics/api/v1/) for
+information on MGnify database filters.
+You can find help on customizing queries from
+[here](https://emg-docs.readthedocs.io/en/latest/api.html#customising-queries).
+
+For example the following filters are available:
 \itemize{
     \item{\strong{studies}: accession, biome_name, lineage, centre_name,
     include}
