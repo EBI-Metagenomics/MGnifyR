@@ -37,7 +37,8 @@ Imports:
     S4Vectors,
     stats,
     urltools,
-    utils
+    utils,
+    tidyjson
 Suggests:
     broom,
     ggplot2,
