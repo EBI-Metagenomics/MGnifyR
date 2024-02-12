@@ -33,15 +33,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MGnifyR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.99.15</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.99.16</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="../articles/MGnifyR.html">Get started</a>
-</li>
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
@@ -54,6 +51,9 @@
   <ul class="dropdown-menu" role="menu">
 <li>
       <a href="../articles/MGnifyR_long.html">MGnifyR: interface to MGnify database</a>
+    </li>
+    <li>
+      <a href="../articles/MgnifyR.html">MGnifyR: interface to MGnify database</a>
     </li>
   </ul>
 </li>
@@ -80,7 +80,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>MGnifyR: interface to MGnify database</h1>
             
-            <h4 data-toc-skip class="date">2024-02-05</h4>
+            <h4 data-toc-skip class="date">2024-02-12</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/EBI-Metagenomics/MGnifyR/blob/HEAD/vignettes/MGnifyR_long.Rmd" class="external-link"><code>vignettes/MGnifyR_long.Rmd</code></a></small>
       <div class="hidden name"><code>MGnifyR_long.Rmd</code></div>
@@ -126,82 +126,7 @@ be built using the following snippet.</p>
 <p>Once installed, <code>MGnifyR</code> is made available in the usual
 way.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/EBI-Metagenomics/MGnifyR" class="external-link">MGnifyR</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; Loading required package: mia</span></span>
-<span><span class="co">#&gt; Loading required package: SummarizedExperiment</span></span>
-<span><span class="co">#&gt; Loading required package: MatrixGenerics</span></span>
-<span><span class="co">#&gt; Loading required package: matrixStats</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Attaching package: 'MatrixGenerics'</span></span>
-<span><span class="co">#&gt; The following objects are masked from 'package:matrixStats':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     colAlls, colAnyNAs, colAnys, colAvgsPerRowSet, colCollapse,</span></span>
-<span><span class="co">#&gt;     colCounts, colCummaxs, colCummins, colCumprods, colCumsums,</span></span>
-<span><span class="co">#&gt;     colDiffs, colIQRDiffs, colIQRs, colLogSumExps, colMadDiffs,</span></span>
-<span><span class="co">#&gt;     colMads, colMaxs, colMeans2, colMedians, colMins, colOrderStats,</span></span>
-<span><span class="co">#&gt;     colProds, colQuantiles, colRanges, colRanks, colSdDiffs, colSds,</span></span>
-<span><span class="co">#&gt;     colSums2, colTabulates, colVarDiffs, colVars, colWeightedMads,</span></span>
-<span><span class="co">#&gt;     colWeightedMeans, colWeightedMedians, colWeightedSds,</span></span>
-<span><span class="co">#&gt;     colWeightedVars, rowAlls, rowAnyNAs, rowAnys, rowAvgsPerColSet,</span></span>
-<span><span class="co">#&gt;     rowCollapse, rowCounts, rowCummaxs, rowCummins, rowCumprods,</span></span>
-<span><span class="co">#&gt;     rowCumsums, rowDiffs, rowIQRDiffs, rowIQRs, rowLogSumExps,</span></span>
-<span><span class="co">#&gt;     rowMadDiffs, rowMads, rowMaxs, rowMeans2, rowMedians, rowMins,</span></span>
-<span><span class="co">#&gt;     rowOrderStats, rowProds, rowQuantiles, rowRanges, rowRanks,</span></span>
-<span><span class="co">#&gt;     rowSdDiffs, rowSds, rowSums2, rowTabulates, rowVarDiffs, rowVars,</span></span>
-<span><span class="co">#&gt;     rowWeightedMads, rowWeightedMeans, rowWeightedMedians,</span></span>
-<span><span class="co">#&gt;     rowWeightedSds, rowWeightedVars</span></span>
-<span><span class="co">#&gt; Loading required package: GenomicRanges</span></span>
-<span><span class="co">#&gt; Loading required package: stats4</span></span>
-<span><span class="co">#&gt; Loading required package: BiocGenerics</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Attaching package: 'BiocGenerics'</span></span>
-<span><span class="co">#&gt; The following objects are masked from 'package:stats':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     IQR, mad, sd, var, xtabs</span></span>
-<span><span class="co">#&gt; The following objects are masked from 'package:base':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     anyDuplicated, aperm, append, as.data.frame, basename, cbind,</span></span>
-<span><span class="co">#&gt;     colnames, dirname, do.call, duplicated, eval, evalq, Filter, Find,</span></span>
-<span><span class="co">#&gt;     get, grep, grepl, intersect, is.unsorted, lapply, Map, mapply,</span></span>
-<span><span class="co">#&gt;     match, mget, order, paste, pmax, pmax.int, pmin, pmin.int,</span></span>
-<span><span class="co">#&gt;     Position, rank, rbind, Reduce, rownames, sapply, setdiff, table,</span></span>
-<span><span class="co">#&gt;     tapply, union, unique, unsplit, which.max, which.min</span></span>
-<span><span class="co">#&gt; Loading required package: S4Vectors</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Attaching package: 'S4Vectors'</span></span>
-<span><span class="co">#&gt; The following object is masked from 'package:utils':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     findMatches</span></span>
-<span><span class="co">#&gt; The following objects are masked from 'package:base':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     expand.grid, I, unname</span></span>
-<span><span class="co">#&gt; Loading required package: IRanges</span></span>
-<span><span class="co">#&gt; Loading required package: GenomeInfoDb</span></span>
-<span><span class="co">#&gt; Loading required package: Biobase</span></span>
-<span><span class="co">#&gt; Welcome to Bioconductor</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     Vignettes contain introductory material; view with</span></span>
-<span><span class="co">#&gt;     'browseVignettes()'. To cite Bioconductor, see</span></span>
-<span><span class="co">#&gt;     'citation("Biobase")', and for packages 'citation("pkgname")'.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Attaching package: 'Biobase'</span></span>
-<span><span class="co">#&gt; The following object is masked from 'package:MatrixGenerics':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     rowMedians</span></span>
-<span><span class="co">#&gt; The following objects are masked from 'package:matrixStats':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     anyMissing, rowMedians</span></span>
-<span><span class="co">#&gt; Loading required package: SingleCellExperiment</span></span>
-<span><span class="co">#&gt; Loading required package: TreeSummarizedExperiment</span></span>
-<span><span class="co">#&gt; Loading required package: Biostrings</span></span>
-<span><span class="co">#&gt; Loading required package: XVector</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Attaching package: 'Biostrings'</span></span>
-<span><span class="co">#&gt; The following object is masked from 'package:base':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     strsplit</span></span>
-<span><span class="co">#&gt; Loading required package: MultiAssayExperiment</span></span>
-<span><span class="co">#&gt; Loading required package: biomformat</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/EBI-Metagenomics/MGnifyR" class="external-link">MGnifyR</a></span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="create-a-client">Create a client<a class="anchor" aria-label="anchor" href="#create-a-client"></a>
@@ -213,28 +138,7 @@ starting any analysis is to instantiate this object. The following
 snippet creates this.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mg</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/MgnifyClient.html">MgnifyClient</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">mg</span></span>
-<span><span class="co">#&gt; An object of class "MgnifyClient"</span></span>
-<span><span class="co">#&gt; Slot "databaseUrl":</span></span>
-<span><span class="co">#&gt; [1] "https://www.ebi.ac.uk/metagenomics/api/v1"</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Slot "authTok":</span></span>
-<span><span class="co">#&gt; [1] NA</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Slot "useCache":</span></span>
-<span><span class="co">#&gt; [1] FALSE</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Slot "cacheDir":</span></span>
-<span><span class="co">#&gt; [1] "/__w/MGnifyR/MGnifyR/vignettes/.MGnifyR_cache"</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Slot "showWarnings":</span></span>
-<span><span class="co">#&gt; [1] FALSE</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Slot "clearCache":</span></span>
-<span><span class="co">#&gt; [1] FALSE</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Slot "verbose":</span></span>
-<span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
+<span><span class="va">mg</span></span></code></pre></div>
 <p>It’s recommended that local caching is enabled with
 <code>useCache = TRUE</code>. Queries to the MGnify API can be quite
 slow, particularly when retrieving multipage results for many analyses
@@ -298,110 +202,15 @@ the following query:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">northpolar</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/doQuery.html">doQuery</a></span><span class="op">(</span></span>
 <span>    <span class="va">mg</span>, <span class="st">"samples"</span>, latitude_gte<span class="op">=</span><span class="fl">60.0</span>, experiment_type<span class="op">=</span><span class="st">"amplicon"</span>,</span>
-<span>    biome_name<span class="op">=</span><span class="st">"Soil"</span>, instrument_platform <span class="op">=</span> <span class="st">"Illumina"</span>, max.hits <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">northpolar</span><span class="op">)</span></span>
-<span><span class="co">#&gt;           latitude longitude    biosample accession analysis-completed</span></span>
-<span><span class="co">#&gt; SRS518212  78.7857 -103.5513 SAMN02484608 SRS518212         2016-05-04</span></span>
-<span><span class="co">#&gt; SRS522877  78.7857 -103.5513 SAMN02484612 SRS522877         2016-05-04</span></span>
-<span><span class="co">#&gt; SRS522878  78.7849 -103.5551 SAMN02484613 SRS522878         2016-05-04</span></span>
-<span><span class="co">#&gt; SRS522883  78.7839 -103.5574 SAMN02484618 SRS522883         2016-05-04</span></span>
-<span><span class="co">#&gt; SRS522884  78.7834 -103.5482 SAMN02484619 SRS522884         2016-05-04</span></span>
-<span><span class="co">#&gt; SRS522886  78.7854 -103.5433 SAMN02484621 SRS522886         2016-05-04</span></span>
-<span><span class="co">#&gt;                           sample-desc environment-biome sample-name</span></span>
-<span><span class="co">#&gt; SRS518212 Keywords: GSC:MIxS MIMS:5.0            tundra       ER-B1</span></span>
-<span><span class="co">#&gt; SRS522877 Keywords: GSC:MIxS MIMS:5.0            tundra       ER-I1</span></span>
-<span><span class="co">#&gt; SRS522878 Keywords: GSC:MIxS MIMS:5.0            tundra       ER-I2</span></span>
-<span><span class="co">#&gt; SRS522883 Keywords: GSC:MIxS MIMS:5.0            tundra       ER-B7</span></span>
-<span><span class="co">#&gt; SRS522884 Keywords: GSC:MIxS MIMS:5.0            tundra       ER-B8</span></span>
-<span><span class="co">#&gt; SRS522886 Keywords: GSC:MIxS MIMS:5.0            tundra      ER-B10</span></span>
-<span><span class="co">#&gt;           sample-alias         last-update investigation type</span></span>
-<span><span class="co">#&gt; SRS518212        ER-B1 2024-01-18T21:26:45         metagenome</span></span>
-<span><span class="co">#&gt; SRS522877        ER-I1 2024-01-18T21:26:28         metagenome</span></span>
-<span><span class="co">#&gt; SRS522878        ER-I2 2024-01-18T21:26:12         metagenome</span></span>
-<span><span class="co">#&gt; SRS522883        ER-B7 2024-01-18T21:25:55         metagenome</span></span>
-<span><span class="co">#&gt; SRS522884        ER-B8 2024-01-18T21:25:39         metagenome</span></span>
-<span><span class="co">#&gt; SRS522886       ER-B10 2024-01-18T21:25:06         metagenome</span></span>
-<span><span class="co">#&gt;                                                              project name</span></span>
-<span><span class="co">#&gt; SRS518212 A community genomics investigation of fungal adaptation to cold</span></span>
-<span><span class="co">#&gt; SRS522877 A community genomics investigation of fungal adaptation to cold</span></span>
-<span><span class="co">#&gt; SRS522878 A community genomics investigation of fungal adaptation to cold</span></span>
-<span><span class="co">#&gt; SRS522883 A community genomics investigation of fungal adaptation to cold</span></span>
-<span><span class="co">#&gt; SRS522884 A community genomics investigation of fungal adaptation to cold</span></span>
-<span><span class="co">#&gt; SRS522886 A community genomics investigation of fungal adaptation to cold</span></span>
-<span><span class="co">#&gt;           geographic location (longitude) geographic location (depth)</span></span>
-<span><span class="co">#&gt; SRS518212                      -103.55135                      0-0.1m</span></span>
-<span><span class="co">#&gt; SRS522877                      -103.55135                      0-0.1m</span></span>
-<span><span class="co">#&gt; SRS522878                     -103.555133                      0-0.1m</span></span>
-<span><span class="co">#&gt; SRS522883                       -103.5574                      0-0.1m</span></span>
-<span><span class="co">#&gt; SRS522884                     -103.548183                      0-0.1m</span></span>
-<span><span class="co">#&gt; SRS522886                     -103.543267                      0-0.1m</span></span>
-<span><span class="co">#&gt;           geographic location (country and/or sea,region) collection date</span></span>
-<span><span class="co">#&gt; SRS518212          Canada: Isachsen, Ellef Ringnes Island         2005-08</span></span>
-<span><span class="co">#&gt; SRS522877          Canada: Isachsen, Ellef Ringnes Island         2005-08</span></span>
-<span><span class="co">#&gt; SRS522878          Canada: Isachsen, Ellef Ringnes Island         2005-08</span></span>
-<span><span class="co">#&gt; SRS522883          Canada: Isachsen, Ellef Ringnes Island         2005-08</span></span>
-<span><span class="co">#&gt; SRS522884          Canada: Isachsen, Ellef Ringnes Island         2005-08</span></span>
-<span><span class="co">#&gt; SRS522886          Canada: Isachsen, Ellef Ringnes Island         2005-08</span></span>
-<span><span class="co">#&gt;           environment (biome) environment (feature) environment (material)</span></span>
-<span><span class="co">#&gt; SRS518212              tundra            frost boil                   soil</span></span>
-<span><span class="co">#&gt; SRS522877              tundra             interboil                   soil</span></span>
-<span><span class="co">#&gt; SRS522878              tundra             interboil                   soil</span></span>
-<span><span class="co">#&gt; SRS522883              tundra            frost boil                   soil</span></span>
-<span><span class="co">#&gt; SRS522884              tundra            frost boil                   soil</span></span>
-<span><span class="co">#&gt; SRS522886              tundra            frost boil                   soil</span></span>
-<span><span class="co">#&gt;                    environmental package  depth elevation</span></span>
-<span><span class="co">#&gt; SRS518212 MIMS.me;MIGS/MIMS/MIMARKS.soil 0-0.1m        41</span></span>
-<span><span class="co">#&gt; SRS522877 MIMS.me;MIGS/MIMS/MIMARKS.soil 0-0.1m        41</span></span>
-<span><span class="co">#&gt; SRS522878 MIMS.me;MIGS/MIMS/MIMARKS.soil 0-0.1m        40</span></span>
-<span><span class="co">#&gt; SRS522883 MIMS.me;MIGS/MIMS/MIMARKS.soil 0-0.1m        32</span></span>
-<span><span class="co">#&gt; SRS522884 MIMS.me;MIGS/MIMS/MIMARKS.soil 0-0.1m        30</span></span>
-<span><span class="co">#&gt; SRS522886 MIMS.me;MIGS/MIMS/MIMARKS.soil 0-0.1m        40</span></span>
-<span><span class="co">#&gt;           miscellaneous parameter geographic location (latitude)</span></span>
-<span><span class="co">#&gt; SRS518212                  Boil 1                       78.78565</span></span>
-<span><span class="co">#&gt; SRS522877             Interboil 1                       78.78565</span></span>
-<span><span class="co">#&gt; SRS522878             Interboil 2                      78.784917</span></span>
-<span><span class="co">#&gt; SRS522883                  Boil 7                      78.783933</span></span>
-<span><span class="co">#&gt; SRS522884                  Boil 8                      78.783433</span></span>
-<span><span class="co">#&gt; SRS522886                 Boil 10                       78.78535</span></span>
-<span><span class="co">#&gt;           NCBI sample classification instrument model acc_type</span></span>
-<span><span class="co">#&gt; SRS518212                     410658   Illumina MiSeq  samples</span></span>
-<span><span class="co">#&gt; SRS522877                     410658   Illumina MiSeq  samples</span></span>
-<span><span class="co">#&gt; SRS522878                     410658   Illumina MiSeq  samples</span></span>
-<span><span class="co">#&gt; SRS522883                     410658   Illumina MiSeq  samples</span></span>
-<span><span class="co">#&gt; SRS522884                     410658   Illumina MiSeq  samples</span></span>
-<span><span class="co">#&gt; SRS522886                     410658   Illumina MiSeq  samples</span></span>
-<span><span class="co">#&gt;                                         biome      studies    type</span></span>
-<span><span class="co">#&gt; SRS518212 root:Environmental:Terrestrial:Soil MGYS00000850 samples</span></span>
-<span><span class="co">#&gt; SRS522877 root:Environmental:Terrestrial:Soil MGYS00000850 samples</span></span>
-<span><span class="co">#&gt; SRS522878 root:Environmental:Terrestrial:Soil MGYS00000850 samples</span></span>
-<span><span class="co">#&gt; SRS522883 root:Environmental:Terrestrial:Soil MGYS00000850 samples</span></span>
-<span><span class="co">#&gt; SRS522884 root:Environmental:Terrestrial:Soil MGYS00000850 samples</span></span>
-<span><span class="co">#&gt; SRS522886 root:Environmental:Terrestrial:Soil MGYS00000850 samples</span></span>
-<span><span class="co">#&gt;           collection-date</span></span>
-<span><span class="co">#&gt; SRS518212            &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; SRS522877            &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; SRS522878            &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; SRS522883            &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; SRS522884            &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; SRS522886      2005-08-01</span></span></code></pre></div>
+<span>    biome_name<span class="op">=</span><span class="st">"Soil"</span>, instrument_platform <span class="op">=</span> <span class="st">"Illumina"</span>, max.hits <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">northpolar</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="op">]</span></span></code></pre></div>
 <p>Specifying an <code>accession</code> parameter will restrict results
 to just those matching that particular entry, be it a study, sample or
 run. For example, to retrieve information for study “MGYS00002891”:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">study_samples</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/doQuery.html">doQuery</a></span><span class="op">(</span><span class="va">mg</span>, <span class="st">"studies"</span>, accession<span class="op">=</span><span class="st">"MGYS00002891"</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">study_samples</span></span>
-<span><span class="co">#&gt;                 accession  bioproject samples-count is-private</span></span>
-<span><span class="co">#&gt; MGYS00002891 MGYS00002891 PRJNA384570            29      FALSE</span></span>
-<span><span class="co">#&gt;              secondary-accession             centre-name</span></span>
-<span><span class="co">#&gt; MGYS00002891           SRP105345 University of Minnesota</span></span>
-<span><span class="co">#&gt;                                                                                             study-abstract</span></span>
-<span><span class="co">#&gt; MGYS00002891 Characterization of bacterial communities in marine sediments from Gladstone and Heron Island</span></span>
-<span><span class="co">#&gt;                              study-name data-origination         last-update</span></span>
-<span><span class="co">#&gt; MGYS00002891 Queensland Marine Sediment        HARVESTED 2019-11-07T16:33:46</span></span>
-<span><span class="co">#&gt;              acc_type                                     biomes    type</span></span>
-<span><span class="co">#&gt; MGYS00002891  studies root:Environmental:Aquatic:Marine:Sediment studies</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">study_samples</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/doQuery.html">doQuery</a></span><span class="op">(</span><span class="va">mg</span>, <span class="st">"studies"</span>, accession<span class="op">=</span><span class="st">"MGYS00002891"</span><span class="op">)</span></span>
+<span><span class="va">study_samples</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="find-relevent-analyses-accessions">Find relevent <strong>analyses</strong> accessions<a class="anchor" aria-label="anchor" href="#find-relevent-analyses-accessions"></a>
@@ -423,17 +232,15 @@ accessions need converting to the corresponding
 this conversion - <code><a href="../reference/searchAnalysis.html">searchAnalysis()</a></code>. Following on from our
 previous search, we have a list of <code>study</code> accessions, so to
 convert to corresponding <code>analyses</code> we use:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">analyses_accessions</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/searchAnalysis.html">searchAnalysis</a></span><span class="op">(</span></span>
-<span>    <span class="va">mg</span>, type<span class="op">=</span><span class="st">"studies"</span>, accession <span class="op">=</span> <span class="va">study_samples</span><span class="op">$</span><span class="va">accession</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">analyses_accessions</span></span>
-<span><span class="co">#&gt;  [1] "MGYA00209648" "MGYA00209649" "MGYA00209650" "MGYA00209651" "MGYA00209652"</span></span>
-<span><span class="co">#&gt;  [6] "MGYA00209653" "MGYA00209654" "MGYA00209655" "MGYA00209656" "MGYA00209657"</span></span>
-<span><span class="co">#&gt; [11] "MGYA00209658" "MGYA00209659" "MGYA00209660" "MGYA00209661" "MGYA00209662"</span></span>
-<span><span class="co">#&gt; [16] "MGYA00209663" "MGYA00209664" "MGYA00209665" "MGYA00209666" "MGYA00209667"</span></span>
-<span><span class="co">#&gt; [21] "MGYA00209668" "MGYA00209669" "MGYA00209670" "MGYA00209671" "MGYA00209672"</span></span>
-<span><span class="co">#&gt; [26] "MGYA00209673" "MGYA00209674" "MGYA00209675" "MGYA00209676"</span></span></code></pre></div>
+<span>    <span class="va">mg</span>, type<span class="op">=</span><span class="st">"studies"</span>, accession <span class="op">=</span> <span class="va">study_samples</span><span class="op">$</span><span class="va">accession</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># For demonstrative purpose, take only few samples</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">595</span><span class="op">)</span></span>
+<span><span class="va">analyses_accessions</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">analyses_accessions</span>, <span class="fl">5</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">analyses_accessions</span></span></code></pre></div>
 <p>A useful side effect of the above call is that some attribute
 metadata for each sample has now been retrieved and stored in the local
 cache. Thus subsequent API calls for these samples (which will occur
@@ -455,199 +262,9 @@ use the <code>getMetadata</code> function to download and combine all
 associated <code>sample</code>, <code>run</code> and <code>study</code>
 metadata, which we then filter as required to include only the rows we
 want.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">analyses_metadata</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getMetadata.html">getMetadata</a></span><span class="op">(</span><span class="va">mg</span>, <span class="va">analyses_accessions</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">analyses_metadata</span><span class="op">)</span></span>
-<span><span class="co">#&gt;              analysis_analysis-status analysis_pipeline-version</span></span>
-<span><span class="co">#&gt; MGYA00209648                completed                       4.1</span></span>
-<span><span class="co">#&gt; MGYA00209649                completed                       4.1</span></span>
-<span><span class="co">#&gt; MGYA00209650                completed                       4.1</span></span>
-<span><span class="co">#&gt; MGYA00209651                completed                       4.1</span></span>
-<span><span class="co">#&gt; MGYA00209652                completed                       4.1</span></span>
-<span><span class="co">#&gt; MGYA00209653                completed                       4.1</span></span>
-<span><span class="co">#&gt;              analysis_experiment-type analysis_accession analysis_is-private</span></span>
-<span><span class="co">#&gt; MGYA00209648                 amplicon       MGYA00209648               FALSE</span></span>
-<span><span class="co">#&gt; MGYA00209649                 amplicon       MGYA00209649               FALSE</span></span>
-<span><span class="co">#&gt; MGYA00209650                 amplicon       MGYA00209650               FALSE</span></span>
-<span><span class="co">#&gt; MGYA00209651                 amplicon       MGYA00209651               FALSE</span></span>
-<span><span class="co">#&gt; MGYA00209652                 amplicon       MGYA00209652               FALSE</span></span>
-<span><span class="co">#&gt; MGYA00209653                 amplicon       MGYA00209653               FALSE</span></span>
-<span><span class="co">#&gt;              analysis_complete-time analysis_instrument-platform</span></span>
-<span><span class="co">#&gt; MGYA00209648    2018-09-06T00:00:00                     ILLUMINA</span></span>
-<span><span class="co">#&gt; MGYA00209649    2018-09-06T00:00:00                     ILLUMINA</span></span>
-<span><span class="co">#&gt; MGYA00209650    2018-09-06T00:00:00                     ILLUMINA</span></span>
-<span><span class="co">#&gt; MGYA00209651    2018-09-06T00:00:00                     ILLUMINA</span></span>
-<span><span class="co">#&gt; MGYA00209652    2018-09-06T00:00:00                     ILLUMINA</span></span>
-<span><span class="co">#&gt; MGYA00209653    2018-09-06T00:00:00                     ILLUMINA</span></span>
-<span><span class="co">#&gt;              analysis_instrument-model analysis_Submitted nucleotide sequences</span></span>
-<span><span class="co">#&gt; MGYA00209648       Illumina HiSeq 2500                                 1441694</span></span>
-<span><span class="co">#&gt; MGYA00209649       Illumina HiSeq 2500                                  650265</span></span>
-<span><span class="co">#&gt; MGYA00209650       Illumina HiSeq 2500                                 1207289</span></span>
-<span><span class="co">#&gt; MGYA00209651       Illumina HiSeq 2500                                  469703</span></span>
-<span><span class="co">#&gt; MGYA00209652       Illumina HiSeq 2500                                  606584</span></span>
-<span><span class="co">#&gt; MGYA00209653       Illumina HiSeq 2500                                  692146</span></span>
-<span><span class="co">#&gt;              analysis_Nucleotide sequences after format-specific filtering</span></span>
-<span><span class="co">#&gt; MGYA00209648                                                       1441359</span></span>
-<span><span class="co">#&gt; MGYA00209649                                                        650108</span></span>
-<span><span class="co">#&gt; MGYA00209650                                                       1206954</span></span>
-<span><span class="co">#&gt; MGYA00209651                                                        469585</span></span>
-<span><span class="co">#&gt; MGYA00209652                                                        606429</span></span>
-<span><span class="co">#&gt; MGYA00209653                                                        691971</span></span>
-<span><span class="co">#&gt;              analysis_Nucleotide sequences after length filtering</span></span>
-<span><span class="co">#&gt; MGYA00209648                                              1272787</span></span>
-<span><span class="co">#&gt; MGYA00209649                                               578060</span></span>
-<span><span class="co">#&gt; MGYA00209650                                              1090737</span></span>
-<span><span class="co">#&gt; MGYA00209651                                               419171</span></span>
-<span><span class="co">#&gt; MGYA00209652                                               536462</span></span>
-<span><span class="co">#&gt; MGYA00209653                                               623965</span></span>
-<span><span class="co">#&gt;              analysis_Nucleotide sequences after undetermined bases filtering</span></span>
-<span><span class="co">#&gt; MGYA00209648                                                          1272787</span></span>
-<span><span class="co">#&gt; MGYA00209649                                                           578060</span></span>
-<span><span class="co">#&gt; MGYA00209650                                                          1090737</span></span>
-<span><span class="co">#&gt; MGYA00209651                                                           419171</span></span>
-<span><span class="co">#&gt; MGYA00209652                                                           536462</span></span>
-<span><span class="co">#&gt; MGYA00209653                                                           623965</span></span>
-<span><span class="co">#&gt;              analysis_Reads with predicted CDS</span></span>
-<span><span class="co">#&gt; MGYA00209648                             22713</span></span>
-<span><span class="co">#&gt; MGYA00209649                             11079</span></span>
-<span><span class="co">#&gt; MGYA00209650                             19717</span></span>
-<span><span class="co">#&gt; MGYA00209651                              7586</span></span>
-<span><span class="co">#&gt; MGYA00209652                             11348</span></span>
-<span><span class="co">#&gt; MGYA00209653                             25746</span></span>
-<span><span class="co">#&gt;              analysis_Reads with predicted RNA</span></span>
-<span><span class="co">#&gt; MGYA00209648                           1243457</span></span>
-<span><span class="co">#&gt; MGYA00209649                            564004</span></span>
-<span><span class="co">#&gt; MGYA00209650                           1065641</span></span>
-<span><span class="co">#&gt; MGYA00209651                            410161</span></span>
-<span><span class="co">#&gt; MGYA00209652                            523120</span></span>
-<span><span class="co">#&gt; MGYA00209653                            595537</span></span>
-<span><span class="co">#&gt;              analysis_Reads with InterProScan match analysis_Predicted CDS</span></span>
-<span><span class="co">#&gt; MGYA00209648                                     54                  22807</span></span>
-<span><span class="co">#&gt; MGYA00209649                                     44                  11215</span></span>
-<span><span class="co">#&gt; MGYA00209650                                    372                  19758</span></span>
-<span><span class="co">#&gt; MGYA00209651                                     34                   7604</span></span>
-<span><span class="co">#&gt; MGYA00209652                                     41                  11356</span></span>
-<span><span class="co">#&gt; MGYA00209653                                    280                  25977</span></span>
-<span><span class="co">#&gt;              analysis_Predicted CDS with InterProScan match</span></span>
-<span><span class="co">#&gt; MGYA00209648                                             55</span></span>
-<span><span class="co">#&gt; MGYA00209649                                             44</span></span>
-<span><span class="co">#&gt; MGYA00209650                                            373</span></span>
-<span><span class="co">#&gt; MGYA00209651                                             35</span></span>
-<span><span class="co">#&gt; MGYA00209652                                             41</span></span>
-<span><span class="co">#&gt; MGYA00209653                                            280</span></span>
-<span><span class="co">#&gt;              analysis_Total InterProScan matches analysis_acc_type</span></span>
-<span><span class="co">#&gt; MGYA00209648                                  97     analysis-jobs</span></span>
-<span><span class="co">#&gt; MGYA00209649                                  58     analysis-jobs</span></span>
-<span><span class="co">#&gt; MGYA00209650                                 589     analysis-jobs</span></span>
-<span><span class="co">#&gt; MGYA00209651                                  58     analysis-jobs</span></span>
-<span><span class="co">#&gt; MGYA00209652                                  47     analysis-jobs</span></span>
-<span><span class="co">#&gt; MGYA00209653                                 485     analysis-jobs</span></span>
-<span><span class="co">#&gt;              study_attributes.accession study_attributes.bioproject</span></span>
-<span><span class="co">#&gt; MGYA00209648               MGYS00002891                 PRJNA384570</span></span>
-<span><span class="co">#&gt; MGYA00209649               MGYS00002891                 PRJNA384570</span></span>
-<span><span class="co">#&gt; MGYA00209650               MGYS00002891                 PRJNA384570</span></span>
-<span><span class="co">#&gt; MGYA00209651               MGYS00002891                 PRJNA384570</span></span>
-<span><span class="co">#&gt; MGYA00209652               MGYS00002891                 PRJNA384570</span></span>
-<span><span class="co">#&gt; MGYA00209653               MGYS00002891                 PRJNA384570</span></span>
-<span><span class="co">#&gt;              study_attributes.samples-count study_attributes.is-private</span></span>
-<span><span class="co">#&gt; MGYA00209648                             29                       FALSE</span></span>
-<span><span class="co">#&gt; MGYA00209649                             29                       FALSE</span></span>
-<span><span class="co">#&gt; MGYA00209650                             29                       FALSE</span></span>
-<span><span class="co">#&gt; MGYA00209651                             29                       FALSE</span></span>
-<span><span class="co">#&gt; MGYA00209652                             29                       FALSE</span></span>
-<span><span class="co">#&gt; MGYA00209653                             29                       FALSE</span></span>
-<span><span class="co">#&gt;              study_attributes.secondary-accession study_attributes.centre-name</span></span>
-<span><span class="co">#&gt; MGYA00209648                            SRP105345      University of Minnesota</span></span>
-<span><span class="co">#&gt; MGYA00209649                            SRP105345      University of Minnesota</span></span>
-<span><span class="co">#&gt; MGYA00209650                            SRP105345      University of Minnesota</span></span>
-<span><span class="co">#&gt; MGYA00209651                            SRP105345      University of Minnesota</span></span>
-<span><span class="co">#&gt; MGYA00209652                            SRP105345      University of Minnesota</span></span>
-<span><span class="co">#&gt; MGYA00209653                            SRP105345      University of Minnesota</span></span>
-<span><span class="co">#&gt;                                                                            study_attributes.study-abstract</span></span>
-<span><span class="co">#&gt; MGYA00209648 Characterization of bacterial communities in marine sediments from Gladstone and Heron Island</span></span>
-<span><span class="co">#&gt; MGYA00209649 Characterization of bacterial communities in marine sediments from Gladstone and Heron Island</span></span>
-<span><span class="co">#&gt; MGYA00209650 Characterization of bacterial communities in marine sediments from Gladstone and Heron Island</span></span>
-<span><span class="co">#&gt; MGYA00209651 Characterization of bacterial communities in marine sediments from Gladstone and Heron Island</span></span>
-<span><span class="co">#&gt; MGYA00209652 Characterization of bacterial communities in marine sediments from Gladstone and Heron Island</span></span>
-<span><span class="co">#&gt; MGYA00209653 Characterization of bacterial communities in marine sediments from Gladstone and Heron Island</span></span>
-<span><span class="co">#&gt;              study_attributes.study-name study_attributes.data-origination</span></span>
-<span><span class="co">#&gt; MGYA00209648  Queensland Marine Sediment                         HARVESTED</span></span>
-<span><span class="co">#&gt; MGYA00209649  Queensland Marine Sediment                         HARVESTED</span></span>
-<span><span class="co">#&gt; MGYA00209650  Queensland Marine Sediment                         HARVESTED</span></span>
-<span><span class="co">#&gt; MGYA00209651  Queensland Marine Sediment                         HARVESTED</span></span>
-<span><span class="co">#&gt; MGYA00209652  Queensland Marine Sediment                         HARVESTED</span></span>
-<span><span class="co">#&gt; MGYA00209653  Queensland Marine Sediment                         HARVESTED</span></span>
-<span><span class="co">#&gt;              study_attributes.last-update study_accession study_acc_type</span></span>
-<span><span class="co">#&gt; MGYA00209648          2019-11-07T16:33:46    MGYS00002891        studies</span></span>
-<span><span class="co">#&gt; MGYA00209649          2019-11-07T16:33:46    MGYS00002891        studies</span></span>
-<span><span class="co">#&gt; MGYA00209650          2019-11-07T16:33:46    MGYS00002891        studies</span></span>
-<span><span class="co">#&gt; MGYA00209651          2019-11-07T16:33:46    MGYS00002891        studies</span></span>
-<span><span class="co">#&gt; MGYA00209652          2019-11-07T16:33:46    MGYS00002891        studies</span></span>
-<span><span class="co">#&gt; MGYA00209653          2019-11-07T16:33:46    MGYS00002891        studies</span></span>
-<span><span class="co">#&gt;              sample_latitude sample_biosample sample_longitude sample_accession</span></span>
-<span><span class="co">#&gt; MGYA00209648         -23.749     SAMN06842047         151.3654       SRS2151215</span></span>
-<span><span class="co">#&gt; MGYA00209649        -23.7692     SAMN06842069         151.3167       SRS2151190</span></span>
-<span><span class="co">#&gt; MGYA00209650        -23.6158     SAMN06842067         152.1597       SRS2151193</span></span>
-<span><span class="co">#&gt; MGYA00209651        -23.7692     SAMN06842071         151.3167       SRS2151189</span></span>
-<span><span class="co">#&gt; MGYA00209652        -23.4369     SAMN06842064         151.9813       SRS2151195</span></span>
-<span><span class="co">#&gt; MGYA00209653        -23.6158     SAMN06842065         152.1597       SRS2151196</span></span>
-<span><span class="co">#&gt;              sample_analysis-completed</span></span>
-<span><span class="co">#&gt; MGYA00209648                2018-09-06</span></span>
-<span><span class="co">#&gt; MGYA00209649                2018-09-06</span></span>
-<span><span class="co">#&gt; MGYA00209650                2018-09-06</span></span>
-<span><span class="co">#&gt; MGYA00209651                2018-09-06</span></span>
-<span><span class="co">#&gt; MGYA00209652                2018-09-06</span></span>
-<span><span class="co">#&gt; MGYA00209653                2018-09-06</span></span>
-<span><span class="co">#&gt;                                    sample_geo-loc-name sample_sample-desc</span></span>
-<span><span class="co">#&gt; MGYA00209648                     Australia: Queensland          composite</span></span>
-<span><span class="co">#&gt; MGYA00209649                     Australia: Queensland               core</span></span>
-<span><span class="co">#&gt; MGYA00209650 Australia: Queensland, Great Barrier Reef               core</span></span>
-<span><span class="co">#&gt; MGYA00209651                     Australia: Queensland               core</span></span>
-<span><span class="co">#&gt; MGYA00209652 Australia: Queensland, Great Barrier Reef               core</span></span>
-<span><span class="co">#&gt; MGYA00209653 Australia: Queensland, Great Barrier Reef               core</span></span>
-<span><span class="co">#&gt;                sample_sample-name  sample_sample-alias  sample_last-update</span></span>
-<span><span class="co">#&gt; MGYA00209648  Facing island box 2  Facing island box 2 2018-09-06T01:18:52</span></span>
-<span><span class="co">#&gt; MGYA00209649 Gladstone Harbour 7A Gladstone Harbour 7A 2018-09-06T01:18:52</span></span>
-<span><span class="co">#&gt; MGYA00209650      Fitzroy reef 2C      Fitzroy reef 2C 2018-09-06T01:18:52</span></span>
-<span><span class="co">#&gt; MGYA00209651 Gladstone Harbour 7C Gladstone Harbour 7C 2018-09-06T01:18:52</span></span>
-<span><span class="co">#&gt; MGYA00209652      Heron Island 4D      Heron Island 4D 2018-09-06T01:18:52</span></span>
-<span><span class="co">#&gt; MGYA00209653      Fitzroy reef 2A      Fitzroy reef 2A 2018-09-06T01:18:52</span></span>
-<span><span class="co">#&gt;              sample_geographic location (longitude)</span></span>
-<span><span class="co">#&gt; MGYA00209648                              151.36536</span></span>
-<span><span class="co">#&gt; MGYA00209649                              151.31674</span></span>
-<span><span class="co">#&gt; MGYA00209650                              152.15974</span></span>
-<span><span class="co">#&gt; MGYA00209651                              151.31674</span></span>
-<span><span class="co">#&gt; MGYA00209652                              151.98132</span></span>
-<span><span class="co">#&gt; MGYA00209653                              152.15974</span></span>
-<span><span class="co">#&gt;              sample_geographic location (country and/or sea,region)</span></span>
-<span><span class="co">#&gt; MGYA00209648                                  Australia: Queensland</span></span>
-<span><span class="co">#&gt; MGYA00209649                                  Australia: Queensland</span></span>
-<span><span class="co">#&gt; MGYA00209650              Australia: Queensland, Great Barrier Reef</span></span>
-<span><span class="co">#&gt; MGYA00209651                                  Australia: Queensland</span></span>
-<span><span class="co">#&gt; MGYA00209652              Australia: Queensland, Great Barrier Reef</span></span>
-<span><span class="co">#&gt; MGYA00209653              Australia: Queensland, Great Barrier Reef</span></span>
-<span><span class="co">#&gt;              sample_geographic location (latitude) sample_instrument model</span></span>
-<span><span class="co">#&gt; MGYA00209648                            -23.749048     Illumina HiSeq 2500</span></span>
-<span><span class="co">#&gt; MGYA00209649                            -23.769222     Illumina HiSeq 2500</span></span>
-<span><span class="co">#&gt; MGYA00209650                            -23.615824     Illumina HiSeq 2500</span></span>
-<span><span class="co">#&gt; MGYA00209651                            -23.769222     Illumina HiSeq 2500</span></span>
-<span><span class="co">#&gt; MGYA00209652                            -23.436857     Illumina HiSeq 2500</span></span>
-<span><span class="co">#&gt; MGYA00209653                            -23.615824     Illumina HiSeq 2500</span></span>
-<span><span class="co">#&gt;              sample_acc_type run_accession</span></span>
-<span><span class="co">#&gt; MGYA00209648         samples    SRR5483782</span></span>
-<span><span class="co">#&gt; MGYA00209649         samples    SRR5483760</span></span>
-<span><span class="co">#&gt; MGYA00209650         samples    SRR5483762</span></span>
-<span><span class="co">#&gt; MGYA00209651         samples    SRR5483758</span></span>
-<span><span class="co">#&gt; MGYA00209652         samples    SRR5483765</span></span>
-<span><span class="co">#&gt; MGYA00209653         samples    SRR5483764</span></span>
-<span><span class="co">#&gt;                                            biome_string sample_depth</span></span>
-<span><span class="co">#&gt; MGYA00209648 root:Environmental:Aquatic:Marine:Sediment         &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00209649 root:Environmental:Aquatic:Marine:Sediment          0.0</span></span>
-<span><span class="co">#&gt; MGYA00209650 root:Environmental:Aquatic:Marine:Sediment         20.0</span></span>
-<span><span class="co">#&gt; MGYA00209651 root:Environmental:Aquatic:Marine:Sediment         20.0</span></span>
-<span><span class="co">#&gt; MGYA00209652 root:Environmental:Aquatic:Marine:Sediment         30.0</span></span>
-<span><span class="co">#&gt; MGYA00209653 root:Environmental:Aquatic:Marine:Sediment          0.0</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">analyses_metadata</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getMetadata.html">getMetadata</a></span><span class="op">(</span><span class="va">mg</span>, <span class="va">analyses_accessions</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">analyses_metadata</span><span class="op">)</span></span></code></pre></div>
 <p>The resulting data.frame has columns with names prefixed with their
 source type. For example, “sample_xxx” columns correspond to metadata
 gleaned from querying an accession’s <code>sample</code> entry. MGnify
@@ -667,12 +284,11 @@ call to ensure the column is converted to <code>numeric</code> type
 before it is checked. <em>All</em> sample data from MGnifyR is initially
 retrieved as type <code>character</code>, and it’s up to the user to
 make sure ostensibly numeric entries are converted properly.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">known_depths</span> <span class="op">&lt;-</span> <span class="va">analyses_metadata</span><span class="op">[</span></span>
 <span>    <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">analyses_metadata</span><span class="op">$</span><span class="va">sample_depth</span><span class="op">)</span><span class="op">)</span>, <span class="op">]</span></span>
 <span><span class="co"># How many are left?</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">known_depths</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 26 49</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">known_depths</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="fetch-microbiome-data">Fetch microbiome data<a class="anchor" aria-label="anchor" href="#fetch-microbiome-data"></a>
@@ -698,54 +314,28 @@ called <a href="https://microbiome.github.io/OMA/" class="external-link">OMA</a>
 does not include function predictions, <code><a href="../reference/getResult.html">getResult()</a></code> method
 returns the dataset as a <code>TreeSE</code> by default. See other
 output types from the function documentation.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">tse</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getResult.html">getResult</a></span><span class="op">(</span><span class="va">mg</span>, accession <span class="op">=</span> <span class="va">analyses_accessions</span>, get.func <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">tse</span></span>
-<span><span class="co">#&gt; class: TreeSummarizedExperiment </span></span>
-<span><span class="co">#&gt; dim: 3689 29 </span></span>
-<span><span class="co">#&gt; metadata(0):</span></span>
-<span><span class="co">#&gt; assays(1): counts</span></span>
-<span><span class="co">#&gt; rownames(3689): 92640 251937 ... 233398 265506</span></span>
-<span><span class="co">#&gt; rowData names(8): Kingdom Phylum ... Species taxonomy1</span></span>
-<span><span class="co">#&gt; colnames(29): MGYA00209651 MGYA00209670 ... MGYA00209657 MGYA00209667</span></span>
-<span><span class="co">#&gt; colData names(49): analysis_experiment.type analysis_pipeline.version</span></span>
-<span><span class="co">#&gt;   ... biome_string sample_depth</span></span>
-<span><span class="co">#&gt; reducedDimNames(0):</span></span>
-<span><span class="co">#&gt; mainExpName: NULL</span></span>
-<span><span class="co">#&gt; altExpNames(0):</span></span>
-<span><span class="co">#&gt; rowLinks: NULL</span></span>
-<span><span class="co">#&gt; rowTree: NULL</span></span>
-<span><span class="co">#&gt; colLinks: NULL</span></span>
-<span><span class="co">#&gt; colTree: NULL</span></span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">tse</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getResult.html">getResult</a></span><span class="op">(</span><span class="va">mg</span>, accession <span class="op">=</span> <span class="va">analyses_accessions</span>, get.func <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">tse</span></span></code></pre></div>
 <p><code>TreeSE</code> object is uniquely positioned to support <em><a href="https://bioconductor.org/packages/3.19/SummarizedExperiment" class="external-link">SummarizedExperiment</a></em>-based
 microbiome data manipulation and visualization. Moreover, it enables
 access to <code>miaverse</code> tools. For example, we can estimate
 diversity of samples.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">tse</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/mia/man/estimateDiversity.html" class="external-link">estimateDiversity</a></span><span class="op">(</span><span class="va">tse</span>, index <span class="op">=</span> <span class="st">"shannon"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://bioconductor.org/packages/scater/" class="external-link">scater</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; Loading required package: scuttle</span></span>
-<span><span class="co">#&gt; Loading required package: ggplot2</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/scater/man/plotColData.html" class="external-link">plotColData</a></span><span class="op">(</span><span class="va">tse</span>, <span class="st">"shannon"</span>, x <span class="op">=</span> <span class="st">"sample_geo.loc.name"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="MGnifyR_long_files/figure-html/calculate_diversity-1.png" width="700"></p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">miaViz</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Loading required package: ggraph</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/miaViz/man/plotAbundance.html" class="external-link">plotAbundance</a></span><span class="op">(</span><span class="va">tse</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">rowData</a></span><span class="op">(</span><span class="va">tse</span><span class="op">)</span><span class="op">[[</span><span class="st">"Kingdom"</span><span class="op">]</span><span class="op">]</span> <span class="op">)</span>, <span class="op">]</span>, rank <span class="op">=</span> <span class="st">"Kingdom"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="MGnifyR_long_files/figure-html/plot_abundance-1.png" width="700"></p>
+<span><span class="fu"><a href="https://rdrr.io/pkg/miaViz/man/plotAbundance.html" class="external-link">plotAbundance</a></span><span class="op">(</span><span class="va">tse</span><span class="op">)</span></span></code></pre></div>
 <p>If needed, <code>TreeSE</code> can be converted to
 <code>phyloseq</code>.</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pseq</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/mia/man/makePhyloseqFromTreeSE.html" class="external-link">makePhyloseqFromTreeSE</a></span><span class="op">(</span><span class="va">tse</span><span class="op">)</span></span>
-<span><span class="va">pseq</span></span>
-<span><span class="co">#&gt; phyloseq-class experiment-level object</span></span>
-<span><span class="co">#&gt; otu_table()   OTU Table:         [ 3689 taxa and 29 samples ]</span></span>
-<span><span class="co">#&gt; sample_data() Sample Data:       [ 29 samples by 50 sample variables ]</span></span>
-<span><span class="co">#&gt; tax_table()   Taxonomy Table:    [ 3689 taxa by 7 taxonomic ranks ]</span></span></code></pre></div>
+<span><span class="va">pseq</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="metagenomics">Metagenomics<a class="anchor" aria-label="anchor" href="#metagenomics"></a>
@@ -769,17 +359,17 @@ the Carribbean Sea. To simplify things, only the first 20 samples from
 each study will be used. Furthermore, the intention is only to
 demonstrate the functionality of the MGnifyR package, rather than
 produce scientifically rigorous results.</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">soil</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/searchAnalysis.html">searchAnalysis</a></span><span class="op">(</span><span class="va">mg</span>, <span class="st">"studies"</span>, <span class="st">"MGYS00001447"</span><span class="op">)</span></span>
 <span><span class="va">human</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/searchAnalysis.html">searchAnalysis</a></span><span class="op">(</span><span class="va">mg</span>, <span class="st">"studies"</span>, <span class="st">"MGYS00001442"</span><span class="op">)</span></span>
 <span><span class="va">marine</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/searchAnalysis.html">searchAnalysis</a></span><span class="op">(</span><span class="va">mg</span>, <span class="st">"studies"</span>, <span class="st">"MGYS00001282"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Combine analyses</span></span>
-<span><span class="va">all_accessions</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">soil</span>, <span class="va">human</span>, <span class="va">marine</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">all_accessions</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "MGYA00097621" "MGYA00097622" "MGYA00097623" "MGYA00097624" "MGYA00097625"</span></span>
-<span><span class="co">#&gt; [6] "MGYA00097626"</span></span></code></pre></div>
+<span><span class="va">all_accessions</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">soil</span>, <span class="va">human</span>, <span class="va">marine</span><span class="op">)</span></span>
+<span><span class="co"># Subset the accessions by taking 5 random analyses</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">74</span><span class="op">)</span></span>
+<span><span class="va">all_accessions</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">all_accessions</span>, <span class="fl">5</span><span class="op">)</span></span>
+<span><span class="va">all_accessions</span></span></code></pre></div>
 <p>The first step with this new accession list is, as previously, to
 retrieve the associated metadata using <code><a href="../reference/getMetadata.html">getMetadata()</a></code>, and
 as seen with the <code><a href="../reference/doQuery.html">doQuery()</a></code> results, the returned
@@ -787,347 +377,11 @@ as seen with the <code><a href="../reference/doQuery.html">doQuery()</a></code> 
 autogenerated and flexible, the column names can be a little difficult
 to predict, but examining <code>colnames(full_metadata)</code> should
 make things clearer.</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">full_metadata</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getMetadata.html">getMetadata</a></span><span class="op">(</span><span class="va">mg</span>, <span class="va">all_accessions</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">full_metadata</span><span class="op">)</span></span>
-<span><span class="co">#&gt;  [1] "analysis_experiment-type"                                        </span></span>
-<span><span class="co">#&gt;  [2] "analysis_pipeline-version"                                       </span></span>
-<span><span class="co">#&gt;  [3] "analysis_analysis-status"                                        </span></span>
-<span><span class="co">#&gt;  [4] "analysis_accession"                                              </span></span>
-<span><span class="co">#&gt;  [5] "analysis_is-private"                                             </span></span>
-<span><span class="co">#&gt;  [6] "analysis_complete-time"                                          </span></span>
-<span><span class="co">#&gt;  [7] "analysis_instrument-platform"                                    </span></span>
-<span><span class="co">#&gt;  [8] "analysis_instrument-model"                                       </span></span>
-<span><span class="co">#&gt;  [9] "analysis_Submitted nucleotide sequences"                         </span></span>
-<span><span class="co">#&gt; [10] "analysis_Nucleotide sequences after format-specific filtering"   </span></span>
-<span><span class="co">#&gt; [11] "analysis_Nucleotide sequences after length filtering"            </span></span>
-<span><span class="co">#&gt; [12] "analysis_Nucleotide sequences after undetermined bases filtering"</span></span>
-<span><span class="co">#&gt; [13] "analysis_Reads with predicted CDS"                               </span></span>
-<span><span class="co">#&gt; [14] "analysis_Reads with predicted RNA"                               </span></span>
-<span><span class="co">#&gt; [15] "analysis_Reads with InterProScan match"                          </span></span>
-<span><span class="co">#&gt; [16] "analysis_Predicted CDS"                                          </span></span>
-<span><span class="co">#&gt; [17] "analysis_Predicted CDS with InterProScan match"                  </span></span>
-<span><span class="co">#&gt; [18] "analysis_Total InterProScan matches"                             </span></span>
-<span><span class="co">#&gt; [19] "analysis_acc_type"                                               </span></span>
-<span><span class="co">#&gt; [20] "study_attributes.accession"                                      </span></span>
-<span><span class="co">#&gt; [21] "study_attributes.bioproject"                                     </span></span>
-<span><span class="co">#&gt; [22] "study_attributes.samples-count"                                  </span></span>
-<span><span class="co">#&gt; [23] "study_attributes.is-private"                                     </span></span>
-<span><span class="co">#&gt; [24] "study_attributes.secondary-accession"                            </span></span>
-<span><span class="co">#&gt; [25] "study_attributes.centre-name"                                    </span></span>
-<span><span class="co">#&gt; [26] "study_attributes.study-abstract"                                 </span></span>
-<span><span class="co">#&gt; [27] "study_attributes.study-name"                                     </span></span>
-<span><span class="co">#&gt; [28] "study_attributes.data-origination"                               </span></span>
-<span><span class="co">#&gt; [29] "study_attributes.last-update"                                    </span></span>
-<span><span class="co">#&gt; [30] "study_accession"                                                 </span></span>
-<span><span class="co">#&gt; [31] "study_acc_type"                                                  </span></span>
-<span><span class="co">#&gt; [32] "sample_latitude"                                                 </span></span>
-<span><span class="co">#&gt; [33] "sample_longitude"                                                </span></span>
-<span><span class="co">#&gt; [34] "sample_biosample"                                                </span></span>
-<span><span class="co">#&gt; [35] "sample_accession"                                                </span></span>
-<span><span class="co">#&gt; [36] "sample_analysis-completed"                                       </span></span>
-<span><span class="co">#&gt; [37] "sample_geo-loc-name"                                             </span></span>
-<span><span class="co">#&gt; [38] "sample_sample-desc"                                              </span></span>
-<span><span class="co">#&gt; [39] "sample_environment-biome"                                        </span></span>
-<span><span class="co">#&gt; [40] "sample_environment-feature"                                      </span></span>
-<span><span class="co">#&gt; [41] "sample_environment-material"                                     </span></span>
-<span><span class="co">#&gt; [42] "sample_sample-name"                                              </span></span>
-<span><span class="co">#&gt; [43] "sample_sample-alias"                                             </span></span>
-<span><span class="co">#&gt; [44] "sample_last-update"                                              </span></span>
-<span><span class="co">#&gt; [45] "sample_investigation type"                                       </span></span>
-<span><span class="co">#&gt; [46] "sample_project name"                                             </span></span>
-<span><span class="co">#&gt; [47] "sample_geographic location (depth)"                              </span></span>
-<span><span class="co">#&gt; [48] "sample_collection date"                                          </span></span>
-<span><span class="co">#&gt; [49] "sample_sequencing method"                                        </span></span>
-<span><span class="co">#&gt; [50] "sample_geographic location (elevation)"                          </span></span>
-<span><span class="co">#&gt; [51] "sample_NCBI sample classification"                               </span></span>
-<span><span class="co">#&gt; [52] "sample_instrument model"                                         </span></span>
-<span><span class="co">#&gt; [53] "sample_ENA checklist"                                            </span></span>
-<span><span class="co">#&gt; [54] "sample_sediment environmental package"                           </span></span>
-<span><span class="co">#&gt; [55] "sample_acc_type"                                                 </span></span>
-<span><span class="co">#&gt; [56] "run_accession"                                                   </span></span>
-<span><span class="co">#&gt; [57] "biome_string"                                                    </span></span>
-<span><span class="co">#&gt; [58] "sample_collection-date"                                          </span></span>
-<span><span class="co">#&gt; [59] "sample_host-tax-id"                                              </span></span>
-<span><span class="co">#&gt; [60] "sample_species"                                                  </span></span>
-<span><span class="co">#&gt; [61] "sample_geographic location (longitude)"                          </span></span>
-<span><span class="co">#&gt; [62] "sample_geographic location (country and/or sea,region)"          </span></span>
-<span><span class="co">#&gt; [63] "sample_environment (biome)"                                      </span></span>
-<span><span class="co">#&gt; [64] "sample_environment (feature)"                                    </span></span>
-<span><span class="co">#&gt; [65] "sample_environment (material)"                                   </span></span>
-<span><span class="co">#&gt; [66] "sample_environmental package"                                    </span></span>
-<span><span class="co">#&gt; [67] "sample_host taxid"                                               </span></span>
-<span><span class="co">#&gt; [68] "sample_geographic location (latitude)"                           </span></span>
-<span><span class="co">#&gt; [69] "sample_host scientific name"                                     </span></span>
-<span><span class="co">#&gt; [70] "sample_human gut environmental package"</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">full_metadata</span><span class="op">)</span></span>
-<span><span class="co">#&gt;              analysis_experiment-type analysis_pipeline-version</span></span>
-<span><span class="co">#&gt; MGYA00097631              metagenomic                       3.0</span></span>
-<span><span class="co">#&gt; MGYA00097632              metagenomic                       3.0</span></span>
-<span><span class="co">#&gt; MGYA00097633              metagenomic                       3.0</span></span>
-<span><span class="co">#&gt; MGYA00097634              metagenomic                       3.0</span></span>
-<span><span class="co">#&gt; MGYA00097635              metagenomic                       3.0</span></span>
-<span><span class="co">#&gt; MGYA00097636              metagenomic                       3.0</span></span>
-<span><span class="co">#&gt;              analysis_analysis-status analysis_accession analysis_is-private</span></span>
-<span><span class="co">#&gt; MGYA00097631                completed       MGYA00097631               FALSE</span></span>
-<span><span class="co">#&gt; MGYA00097632                completed       MGYA00097632               FALSE</span></span>
-<span><span class="co">#&gt; MGYA00097633                completed       MGYA00097633               FALSE</span></span>
-<span><span class="co">#&gt; MGYA00097634                completed       MGYA00097634               FALSE</span></span>
-<span><span class="co">#&gt; MGYA00097635                completed       MGYA00097635               FALSE</span></span>
-<span><span class="co">#&gt; MGYA00097636                completed       MGYA00097636               FALSE</span></span>
-<span><span class="co">#&gt;              analysis_complete-time analysis_instrument-platform</span></span>
-<span><span class="co">#&gt; MGYA00097631    2017-02-10T00:00:00                     ILLUMINA</span></span>
-<span><span class="co">#&gt; MGYA00097632    2017-02-10T00:00:00                     ILLUMINA</span></span>
-<span><span class="co">#&gt; MGYA00097633    2017-02-10T00:00:00                     ILLUMINA</span></span>
-<span><span class="co">#&gt; MGYA00097634    2017-02-10T00:00:00                     ILLUMINA</span></span>
-<span><span class="co">#&gt; MGYA00097635    2017-02-10T00:00:00                     ILLUMINA</span></span>
-<span><span class="co">#&gt; MGYA00097636    2017-02-10T00:00:00                     ILLUMINA</span></span>
-<span><span class="co">#&gt;              analysis_instrument-model analysis_Submitted nucleotide sequences</span></span>
-<span><span class="co">#&gt; MGYA00097631       Illumina HiSeq 4000                                14263292</span></span>
-<span><span class="co">#&gt; MGYA00097632       Illumina HiSeq 4000                                14017313</span></span>
-<span><span class="co">#&gt; MGYA00097633       Illumina HiSeq 4000                                17493693</span></span>
-<span><span class="co">#&gt; MGYA00097634       Illumina HiSeq 4000                                12803734</span></span>
-<span><span class="co">#&gt; MGYA00097635       Illumina HiSeq 4000                                19918196</span></span>
-<span><span class="co">#&gt; MGYA00097636       Illumina HiSeq 4000                                11768981</span></span>
-<span><span class="co">#&gt;              analysis_Nucleotide sequences after format-specific filtering</span></span>
-<span><span class="co">#&gt; MGYA00097631                                                      14221062</span></span>
-<span><span class="co">#&gt; MGYA00097632                                                      14007866</span></span>
-<span><span class="co">#&gt; MGYA00097633                                                      17476376</span></span>
-<span><span class="co">#&gt; MGYA00097634                                                      12794042</span></span>
-<span><span class="co">#&gt; MGYA00097635                                                      19901713</span></span>
-<span><span class="co">#&gt; MGYA00097636                                                      11759662</span></span>
-<span><span class="co">#&gt;              analysis_Nucleotide sequences after length filtering</span></span>
-<span><span class="co">#&gt; MGYA00097631                                             13131530</span></span>
-<span><span class="co">#&gt; MGYA00097632                                             13251661</span></span>
-<span><span class="co">#&gt; MGYA00097633                                             16306229</span></span>
-<span><span class="co">#&gt; MGYA00097634                                             12081026</span></span>
-<span><span class="co">#&gt; MGYA00097635                                             18776052</span></span>
-<span><span class="co">#&gt; MGYA00097636                                             11124185</span></span>
-<span><span class="co">#&gt;              analysis_Nucleotide sequences after undetermined bases filtering</span></span>
-<span><span class="co">#&gt; MGYA00097631                                                         13131432</span></span>
-<span><span class="co">#&gt; MGYA00097632                                                         13251540</span></span>
-<span><span class="co">#&gt; MGYA00097633                                                         16306111</span></span>
-<span><span class="co">#&gt; MGYA00097634                                                         12080915</span></span>
-<span><span class="co">#&gt; MGYA00097635                                                         18775871</span></span>
-<span><span class="co">#&gt; MGYA00097636                                                         11124089</span></span>
-<span><span class="co">#&gt;              analysis_Reads with predicted CDS</span></span>
-<span><span class="co">#&gt; MGYA00097631                          12706029</span></span>
-<span><span class="co">#&gt; MGYA00097632                          12854908</span></span>
-<span><span class="co">#&gt; MGYA00097633                          15781126</span></span>
-<span><span class="co">#&gt; MGYA00097634                          11692069</span></span>
-<span><span class="co">#&gt; MGYA00097635                          18174796</span></span>
-<span><span class="co">#&gt; MGYA00097636                          10767961</span></span>
-<span><span class="co">#&gt;              analysis_Reads with predicted RNA</span></span>
-<span><span class="co">#&gt; MGYA00097631                             16190</span></span>
-<span><span class="co">#&gt; MGYA00097632                             15055</span></span>
-<span><span class="co">#&gt; MGYA00097633                             20933</span></span>
-<span><span class="co">#&gt; MGYA00097634                             14064</span></span>
-<span><span class="co">#&gt; MGYA00097635                             23868</span></span>
-<span><span class="co">#&gt; MGYA00097636                             15644</span></span>
-<span><span class="co">#&gt;              analysis_Reads with InterProScan match analysis_Predicted CDS</span></span>
-<span><span class="co">#&gt; MGYA00097631                                4564209               12799168</span></span>
-<span><span class="co">#&gt; MGYA00097632                                4905147               12958349</span></span>
-<span><span class="co">#&gt; MGYA00097633                                5734721               15898933</span></span>
-<span><span class="co">#&gt; MGYA00097634                                4303972               11775442</span></span>
-<span><span class="co">#&gt; MGYA00097635                                6944293               18316341</span></span>
-<span><span class="co">#&gt; MGYA00097636                                4064336               10844621</span></span>
-<span><span class="co">#&gt;              analysis_Predicted CDS with InterProScan match</span></span>
-<span><span class="co">#&gt; MGYA00097631                                        4567359</span></span>
-<span><span class="co">#&gt; MGYA00097632                                        4909395</span></span>
-<span><span class="co">#&gt; MGYA00097633                                        5738555</span></span>
-<span><span class="co">#&gt; MGYA00097634                                        4306951</span></span>
-<span><span class="co">#&gt; MGYA00097635                                        6950012</span></span>
-<span><span class="co">#&gt; MGYA00097636                                        4067254</span></span>
-<span><span class="co">#&gt;              analysis_Total InterProScan matches analysis_acc_type</span></span>
-<span><span class="co">#&gt; MGYA00097631                             7258924     analysis-jobs</span></span>
-<span><span class="co">#&gt; MGYA00097632                             7837311     analysis-jobs</span></span>
-<span><span class="co">#&gt; MGYA00097633                             9124572     analysis-jobs</span></span>
-<span><span class="co">#&gt; MGYA00097634                             6849131     analysis-jobs</span></span>
-<span><span class="co">#&gt; MGYA00097635                            11109826     analysis-jobs</span></span>
-<span><span class="co">#&gt; MGYA00097636                             6486426     analysis-jobs</span></span>
-<span><span class="co">#&gt;              study_attributes.accession study_attributes.bioproject</span></span>
-<span><span class="co">#&gt; MGYA00097631               MGYS00001447                  PRJEB19235</span></span>
-<span><span class="co">#&gt; MGYA00097632               MGYS00001447                  PRJEB19235</span></span>
-<span><span class="co">#&gt; MGYA00097633               MGYS00001447                  PRJEB19235</span></span>
-<span><span class="co">#&gt; MGYA00097634               MGYS00001447                  PRJEB19235</span></span>
-<span><span class="co">#&gt; MGYA00097635               MGYS00001447                  PRJEB19235</span></span>
-<span><span class="co">#&gt; MGYA00097636               MGYS00001447                  PRJEB19235</span></span>
-<span><span class="co">#&gt;              study_attributes.samples-count study_attributes.is-private</span></span>
-<span><span class="co">#&gt; MGYA00097631                             38                       FALSE</span></span>
-<span><span class="co">#&gt; MGYA00097632                             38                       FALSE</span></span>
-<span><span class="co">#&gt; MGYA00097633                             38                       FALSE</span></span>
-<span><span class="co">#&gt; MGYA00097634                             38                       FALSE</span></span>
-<span><span class="co">#&gt; MGYA00097635                             38                       FALSE</span></span>
-<span><span class="co">#&gt; MGYA00097636                             38                       FALSE</span></span>
-<span><span class="co">#&gt;              study_attributes.secondary-accession study_attributes.centre-name</span></span>
-<span><span class="co">#&gt; MGYA00097631                            ERP021219           University of York</span></span>
-<span><span class="co">#&gt; MGYA00097632                            ERP021219           University of York</span></span>
-<span><span class="co">#&gt; MGYA00097633                            ERP021219           University of York</span></span>
-<span><span class="co">#&gt; MGYA00097634                            ERP021219           University of York</span></span>
-<span><span class="co">#&gt; MGYA00097635                            ERP021219           University of York</span></span>
-<span><span class="co">#&gt; MGYA00097636                            ERP021219           University of York</span></span>
-<span><span class="co">#&gt;                                                                     study_attributes.study-abstract</span></span>
-<span><span class="co">#&gt; MGYA00097631 Samples were collected from natural and realigned sites, and during Summer and Winter.</span></span>
-<span><span class="co">#&gt; MGYA00097632 Samples were collected from natural and realigned sites, and during Summer and Winter.</span></span>
-<span><span class="co">#&gt; MGYA00097633 Samples were collected from natural and realigned sites, and during Summer and Winter.</span></span>
-<span><span class="co">#&gt; MGYA00097634 Samples were collected from natural and realigned sites, and during Summer and Winter.</span></span>
-<span><span class="co">#&gt; MGYA00097635 Samples were collected from natural and realigned sites, and during Summer and Winter.</span></span>
-<span><span class="co">#&gt; MGYA00097636 Samples were collected from natural and realigned sites, and during Summer and Winter.</span></span>
-<span><span class="co">#&gt;                                    study_attributes.study-name</span></span>
-<span><span class="co">#&gt; MGYA00097631 Samples from salt marshes in the south of England</span></span>
-<span><span class="co">#&gt; MGYA00097632 Samples from salt marshes in the south of England</span></span>
-<span><span class="co">#&gt; MGYA00097633 Samples from salt marshes in the south of England</span></span>
-<span><span class="co">#&gt; MGYA00097634 Samples from salt marshes in the south of England</span></span>
-<span><span class="co">#&gt; MGYA00097635 Samples from salt marshes in the south of England</span></span>
-<span><span class="co">#&gt; MGYA00097636 Samples from salt marshes in the south of England</span></span>
-<span><span class="co">#&gt;              study_attributes.data-origination study_attributes.last-update</span></span>
-<span><span class="co">#&gt; MGYA00097631                         SUBMITTED          2017-02-10T11:32:47</span></span>
-<span><span class="co">#&gt; MGYA00097632                         SUBMITTED          2017-02-10T11:32:47</span></span>
-<span><span class="co">#&gt; MGYA00097633                         SUBMITTED          2017-02-10T11:32:47</span></span>
-<span><span class="co">#&gt; MGYA00097634                         SUBMITTED          2017-02-10T11:32:47</span></span>
-<span><span class="co">#&gt; MGYA00097635                         SUBMITTED          2017-02-10T11:32:47</span></span>
-<span><span class="co">#&gt; MGYA00097636                         SUBMITTED          2017-02-10T11:32:47</span></span>
-<span><span class="co">#&gt;              study_accession study_acc_type sample_latitude sample_longitude</span></span>
-<span><span class="co">#&gt; MGYA00097631    MGYS00001447        studies         51.7972            0.921</span></span>
-<span><span class="co">#&gt; MGYA00097632    MGYS00001447        studies         51.7972            0.921</span></span>
-<span><span class="co">#&gt; MGYA00097633    MGYS00001447        studies         51.7865           0.8609</span></span>
-<span><span class="co">#&gt; MGYA00097634    MGYS00001447        studies         51.7865           0.8609</span></span>
-<span><span class="co">#&gt; MGYA00097635    MGYS00001447        studies            &lt;NA&gt;             &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00097636    MGYS00001447        studies         51.7968           0.9218</span></span>
-<span><span class="co">#&gt;              sample_biosample sample_accession sample_analysis-completed</span></span>
-<span><span class="co">#&gt; MGYA00097631    SAMEA56090668       ERS1512902                2017-02-10</span></span>
-<span><span class="co">#&gt; MGYA00097632    SAMEA56092168       ERS1512904                2017-02-10</span></span>
-<span><span class="co">#&gt; MGYA00097633    SAMEA56099668       ERS1512914                2017-02-10</span></span>
-<span><span class="co">#&gt; MGYA00097634    SAMEA56095168       ERS1512908                2017-02-10</span></span>
-<span><span class="co">#&gt; MGYA00097635             &lt;NA&gt;             &lt;NA&gt;                      &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00097636    SAMEA56094418       ERS1512907                2017-02-10</span></span>
-<span><span class="co">#&gt;              sample_geo-loc-name                          sample_sample-desc</span></span>
-<span><span class="co">#&gt; MGYA00097631      United Kingdom   Natural salt marsh, Mersea Island, Winter</span></span>
-<span><span class="co">#&gt; MGYA00097632      United Kingdom   Natural salt marsh, Mersea Island, Winter</span></span>
-<span><span class="co">#&gt; MGYA00097633      United Kingdom    Natural salt marsh, Abbotts Hall, Winter</span></span>
-<span><span class="co">#&gt; MGYA00097634      United Kingdom    Natural salt marsh, Abbotts Hall, Summer</span></span>
-<span><span class="co">#&gt; MGYA00097635                &lt;NA&gt;                                        &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00097636      United Kingdom Realigned salt marsh, Mersea Island, Winter</span></span>
-<span><span class="co">#&gt;              sample_environment-biome sample_environment-feature</span></span>
-<span><span class="co">#&gt; MGYA00097631  marine salt marsh biome                  sea shore</span></span>
-<span><span class="co">#&gt; MGYA00097632  marine salt marsh biome                  sea shore</span></span>
-<span><span class="co">#&gt; MGYA00097633  marine salt marsh biome                  sea shore</span></span>
-<span><span class="co">#&gt; MGYA00097634  marine salt marsh biome                  sea shore</span></span>
-<span><span class="co">#&gt; MGYA00097635                     &lt;NA&gt;                       &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00097636  marine salt marsh biome                  sea shore</span></span>
-<span><span class="co">#&gt;              sample_environment-material</span></span>
-<span><span class="co">#&gt; MGYA00097631                    sediment</span></span>
-<span><span class="co">#&gt; MGYA00097632                    sediment</span></span>
-<span><span class="co">#&gt; MGYA00097633                    sediment</span></span>
-<span><span class="co">#&gt; MGYA00097634                    sediment</span></span>
-<span><span class="co">#&gt; MGYA00097635                        &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00097636                    sediment</span></span>
-<span><span class="co">#&gt;                                       sample_sample-name sample_sample-alias</span></span>
-<span><span class="co">#&gt; MGYA00097631   Natural salt marsh, Mersea Island, Winter           W MINM 1A</span></span>
-<span><span class="co">#&gt; MGYA00097632   Natural salt marsh, Mersea Island, Winter           W MINM 3A</span></span>
-<span><span class="co">#&gt; MGYA00097633    Natural salt marsh, Abbotts Hall, Winter           W AHNM 2A</span></span>
-<span><span class="co">#&gt; MGYA00097634    Natural salt marsh, Abbotts Hall, Summer           S AHNM 1A</span></span>
-<span><span class="co">#&gt; MGYA00097635                                        &lt;NA&gt;                &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00097636 Realigned salt marsh, Mersea Island, Winter           W MIRM 3A</span></span>
-<span><span class="co">#&gt;               sample_last-update sample_investigation type  sample_project name</span></span>
-<span><span class="co">#&gt; MGYA00097631 2017-02-10T11:32:50                metagenome Southern Saltmarshes</span></span>
-<span><span class="co">#&gt; MGYA00097632 2017-02-10T11:32:50                metagenome Southern Saltmarshes</span></span>
-<span><span class="co">#&gt; MGYA00097633 2017-02-10T11:32:50                metagenome Southern Saltmarshes</span></span>
-<span><span class="co">#&gt; MGYA00097634 2017-02-10T11:32:50                metagenome Southern Saltmarshes</span></span>
-<span><span class="co">#&gt; MGYA00097635                &lt;NA&gt;                      &lt;NA&gt;                 &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00097636 2017-02-10T11:32:50                metagenome Southern Saltmarshes</span></span>
-<span><span class="co">#&gt;              sample_geographic location (depth) sample_collection date</span></span>
-<span><span class="co">#&gt; MGYA00097631                               0.05             2015-02-24</span></span>
-<span><span class="co">#&gt; MGYA00097632                               0.05             2015-02-24</span></span>
-<span><span class="co">#&gt; MGYA00097633                               0.05             2015-03-28</span></span>
-<span><span class="co">#&gt; MGYA00097634                               0.05             2014-07-03</span></span>
-<span><span class="co">#&gt; MGYA00097635                               &lt;NA&gt;                   &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00097636                               0.05             2015-02-24</span></span>
-<span><span class="co">#&gt;              sample_sequencing method sample_geographic location (elevation)</span></span>
-<span><span class="co">#&gt; MGYA00097631           Illumina HiSeq                                    0.3</span></span>
-<span><span class="co">#&gt; MGYA00097632           Illumina HiSeq                                    0.3</span></span>
-<span><span class="co">#&gt; MGYA00097633           Illumina HiSeq                                      2</span></span>
-<span><span class="co">#&gt; MGYA00097634           Illumina HiSeq                                      2</span></span>
-<span><span class="co">#&gt; MGYA00097635                     &lt;NA&gt;                                   &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00097636           Illumina HiSeq                                      1</span></span>
-<span><span class="co">#&gt;              sample_NCBI sample classification sample_instrument model</span></span>
-<span><span class="co">#&gt; MGYA00097631                            749907     Illumina HiSeq 4000</span></span>
-<span><span class="co">#&gt; MGYA00097632                            749907     Illumina HiSeq 4000</span></span>
-<span><span class="co">#&gt; MGYA00097633                            749907     Illumina HiSeq 4000</span></span>
-<span><span class="co">#&gt; MGYA00097634                            749907     Illumina HiSeq 4000</span></span>
-<span><span class="co">#&gt; MGYA00097635                              &lt;NA&gt;                    &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00097636                            749907     Illumina HiSeq 4000</span></span>
-<span><span class="co">#&gt;                       sample_ENA checklist</span></span>
-<span><span class="co">#&gt; MGYA00097631 GSC MIxS sediment (ERC000021)</span></span>
-<span><span class="co">#&gt; MGYA00097632 GSC MIxS sediment (ERC000021)</span></span>
-<span><span class="co">#&gt; MGYA00097633 GSC MIxS sediment (ERC000021)</span></span>
-<span><span class="co">#&gt; MGYA00097634 GSC MIxS sediment (ERC000021)</span></span>
-<span><span class="co">#&gt; MGYA00097635                          &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00097636 GSC MIxS sediment (ERC000021)</span></span>
-<span><span class="co">#&gt;              sample_sediment environmental package sample_acc_type</span></span>
-<span><span class="co">#&gt; MGYA00097631                              sediment         samples</span></span>
-<span><span class="co">#&gt; MGYA00097632                              sediment         samples</span></span>
-<span><span class="co">#&gt; MGYA00097633                              sediment         samples</span></span>
-<span><span class="co">#&gt; MGYA00097634                              sediment         samples</span></span>
-<span><span class="co">#&gt; MGYA00097635                                  &lt;NA&gt;            &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00097636                              sediment         samples</span></span>
-<span><span class="co">#&gt;              run_accession                        biome_string</span></span>
-<span><span class="co">#&gt; MGYA00097631    ERR1811630 root:Environmental:Terrestrial:Soil</span></span>
-<span><span class="co">#&gt; MGYA00097632    ERR1811632 root:Environmental:Terrestrial:Soil</span></span>
-<span><span class="co">#&gt; MGYA00097633    ERR1811642 root:Environmental:Terrestrial:Soil</span></span>
-<span><span class="co">#&gt; MGYA00097634    ERR1811636 root:Environmental:Terrestrial:Soil</span></span>
-<span><span class="co">#&gt; MGYA00097635    ERR1811628                                &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00097636    ERR1811635 root:Environmental:Terrestrial:Soil</span></span>
-<span><span class="co">#&gt;              sample_collection-date sample_host-tax-id sample_species</span></span>
-<span><span class="co">#&gt; MGYA00097631                   &lt;NA&gt;               &lt;NA&gt;           &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00097632                   &lt;NA&gt;               &lt;NA&gt;           &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00097633                   &lt;NA&gt;               &lt;NA&gt;           &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00097634                   &lt;NA&gt;               &lt;NA&gt;           &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00097635                   &lt;NA&gt;               &lt;NA&gt;           &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00097636                   &lt;NA&gt;               &lt;NA&gt;           &lt;NA&gt;</span></span>
-<span><span class="co">#&gt;              sample_geographic location (longitude)</span></span>
-<span><span class="co">#&gt; MGYA00097631                                   &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00097632                                   &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00097633                                   &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00097634                                   &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00097635                                   &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00097636                                   &lt;NA&gt;</span></span>
-<span><span class="co">#&gt;              sample_geographic location (country and/or sea,region)</span></span>
-<span><span class="co">#&gt; MGYA00097631                                                   &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00097632                                                   &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00097633                                                   &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00097634                                                   &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00097635                                                   &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00097636                                                   &lt;NA&gt;</span></span>
-<span><span class="co">#&gt;              sample_environment (biome) sample_environment (feature)</span></span>
-<span><span class="co">#&gt; MGYA00097631                       &lt;NA&gt;                         &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00097632                       &lt;NA&gt;                         &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00097633                       &lt;NA&gt;                         &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00097634                       &lt;NA&gt;                         &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00097635                       &lt;NA&gt;                         &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00097636                       &lt;NA&gt;                         &lt;NA&gt;</span></span>
-<span><span class="co">#&gt;              sample_environment (material) sample_environmental package</span></span>
-<span><span class="co">#&gt; MGYA00097631                          &lt;NA&gt;                         &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00097632                          &lt;NA&gt;                         &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00097633                          &lt;NA&gt;                         &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00097634                          &lt;NA&gt;                         &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00097635                          &lt;NA&gt;                         &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00097636                          &lt;NA&gt;                         &lt;NA&gt;</span></span>
-<span><span class="co">#&gt;              sample_host taxid sample_geographic location (latitude)</span></span>
-<span><span class="co">#&gt; MGYA00097631              &lt;NA&gt;                                  &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00097632              &lt;NA&gt;                                  &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00097633              &lt;NA&gt;                                  &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00097634              &lt;NA&gt;                                  &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00097635              &lt;NA&gt;                                  &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00097636              &lt;NA&gt;                                  &lt;NA&gt;</span></span>
-<span><span class="co">#&gt;              sample_host scientific name sample_human gut environmental package</span></span>
-<span><span class="co">#&gt; MGYA00097631                        &lt;NA&gt;                                   &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00097632                        &lt;NA&gt;                                   &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00097633                        &lt;NA&gt;                                   &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00097634                        &lt;NA&gt;                                   &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00097635                        &lt;NA&gt;                                   &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00097636                        &lt;NA&gt;                                   &lt;NA&gt;</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">full_metadata</span><span class="op">)</span></span></code></pre></div>
 <p>From <code>full_metadata</code> we get an idea of the type of data
 we’re dealing with, and can extract useul information such as sequencing
 platform, source biome, etc. The next code snippet tallies a few of
@@ -1136,23 +390,15 @@ indicates that while within study read counts are similar, we probably
 need to use some sort of normalization procedure when comparing across
 samples. We might also want to drop particularly low read coverage
 samples from further analysis.</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Load ggplot2 </span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">#Distribution of sample source material:</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">full_metadata</span><span class="op">$</span><span class="va">`sample_environment-material`</span><span class="op">)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; sediment    stool    water </span></span>
-<span><span class="co">#&gt;       27       38      412</span></span>
 <span></span>
 <span><span class="co">#What sequencing machine(s) were used?</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">full_metadata</span><span class="op">$</span><span class="va">`sample_instrument model`</span><span class="op">)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;   Illumina HiScanSQ Illumina HiSeq 2000 Illumina HiSeq 2500 Illumina HiSeq 4000 </span></span>
-<span><span class="co">#&gt;                  38                 352                   2                  25 </span></span>
-<span><span class="co">#&gt;         NextSeq 500 </span></span>
-<span><span class="co">#&gt;                  60</span></span>
 <span></span>
 <span><span class="co"># Boxplot of raw read counts:</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span></span>
@@ -1160,9 +406,7 @@ samples from further analysis.</p>
 <span>        <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">`analysis_Submitted nucleotide sequences`</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_boxplot.html" class="external-link">geom_boxplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>group<span class="op">=</span><span class="va">study_accession</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"log(submitted reads)"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: Removed 1 rows containing non-finite values (`stat_boxplot()`).</span></span></code></pre></div>
-<p><img src="MGnifyR_long_files/figure-html/full_metatdata_explore-1.png" width="700"></p>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"log(submitted reads)"</span><span class="op">)</span></span></code></pre></div>
 <p>Again, we can fetch the data by calling <code><a href="../reference/getResult.html">getResult()</a></code>.
 <code>bulk.dl=TRUE</code> has the potential to significantly speed up
 data retrieval. MGnify makes its functional results available in two
@@ -1193,25 +437,9 @@ analysis to continue. It might take a while though. Hopefully in the
 future the sample/analysis correspondence mismatches will be fixed and
 the default <code>bulk.dl</code> will be switch to
 <code>TRUE</code>.</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">mae</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getResult.html">getResult</a></span><span class="op">(</span><span class="va">mg</span>, <span class="va">all_accessions</span>, bulk.dl <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">mae</span></span>
-<span><span class="co">#&gt; A MultiAssayExperiment object of 4 listed</span></span>
-<span><span class="co">#&gt;  experiments with user-defined names and respective classes.</span></span>
-<span><span class="co">#&gt;  Containing an ExperimentList class object of length 4:</span></span>
-<span><span class="co">#&gt;  [1] microbiota: TreeSummarizedExperiment with 32401 rows and 487 columns</span></span>
-<span><span class="co">#&gt;  [2] go-slim: TreeSummarizedExperiment with 116 rows and 487 columns</span></span>
-<span><span class="co">#&gt;  [3] go-terms: TreeSummarizedExperiment with 2640 rows and 487 columns</span></span>
-<span><span class="co">#&gt;  [4] interpro-identifiers: TreeSummarizedExperiment with 15818 rows and 487 columns</span></span>
-<span><span class="co">#&gt; Functionality:</span></span>
-<span><span class="co">#&gt;  experiments() - obtain the ExperimentList instance</span></span>
-<span><span class="co">#&gt;  colData() - the primary/phenotype DataFrame</span></span>
-<span><span class="co">#&gt;  sampleMap() - the sample coordination DataFrame</span></span>
-<span><span class="co">#&gt;  `$`, `[`, `[[` - extract colData columns, subset, or experiment</span></span>
-<span><span class="co">#&gt;  *Format() - convert into a long or wide DataFrame</span></span>
-<span><span class="co">#&gt;  assays() - convert ExperimentList to a SimpleList of matrices</span></span>
-<span><span class="co">#&gt;  exportClass() - save data to flat files</span></span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">mae</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getResult.html">getResult</a></span><span class="op">(</span><span class="va">mg</span>, <span class="va">all_accessions</span>, bulk.dl <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">mae</span></span></code></pre></div>
 <p>For metagenomic samples, the result is <em><a href="https://bioconductor.org/packages/3.19/MultiAssayExperiment" class="external-link">MultiAssayExperiment</a></em>
 (<code>MAE</code>) which links multiple <code>TreeSE</code> objects into
 one dataset. These <code>TreeSE</code> objects include taxonomic
@@ -1219,28 +447,11 @@ profiling data along with functional data in unique objects. Each
 objects is linked with each other by their sample names. You can get
 access to individual object or experiment by specifying index or
 name.</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">mae</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span></span>
-<span><span class="co">#&gt; class: TreeSummarizedExperiment </span></span>
-<span><span class="co">#&gt; dim: 116 487 </span></span>
-<span><span class="co">#&gt; metadata(0):</span></span>
-<span><span class="co">#&gt; assays(1): counts</span></span>
-<span><span class="co">#&gt; rownames(116): GO:0000015 GO:0000150 ... GO:1902494 GO:1990204</span></span>
-<span><span class="co">#&gt; rowData names(10): description category ... Genus Species</span></span>
-<span><span class="co">#&gt; colnames(487): MGYA00083332 MGYA00083120 ... MGYA00097653 MGYA00097655</span></span>
-<span><span class="co">#&gt; colData names(70): analysis_analysis.status analysis_pipeline.version</span></span>
-<span><span class="co">#&gt;   ... sample_host.scientific.name</span></span>
-<span><span class="co">#&gt;   sample_human.gut.environmental.package</span></span>
-<span><span class="co">#&gt; reducedDimNames(0):</span></span>
-<span><span class="co">#&gt; mainExpName: NULL</span></span>
-<span><span class="co">#&gt; altExpNames(0):</span></span>
-<span><span class="co">#&gt; rowLinks: NULL</span></span>
-<span><span class="co">#&gt; rowTree: NULL</span></span>
-<span><span class="co">#&gt; colLinks: NULL</span></span>
-<span><span class="co">#&gt; colTree: NULL</span></span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">mae</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span></span></code></pre></div>
 <p>We can perform principal component analysis to microbial profiling
 data by utilizing miaverse tools.</p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Apply relative transformation</span></span>
 <span><span class="va">mae</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/mia/man/transformAssay.html" class="external-link">transformAssay</a></span><span class="op">(</span><span class="va">mae</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, method <span class="op">=</span> <span class="st">"relabundance"</span><span class="op">)</span></span>
 <span><span class="co"># Perform PCoA</span></span>
@@ -1249,7 +460,6 @@ data by utilizing miaverse tools.</p>
 <span>    FUN <span class="op">=</span> <span class="fu">vegan</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/vegan/man/vegdist.html" class="external-link">vegdist</a></span>, method <span class="op">=</span> <span class="st">"bray"</span><span class="op">)</span></span>
 <span><span class="co"># Plot</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/scater/man/plotReducedDim.html" class="external-link">plotReducedDim</a></span><span class="op">(</span><span class="va">mae</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, <span class="st">"MDS"</span>, colour_by <span class="op">=</span> <span class="st">"sample_environment.feature"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="MGnifyR_long_files/figure-html/pcoa-1.png" width="700"></p>
 </div>
 </div>
 <div class="section level3">
@@ -1271,115 +481,18 @@ below retrieves a data.frame containing all available downloads for each
 accession we’ve been examining previously. It then filters this to
 retain only those files corresponding retain the annotated amino acid
 sequence files.</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Find list of available downloads</span></span>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">#Find list of available downloads, and filter for </span></span>
 <span><span class="va">dl_urls</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getFile.html">searchFile</a></span><span class="op">(</span></span>
 <span>    <span class="va">mg</span>, <span class="va">full_metadata</span><span class="op">$</span><span class="va">analysis_accession</span>, type <span class="op">=</span> <span class="st">"analyses"</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Filter table</span></span>
-<span><span class="va">target_urls</span> <span class="op">&lt;-</span> <span class="va">dl_urls</span><span class="op">[</span></span>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">target_urls</span> <span class="op">&lt;-</span> <span class="va">dl_urls</span><span class="op">[</span></span>
 <span>    <span class="va">dl_urls</span><span class="op">$</span><span class="va">attributes.description.label</span> <span class="op">==</span> <span class="st">"Predicted CDS with annotation"</span>,<span class="op">]</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">target_urls</span><span class="op">)</span></span>
-<span><span class="co">#&gt;         type                                           id</span></span>
-<span><span class="co">#&gt; 3   analyses ERR1811630_MERGED_FASTQ_CDS_annotated.faa.gz</span></span>
-<span><span class="co">#&gt; 24  analyses ERR1811632_MERGED_FASTQ_CDS_annotated.faa.gz</span></span>
-<span><span class="co">#&gt; 45  analyses ERR1811642_MERGED_FASTQ_CDS_annotated.faa.gz</span></span>
-<span><span class="co">#&gt; 68  analyses ERR1811636_MERGED_FASTQ_CDS_annotated.faa.gz</span></span>
-<span><span class="co">#&gt; 90  analyses ERR1811628_MERGED_FASTQ_CDS_annotated.faa.gz</span></span>
-<span><span class="co">#&gt; 115 analyses ERR1811635_MERGED_FASTQ_CDS_annotated.faa.gz</span></span>
-<span><span class="co">#&gt;                                 attributes.alias attributes.file.format.name</span></span>
-<span><span class="co">#&gt; 3   ERR1811630_MERGED_FASTQ_CDS_annotated.faa.gz                       FASTA</span></span>
-<span><span class="co">#&gt; 24  ERR1811632_MERGED_FASTQ_CDS_annotated.faa.gz                       FASTA</span></span>
-<span><span class="co">#&gt; 45  ERR1811642_MERGED_FASTQ_CDS_annotated.faa.gz                       FASTA</span></span>
-<span><span class="co">#&gt; 68  ERR1811636_MERGED_FASTQ_CDS_annotated.faa.gz                       FASTA</span></span>
-<span><span class="co">#&gt; 90  ERR1811628_MERGED_FASTQ_CDS_annotated.faa.gz                       FASTA</span></span>
-<span><span class="co">#&gt; 115 ERR1811635_MERGED_FASTQ_CDS_annotated.faa.gz                       FASTA</span></span>
-<span><span class="co">#&gt;     attributes.file.format.extension attributes.file.format.compression</span></span>
-<span><span class="co">#&gt; 3                              fasta                               TRUE</span></span>
-<span><span class="co">#&gt; 24                             fasta                               TRUE</span></span>
-<span><span class="co">#&gt; 45                             fasta                               TRUE</span></span>
-<span><span class="co">#&gt; 68                             fasta                               TRUE</span></span>
-<span><span class="co">#&gt; 90                             fasta                               TRUE</span></span>
-<span><span class="co">#&gt; 115                            fasta                               TRUE</span></span>
-<span><span class="co">#&gt;      attributes.description.label</span></span>
-<span><span class="co">#&gt; 3   Predicted CDS with annotation</span></span>
-<span><span class="co">#&gt; 24  Predicted CDS with annotation</span></span>
-<span><span class="co">#&gt; 45  Predicted CDS with annotation</span></span>
-<span><span class="co">#&gt; 68  Predicted CDS with annotation</span></span>
-<span><span class="co">#&gt; 90  Predicted CDS with annotation</span></span>
-<span><span class="co">#&gt; 115 Predicted CDS with annotation</span></span>
-<span><span class="co">#&gt;                         attributes.description.description</span></span>
-<span><span class="co">#&gt; 3   Predicted coding sequences with InterPro match (FASTA)</span></span>
-<span><span class="co">#&gt; 24  Predicted coding sequences with InterPro match (FASTA)</span></span>
-<span><span class="co">#&gt; 45  Predicted coding sequences with InterPro match (FASTA)</span></span>
-<span><span class="co">#&gt; 68  Predicted coding sequences with InterPro match (FASTA)</span></span>
-<span><span class="co">#&gt; 90  Predicted coding sequences with InterPro match (FASTA)</span></span>
-<span><span class="co">#&gt; 115 Predicted coding sequences with InterPro match (FASTA)</span></span>
-<span><span class="co">#&gt;     attributes.group.type attributes.file.checksum.checksum</span></span>
-<span><span class="co">#&gt; 3           Sequence data                                  </span></span>
-<span><span class="co">#&gt; 24          Sequence data                                  </span></span>
-<span><span class="co">#&gt; 45          Sequence data                                  </span></span>
-<span><span class="co">#&gt; 68          Sequence data                                  </span></span>
-<span><span class="co">#&gt; 90          Sequence data                                  </span></span>
-<span><span class="co">#&gt; 115         Sequence data                                  </span></span>
-<span><span class="co">#&gt;     attributes.file.checksum.checksum.algorithm</span></span>
-<span><span class="co">#&gt; 3                                              </span></span>
-<span><span class="co">#&gt; 24                                             </span></span>
-<span><span class="co">#&gt; 45                                             </span></span>
-<span><span class="co">#&gt; 68                                             </span></span>
-<span><span class="co">#&gt; 90                                             </span></span>
-<span><span class="co">#&gt; 115                                            </span></span>
-<span><span class="co">#&gt;     relationships.pipeline.data.type relationships.pipeline.data.id</span></span>
-<span><span class="co">#&gt; 3                          pipelines                            3.0</span></span>
-<span><span class="co">#&gt; 24                         pipelines                            3.0</span></span>
-<span><span class="co">#&gt; 45                         pipelines                            3.0</span></span>
-<span><span class="co">#&gt; 68                         pipelines                            3.0</span></span>
-<span><span class="co">#&gt; 90                         pipelines                            3.0</span></span>
-<span><span class="co">#&gt; 115                        pipelines                            3.0</span></span>
-<span><span class="co">#&gt;                                          relationships.pipeline.related</span></span>
-<span><span class="co">#&gt; 3   https://www.ebi.ac.uk/metagenomics/api/v1/pipelines/3.0?format=json</span></span>
-<span><span class="co">#&gt; 24  https://www.ebi.ac.uk/metagenomics/api/v1/pipelines/3.0?format=json</span></span>
-<span><span class="co">#&gt; 45  https://www.ebi.ac.uk/metagenomics/api/v1/pipelines/3.0?format=json</span></span>
-<span><span class="co">#&gt; 68  https://www.ebi.ac.uk/metagenomics/api/v1/pipelines/3.0?format=json</span></span>
-<span><span class="co">#&gt; 90  https://www.ebi.ac.uk/metagenomics/api/v1/pipelines/3.0?format=json</span></span>
-<span><span class="co">#&gt; 115 https://www.ebi.ac.uk/metagenomics/api/v1/pipelines/3.0?format=json</span></span>
-<span><span class="co">#&gt;                                                                                                          download_url</span></span>
-<span><span class="co">#&gt; 3   https://www.ebi.ac.uk/metagenomics/api/v1/analyses/MGYA00097631/file/ERR1811630_MERGED_FASTQ_CDS_annotated.faa.gz</span></span>
-<span><span class="co">#&gt; 24  https://www.ebi.ac.uk/metagenomics/api/v1/analyses/MGYA00097632/file/ERR1811632_MERGED_FASTQ_CDS_annotated.faa.gz</span></span>
-<span><span class="co">#&gt; 45  https://www.ebi.ac.uk/metagenomics/api/v1/analyses/MGYA00097633/file/ERR1811642_MERGED_FASTQ_CDS_annotated.faa.gz</span></span>
-<span><span class="co">#&gt; 68  https://www.ebi.ac.uk/metagenomics/api/v1/analyses/MGYA00097634/file/ERR1811636_MERGED_FASTQ_CDS_annotated.faa.gz</span></span>
-<span><span class="co">#&gt; 90  https://www.ebi.ac.uk/metagenomics/api/v1/analyses/MGYA00097635/file/ERR1811628_MERGED_FASTQ_CDS_annotated.faa.gz</span></span>
-<span><span class="co">#&gt; 115 https://www.ebi.ac.uk/metagenomics/api/v1/analyses/MGYA00097636/file/ERR1811635_MERGED_FASTQ_CDS_annotated.faa.gz</span></span>
-<span><span class="co">#&gt;        accession</span></span>
-<span><span class="co">#&gt; 3   MGYA00097631</span></span>
-<span><span class="co">#&gt; 24  MGYA00097632</span></span>
-<span><span class="co">#&gt; 45  MGYA00097633</span></span>
-<span><span class="co">#&gt; 68  MGYA00097634</span></span>
-<span><span class="co">#&gt; 90  MGYA00097635</span></span>
-<span><span class="co">#&gt; 115 MGYA00097636</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">target_urls</span><span class="op">)</span></span></code></pre></div>
 <p>To list the types of available files, and guide the filtering,
 something like the following might be useful.</p>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">dl_urls</span><span class="op">$</span><span class="va">attributes.description.label</span><span class="op">)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;                 Complete GO annotation                     GO slim annotation </span></span>
-<span><span class="co">#&gt;                                    478                                    478 </span></span>
-<span><span class="co">#&gt;                       InterPro matches OTUs, counts and taxonomic assignments </span></span>
-<span><span class="co">#&gt;                                    483                                   1434 </span></span>
-<span><span class="co">#&gt;                      Phylogenetic tree          Predicted CDS with annotation </span></span>
-<span><span class="co">#&gt;                                    478                                    477 </span></span>
-<span><span class="co">#&gt;       Predicted CDS without annotation       Predicted ORF without annotation </span></span>
-<span><span class="co">#&gt;                                    480                                    488 </span></span>
-<span><span class="co">#&gt;                        Predicted tRNAs             Processed nucleotide reads </span></span>
-<span><span class="co">#&gt;                                    478                                    508 </span></span>
-<span><span class="co">#&gt;        Processed reads with annotation              Processed reads with pCDS </span></span>
-<span><span class="co">#&gt;                                    477                                    508 </span></span>
-<span><span class="co">#&gt;     Processed reads without annotation                Reads encoding 16S rRNA </span></span>
-<span><span class="co">#&gt;                                    488                                    478 </span></span>
-<span><span class="co">#&gt;                Reads encoding 23S rRNA                 Reads encoding 5S rRNA </span></span>
-<span><span class="co">#&gt;                                    478                                    478 </span></span>
-<span><span class="co">#&gt;            Taxa abundance distribution </span></span>
-<span><span class="co">#&gt;                                    475</span></span></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">dl_urls</span><span class="op">$</span><span class="va">attributes.description.label</span><span class="op">)</span></span></code></pre></div>
 <p>Unlike other <code>MGnifyR</code> functions,
 <code><a href="../reference/getFile.html">searchFile()</a></code> is not limited to <code>analyses</code>, and
 by specifying <code>accession_type</code> other results types may be
@@ -1387,46 +500,11 @@ found. For instance, while general <code>genome</code> functionality is
 not yet integrated into <code>MGnifyR</code>, we can retrieve associated
 files for a particular <code>genome</code> accession with the
 following:</p>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">genome_urls</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getFile.html">searchFile</a></span><span class="op">(</span><span class="va">mg</span>, <span class="st">"MGYG000433953"</span>, type <span class="op">=</span> <span class="st">"genomes"</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">genome_urls</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"id"</span>,<span class="st">"attributes.file.format.name"</span>,<span class="st">"download_url"</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="co">#&gt;                                   id attributes.file.format.name</span></span>
-<span><span class="co">#&gt; 1                     core_genes.txt                         TAB</span></span>
-<span><span class="co">#&gt; 2          gene_presence_absence.csv                         CSV</span></span>
-<span><span class="co">#&gt; 3         gene_presence_absence.Rtab                         TSV</span></span>
-<span><span class="co">#&gt; 4                       mashtree.nwk               Newick format</span></span>
-<span><span class="co">#&gt; 5                  MGYG000433953.faa                       FASTA</span></span>
-<span><span class="co">#&gt; 6                  MGYG000433953.fna                       FASTA</span></span>
-<span><span class="co">#&gt; 7              MGYG000433953.fna.fai                         FAI</span></span>
-<span><span class="co">#&gt; 8                  MGYG000433953.gff                         GFF</span></span>
-<span><span class="co">#&gt; 9    MGYG000433953_amrfinderplus.tsv                         TSV</span></span>
-<span><span class="co">#&gt; 10 MGYG000433953_crisprcasfinder.gff                         GFF</span></span>
-<span><span class="co">#&gt; 11 MGYG000433953_crisprcasfinder.tsv                         TSV</span></span>
-<span><span class="co">#&gt; 12          MGYG000433953_eggNOG.tsv                         TSV</span></span>
-<span><span class="co">#&gt; 13    MGYG000433953_InterProScan.tsv                         TSV</span></span>
-<span><span class="co">#&gt; 14        MGYG000433953_mobilome.gff                         GFF</span></span>
-<span><span class="co">#&gt; 15         MGYG000433953_rRNAs.fasta                       FASTA</span></span>
-<span><span class="co">#&gt; 16         MGYG000433953_sanntis.gff                         GFF</span></span>
-<span><span class="co">#&gt; 17                    pan-genome.fna                       FASTA</span></span>
-<span><span class="co">#&gt;                                                                                                   download_url</span></span>
-<span><span class="co">#&gt; 1                     https://www.ebi.ac.uk/metagenomics/api/v1/genomes/MGYG000433953/downloads/core_genes.txt</span></span>
-<span><span class="co">#&gt; 2          https://www.ebi.ac.uk/metagenomics/api/v1/genomes/MGYG000433953/downloads/gene_presence_absence.csv</span></span>
-<span><span class="co">#&gt; 3         https://www.ebi.ac.uk/metagenomics/api/v1/genomes/MGYG000433953/downloads/gene_presence_absence.Rtab</span></span>
-<span><span class="co">#&gt; 4                       https://www.ebi.ac.uk/metagenomics/api/v1/genomes/MGYG000433953/downloads/mashtree.nwk</span></span>
-<span><span class="co">#&gt; 5                  https://www.ebi.ac.uk/metagenomics/api/v1/genomes/MGYG000433953/downloads/MGYG000433953.faa</span></span>
-<span><span class="co">#&gt; 6                  https://www.ebi.ac.uk/metagenomics/api/v1/genomes/MGYG000433953/downloads/MGYG000433953.fna</span></span>
-<span><span class="co">#&gt; 7              https://www.ebi.ac.uk/metagenomics/api/v1/genomes/MGYG000433953/downloads/MGYG000433953.fna.fai</span></span>
-<span><span class="co">#&gt; 8                  https://www.ebi.ac.uk/metagenomics/api/v1/genomes/MGYG000433953/downloads/MGYG000433953.gff</span></span>
-<span><span class="co">#&gt; 9    https://www.ebi.ac.uk/metagenomics/api/v1/genomes/MGYG000433953/downloads/MGYG000433953_amrfinderplus.tsv</span></span>
-<span><span class="co">#&gt; 10 https://www.ebi.ac.uk/metagenomics/api/v1/genomes/MGYG000433953/downloads/MGYG000433953_crisprcasfinder.gff</span></span>
-<span><span class="co">#&gt; 11 https://www.ebi.ac.uk/metagenomics/api/v1/genomes/MGYG000433953/downloads/MGYG000433953_crisprcasfinder.tsv</span></span>
-<span><span class="co">#&gt; 12          https://www.ebi.ac.uk/metagenomics/api/v1/genomes/MGYG000433953/downloads/MGYG000433953_eggNOG.tsv</span></span>
-<span><span class="co">#&gt; 13    https://www.ebi.ac.uk/metagenomics/api/v1/genomes/MGYG000433953/downloads/MGYG000433953_InterProScan.tsv</span></span>
-<span><span class="co">#&gt; 14        https://www.ebi.ac.uk/metagenomics/api/v1/genomes/MGYG000433953/downloads/MGYG000433953_mobilome.gff</span></span>
-<span><span class="co">#&gt; 15         https://www.ebi.ac.uk/metagenomics/api/v1/genomes/MGYG000433953/downloads/MGYG000433953_rRNAs.fasta</span></span>
-<span><span class="co">#&gt; 16         https://www.ebi.ac.uk/metagenomics/api/v1/genomes/MGYG000433953/downloads/MGYG000433953_sanntis.gff</span></span>
-<span><span class="co">#&gt; 17                    https://www.ebi.ac.uk/metagenomics/api/v1/genomes/MGYG000433953/downloads/pan-genome.fna</span></span></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># FIXME</span></span>
+<span><span class="va">genome_urls</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getFile.html">searchFile</a></span><span class="op">(</span><span class="va">mg</span>, <span class="st">"MGYS00005650"</span>, type <span class="op">=</span> <span class="st">"genomes"</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">genome_urls</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"id"</span>,<span class="st">"attributes.file.format.name"</span>,<span class="st">"download_url"</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
 <p>Having found the a set of target urls, the final step is to use
 <code><a href="../reference/getFile.html">getFile()</a></code> to actually retrieve the file. Unlike other
 functions, this only works with a single url location at once, so each
@@ -1441,21 +519,18 @@ the file afterwards more awkward. Regardless, the default behaviour of
 <code><a href="../reference/getFile.html">getFile()</a></code> is to retrieve the file specified in the
 parameter <code>url</code>, save it to disk, and return the filepath it
 was saved to.</p>
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Just select a single file from the target_urls list for demonstration.</span></span>
 <span></span>
 <span><span class="co"># Default behavior - use local cache.</span></span>
-<span><span class="va">cached_location1</span> <span class="op">=</span> <span class="fu"><a href="../reference/getFile.html">getFile</a></span><span class="op">(</span><span class="va">mg</span>, <span class="va">target_urls</span><span class="op">$</span><span class="va">download_url</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="va">cached_location</span> <span class="op">=</span> <span class="fu"><a href="../reference/getFile.html">getFile</a></span><span class="op">(</span><span class="va">mg</span>, <span class="va">target_urls</span><span class="op">$</span><span class="va">download_url</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Specifying a file</span></span>
-<span><span class="va">cached_location2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getFile.html">getFile</a></span><span class="op">(</span></span>
+<span><span class="va">specified_location</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getFile.html">getFile</a></span><span class="op">(</span></span>
 <span>    <span class="va">mg</span>, <span class="va">target_urls</span><span class="op">$</span><span class="va">download_url</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">cached_location</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">cached_location1</span>, <span class="va">cached_location2</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Where are the files?</span></span>
-<span><span class="va">cached_location</span></span>
-<span><span class="co">#&gt; [1] "/tmp/RtmpeKYwQ1/file4c1937cbdfd5" "/tmp/RtmpeKYwQ1/file4c19a3b3548"</span></span></code></pre></div>
+<span><span class="co"># Where are the files?</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">cached_location</span>,<span class="va">specified_location</span><span class="op">)</span></span></code></pre></div>
 <p>A second download option is available, which allows built-in parsing
 of the file. If we know ahead of time what processing will be performed,
 it may be possible to integrate it into a function, pass this function
@@ -1480,7 +555,7 @@ sequence name, and then tallies up the unique sequences into a single
 data.frame row. In this case the PFAM motif identifies sequences coding
 for the amoC gene, found in both ammonia and methane oxidizing
 organisms, but any other filtering method could be used.</p>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://bioconductor.org/packages/Biostrings" class="external-link">Biostrings</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Simple function to a count of unique sequences matching PFAM amoC/mmoC motif</span></span>
@@ -1491,119 +566,14 @@ organisms, but any other filtering method could be used.</p>
 <span><span class="op">}</span></span></code></pre></div>
 <p>Having defined the function, it just remains to include it in the
 call to <code><a href="../reference/getFile.html">getFile()</a></code>.</p>
-<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Just download a single accession for demonstration, specifying a read_function</span></span>
 <span><span class="va">amoC_seq_counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getFile.html">getFile</a></span><span class="op">(</span></span>
-<span>    <span class="va">mg</span>, <span class="va">target_urls</span><span class="op">$</span><span class="va">download_url</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, read_func <span class="op">=</span> <span class="va">getAmoCseqs</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">amoC_seq_counts</span></span>
-<span><span class="co">#&gt; [1] "/tmp/RtmpeKYwQ1/file4c1941f3c62"</span></span></code></pre></div>
-<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; R Under development (unstable) (2024-01-31 r85845)</span></span>
-<span><span class="co">#&gt; Platform: x86_64-pc-linux-gnu</span></span>
-<span><span class="co">#&gt; Running under: Ubuntu 22.04.3 LTS</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Matrix products: default</span></span>
-<span><span class="co">#&gt; BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 </span></span>
-<span><span class="co">#&gt; LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.20.so;  LAPACK version 3.10.0</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; locale:</span></span>
-<span><span class="co">#&gt;  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              </span></span>
-<span><span class="co">#&gt;  [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    </span></span>
-<span><span class="co">#&gt;  [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   </span></span>
-<span><span class="co">#&gt;  [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 </span></span>
-<span><span class="co">#&gt;  [9] LC_ADDRESS=C               LC_TELEPHONE=C            </span></span>
-<span><span class="co">#&gt; [11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; time zone: UTC</span></span>
-<span><span class="co">#&gt; tzcode source: system (glibc)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; attached base packages:</span></span>
-<span><span class="co">#&gt; [1] stats4    stats     graphics  grDevices utils     datasets  methods  </span></span>
-<span><span class="co">#&gt; [8] base     </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; other attached packages:</span></span>
-<span><span class="co">#&gt;  [1] miaViz_1.11.0                   ggraph_2.1.0                   </span></span>
-<span><span class="co">#&gt;  [3] scater_1.31.2                   ggplot2_3.4.4                  </span></span>
-<span><span class="co">#&gt;  [5] scuttle_1.13.0                  MGnifyR_0.99.15                </span></span>
-<span><span class="co">#&gt;  [7] biomformat_1.31.0               mia_1.11.1                     </span></span>
-<span><span class="co">#&gt;  [9] MultiAssayExperiment_1.29.0     TreeSummarizedExperiment_2.11.0</span></span>
-<span><span class="co">#&gt; [11] Biostrings_2.71.2               XVector_0.43.1                 </span></span>
-<span><span class="co">#&gt; [13] SingleCellExperiment_1.25.0     SummarizedExperiment_1.33.3    </span></span>
-<span><span class="co">#&gt; [15] Biobase_2.63.0                  GenomicRanges_1.55.2           </span></span>
-<span><span class="co">#&gt; [17] GenomeInfoDb_1.39.5             IRanges_2.37.1                 </span></span>
-<span><span class="co">#&gt; [19] S4Vectors_0.41.3                BiocGenerics_0.49.1            </span></span>
-<span><span class="co">#&gt; [21] MatrixGenerics_1.15.0           matrixStats_1.2.0              </span></span>
-<span><span class="co">#&gt; [23] knitr_1.45                      BiocStyle_2.31.0               </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
-<span><span class="co">#&gt;   [1] jsonlite_1.8.8              magrittr_2.0.3             </span></span>
-<span><span class="co">#&gt;   [3] ggbeeswarm_0.7.2            farver_2.1.1               </span></span>
-<span><span class="co">#&gt;   [5] rmarkdown_2.25              fs_1.6.3                   </span></span>
-<span><span class="co">#&gt;   [7] zlibbioc_1.49.0             ragg_1.2.7                 </span></span>
-<span><span class="co">#&gt;   [9] vctrs_0.6.5                 multtest_2.59.0            </span></span>
-<span><span class="co">#&gt;  [11] memoise_2.0.1               DelayedMatrixStats_1.25.1  </span></span>
-<span><span class="co">#&gt;  [13] RCurl_1.98-1.14             ggtree_3.11.0              </span></span>
-<span><span class="co">#&gt;  [15] BiocBaseUtils_1.5.0         htmltools_0.5.7            </span></span>
-<span><span class="co">#&gt;  [17] S4Arrays_1.3.3              BiocNeighbors_1.21.2       </span></span>
-<span><span class="co">#&gt;  [19] Rhdf5lib_1.25.1             gridGraphics_0.5-1         </span></span>
-<span><span class="co">#&gt;  [21] SparseArray_1.3.3           rhdf5_2.47.2               </span></span>
-<span><span class="co">#&gt;  [23] sass_0.4.8                  bslib_0.6.1                </span></span>
-<span><span class="co">#&gt;  [25] desc_1.4.3                  plyr_1.8.9                 </span></span>
-<span><span class="co">#&gt;  [27] DECIPHER_2.31.1             cachem_1.0.8               </span></span>
-<span><span class="co">#&gt;  [29] igraph_2.0.1.1              iterators_1.0.14           </span></span>
-<span><span class="co">#&gt;  [31] lifecycle_1.0.4             pkgconfig_2.0.3            </span></span>
-<span><span class="co">#&gt;  [33] rsvd_1.0.5                  Matrix_1.6-5               </span></span>
-<span><span class="co">#&gt;  [35] R6_2.5.1                    fastmap_1.1.1              </span></span>
-<span><span class="co">#&gt;  [37] GenomeInfoDbData_1.2.11     aplot_0.2.2                </span></span>
-<span><span class="co">#&gt;  [39] digest_0.6.34               ggnewscale_0.4.9           </span></span>
-<span><span class="co">#&gt;  [41] colorspace_2.1-0            patchwork_1.2.0            </span></span>
-<span><span class="co">#&gt;  [43] irlba_2.3.5.1               textshaping_0.3.7          </span></span>
-<span><span class="co">#&gt;  [45] RSQLite_2.3.5               vegan_2.6-4                </span></span>
-<span><span class="co">#&gt;  [47] beachmat_2.19.1             labeling_0.4.3             </span></span>
-<span><span class="co">#&gt;  [49] fansi_1.0.6                 urltools_1.7.3             </span></span>
-<span><span class="co">#&gt;  [51] polyclip_1.10-6             httr_1.4.7                 </span></span>
-<span><span class="co">#&gt;  [53] abind_1.4-5                 mgcv_1.9-1                 </span></span>
-<span><span class="co">#&gt;  [55] compiler_4.4.0              bit64_4.0.5                </span></span>
-<span><span class="co">#&gt;  [57] withr_3.0.0                 BiocParallel_1.37.0        </span></span>
-<span><span class="co">#&gt;  [59] viridis_0.6.5               DBI_1.2.1                  </span></span>
-<span><span class="co">#&gt;  [61] highr_0.10                  ggforce_0.4.1              </span></span>
-<span><span class="co">#&gt;  [63] MASS_7.3-60.2               DelayedArray_0.29.1        </span></span>
-<span><span class="co">#&gt;  [65] bluster_1.13.0              permute_0.9-7              </span></span>
-<span><span class="co">#&gt;  [67] tools_4.4.0                 vipor_0.4.7                </span></span>
-<span><span class="co">#&gt;  [69] beeswarm_0.4.0              ape_5.7-1                  </span></span>
-<span><span class="co">#&gt;  [71] glue_1.7.0                  nlme_3.1-164               </span></span>
-<span><span class="co">#&gt;  [73] rhdf5filters_1.15.1         grid_4.4.0                 </span></span>
-<span><span class="co">#&gt;  [75] ade4_1.7-22                 cluster_2.1.6              </span></span>
-<span><span class="co">#&gt;  [77] reshape2_1.4.4              generics_0.1.3             </span></span>
-<span><span class="co">#&gt;  [79] gtable_0.3.4                tidyr_1.3.1                </span></span>
-<span><span class="co">#&gt;  [81] data.table_1.15.0           tidygraph_1.3.1            </span></span>
-<span><span class="co">#&gt;  [83] BiocSingular_1.19.0         ScaledMatrix_1.11.0        </span></span>
-<span><span class="co">#&gt;  [85] utf8_1.2.4                  foreach_1.5.2              </span></span>
-<span><span class="co">#&gt;  [87] ggrepel_0.9.5               pillar_1.9.0               </span></span>
-<span><span class="co">#&gt;  [89] stringr_1.5.1               yulab.utils_0.1.4          </span></span>
-<span><span class="co">#&gt;  [91] splines_4.4.0               tweenr_2.0.2               </span></span>
-<span><span class="co">#&gt;  [93] dplyr_1.1.4                 treeio_1.27.0              </span></span>
-<span><span class="co">#&gt;  [95] lattice_0.22-5              survival_3.5-7             </span></span>
-<span><span class="co">#&gt;  [97] bit_4.0.5                   tidyselect_1.2.0           </span></span>
-<span><span class="co">#&gt;  [99] DirichletMultinomial_1.45.0 gridExtra_2.3              </span></span>
-<span><span class="co">#&gt; [101] bookdown_0.37               phyloseq_1.47.0            </span></span>
-<span><span class="co">#&gt; [103] xfun_0.41                   graphlayouts_1.1.0         </span></span>
-<span><span class="co">#&gt; [105] stringi_1.8.3               ggfun_0.1.4                </span></span>
-<span><span class="co">#&gt; [107] lazyeval_0.2.2              yaml_2.3.8                 </span></span>
-<span><span class="co">#&gt; [109] evaluate_0.23               codetools_0.2-19           </span></span>
-<span><span class="co">#&gt; [111] tibble_3.2.1                BiocManager_1.30.22        </span></span>
-<span><span class="co">#&gt; [113] ggplotify_0.1.2             cli_3.6.2                  </span></span>
-<span><span class="co">#&gt; [115] systemfonts_1.0.5           munsell_0.5.0              </span></span>
-<span><span class="co">#&gt; [117] jquerylib_0.1.4             Rcpp_1.0.12                </span></span>
-<span><span class="co">#&gt; [119] triebeard_0.4.1             parallel_4.4.0             </span></span>
-<span><span class="co">#&gt; [121] pkgdown_2.0.7               blob_1.2.4                 </span></span>
-<span><span class="co">#&gt; [123] sparseMatrixStats_1.15.0    bitops_1.0-7               </span></span>
-<span><span class="co">#&gt; [125] decontam_1.23.0             viridisLite_0.4.2          </span></span>
-<span><span class="co">#&gt; [127] tidytree_0.4.6              scales_1.3.0               </span></span>
-<span><span class="co">#&gt; [129] purrr_1.0.2                 crayon_1.5.2               </span></span>
-<span><span class="co">#&gt; [131] rlang_1.1.3</span></span></code></pre></div>
+<span>    <span class="va">mg</span>, <span class="va">target_urls</span><span class="op">$</span><span class="va">download_url</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, read_func <span class="op">=</span> <span class="va">getAmoCseqs</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">amoC_seq_counts</span></span></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
   </div>
