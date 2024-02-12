@@ -1,3 +1,6 @@
+Changes in version 0.99.17
++ Added getData function for fetching raw data from the database
+
 Changes in version 0.99.0
 + Support for TreeSummarizedExperiment and MultiAssayExperiment
 + Submitted to Bioconductor
