@@ -36,7 +36,7 @@ NULL
 
 #' @rdname searchAnalysis
 #' @importFrom plyr llply
-#' @include allClasses.R allGenerics.R MgnifyClient.R utils.R
+#' @include AllClasses.R AllGenerics.R MgnifyClient.R utils.R
 #' @export
 setMethod("searchAnalysis", signature = c(x = "MgnifyClient"), function(
         x, type, accession, ...){
@@ -98,7 +98,7 @@ setMethod("searchAnalysis", signature = c(x = "MgnifyClient"), function(
             res <- lapply(jsondat, function(x) x$id)
         } else {
             res <- accurl
-            warning("Analyses not found for studies ", x, call. = FALSE)
+            warning("\nAnalyses not found for studies ", x, call. = FALSE)
         }
         return(res)
     }, .progress=show.messages)
@@ -159,7 +159,7 @@ setMethod("searchAnalysis", signature = c(x = "MgnifyClient"), function(
     runurl <- .mgnify_get_x_for_y(
         client, x, "samples","runs", use.cache = use.cache, ...)
     if(is.null(runurl)){
-        warning("Analyses not found for samples ", x, call. = FALSE)
+        warning("\nAnalyses not found for samples ", x, call. = FALSE)
         return(runurl)
     }
     # If found, get data for runs
@@ -172,6 +172,10 @@ setMethod("searchAnalysis", signature = c(x = "MgnifyClient"), function(
         # Get data url of related analyses
         accurl <- .mgnify_get_x_for_y(
             client, z, "runs","analyses", use.cache = use.cache, ...)
+        # If no data was found, end the searching.
+        if( is.null(accurl) ){
+            return(accurl)
+        }
         # Get data of those analyses
         jsondat <- .mgnify_retrieve_json(
             client, complete_url = accurl, use.cache = use.cache, ...)
@@ -203,7 +207,8 @@ setMethod("searchAnalysis", signature = c(x = "MgnifyClient"), function(
                 # If we've got to this point, I give up - just return an empty
                 # list...
                 warning(
-                    "Failed to find an analysis for sample ", x, call. = FALSE)
+                    "\nFailed to find an analysis for sample ", x,
+                    call. = FALSE)
             }
         }
         # Get analyses IDs

@@ -59,7 +59,7 @@
 NULL
 
 #' @rdname getData
-#' @include allClasses.R allGenerics.R MgnifyClient.R utils.R
+#' @include AllClasses.R AllGenerics.R MgnifyClient.R utils.R
 #' @export
 setMethod(
     "getData", signature = c(x = "MgnifyClient"), function(

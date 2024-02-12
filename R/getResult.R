@@ -110,7 +110,7 @@ NULL
 #' @importFrom plyr llply
 #' @importFrom dplyr bind_rows
 #' @importFrom reshape2 dcast
-#' @include allClasses.R allGenerics.R MgnifyClient.R utils.R
+#' @include AllClasses.R AllGenerics.R MgnifyClient.R utils.R
 #' @export
 setMethod("getResult", signature = c(x = "MgnifyClient"), function(
         x, accession, get.taxa = TRUE, get.func = TRUE, output = "TreeSE", ...){
@@ -208,7 +208,7 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
             }
         } else{
             warning(
-                "No taxonomy data was found for the dataset.",
+                "\nNo taxonomy data was found for the dataset.",
                 call. = FALSE)
         }
     }
@@ -261,7 +261,7 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
                 }
             }
         } else{
-            warning("No functional data found for the dataset.", call. = FALSE)
+            warning("\nNo functional data found for the dataset.", call. = FALSE)
         }
     }
     return(result)
@@ -422,7 +422,7 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
     # Check if any biom files was found
     if( is.null(available_biom_files) || length(available_biom_files) == 0 ){
         warning(
-            "No BIOM data found for accession '", accession, "'.",
+            "\nNo BIOM data found for accession '", accession, "'.",
             call. = FALSE)
         return(NULL)
     }
@@ -433,7 +433,7 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
     if( sum(biom_position) == 0 ){
         if( show.warnings ){
             warning(
-                "Unable to locate requested taxonomy type ", taxa.su, ". ",
+                "\nUnable to locate requested taxonomy type ", taxa.su, ". ",
                 "This is likely due to the current analysis having been ",
                 "performed on an older version of the MGnify pipeline. ",
                 "The available BIOM file will be used instead.",
@@ -471,7 +471,7 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
         # If the file was not successfully downloaded
         if( res$status_code != 200 ){
             warning(
-                biom_url, ": ", content(res, ...)$errors[[1]]$detail,
+                "\n", biom_url, ": ", content(res, ...)$errors[[1]]$detail,
                 " A biom listed in 'accession' is missing from the ",
                 "output.", call. = FALSE)
             # Remove the downloaded file, it includes only info on errors
@@ -529,7 +529,8 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
                 # If the file was not successfully downloaded
                 if( res$status_code != 200 ){
                     warning(
-                        tree_url, ": ", content(res, ...)$errors[[1]]$detail,
+                        "\n", tree_url, ": ",
+                        content(res, ...)$errors[[1]]$detail,
                         " A phylogenetic tree listed in 'accession' is ",
                         "missing from the output.", call. = FALSE)
                 }
@@ -782,7 +783,7 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
     #build the cache filename
     fname <- utils::tail(strsplit(data_url, '/')[[1]], n=1)
 
-    # At this point we might have alread got the data we want
+    # At this point we might have already got the data we want
     # loaded. Check the memory cache object
     if( (use.mem.cache &&
         cur_type %in% names(mgnify_memory_cache) &&
@@ -803,7 +804,7 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
             # If the file was not successfully downloaded
             if( res$status_code != 200 ){
                 warning(
-                    data_url, ": ", content(res, ...)$errors[[1]]$detail,
+                    "\n", data_url, ": ", content(res, ...)$errors[[1]]$detail,
                     " Could not load the file from database. The data ",
                     "from the file is not included in the output.",
                     call. = FALSE)
@@ -834,7 +835,7 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
     # with missing downloads, we have to check if we
     # actually got a valid file:
     if( ncol(tmp_df) < 3 ){
-        warning("Invalid download for ", accession, call. = FALSE)
+        warning("\nInvalid download for ", accession, call. = FALSE)
         return(NULL)
     }
 
@@ -857,7 +858,7 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
     }else if( "run_accession" %in% colnames(metadata_df) ){
         accession <- metadata_df$run_accession[[1]]
     } else{
-        warning("Failed to data on ", accession, call. = FALSE)
+        warning("\nFailed to data on ", accession, call. = FALSE)
         return(NULL)
     }
 
@@ -865,7 +866,7 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
     # the sample and info columns
     column_position <- match(accession, colnames(tmp_df))
     if( (is.na(column_position) || length(column_position) != 1) ){
-        warning("Failed to find column ", accession, call. = FALSE)
+        warning("\nFailed to find column ", accession, call. = FALSE)
         return(NULL)
     }
     # Ensure that the counts are numeric

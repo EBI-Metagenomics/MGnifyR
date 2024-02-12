@@ -147,7 +147,7 @@
 #' @importFrom httr timeout
 .mgnify_retrieve_json <- function(
         client, path = "biomes", complete_url = NULL, qopts = NULL,
-        max.hits = 200, timeout = 60, Debug = FALSE,
+        max.hits = 200, timeout = 5*60, Debug = FALSE,
         use.cache = useCache(client), show.warnings = showWarnings(client),
         clear.cache = clearCache(client), url.address = databaseUrl(client),
         auth.tok = authTok(client), cache.dir = cacheDir(client), ...){
@@ -205,6 +205,8 @@
         parameters(fullurl) <- NULL
         path <- substr(fullurl, nchar(url.address) + 2, nchar(fullurl))
     }
+    # Spaces are not allowed in url address. Convert spaces to %20.
+    fullurl <- gsub(" ", "%20", fullurl)
 
     # Convert to csv if filters are lists.
     # This doesn't check if they  can  be searched for in the API,
@@ -278,7 +280,7 @@
     }
     # Give warning if data is not found.
     if( is.null(final_data) ){
-        warning(warning_msg, call. = FALSE)
+        warning("\n", warning_msg, call. = FALSE)
     }
     return(final_data)
 }

@@ -1,5 +1,5 @@
-#' Search MGnify database for studies, samples, runs, analyses, biomes, and
-#' assemblies.
+#' Search MGnify database for studies, samples, runs, analyses, biomes,
+#' assemblies, and genomes.
 #'
 #' @details
 #' \code{doQuery} is a flexible query function, harnessing the "full"
@@ -112,7 +112,7 @@ NULL
 
 #' @rdname doQuery
 #' @importFrom dplyr bind_rows
-#' @include allClasses.R allGenerics.R MgnifyClient.R utils.R
+#' @include AllClasses.R AllGenerics.R MgnifyClient.R utils.R
 #' @export
 setMethod("doQuery", signature = c(x = "MgnifyClient"), function(
         x, type = "studies", accession = NULL, as.df = TRUE, max.hits = 200,

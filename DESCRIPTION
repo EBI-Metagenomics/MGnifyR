@@ -1,6 +1,6 @@
 Package: MGnifyR
 Type: Package
-Version: 0.99.17
+Version: 0.99.18
 Authors@R:
     c(person(given = "Tuomas", family = "Borman", role = c("aut", "cre"),
              email = "tuomas.v.borman@utu.fi",
@@ -20,10 +20,10 @@ biocViews: PackageTypeData, ExperimentData, MicrobiomeData, SequencingData
 License: Artistic-2.0 | file LICENSE
 Encoding: UTF-8
 Depends:
-    R(>= 4.3),
+    R(>= 4.4.0),
     mia,
     MultiAssayExperiment,
-    TreeSummarizedExperiment (>= 1.99.3),
+    TreeSummarizedExperiment,
     SummarizedExperiment,
     biomformat,
     BiocGenerics
@@ -57,12 +57,12 @@ BugReports: https://github.com/EBI-Metagenomics/MGnifyR/issues
 VignetteBuilder: knitr
 RoxygenNote: 7.3.0
 Collate:
-    'MGnifyR.R'
-    'MgnifyClient.R'
     'utils.R'
-    'allGenerics.R'
-    'allClasses.R'
-    'allAccessors.R'
+    'MgnifyClient.R'
+    'AllGenerics.R'
+    'AllClasses.R'
+    'AllAccessors.R'
+    'MGnifyR.R'
     'deprecate.R'
     'doQuery.R'
     'getData.R'

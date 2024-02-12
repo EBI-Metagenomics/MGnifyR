@@ -16,14 +16,17 @@ vignette: >
 bibliography: references.bib
 ---
 
-```{r, include = FALSE}
+```{r include = FALSE}
 library(knitr)
 knitr::opts_chunk$set(
     collapse = TRUE,
-    eval = FALSE,
     comment = "#>",
     cache = TRUE
 )
+
+# Get already loaded results
+path <- system.file("extdata", "vignette_MGnifyR_long.rds", package = "MGnifyR")
+vignette_MGnifyR_long <- readRDS(path)
 ```
 
 [MGnifyR homepage](http://github.com/EBI-Metagenomics/MGnifyR)
@@ -131,22 +134,37 @@ are given in `help(doQuery)`. By way of example though, supposing we are
 interested in amplicon Illumina samples from the arctic, we might try the
 following query:
 
-```{r search_studies}
+```{r search_studies1, eval=FALSE}
 northpolar <- doQuery(
     mg, "samples", latitude_gte=60.0, experiment_type="amplicon",
     biome_name="Soil", instrument_platform = "Illumina", max.hits = 10)
-
-northpolar[1:5, ]
 ```
+
+```{r search_studies2, eval=TRUE, include=FALSE}
+northpolar <- vignette_MGnifyR_long[["northpolar"]]
+```
+
+```{r search_studies3}
+head(northpolar)
+```
+
 
 Specifying an `accession` parameter will restrict results to just those matching
 that particular entry, be it a study, sample or run. For example, to retrieve
 information for study "MGYS00002891":
 
-```{r search_studies_accession}
+```{r search_studies_accession1, eval=FALSE}
 study_samples <- doQuery(mg, "studies", accession="MGYS00002891")
+```
+
+```{r search_studies_accession2, eval=TRUE, include=FALSE}
+study_samples <- vignette_MGnifyR_long[["study_samples"]]
+```
+
+```{r search_studies_accession3}
 study_samples
 ```
+
 
 ## Find relevent **analyses** accessions
 
@@ -165,16 +183,20 @@ need converting to the corresponding `analyses`.
 `searchAnalysis()`. Following on from our previous search, we have a
 list of `study` accessions, so to convert to corresponding `analyses` we use:
 
-```{r convert_to_analyses}
+```{r convert_to_analyses1, eval=FALSE}
 analyses_accessions <- searchAnalysis(
     mg, type="studies", accession = study_samples$accession)
+```
 
-# For demonstrative purpose, take only few samples
-set.seed(595)
-analyses_accessions <- sample(analyses_accessions, 5)
+```{r convert_to_analyses2, eval=TRUE, include=FALSE}
+analyses_accessions <- vignette_MGnifyR_long[["analyses_accessions"]]
+```
 
+
+```{r convert_to_analyses3}
 analyses_accessions
 ```
+
 
 A useful side effect of the above call is that some attribute metadata for
 each sample has now been retrieved and stored in the local cache. Thus
@@ -195,8 +217,15 @@ duplicates) corresponding to the samples previously found. We use the
 and `study` metadata, which we then filter as required to include only the
 rows we want.
 
-```{r get_metadata}
+```{r get_metadata1, eval=FALSE}
 analyses_metadata <- getMetadata(mg, analyses_accessions)
+```
+
+```{r get_metadata2, eval=TRUE, include=FALSE}
+analyses_metadata <- vignette_MGnifyR_long[["analyses_metadata"]]
+```
+
+```{r get_metadata3}
 head(analyses_metadata)
 ```
 
@@ -217,7 +246,7 @@ is converted to `numeric` type before it is checked. *All* sample data from
 MGnifyR is initially retrieved as type `character`, and it's up to the user to
 make sure ostensibly numeric entries are converted properly.
 
-```{r filter_show_metadata}
+```{r filter_metadata}
 known_depths <- analyses_metadata[
     !is.na(as.numeric(analyses_metadata$sample_depth)), ]
 # How many are left?
@@ -246,8 +275,15 @@ When the dataset includes amplicon sequencing data, i.e., the dataset does not
 include function predictions, `getResult()` method returns the dataset as a
 `TreeSE` by default. See other output types from the function documentation.
 
-```{r get_TreeSE}
+```{r get_treese1, eval=FALSE}
 tse <- getResult(mg, accession = analyses_accessions, get.func = FALSE)
+```
+
+```{r get_treese2, eval=TRUE, include=FALSE}
+tse <- vignette_MGnifyR_long[["tse"]]
+```
+
+```{r get_treese3}
 tse
 ```
 
@@ -267,7 +303,7 @@ plotColData(tse, "shannon", x = "sample_geo.loc.name")
 ```{r plot_abundance}
 library(miaViz)
 
-plotAbundance(tse)
+plotAbundance(tse[!is.na( rowData(tse)[["Kingdom"]] ), ], rank = "Kingdom")
 ```
 
 If needed, `TreeSE` can be converted to `phyloseq`.
@@ -297,17 +333,22 @@ things, only the first 20 samples from each study will be used. Furthermore,
 the intention is only to demonstrate the functionality of the MGnifyR package,
 rather than produce scientifically rigorous results.
 
-```{r get_analyses}
+```{r get_analyses1, eval=FALSE}
 soil <- searchAnalysis(mg, "studies", "MGYS00001447")
 human <- searchAnalysis(mg, "studies", "MGYS00001442")
 marine <- searchAnalysis(mg, "studies", "MGYS00001282")
 
 # Combine analyses
 all_accessions <- c(soil, human, marine)
-# Subset the accessions by taking 5 random analyses
-set.seed(74)
-all_accessions <- sample(all_accessions, 5)
-all_accessions
+```
+
+```{r get_analyses2, eval=TRUE, include=FALSE}
+all_accessions <- vignette_MGnifyR_long[["all_accessions"]]
+```
+
+
+```{r get_analyses3}
+head(all_accessions)
 ```
 
 The first step with this new accession list is, as previously, to retrieve the
@@ -317,11 +358,16 @@ columns. Being autogenerated and flexible, the column names can be a little
 difficult to predict, but examining `colnames(full_metadata)` should make
 things clearer.
 
-```{r get_new_metadata}
+```{r get_new_metadata1, eval=FALSE}
 full_metadata <- getMetadata(mg, all_accessions)
 ```
 
-```{r show_new_metadata}
+```{r get_new_metadata2, eval=TRUE, include=FALSE}
+full_metadata <- vignette_MGnifyR_long[["full_metadata"]]
+```
+
+
+```{r get_new_metadata3}
 colnames(full_metadata)
 head(full_metadata)
 ```
@@ -379,10 +425,18 @@ more robust approach allowing the analysis to continue. It might take a while
 though. Hopefully in the future the sample/analysis correspondence mismatches
 will be fixed and the default `bulk.dl` will be switch to `TRUE`.
 
-```{r get_mae}
+```{r get_mae1, eval=FALSE}
 mae <- getResult(mg, all_accessions, bulk.dl = TRUE)
+```
+
+```{r get_mae2, eval=TRUE, include=FALSE}
+mae <- vignette_MGnifyR_long[["mae"]]
+```
+
+```{r get_mae3}
 mae
 ```
+
 
 For metagenomic samples, the result is
 `r BiocStyle::Biocpkg("MultiAssayExperiment")` (`MAE`) which
@@ -409,6 +463,26 @@ mae[[1]] <- runMDS(
 plotReducedDim(mae[[1]], "MDS", colour_by = "sample_environment.feature")
 ```
 
+## Fetch raw files
+
+While `getResult()` can be utilized to retrieve microbial profiling data, 
+`getData()` can be used more flexibly to retrieve any kind of data from the
+database. It returns data as simple data.frame or list format.
+
+```{r fetch_data1, eval=FALSE}
+kegg <- getData(
+    mg, type = "kegg-modules", accession = "MGYA00642773",
+    accession.type = "analyses")
+```
+
+```{r fetch_data2, eval=TRUE, include=FALSE}
+kegg <- vignette_MGnifyR_long[["kegg"]]
+```
+
+```{r fetch_data3}
+head(kegg)
+```
+
 ## Fetch sequence files
 
 Finally, we can use `searchFile()` and `getFile()` to retrieve other MGnify
@@ -425,13 +499,19 @@ a data.frame containing all available downloads for each accession we've been
 examining previously. It then filters this to retain only those files
 corresponding retain the annotated amino acid sequence files.
 
-```{r get_download_urls}
-#Find list of available downloads, and filter for 
+```{r get_download_urls1, eval=FALSE}
+# Find list of available downloads
 dl_urls <- searchFile(
     mg, full_metadata$analysis_accession, type = "analyses")
 ```
 
-```{r show_tgt_urls}
+```{r get_download_urls2, eval=TRUE, include=FALSE}
+dl_urls <- vignette_MGnifyR_long[["dl_urls"]]
+```
+
+
+```{r get_download_urls3}
+# Filter table
 target_urls <- dl_urls[
     dl_urls$attributes.description.label == "Predicted CDS with annotation",]
 head(target_urls)
@@ -440,7 +520,7 @@ head(target_urls)
 To list the types of available files, and guide the filtering, something like
 the following might be useful.
 
-```{r, list_descriptions}
+```{r list_descriptions}
 table(dl_urls$attributes.description.label)
 ```
 
@@ -450,12 +530,15 @@ found. For instance, while general `genome` functionality is not yet
 integrated into `MGnifyR`, we can retrieve associated files for a particular
 `genome` accession with the following:
 
-```{r get_genome_urls, results='hide', eval=FALSE}
-# FIXME
-genome_urls <- searchFile(mg, "MGYS00005650", type = "genomes")
+```{r get_genome_urls1, eval=FALSE}
+genome_urls <- searchFile(mg, "MGYG000433953", type = "genomes")
 ```
 
-```{r show_genome_urls, eval=FALSE}
+```{r get_genome_urls2, eval=TRUE, include=FALSE}
+genome_urls <- vignette_MGnifyR_long[["genome_urls"]]
+```
+
+```{r get_genome_urls3}
 genome_urls[c("id","attributes.file.format.name","download_url")]
 ```
 
@@ -472,18 +555,27 @@ cache, which can make getting to the file afterwards more awkward. Regardless,
 the default behaviour of `getFile()` is to retrieve the file specified in the
 parameter `url`, save it to disk, and return the filepath it was saved to. 
 
-```{r, filter_dl_urls}
+```{r get_files1, eval=FALSE}
 # Just select a single file from the target_urls list for demonstration.
 
 # Default behavior - use local cache.
-cached_location = getFile(mg, target_urls$download_url[[1]])
+cached_location1 = getFile(mg, target_urls$download_url[[1]])
 
 # Specifying a file
-specified_location <- getFile(
+cached_location2 <- getFile(
     mg, target_urls$download_url[[1]])
 
+cached_location <- c(cached_location1, cached_location2)
+```
+
+```{r get_files2, eval=TRUE, include=FALSE}
+cached_location <- vignette_MGnifyR_long[["cached_location"]]
+```
+
+
+```{r get_files3}
 # Where are the files?
-c(cached_location,specified_location)
+cached_location
 ```
 
 A second download option is available, which allows built-in parsing of the
@@ -524,11 +616,18 @@ getAmoCseqs <- function(fname){
 Having defined the function, it just remains to include it in the call to
 `getFile()`. 
 
-```{r do_download_with_read}
+```{r download_with_read1, eval=FALSE}
 # Just download a single accession for demonstration, specifying a read_function
 amoC_seq_counts <- getFile(
     mg, target_urls$download_url[[1]], read_func = getAmoCseqs)
+```
 
+```{r do_download_with_read2, eval=TRUE, include=FALSE}
+amoC_seq_counts <- vignette_MGnifyR_long[["amoC_seq_counts"]]
+```
+
+
+```{r download_with_read3}
 amoC_seq_counts
 ```
 

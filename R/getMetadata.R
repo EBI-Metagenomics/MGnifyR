@@ -29,7 +29,7 @@ NULL
 #' @rdname getMetadata
 #' @importFrom plyr llply
 #' @importFrom dplyr bind_rows
-#' @include allClasses.R allGenerics.R MgnifyClient.R utils.R
+#' @include AllClasses.R AllGenerics.R MgnifyClient.R utils.R
 #' @export
 setMethod("getMetadata", signature = c(x = "MgnifyClient"), function(
         x, accession, ...){
@@ -94,7 +94,8 @@ setMethod("getMetadata", signature = c(x = "MgnifyClient"), function(
         max.hits = max.hits, ...)
     # If metadata was not found, return the NULL value
     if(is.null(dat)){
-        warning("Failed to find study metadata for ", accession, call. = FALSE)
+        warning(
+            "\nFailed to find study metadata for ", accession, call. = FALSE)
         return(dat)
     }
 
@@ -116,7 +117,8 @@ setMethod("getMetadata", signature = c(x = "MgnifyClient"), function(
         sample_df <- .mgnify_attr_list_to_df_row(
             sample_met[[1]], metadata_key = "sample-metadata")
     } else{
-        warning("Failed to find sample metadata for ", accession, call. = FALSE)
+        warning(
+            "\nFailed to find sample metadata for ", accession, call. = FALSE)
         sample_df <- data.frame(accession=NA)
     }
     # It turns out that a sample might not be part of a study - if it's been
@@ -124,7 +126,8 @@ setMethod("getMetadata", signature = c(x = "MgnifyClient"), function(
     if(!is.null(study_met)){
         study_df <- .mgnify_attr_list_to_df_row(study_met[[1]])
     } else{
-        warning("Failed to find study metadata for ", accession, call. = FALSE)
+        warning(
+            "\nFailed to find study metadata for ", accession, call. = FALSE)
         study_df <- data.frame(accession=NA)
     }
     # Add colnames to sample, study and analysis tables
@@ -150,7 +153,7 @@ setMethod("getMetadata", signature = c(x = "MgnifyClient"), function(
     if( !is.null(sample_met[[1]]$relationships$biome$data$id) ){
         full_df$biome_string <- sample_met[[1]]$relationships$biome$data$id
     } else {
-        warning("Failed to find biome entry for ", accession, call = FALSE)
+        warning("\nFailed to find biome entry for ", accession, call = FALSE)
     }
     return(full_df)
 }

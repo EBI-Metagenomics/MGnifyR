@@ -1,0 +1,274 @@
+---
+title: "MGnifyR: interface to MGnify database"
+date: "`r Sys.Date()`"
+package: MGnifyR
+output:
+    BiocStyle::html_document:
+        fig_height: 7
+        fig_width: 10
+        toc: yes
+        toc_depth: 2
+        number_sections: true
+vignette: >
+    %\VignetteIndexEntry{mia}
+    %\VignetteEngine{knitr::rmarkdown}
+    %\VignetteEncoding{UTF-8}
+bibliography: references.bib
+---
+
+```{r, include = FALSE}
+library(knitr)
+knitr::opts_chunk$set(
+    collapse = TRUE,
+    comment = "#>",
+    cache = TRUE
+)
+
+# Get already loaded results
+path <- system.file("extdata", "vignette_MGnifyR.rds", package = "MGnifyR")
+vignette_MGnifyR <- readRDS(path)
+```
+
+# Introduction
+
+`MGnifyR` is a package designed to ease access to the EBI's
+[MGnify](https://www.ebi.ac.uk/metagenomics) resource, allowing searching and
+retrieval of multiple datasets for downstream analysis.
+
+The latest version of MGnifyR seamlessly integrates with the
+[miaverse framework](https://microbiome.github.io/) providing access to
+cutting-edge tools in microbiome down-stream analytics. 
+
+# Installation
+
+`MGnifyR` is hosted on Bioconductor, and can be installed using via
+`BiocManager`.
+
+```{r install, eval=FALSE}
+BiocManager::install(MGnifyR)
+```
+
+# Load `MGnifyR` package
+
+Once installed, `MGnifyR` is made available in the usual way.
+
+```{r load_package}
+library(MGnifyR)
+```
+
+# Create a client
+
+All functions in `MGnifyR` make use of a `MgnifyClient` object to keep track
+of the JSONAPI url, disk cache location and user access tokens. Thus the first
+thing to do when starting any analysis is to instantiate this object. The
+following snippet creates this.
+
+```{r create_client, message = FALSE}
+mg <- MgnifyClient(useCache = TRUE)
+mg
+```
+
+# Functions for fetching the data
+
+## Search data
+
+`doQuery()` function can be utilized to search results such as samples and
+studies from MGnify database. Below, we fetch information drinking water
+samples.
+
+```{r search_studies1, eval=FALSE}
+# Fetch studies
+samples <- doQuery(
+    mg,
+    type = "samples",
+    biome_name = "root:Environmental:Aquatic:Freshwater:Drinking water",
+    max.hits = 10)
+```
+
+```{r search_studies2, eval=TRUE, include=FALSE}
+samples <- vignette_MGnifyR[["samples"]]
+```
+
+The result is a table containing accession IDs and description -- in this case
+-- on samples.
+
+```{r search_studies3}
+head(samples)
+```
+
+## Find relevent **analyses** accessions
+
+Now we want to find analysis accessions. Each sample might have multiple
+analyses. Each analysis ID corresponds to a single run of a particular pipeline
+on a single sample in a single study.
+
+```{r convert_to_analyses1, eval=FALSE}
+analyses_accessions <- searchAnalysis(mg, "samples", samples$accession)
+```
+
+```{r convert_to_analyses2, eval=TRUE, include=FALSE}
+analyses_accessions <- vignette_MGnifyR[["analyses_accessions"]]
+```
+
+By running the `searchAnalysis()` function, we get analysis IDs of samples that
+we fed as an input.
+
+```{r convert_to_analyses3}
+head(analyses_accessions)
+```
+
+## Fetch metadata
+
+We can now check the metadata to get hint of what kind of data we have. We use
+`getMetadata()` function to fetch data based on analysis IDs.
+
+```{r get_metadata1, eval=FALSE}
+analyses_metadata <- getMetadata(mg, analyses_accessions)
+```
+
+```{r get_metadata2, eval=TRUE, include=FALSE}
+analyses_metadata <- vignette_MGnifyR[["analyses_metadata"]]
+```
+
+Metadata includes for example information on how analysis was conducted and
+what kind of samples were analyzed.
+
+```{r get_metadata3}
+head(analyses_metadata)
+```
+
+## Fetch microbiome data
+
+After we have selected the data to fetch, we can use `getResult()`
+
+The output is `r BiocStyle::Biocpkg("TreeSummarizedExperiment")` (`TreeSE`) or
+`r BiocStyle::Biocpkg("MultiAssayExperiment")` (`MAE`) depending on the dataset.
+If the dataset includes only taxonomic profiling data, the output is a single
+`TreeSE`. If dataset includes also functional data, the output is multiple
+`TreeSE` objects that are linked together by utilizing `MAE`.
+
+```{r get_mae1, eval=FALSE}
+mae <- getResult(mg, accession = analyses_accessions)
+```
+
+```{r get_mae2, eval=TRUE, include=FALSE}
+mae <- vignette_MGnifyR[["mae"]]
+```
+
+```{r get_mae3}
+mae
+```
+
+You can get access to individual `TreeSE` object in `MAE` by specifying
+index or name.
+
+```{r mae_access}
+mae[[1]]
+```
+
+`TreeSE` object is uniquely positioned to support `SummarizedExperiment`-based
+microbiome data manipulation and visualization. Moreover, it enables access
+to `miaverse` tools. For example, we can estimate diversity of samples...
+
+```{r calculate_diversity, fig.width=9}
+mae[[1]] <- estimateDiversity(mae[[1]], index = "shannon")
+
+library(scater)
+
+plotColData(mae[[1]], "shannon", x = "sample_environment..biome.")
+```
+
+... and plot abundances of most abundant phyla.
+
+```{r plot_abundance}
+# Agglomerate data
+altExps(mae[[1]]) <- splitByRanks(mae[[1]])
+
+library(miaViz)
+
+# Plot top taxa
+top_taxa <- getTopFeatures(altExp(mae[[1]], "Phylum"), 10)
+plotAbundance(altExp(mae[[1]], "Phylum")[top_taxa, ], rank = "Phylum")
+```
+
+We can also perform other analyses such as principal component analysis to
+microbial profiling data by utilizing miaverse tools.
+
+```{r pcoa}
+# Apply relative transformation
+mae[[1]] <- transformAssay(mae[[1]], method = "relabundance")
+# Perform PCoA
+mae[[1]] <- runMDS(
+    mae[[1]], assay.type = "relabundance",
+    FUN = vegan::vegdist, method = "bray")
+# Plot
+plotReducedDim(
+    mae[[1]], "MDS", colour_by = "sample_environment..biome.")
+```
+
+## Fetch raw files
+
+While `getResult()` can be utilized to retrieve microbial profiling data, 
+`getData()` can be used more flexibly to retrieve any kind of data from the
+database. It returns data as simple data.frame or list format.
+
+```{r fetch_data1, eval=FALSE}
+publications <- getData(mg, type = "publications")
+```
+
+```{r fetch_data2, eval=TRUE, include=FALSE}
+publications <- vignette_MGnifyR[["publications"]]
+```
+
+```{r fetch_data3}
+head(publications)
+```
+
+## Fetch sequence files
+
+Finally, we can use `searchFile()` and `getFile()` to retrieve other MGnify
+pipeline outputs such as merged sequence reads, assembled contigs, and details
+of the functional analyses.
+
+With `searchFile()`, we can search files from the database.
+
+```{r get_download_urls1, eval=FALSE}
+dl_urls <- searchFile(mg, analyses_accessions, type = "analyses")
+```
+
+```{r get_download_urls2, eval=TRUE, include=FALSE}
+dl_urls <- vignette_MGnifyR[["dl_urls"]]
+```
+
+The returned table contains search results related to analyses that we fed as
+an input. The table contains information on file and also URL address from
+where the file can be loaded.
+
+```{r get_download_urls3}
+target_urls <- dl_urls[
+    dl_urls$attributes.description.label == "Predicted alpha tmRNA", ]
+head(target_urls)
+```
+
+Finally, we can download the files with `getFile()`.
+
+```{r download_file1, eval=FALSE}
+# Just select a single file from the target_urls list for demonstration.
+file_url <- target_urls$download_url[[1]]
+cached_location <- getFile(mg, file_url)
+```
+
+```{r download_file2, eval=TRUE, include=FALSE}
+cached_location <- vignette_MGnifyR[["cached_location"]]
+```
+
+The function returns a path where the file is stored.
+
+```{r download_file3}
+# Where are the files?
+cached_location
+```
+
+```{r session_info}
+sessionInfo()
+```
