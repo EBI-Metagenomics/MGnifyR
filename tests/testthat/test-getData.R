@@ -50,7 +50,9 @@ test_that("getData", {
     # Require internet access
     skip_if(httr::http_error("https://www.ebi.ac.uk/metagenomics/api/v1"))
 
-    res <- getData(mg, type = "pipelines")
+    type <- "kegg-modules"
+    res <- getData(
+      mg, type = type, accession = "MGYA00642773", accession.type = "analyses")
     expect_is(res, "data.frame")
-    expect_true( all(res[["type"]] == "pipelines") )
+    expect_true( all(res[["type"]] == type) )
 })
