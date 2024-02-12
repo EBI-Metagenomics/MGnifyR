@@ -3,7 +3,7 @@
 \name{getResult}
 \alias{getResult}
 \alias{getResult,MgnifyClient-method}
-\title{Get functional and/or taxonomic information for a list of accessions}
+\title{Get microbial and/or functional profiling data for a list of accessions}
 \usage{
 getResult(x, ...)
 
@@ -93,11 +93,14 @@ Functional data can be returned as a \code{MultiAssayExperiment} object or
 as a list of \code{data.frames}.
 }
 \description{
-Get functional and/or taxonomic information for a list of accessions
+Get microbial and/or functional profiling data for a list of accessions
 }
 \details{
 Given a set of analysis accessions and collection of annotation types,
-the function queries the MGNify API and returns the results.
+the function queries the MGNify API and returns the results. This function
+is convenient for retrieving highly structured (analysis vs counts) data on
+certain instances. For example, BIOM files are downloaded automatically.
+If you want just to retrieve raw data from the database, see \code{getData}.
 }
 \examples{
 # Create a client object
@@ -117,4 +120,7 @@ list <- getResult(
     as.df = TRUE, use.cache = TRUE)
 }
 
+}
+\seealso{
+\code{\link[MGnifyR:getData]{getData}}
 }
