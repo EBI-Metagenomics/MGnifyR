@@ -206,6 +206,24 @@ plotReducedDim(
     mae[[1]], "MDS", colour_by = "sample_environment..biome.")
 ```
 
+## Fetch raw files
+
+While `getResult()` can be utilized to retrieve microbial profiling data, 
+`getData()` can be used more flexibly to retrieve any kind of data from the
+database. It returns data as simple data.frame or list format.
+
+```{r fetch_data1, eval=FALSE}
+publications <- getData(mg, type = "publications")
+```
+
+```{r fetch_data2, eval=TRUE, include=FALSE}
+publications <- vignette_MGnifyR[["publications"]] <- publications
+```
+
+```{r fetch_data3}
+head(publications)
+```
+
 ## Fetch sequence files
 
 Finally, we can use `searchFile()` and `getFile()` to retrieve other MGnify
