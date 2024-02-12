@@ -122,7 +122,7 @@ setMethod(
 ################################ HELP FUNCTIONS ################################
 
 #' @importFrom plyr llply
-.get_results_as_json_list <- function(x, type, accession.type, accession, ...){
+.get_results_as_json_list <- function(mg, type, accession.type, accession, ...){
     # Create a path. If multiple accession IDs, path is vector of multiple
     # paths. Otherwise the path specifies only the type
     if( !is.null(accession.type) && !is.null(accession) ){
