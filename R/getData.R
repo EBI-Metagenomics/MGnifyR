@@ -6,8 +6,9 @@
 #' the data. However, there are drawbacks: for counts data, \code{getResult}
 #' returns optimally structured data container which is easier for downstream
 #' analysis. \code{getData} returns raw data from the database. However, if
-#' you want to retrieve data on pipelines, for instance, \code{getResult} is
-#' not suitable for it, and \code{getData} can be utilized instead.
+#' you want to retrieve data on pipelines or publications, for instance,
+#' \code{getResult} is not suitable for it, and \code{getData} can be utilized
+#' instead.
 #'
 #' @param x A \code{MgnifyClient} object.
 #'
