@@ -60,14 +60,13 @@ NULL
 #' @rdname deprecate
 #' @export
 mgnify_client <- function(
-        url = NULL, username = NULL, password = NULL, usecache = FALSE,
-        cache_dir = NULL, warnings = FALSE, use_memcache = FALSE){
+        username = NULL, password = NULL, usecache = FALSE,
+        cache_dir = NULL, warnings = FALSE, use_memcache = FALSE, ...){
     .Deprecated("MgnifyClient")
     MgnifyClient(
-        url = url,
         username = username, password = password,
         useCache = usecache, cacheDir = cache_dir, warnings = warnings,
-        use.mem.cache = use_memcache)
+        use.mem.cache = use_memcache, ...)
 }
 
 #' @rdname deprecate

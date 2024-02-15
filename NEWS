@@ -1,3 +1,7 @@
+Version: 0.99.19
+Date: 2024-02-15
++ Fix deprecated mgnify_client function
+
 Version: 0.99.18
 Date: 2024-02-12
 + Last modifications for Biocondutor submission

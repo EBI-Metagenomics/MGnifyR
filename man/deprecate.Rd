@@ -15,13 +15,13 @@
 \title{These functions will be deprecated. Please use other functions instead.}
 \usage{
 mgnify_client(
-  url = NULL,
   username = NULL,
   password = NULL,
   usecache = FALSE,
   cache_dir = NULL,
   warnings = FALSE,
-  use_memcache = FALSE
+  use_memcache = FALSE,
+  ...
 )
 
 mgnify_query(
@@ -89,8 +89,6 @@ mgnify_retrieve_json(
 )
 }
 \arguments{
-\item{url}{-}
-
 \item{username}{-}
 
 \item{password}{-}
@@ -103,6 +101,8 @@ mgnify_retrieve_json(
 
 \item{use_memcache}{-}
 
+\item{...}{-}
+
 \item{client}{-}
 
 \item{qtype}{-}
@@ -113,11 +113,11 @@ mgnify_retrieve_json(
 
 \item{maxhits}{-}
 
-\item{...}{-}
-
 \item{accessions}{-}
 
 \item{accession_type}{-}
+
+\item{url}{-}
 
 \item{file}{-}
 
