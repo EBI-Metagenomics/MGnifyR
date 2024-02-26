@@ -225,7 +225,7 @@
     # colons that are not supported in file names. Replace them with
     # underscores.
     cache_fname <- gsub(":", "_", cache_fname)
-    cache_full_fname <- file.path(cache.dir, cache_fname, ".RDS")
+    cache_full_fname <- file.path(cache.dir, paste0(cache_fname, ".RDS"))
 
     # Quick check to see if we should clear the disk cache  for this
     # specific call  - used for debugging and when MGnify breaks
