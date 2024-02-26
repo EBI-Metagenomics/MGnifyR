@@ -41,7 +41,7 @@ NULL
 setMethod("searchAnalysis", signature = c(x = "MgnifyClient"), function(
         x, type, accession, ...){
     ############################### INPUT CHECK ################################
-    if( !(type %in% c("samples", "studies")) ){
+    if( !(length(type) == 1 && type %in% c("samples", "studies")) ){
         stop(
             "'type' must be 'samples' or 'studies'.", call. = FALSE)
     }
