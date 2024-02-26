@@ -21,8 +21,7 @@
 #' # Create a client object
 #' mg <- MgnifyClient(useCache = FALSE)
 #'
-#' # Retrieve all analysis ids from studies
-#' # MGYS00005058, MGYS00005058 and MGYS00005058
+#' # Retrieve analysis ids from study MGYS00005058
 #' result <- searchAnalysis(mg, "studies", c("MGYS00005058"))
 #'
 #' \donttest{
@@ -102,6 +101,7 @@ setMethod("searchAnalysis", signature = c(x = "MgnifyClient"), function(
         }
         return(res)
     }, .progress=show.messages)
+    names(analyses_accessions) <- accession
     res <- unlist(analyses_accessions)
     return(res)
 }
@@ -142,6 +142,7 @@ setMethod("searchAnalysis", signature = c(x = "MgnifyClient"), function(
         }
         return(temp)
         }, .progress = show.messages)
+    names(analyses_accessions) <- accession
     res <- unlist(analyses_accessions)
     return(res)
 }

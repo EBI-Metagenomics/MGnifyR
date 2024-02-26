@@ -1,3 +1,7 @@
+Version: 0.99.20
+Date: 2024-02-26
++ searchAnalysis returns now a named vector where names are accession IDs that was fed as input
+
 Version: 0.99.19
 Date: 2024-02-15
 + Fix deprecated mgnify_client function
