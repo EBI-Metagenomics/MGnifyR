@@ -20,3 +20,4 @@ vignettes/*.html
 vignettes/*.R
 vignettes/*.pdf
 vignettes/MGnifyR_cache
+docs
