@@ -229,13 +229,12 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
                 # Get colData from microbial profiling data TreeSE,
                 # if it is included
                 args <- list()
-                # If taxa data is included
+                # If taxa data is included get all the data. Otherwise, get only
+                # functional annotations.
                 if( !is.null(result) ){
                     col_data <- colData(result)
-                    # Create a MAE
                     result <- list(microbiota = result)
-                    exp_list <- append(result, func_res)
-                    args$colData <- col_data
+                    exp_list <- c(result, func_res)
                 } else {
                     exp_list <- func_res
                     col_data <- NULL
@@ -244,8 +243,17 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
                 # If there are more than 1 experiments, create MAE
                 if( length(exp_list) > 1 ){
                     exp_list <- ExperimentList(exp_list)
-                    args$experiments <- exp_list
-                    result <- do.call(MultiAssayExperiment, args)
+                    result <- MultiAssayExperiment(exp_list)
+                    # If sample metadata is not empty
+                    if( !is.null(col_data) ){
+                        # Ensure that colData has all samples present in dataset
+                        all_samples <- unique(unlist(colnames(result)))
+                        col_data <- col_data[match(
+                            all_samples, rownames(col_data)), ]
+                        rownames(col_data) <- all_samples
+                        # And then add to mae
+                        colData(result) <- col_data
+                    }
                 } else{
                     # If there are only 1 experiment, give it as it is
                     result <- exp_list[[1]]
@@ -254,7 +262,7 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
                 # If user wants output as a phyloseq, give a list of one
                 # phyloseq object and functional data
                 result <- list(microbiota = result)
-                result <- append(result, func_res)
+                result <- c(result, func_res)
                 # If there are only one experiment, take it out from the list
                 if( length(result) == 1 ){
                     result <- result[[1]]
@@ -311,8 +319,11 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
         # Get sample metadata
         if( !is.null(tse_microbiota) ){
             col_data <- colData(tse_microbiota)
-            # Order coldata
+            # Order coldata.
             col_data <- col_data[match(colnames(assay), rownames(col_data)), ]
+            # Add colnames to ensure that all rows have name (if some samples
+            # were missing from the col_data)
+            rownames(col_data) <- colnames(assay)
             args$colData <- col_data
         }
         # Create TreeSE

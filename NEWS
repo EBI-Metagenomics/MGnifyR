@@ -1,3 +1,7 @@
+Version: 0.99.23
+Date: 2024-03-04
++ getReturn fix: failed constructing MAE if samples in experiments did not match
+
 Version: 0.99.20
 Date: 2024-02-26
 + searchAnalysis returns now a named vector where names are accession IDs that was fed as input
