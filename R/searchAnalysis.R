@@ -24,7 +24,7 @@
 #' # Retrieve analysis ids from study MGYS00005058
 #' result <- searchAnalysis(mg, "studies", c("MGYS00005058"))
 #'
-#' \donttest{
+#' \dontrun{
 #' # Retrieve all analysis ids from samples
 #' result <- searchAnalysis(
 #'     mg, "samples", c("SRS4392730", "SRS4392743"))

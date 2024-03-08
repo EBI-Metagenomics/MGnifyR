@@ -102,7 +102,7 @@ url_list <- downloads[
 supplied_filename <- getFile(
     mg, url_list[[1]], file="SSU_file.fasta.gz")
 
-\donttest{
+\dontrun{
 # Example 2:
 # Just use local caching
 cached_filename <- getFile(mg, url_list[[2]])

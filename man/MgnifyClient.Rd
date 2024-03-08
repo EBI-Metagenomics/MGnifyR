@@ -50,9 +50,9 @@ cache. (By default: \code{clearCache = FALSE})}
 
 \item{...}{optional arguments:
 \itemize{
-  \item{url}{ A single character value specifying an url address of the
-  the database.
-  (By default: \code{url = "https://www.ebi.ac.uk/metagenomics/api/v1"})}
+  \item \strong{url} A single character value specifying an url address of
+  the database. (By default:
+  \code{url = "https://www.ebi.ac.uk/metagenomics/api/v1"})
 }}
 }
 \value{
@@ -108,7 +108,7 @@ my_client <- MgnifyClient(
     useCache = TRUE, cacheDir = "/scratch/MGnify_cache_location"
     )
 
-\donttest{
+\dontrun{
 # Use username and password to get access to non-public data
 my_client <- MgnifyClient(
     username = "Webin-1122334", password = "SecretPassword",

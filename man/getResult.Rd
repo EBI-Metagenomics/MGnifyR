@@ -21,29 +21,30 @@ getResult(x, ...)
 
 \item{...}{optional arguments:
 \itemize{
-  \item{taxa.su}{ A single character value specifying which taxa subunit
-  results should be selected? Currently, taxonomy assignments in the
+  
+  \item \strong{taxa.su} A single character value specifying which taxa
+  subunit results should be selected? Currently, taxonomy assignments in the
   MGnify pipelines rely on rRNA matches to existing databases
   (GreenGenes and SILVA), with later pipelines checking both the SSU and
   LSU portions of the rRNA sequence. \code{taxa.su} allows then selection
   of either the Small subunit (SSU) or Large subunit results
   in the final \code{TreeSummarizedExperiment} object. Older pipeline
   versions do not report results for both subunits, and thus for some
-  accessions this value will have no effect.}
+  accessions this value will have no effect.
 
-  \item{get.tree}{ A single boolean value specifying whether to include
-  available phylogenetic trees in the \code{TreeSummarizedExperiment}
-  object. (By default: \code{get.tree = TRUE})}
+  \item \strong{get.tree} A single boolean value specifying whether to
+  include available phylogenetic trees in the \code{TreeSummarizedExperiment}
+  object. (By default: \code{get.tree = TRUE})
 
-  \item{as.df}{ A single boolean value enabled when \code{output = "list"}.
-  The argument specifies whether return functional data as a named list
-  (one entry per element in the output list) of data.frames,
-  with each data.frame containing results for all requested accessions.
-  If \code{FALSE}, The function returns a list of lists, each element
-  consisting of results for a single accession.
-  (By default: \code{as.df = TRUE})}
+  \item \strong{as.df} A single boolean value enabled when
+  \code{output = "list"}. The argument specifies whether return functional
+  data as a named list (one entry per element in the output list) of
+  data.frames, with each data.frame containing results for all requested
+  accessions. If \code{FALSE}, The function returns a list of lists, each
+  element consisting of results for a single accession. (By default:
+  \code{as.df = TRUE})
 
-  \item{bulk.dl}{ A single boolean value specifying should
+  \item \strong{bulk.dl} A single boolean value specifying should
   MGnifyR attempt to speed things up by downloading
   relevant studies TSV results and only extracting the required columns,
   rather than using the JSONAPI interface. When getting results where
@@ -53,7 +54,7 @@ getResult(x, ...)
   expected accession names. This will hopefully be fixed in the future,
   but for now \code{bulk.dl} defaults to TRUE. When it does work, it can
   be orders of magnitude more efficient.
-  (By default: \code{buld_dl = TRUE})}
+  (By default: \code{buld_dl = TRUE})
 
 }}
 
@@ -110,7 +111,7 @@ mg <- MgnifyClient(useCache = FALSE)
 accession_list <- c("MGYA00377505")
 tse <- getResult(mg, accession_list, get.func=FALSE, get.taxa=TRUE)
 
-\donttest{
+\dontrun{
 # Get functional data along with OTU tables as MAE
 mae <- getResult(mg, accession_list, get.func=TRUE, get.taxa=TRUE)
 

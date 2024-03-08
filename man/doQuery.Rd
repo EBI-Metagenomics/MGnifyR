@@ -113,7 +113,7 @@ agwaste_studies <- doQuery(
     mg, "studies", biome_name="Agricultural wastewater"
     )
 
-\donttest{
+\dontrun{
 # Get all samples from a particular study
 samps <- doQuery(mg, "samples", accession="MGYS00004521")
 

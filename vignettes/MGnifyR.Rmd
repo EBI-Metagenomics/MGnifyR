@@ -1,5 +1,5 @@
 ---
-title: "MGnifyR: interface to MGnify database"
+title: "MGnifyR"
 date: "`r Sys.Date()`"
 package: MGnifyR
 output:
@@ -10,7 +10,7 @@ output:
         toc_depth: 2
         number_sections: true
 vignette: >
-    %\VignetteIndexEntry{mia}
+    %\VignetteIndexEntry{MGnifyR}
     %\VignetteEngine{knitr::rmarkdown}
     %\VignetteEncoding{UTF-8}
 bibliography: references.bib
