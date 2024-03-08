@@ -16,7 +16,7 @@ Listing files available for download"><!-- mathjax --><script src="https://cdnjs
     
     <a class="navbar-brand me-2" href="../index.html">MGnifyR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.24</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.25</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,7 +33,7 @@ Listing files available for download"><!-- mathjax --><script src="https://cdnjs
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/MGnifyR_long.html">MGnifyR: interface to MGnify database</a>
+    <a class="dropdown-item" href="../articles/MGnifyR_long.html">MGnifyR, extended vignette</a>
   </div>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
@@ -180,7 +180,7 @@ retrieving the files using <code>mgnify_download</code></p>
 <span class="r-in"><span><span class="va">supplied_filename</span> <span class="op">&lt;-</span> <span class="fu">getFile</span><span class="op">(</span></span></span>
 <span class="r-in"><span>    <span class="va">mg</span>, <span class="va">url_list</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, file<span class="op">=</span><span class="st">"SSU_file.fasta.gz"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># \donttest{</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span><span class="co"># Example 2:</span></span></span>
 <span class="r-in"><span><span class="co"># Just use local caching</span></span></span>
 <span class="r-in"><span><span class="va">cached_filename</span> <span class="op">&lt;-</span> <span class="fu">getFile</span><span class="op">(</span><span class="va">mg</span>, <span class="va">url_list</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
@@ -190,8 +190,7 @@ retrieving the files using <code>mgnify_download</code></p>
 <span class="r-in"><span><span class="co"># \code{biostrings}. Without retaining on disk</span></span></span>
 <span class="r-in"><span><span class="va">dna_seqs</span> <span class="op">&lt;-</span> <span class="fu">getFile</span><span class="op">(</span></span></span>
 <span class="r-in"><span>    <span class="va">mg</span>, <span class="va">url_list</span><span class="op">[[</span><span class="fl">3</span><span class="op">]</span><span class="op">]</span>, read.func <span class="op">=</span> <span class="va">readDNAStringSet</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in url_list[[3]]:</span> subscript out of bounds</span>
-<span class="r-in"><span><span class="co"># }</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Make a client object</span></span></span>
 <span class="r-in"><span><span class="va">mg</span> <span class="op">&lt;-</span> <span class="fu"><a href="MgnifyClient.html">MgnifyClient</a></span><span class="op">(</span>useCache <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>

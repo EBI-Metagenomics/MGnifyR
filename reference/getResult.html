@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">MGnifyR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.24</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.25</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -27,7 +27,7 @@
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/MGnifyR_long.html">MGnifyR: interface to MGnify database</a>
+    <a class="dropdown-item" href="../articles/MGnifyR_long.html">MGnifyR, extended vignette</a>
   </div>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
@@ -77,8 +77,8 @@
 
 
 <dt>...</dt>
-<dd><p>optional arguments:</p><ul><li><p>taxa.su A single character value specifying which taxa subunit
-  results should be selected? Currently, taxonomy assignments in the
+<dd><p>optional arguments:</p><ul><li><p><strong>taxa.su</strong> A single character value specifying which taxa
+  subunit results should be selected? Currently, taxonomy assignments in the
   MGnify pipelines rely on rRNA matches to existing databases
   (GreenGenes and SILVA), with later pipelines checking both the SSU and
   LSU portions of the rRNA sequence. <code>taxa.su</code> allows then selection
@@ -86,17 +86,17 @@
   in the final <code>TreeSummarizedExperiment</code> object. Older pipeline
   versions do not report results for both subunits, and thus for some
   accessions this value will have no effect.</p></li>
-<li><p>get.tree A single boolean value specifying whether to include
-  available phylogenetic trees in the <code>TreeSummarizedExperiment</code>
+<li><p><strong>get.tree</strong> A single boolean value specifying whether to
+  include available phylogenetic trees in the <code>TreeSummarizedExperiment</code>
   object. (By default: <code>get.tree = TRUE</code>)</p></li>
-<li><p>as.df A single boolean value enabled when <code>output = "list"</code>.
-  The argument specifies whether return functional data as a named list
-  (one entry per element in the output list) of data.frames,
-  with each data.frame containing results for all requested accessions.
-  If <code>FALSE</code>, The function returns a list of lists, each element
-  consisting of results for a single accession.
-  (By default: <code>as.df = TRUE</code>)</p></li>
-<li><p>bulk.dl A single boolean value specifying should
+<li><p><strong>as.df</strong> A single boolean value enabled when
+  <code>output = "list"</code>. The argument specifies whether return functional
+  data as a named list (one entry per element in the output list) of
+  data.frames, with each data.frame containing results for all requested
+  accessions. If <code>FALSE</code>, The function returns a list of lists, each
+  element consisting of results for a single accession. (By default:
+  <code>as.df = TRUE</code>)</p></li>
+<li><p><strong>bulk.dl</strong> A single boolean value specifying should
   MGnifyR attempt to speed things up by downloading
   relevant studies TSV results and only extracting the required columns,
   rather than using the JSONAPI interface. When getting results where
@@ -185,26 +185,15 @@ If you want just to retrieve raw data from the database, see <code>getData</code
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 1/1</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># \donttest{</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span><span class="co"># Get functional data along with OTU tables as MAE</span></span></span>
 <span class="r-in"><span><span class="va">mae</span> <span class="op">&lt;-</span> <span class="fu">getResult</span><span class="op">(</span><span class="va">mg</span>, <span class="va">accession_list</span>, get.func<span class="op">=</span><span class="cn">TRUE</span>, get.taxa<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Fetching functional data...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |======================================================================| 100%</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Fetching taxonomy data...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |======================================================================| 100%</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Merging with full join...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 1/1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Get same data as list</span></span></span>
 <span class="r-in"><span><span class="va">list</span> <span class="op">&lt;-</span> <span class="fu">getResult</span><span class="op">(</span></span></span>
 <span class="r-in"><span>    <span class="va">mg</span>, <span class="va">accession_list</span>, get.func<span class="op">=</span><span class="cn">TRUE</span>, get.taxa<span class="op">=</span><span class="cn">TRUE</span>, output <span class="op">=</span> <span class="st">"list"</span>,</span></span>
 <span class="r-in"><span>    as.df <span class="op">=</span> <span class="cn">TRUE</span>, use.cache <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Fetching functional data...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |======================================================================| 100%</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Fetching taxonomy data...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |======================================================================| 100%</span>
-<span class="r-in"><span><span class="co"># }</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

@@ -16,7 +16,7 @@ A MgnifyClient object"><!-- mathjax --><script src="https://cdnjs.cloudflare.com
     
     <a class="navbar-brand me-2" href="../index.html">MGnifyR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.24</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.25</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,7 +33,7 @@ A MgnifyClient object"><!-- mathjax --><script src="https://cdnjs.cloudflare.com
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/MGnifyR_long.html">MGnifyR: interface to MGnify database</a>
+    <a class="dropdown-item" href="../articles/MGnifyR_long.html">MGnifyR, extended vignette</a>
   </div>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
@@ -124,9 +124,9 @@ cache. (By default: <code>clearCache = FALSE</code>)</p></dd>
 
 
 <dt>...</dt>
-<dd><p>optional arguments:</p><ul><li><p>url A single character value specifying an url address of the
-  the database.
-  (By default: <code>url = "https://www.ebi.ac.uk/metagenomics/api/v1"</code>)</p></li>
+<dd><p>optional arguments:</p><ul><li><p><strong>url</strong> A single character value specifying an url address of
+  the database. (By default:
+  <code>url = "https://www.ebi.ac.uk/metagenomics/api/v1"</code>)</p></li>
 </ul></dd>
 
 </dl></div>
@@ -199,14 +199,13 @@ warnings.</p></dd>
 <span class="r-in"><span>    useCache <span class="op">=</span> <span class="cn">TRUE</span>, cacheDir <span class="op">=</span> <span class="st">"/scratch/MGnify_cache_location"</span></span></span>
 <span class="r-in"><span>    <span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># \donttest{</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span><span class="co"># Use username and password to get access to non-public data</span></span></span>
 <span class="r-in"><span><span class="va">my_client</span> <span class="op">&lt;-</span> <span class="fu">MgnifyClient</span><span class="op">(</span></span></span>
 <span class="r-in"><span>    username <span class="op">=</span> <span class="st">"Webin-1122334"</span>, password <span class="op">=</span> <span class="st">"SecretPassword"</span>,</span></span>
 <span class="r-in"><span>    useCache <span class="op">=</span> <span class="cn">TRUE</span>, cacheDir <span class="op">=</span> <span class="st">"/scratch/MGnify_cache_location"</span></span></span>
 <span class="r-in"><span>    <span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> Failed to authenticate.</span>
-<span class="r-in"><span><span class="co"># }</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
