@@ -5,3 +5,5 @@ MGnifyR/vignettes/MGnifyR_cache
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
+^doc$
+^Meta$
