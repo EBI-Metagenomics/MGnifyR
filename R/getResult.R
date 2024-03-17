@@ -496,8 +496,6 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
     tse <- loadFromBiom(
         biom_path, removeTaxaPrefixes = TRUE, only.taxa.col = TRUE,
         rankFromPrefix = TRUE, remove.artifacts = TRUE)
-    # Remove unnecessary column from taxonomy data
-    rowData(tse)[["taxonomy_unparsed"]] <- NULL
     # If the file was not in store already but fetched from database, and cache
     # storing is disabled
     if( fetched_from_url && !use.cache ){
