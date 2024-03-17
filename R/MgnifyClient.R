@@ -137,7 +137,7 @@ MgnifyClient <- function(
     # Make it if needed - assume the user is sensible and the path will
     # work...
     if( useCache ){
-        dir.create(cacheDir, showWarnings = FALSE)
+        dir.create(cacheDir, recursive = TRUE, showWarnings = FALSE)
     }
     # Return the final object
     obj <- new(
