@@ -16,7 +16,7 @@ A MgnifyClient object"><!-- mathjax --><script src="https://cdnjs.cloudflare.com
     
     <a class="navbar-brand me-2" href="../index.html">MGnifyR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.25</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.26</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -70,7 +70,7 @@ MGnify database.</p>
 <span>  username <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  password <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  useCache <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  cacheDir <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  cacheDir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  showWarnings <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  clearCache <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -98,12 +98,10 @@ caching of results during this session. In most use cases should be TRUE.
 
 <dt>cacheDir</dt>
 <dd><p>A single character value specifying a folder to contain the
-local cache. If NULL, and useCache is TRUE, the new subdirectory
-<code>.MGnifyR_cache</code> in the current working directory will be used. Note
-that cached files are persistent, so the cache directory may be reused
-between sessions, taking advantage of previously downloaded results. The
-directory will be created if it doesn't exist already.
-(By default: <code>cachedir = NULL</code>)</p></dd>
+local cache. Note that cached files are persistent, so the cache directory
+may be reused between sessions, taking advantage of previously downloaded
+results. The directory will be created if it doesn't exist already.
+(By default: <code>cacheDir = tempdir()</code>)</p></dd>
 
 
 <dt>showWarnings</dt>
