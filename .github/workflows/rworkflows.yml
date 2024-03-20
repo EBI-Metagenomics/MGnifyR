@@ -28,6 +28,16 @@ jobs:
           r: auto
           cont: bioconductor/bioconductor_docker:devel
           rspm: https://packagemanager.rstudio.com/cran/__linux__/latest/release
+        - os: macOS-latest
+          bioc: devel
+          r: auto
+          cont: ~
+          rspm: ~
+        - os: windows-latest
+          bioc: devel
+          r: auto
+          cont: ~
+          rspm: ~
     steps:
     - uses: neurogenomics/rworkflows@master
       with:
