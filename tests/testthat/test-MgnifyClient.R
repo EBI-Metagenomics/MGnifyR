@@ -44,7 +44,7 @@ test_that("MgnifyClient", {
         showWarnings = FALSE,
         url = "test"
     )
-    expect_equal(cacheDir(mg), "test")
+    expect_equal(cacheDir(mg), "test/.MGnifyR_cache")
     expect_equal(showWarnings(mg), FALSE)
     expect_equal(databaseUrl(mg), "test")
     mg <- MgnifyClient(

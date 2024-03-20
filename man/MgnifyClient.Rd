@@ -11,7 +11,7 @@ MgnifyClient(
   username = NULL,
   password = NULL,
   useCache = FALSE,
-  cacheDir = NULL,
+  cacheDir = tempdir(),
   showWarnings = FALSE,
   verbose = TRUE,
   clearCache = FALSE,
@@ -30,12 +30,10 @@ caching of results during this session. In most use cases should be TRUE.
 (By default: \code{useCache = FALSE})}
 
 \item{cacheDir}{A single character value specifying a folder to contain the
-local cache. If NULL, and useCache is TRUE, the new subdirectory
-\code{.MGnifyR_cache} in the current working directory will be used. Note
-that cached files are persistent, so the cache directory may be reused
-between sessions, taking advantage of previously downloaded results. The
-directory will be created if it doesn't exist already.
-(By default: \code{cachedir = NULL})}
+local cache. Note that cached files are persistent, so the cache directory
+may be reused between sessions, taking advantage of previously downloaded
+results. The directory will be created if it doesn't exist already.
+(By default: \code{cacheDir = tempdir()})}
 
 \item{showWarnings}{A single boolean value specifying whether to print
 warnings during invocation of some MGnifyR functions.

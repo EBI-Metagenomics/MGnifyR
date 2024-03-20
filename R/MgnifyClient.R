@@ -19,12 +19,10 @@
 #' (By default: \code{useCache = FALSE})
 #'
 #' @param cacheDir A single character value specifying a folder to contain the
-#' local cache. If NULL, and useCache is TRUE, the new subdirectory
-#' \code{.MGnifyR_cache} in the current working directory will be used. Note
-#' that cached files are persistent, so the cache directory may be reused
-#' between sessions, taking advantage of previously downloaded results. The
-#' directory will be created if it doesn't exist already.
-#' (By default: \code{cachedir = NULL})
+#' local cache. Note that cached files are persistent, so the cache directory
+#' may be reused between sessions, taking advantage of previously downloaded
+#' results. The directory will be created if it doesn't exist already.
+#' (By default: \code{cacheDir = tempdir()})
 #'
 #' @param showWarnings A single boolean value specifying whether to print
 #' warnings during invocation of some MGnifyR functions.
@@ -66,8 +64,9 @@ NULL
 #' @importFrom methods new
 #' @export
 MgnifyClient <- function(
-        username = NULL, password = NULL, useCache = FALSE, cacheDir = NULL,
-        showWarnings = FALSE, verbose = TRUE, clearCache = FALSE, ...){
+        username = NULL, password = NULL, useCache = FALSE,
+        cacheDir = tempdir(), showWarnings = FALSE, verbose = TRUE,
+        clearCache = FALSE, ...){
     ############################### INPUT CHECK ################################
     if( !(is.null(username) || .is_non_empty_string(username)) ){
         stop(
@@ -84,9 +83,9 @@ MgnifyClient <- function(
             "'useCache' must be a boolean value specifying whether to use ",
             "on-disk caching.", call. = FALSE)
     }
-    if( !(is.null(cacheDir) || .is_non_empty_string(cacheDir)) ){
+    if( !.is_non_empty_string(cacheDir) ){
         stop(
-            "'cacheDir' must be NULL or single character value specifying ",
+            "'cacheDir' must be single character value specifying ",
             "the the directory for cache.", call. = FALSE)
     }
     if( !.is_a_bool(showWarnings) ){
@@ -127,24 +126,26 @@ MgnifyClient <- function(
             stop("Failed to authenticate.", call. = FALSE)
         }
     }
-    # Assume we're not using it
-    cachepath <- NA_character_
-    # Get the directory where cache will be stored, if cache is used
-    if (is.null(cacheDir) ){
-        cachepath <- file.path(getwd(), ".MGnifyR_cache")
-    } else{
-        cachepath <- cacheDir
-    }
+    # Get the directory where cache will be stored.
+    # If user has specified the subdirectory, ensure that it works in any
+    # system by adding correct "/".
+    cacheDir <- as.list(strsplit(cacheDir, "[/\\\\]")[[1]])
+    cacheDir <- do.call(file.path, cacheDir)
+    # Add subdirectory. If user has specified for example working directory,
+    # the directory would be full of files. This is unintentional.
+    cacheDir <- file.path(cacheDir, ".MGnifyR_cache")
     # Make it if needed - assume the user is sensible and the path will
     # work...
-    dir.create(cachepath, showWarnings = FALSE)
+    if( useCache ){
+        dir.create(cacheDir, recursive = TRUE, showWarnings = FALSE)
+    }
     # Return the final object
     obj <- new(
         "MgnifyClient",
         databaseUrl = url,
         authTok = authtok,
         useCache = useCache,
-        cacheDir = cachepath,
+        cacheDir = cacheDir,
         showWarnings = showWarnings,
         clearCache = clearCache,
         verbose = verbose
