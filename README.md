@@ -14,6 +14,16 @@ microbiome analysis ecosystem enabling usage of
 [mia](https://bioconductor.org/packages/release/bioc/html/mia.html)
 and other miaverse packages.
 
+<img src="man/figures/findingpheno_logo.png" align="right" width="160" />
+
+**This research has received funding from the Horizon 2020 Programme of the
+European Union within the FindingPheno project under grant agreement No
+952914.** FindingPheno, an EU-funded project, is dedicated to developing
+computational tools and methodologies for the integration and analysis of
+multi-omics data. Its primary objective is to deepen our understanding of the
+interactions between hosts and their microbiomes. You can find more information
+on [FindingPheno website](https://findingpheno.eu/).
+
 ## Requirements
 
 ```
