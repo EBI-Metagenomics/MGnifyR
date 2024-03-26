@@ -95,6 +95,10 @@ samples <- vignette_MGnifyR[["samples"]]
 The result is a table containing accession IDs and description -- in this case
 -- on samples.
 
+```{r search_studies3}
+colnames(samples) |> head()
+```
+
 ## Find relevent **analyses** accessions
 
 Now we want to find analysis accessions. Each sample might have multiple
@@ -112,6 +116,11 @@ analyses_accessions <- vignette_MGnifyR[["analyses_accessions"]]
 By running the `searchAnalysis()` function, we get a vector of analysis IDs of
 samples that we fed as an input.
 
+```{r convert_to_analyses3}
+analyses_accessions |> head()
+```
+
+
 ## Fetch metadata
 
 We can now check the metadata to get hint of what kind of data we have. We use
@@ -125,8 +134,12 @@ analyses_metadata <- getMetadata(mg, analyses_accessions)
 analyses_metadata <- vignette_MGnifyR[["analyses_metadata"]]
 ```
 
-The returned value is a `data.frame` that includes metadata includes for example
-information on how analysis was conducted and what kind of samples were analyzed.
+The returned value is a `data.frame` that includes metadata for example on how
+analysis was conducted and what kind of samples were analyzed.
+
+```{r get_metadata3}
+colnames(analyses_metadata) |> head()
+```
 
 ## Fetch microbiome data
 
@@ -212,8 +225,11 @@ publications <- vignette_MGnifyR[["publications"]]
 ```
 
 ```{r fetch_data3}
-head(publications)
+colnames(publications) |> head()
 ```
+
+The result is a `data.frame` by default. In this case, it includes information
+on publications fetched from the data portal.
 
 ## Fetch sequence files
 
@@ -238,7 +254,8 @@ where the file can be loaded.
 ```{r get_download_urls3}
 target_urls <- dl_urls[
     dl_urls$attributes.description.label == "Predicted alpha tmRNA", ]
-head(target_urls)
+
+colnames(target_urls) |> head()
 ```
 
 Finally, we can download the files with `getFile()`.
