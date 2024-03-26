@@ -53,7 +53,7 @@ book that offers valuable guidance and support.
 `devtools`. `MGnifyR` should be built using the following snippet.
 
 ```{r install, eval=FALSE}
-BiocManager::install(MGnifyR)
+BiocManager::install("MGnifyR")
 ```
 
 # Load `MGnifyR` package

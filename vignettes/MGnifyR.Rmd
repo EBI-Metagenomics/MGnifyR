@@ -45,7 +45,7 @@ cutting-edge tools in microbiome down-stream analytics.
 `BiocManager`.
 
 ```{r install, eval=FALSE}
-BiocManager::install(MGnifyR)
+BiocManager::install("MGnifyR")
 ```
 
 # Load `MGnifyR` package
