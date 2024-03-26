@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">MGnifyR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.26</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.27</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -73,7 +73,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="" class="logo" alt=""><h1>MGnifyR</h1>
             
-            <h4 data-toc-skip class="date">2024-03-21</h4>
+            <h4 data-toc-skip class="date">2024-03-26</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/EBI-Metagenomics/MGnifyR/blob/HEAD/vignettes/MGnifyR.Rmd" class="external-link"><code>vignettes/MGnifyR.Rmd</code></a></small>
       <div class="d-none name"><code>MGnifyR.Rmd</code></div>
@@ -97,7 +97,7 @@ access to cutting-edge tools in microbiome down-stream analytics.</p>
 <p><code>MGnifyR</code> is hosted on Bioconductor, and can be installed
 using via <code>BiocManager</code>.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">install</a></span><span class="op">(</span><span class="va">MGnifyR</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"MGnifyR"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="load-mgnifyr-package">Load <code>MGnifyR</code> package<a class="anchor" aria-label="anchor" href="#load-mgnifyr-package"></a>
@@ -204,7 +204,7 @@ snippet creates this.</p>
 <span><span class="co">#&gt; [1] TRUE</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Slot "cacheDir":</span></span>
-<span><span class="co">#&gt; [1] "/tmp/RtmpYm6IPu/.MGnifyR_cache"</span></span>
+<span><span class="co">#&gt; [1] "/tmp/RtmpY5Lwhx/.MGnifyR_cache"</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Slot "showWarnings":</span></span>
 <span><span class="co">#&gt; [1] FALSE</span></span>
@@ -214,6 +214,8 @@ snippet creates this.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Slot "verbose":</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
+<p>The <code>MgnifyClient</code> object contains slots for each of the
+previously mentioned settings.</p>
 </div>
 <div class="section level2">
 <h2 id="functions-for-fetching-the-data">Functions for fetching the data<a class="anchor" aria-label="anchor" href="#functions-for-fetching-the-data"></a>
@@ -233,106 +235,6 @@ information drinking water samples.</p>
 <span>    max.hits <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
 <p>The result is a table containing accession IDs and description – in
 this case – on samples.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">samples</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                  biosample   accession sample-desc</span></span>
-<span><span class="co">#&gt; ERS14399436 SAMEA112288610 ERS14399436     biofilm</span></span>
-<span><span class="co">#&gt; ERS14399429 SAMEA112288603 ERS14399429     biofilm</span></span>
-<span><span class="co">#&gt; ERS14399431 SAMEA112288605 ERS14399431     biomass</span></span>
-<span><span class="co">#&gt; ERS14399428 SAMEA112288602 ERS14399428     biofilm</span></span>
-<span><span class="co">#&gt; ERS14399416 SAMEA112288590 ERS14399416     biofilm</span></span>
-<span><span class="co">#&gt; ERS14399423 SAMEA112288597 ERS14399423     biofilm</span></span>
-<span><span class="co">#&gt;                                  environment-biome</span></span>
-<span><span class="co">#&gt; ERS14399436 Laboratory environment (ENVO_01001405)</span></span>
-<span><span class="co">#&gt; ERS14399429 Laboratory environment (ENVO_01001405)</span></span>
-<span><span class="co">#&gt; ERS14399431                                   &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; ERS14399428                                   &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; ERS14399416                                   &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; ERS14399423                                   &lt;NA&gt;</span></span>
-<span><span class="co">#&gt;                                environment-feature</span></span>
-<span><span class="co">#&gt; ERS14399436 Laboratory environment (ENVO_01001405)</span></span>
-<span><span class="co">#&gt; ERS14399429 Laboratory environment (ENVO_01001405)</span></span>
-<span><span class="co">#&gt; ERS14399431                                   &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; ERS14399428                                   &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; ERS14399416                                   &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; ERS14399423                                   &lt;NA&gt;</span></span>
-<span><span class="co">#&gt;                         environment-material sample-name sample-alias</span></span>
-<span><span class="co">#&gt; ERS14399436 Biofilm material (ENVO:01000156)     GREEN68      GREEN68</span></span>
-<span><span class="co">#&gt; ERS14399429 Biofilm material (ENVO:01000156)     GREEN61      GREEN61</span></span>
-<span><span class="co">#&gt; ERS14399431                             &lt;NA&gt;     GREEN63      GREEN63</span></span>
-<span><span class="co">#&gt; ERS14399428                             &lt;NA&gt;     GREEN60      GREEN60</span></span>
-<span><span class="co">#&gt; ERS14399416                             &lt;NA&gt;     GREEN48      GREEN48</span></span>
-<span><span class="co">#&gt; ERS14399423                             &lt;NA&gt;     GREEN55      GREEN55</span></span>
-<span><span class="co">#&gt;                     last-update                                 project name</span></span>
-<span><span class="co">#&gt; ERS14399436 2023-08-07T11:15:24 ARGs study in bioelectrochemical remediation</span></span>
-<span><span class="co">#&gt; ERS14399429 2023-08-07T10:52:31 ARGs study in bioelectrochemical remediation</span></span>
-<span><span class="co">#&gt; ERS14399431 2023-04-23T08:53:19 ARGs study in bioelectrochemical remediation</span></span>
-<span><span class="co">#&gt; ERS14399428 2023-04-23T07:57:35 ARGs study in bioelectrochemical remediation</span></span>
-<span><span class="co">#&gt; ERS14399416 2023-04-23T06:14:08 ARGs study in bioelectrochemical remediation</span></span>
-<span><span class="co">#&gt; ERS14399423 2023-04-23T05:00:17 ARGs study in bioelectrochemical remediation</span></span>
-<span><span class="co">#&gt;             geographic location (country and/or sea,region) collection date</span></span>
-<span><span class="co">#&gt; ERS14399436                                           Spain      2022-09-14</span></span>
-<span><span class="co">#&gt; ERS14399429                                           Spain      2022-09-14</span></span>
-<span><span class="co">#&gt; ERS14399431                                           Spain      2022-09-14</span></span>
-<span><span class="co">#&gt; ERS14399428                                           Spain      2022-09-14</span></span>
-<span><span class="co">#&gt; ERS14399416                                           Spain      2022-09-14</span></span>
-<span><span class="co">#&gt; ERS14399423                                           Spain      2022-09-14</span></span>
-<span><span class="co">#&gt;                                environment (biome)</span></span>
-<span><span class="co">#&gt; ERS14399436 Laboratory environment (ENVO_01001405)</span></span>
-<span><span class="co">#&gt; ERS14399429 Laboratory environment (ENVO_01001405)</span></span>
-<span><span class="co">#&gt; ERS14399431                                   &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; ERS14399428                                   &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; ERS14399416                                   &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; ERS14399423                                   &lt;NA&gt;</span></span>
-<span><span class="co">#&gt;                              environment (feature)</span></span>
-<span><span class="co">#&gt; ERS14399436 Laboratory environment (ENVO_01001405)</span></span>
-<span><span class="co">#&gt; ERS14399429 Laboratory environment (ENVO_01001405)</span></span>
-<span><span class="co">#&gt; ERS14399431                                   &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; ERS14399428                                   &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; ERS14399416                                   &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; ERS14399423                                   &lt;NA&gt;</span></span>
-<span><span class="co">#&gt;                       environment (material) ENA checklist acc_type</span></span>
-<span><span class="co">#&gt; ERS14399436 Biofilm material (ENVO:01000156)     ERC000023  samples</span></span>
-<span><span class="co">#&gt; ERS14399429 Biofilm material (ENVO:01000156)     ERC000023  samples</span></span>
-<span><span class="co">#&gt; ERS14399431                             &lt;NA&gt;     ERC000023  samples</span></span>
-<span><span class="co">#&gt; ERS14399428                             &lt;NA&gt;     ERC000023  samples</span></span>
-<span><span class="co">#&gt; ERS14399416                             &lt;NA&gt;     ERC000023  samples</span></span>
-<span><span class="co">#&gt; ERS14399423                             &lt;NA&gt;     ERC000023  samples</span></span>
-<span><span class="co">#&gt;                  studies                                                biome</span></span>
-<span><span class="co">#&gt; ERS14399436 MGYS00006211 root:Environmental:Aquatic:Freshwater:Drinking water</span></span>
-<span><span class="co">#&gt; ERS14399429 MGYS00006211 root:Environmental:Aquatic:Freshwater:Drinking water</span></span>
-<span><span class="co">#&gt; ERS14399431 MGYS00006211 root:Environmental:Aquatic:Freshwater:Drinking water</span></span>
-<span><span class="co">#&gt; ERS14399428 MGYS00006211 root:Environmental:Aquatic:Freshwater:Drinking water</span></span>
-<span><span class="co">#&gt; ERS14399416 MGYS00006211 root:Environmental:Aquatic:Freshwater:Drinking water</span></span>
-<span><span class="co">#&gt; ERS14399423 MGYS00006211 root:Environmental:Aquatic:Freshwater:Drinking water</span></span>
-<span><span class="co">#&gt;                type collection-date latitude longitude investigation type</span></span>
-<span><span class="co">#&gt; ERS14399436 samples            &lt;NA&gt;     &lt;NA&gt;      &lt;NA&gt;               &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; ERS14399429 samples            &lt;NA&gt;     &lt;NA&gt;      &lt;NA&gt;               &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; ERS14399431 samples      2022-09-14     &lt;NA&gt;      &lt;NA&gt;               &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; ERS14399428 samples      2022-09-14     &lt;NA&gt;      &lt;NA&gt;               &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; ERS14399416 samples      2022-09-14     &lt;NA&gt;      &lt;NA&gt;               &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; ERS14399423 samples      2022-09-14     &lt;NA&gt;      &lt;NA&gt;               &lt;NA&gt;</span></span>
-<span><span class="co">#&gt;             geographic location (longitude) environmental package</span></span>
-<span><span class="co">#&gt; ERS14399436                            &lt;NA&gt;                  &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; ERS14399429                            &lt;NA&gt;                  &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; ERS14399431                            &lt;NA&gt;                  &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; ERS14399428                            &lt;NA&gt;                  &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; ERS14399416                            &lt;NA&gt;                  &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; ERS14399423                            &lt;NA&gt;                  &lt;NA&gt;</span></span>
-<span><span class="co">#&gt;             sequencing method geographic location (latitude) analysis-completed</span></span>
-<span><span class="co">#&gt; ERS14399436              &lt;NA&gt;                           &lt;NA&gt;               &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; ERS14399429              &lt;NA&gt;                           &lt;NA&gt;               &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; ERS14399431              &lt;NA&gt;                           &lt;NA&gt;               &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; ERS14399428              &lt;NA&gt;                           &lt;NA&gt;               &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; ERS14399416              &lt;NA&gt;                           &lt;NA&gt;               &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; ERS14399423              &lt;NA&gt;                           &lt;NA&gt;               &lt;NA&gt;</span></span>
-<span><span class="co">#&gt;             geo-loc-name instrument model</span></span>
-<span><span class="co">#&gt; ERS14399436         &lt;NA&gt;             &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; ERS14399429         &lt;NA&gt;             &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; ERS14399431         &lt;NA&gt;             &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; ERS14399428         &lt;NA&gt;             &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; ERS14399416         &lt;NA&gt;             &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; ERS14399423         &lt;NA&gt;             &lt;NA&gt;</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="find-relevent-analyses-accessions">Find relevent <strong>analyses</strong> accessions<a class="anchor" aria-label="anchor" href="#find-relevent-analyses-accessions"></a>
@@ -340,14 +242,10 @@ this case – on samples.</p>
 <p>Now we want to find analysis accessions. Each sample might have
 multiple analyses. Each analysis ID corresponds to a single run of a
 particular pipeline on a single sample in a single study.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">analyses_accessions</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/searchAnalysis.html">searchAnalysis</a></span><span class="op">(</span><span class="va">mg</span>, <span class="st">"samples"</span>, <span class="va">samples</span><span class="op">$</span><span class="va">accession</span><span class="op">)</span></span></code></pre></div>
-<p>By running the <code><a href="../reference/searchAnalysis.html">searchAnalysis()</a></code> function, we get
-analysis IDs of samples that we fed as an input.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">analyses_accessions</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "MGYA00652201" "MGYA00652185" "MGYA00643487" "MGYA00643486" "MGYA00643485"</span></span>
-<span><span class="co">#&gt; [6] "MGYA00643484"</span></span></code></pre></div>
+<p>By running the <code><a href="../reference/searchAnalysis.html">searchAnalysis()</a></code> function, we get a
+vector of analysis IDs of samples that we fed as an input.</p>
 </div>
 <div class="section level3">
 <h3 id="fetch-metadata">Fetch metadata<a class="anchor" aria-label="anchor" href="#fetch-metadata"></a>
@@ -355,278 +253,11 @@ analysis IDs of samples that we fed as an input.</p>
 <p>We can now check the metadata to get hint of what kind of data we
 have. We use <code><a href="../reference/getMetadata.html">getMetadata()</a></code> function to fetch data based on
 analysis IDs.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">analyses_metadata</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getMetadata.html">getMetadata</a></span><span class="op">(</span><span class="va">mg</span>, <span class="va">analyses_accessions</span><span class="op">)</span></span></code></pre></div>
-<p>Metadata includes for example information on how analysis was
-conducted and what kind of samples were analyzed.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">analyses_metadata</span><span class="op">)</span></span>
-<span><span class="co">#&gt;              analysis_analysis-status analysis_pipeline-version</span></span>
-<span><span class="co">#&gt; MGYA00652201                completed                       5.0</span></span>
-<span><span class="co">#&gt; MGYA00652185                completed                       5.0</span></span>
-<span><span class="co">#&gt; MGYA00643487                completed                       5.0</span></span>
-<span><span class="co">#&gt; MGYA00643486                completed                       5.0</span></span>
-<span><span class="co">#&gt; MGYA00643485                completed                       5.0</span></span>
-<span><span class="co">#&gt; MGYA00643484                completed                       5.0</span></span>
-<span><span class="co">#&gt;              analysis_experiment-type analysis_accession analysis_is-private</span></span>
-<span><span class="co">#&gt; MGYA00652201                 assembly       MGYA00652201                TRUE</span></span>
-<span><span class="co">#&gt; MGYA00652185                 assembly       MGYA00652185                TRUE</span></span>
-<span><span class="co">#&gt; MGYA00643487                 assembly       MGYA00643487                TRUE</span></span>
-<span><span class="co">#&gt; MGYA00643486                 assembly       MGYA00643486                TRUE</span></span>
-<span><span class="co">#&gt; MGYA00643485                 assembly       MGYA00643485                TRUE</span></span>
-<span><span class="co">#&gt; MGYA00643484                 assembly       MGYA00643484                TRUE</span></span>
-<span><span class="co">#&gt;              analysis_complete-time analysis_instrument-platform</span></span>
-<span><span class="co">#&gt; MGYA00652201    2023-08-07T11:15:25                     ILLUMINA</span></span>
-<span><span class="co">#&gt; MGYA00652185    2023-08-07T10:52:31                     ILLUMINA</span></span>
-<span><span class="co">#&gt; MGYA00643487    2023-04-23T08:53:23                     ILLUMINA</span></span>
-<span><span class="co">#&gt; MGYA00643486    2023-04-23T07:57:38                     ILLUMINA</span></span>
-<span><span class="co">#&gt; MGYA00643485    2023-04-23T06:14:11                     ILLUMINA</span></span>
-<span><span class="co">#&gt; MGYA00643484    2023-04-23T05:00:21                     ILLUMINA</span></span>
-<span><span class="co">#&gt;              analysis_instrument-model analysis_Submitted nucleotide sequences</span></span>
-<span><span class="co">#&gt; MGYA00652201     Illumina NovaSeq 6000                                  223726</span></span>
-<span><span class="co">#&gt; MGYA00652185     Illumina NovaSeq 6000                                  292409</span></span>
-<span><span class="co">#&gt; MGYA00643487     Illumina NovaSeq 6000                                  162292</span></span>
-<span><span class="co">#&gt; MGYA00643486     Illumina NovaSeq 6000                                  233327</span></span>
-<span><span class="co">#&gt; MGYA00643485     Illumina NovaSeq 6000                                  318625</span></span>
-<span><span class="co">#&gt; MGYA00643484     Illumina NovaSeq 6000                                  341952</span></span>
-<span><span class="co">#&gt;              analysis_Nucleotide sequences after format-specific filtering</span></span>
-<span><span class="co">#&gt; MGYA00652201                                                        223726</span></span>
-<span><span class="co">#&gt; MGYA00652185                                                        292409</span></span>
-<span><span class="co">#&gt; MGYA00643487                                                        162292</span></span>
-<span><span class="co">#&gt; MGYA00643486                                                        233327</span></span>
-<span><span class="co">#&gt; MGYA00643485                                                        318625</span></span>
-<span><span class="co">#&gt; MGYA00643484                                                        341952</span></span>
-<span><span class="co">#&gt;              analysis_Nucleotide sequences after length filtering</span></span>
-<span><span class="co">#&gt; MGYA00652201                                               223726</span></span>
-<span><span class="co">#&gt; MGYA00652185                                               292409</span></span>
-<span><span class="co">#&gt; MGYA00643487                                               162292</span></span>
-<span><span class="co">#&gt; MGYA00643486                                               233327</span></span>
-<span><span class="co">#&gt; MGYA00643485                                               318625</span></span>
-<span><span class="co">#&gt; MGYA00643484                                               341952</span></span>
-<span><span class="co">#&gt;              analysis_Nucleotide sequences after undetermined bases filtering</span></span>
-<span><span class="co">#&gt; MGYA00652201                                                           223726</span></span>
-<span><span class="co">#&gt; MGYA00652185                                                           292409</span></span>
-<span><span class="co">#&gt; MGYA00643487                                                           162292</span></span>
-<span><span class="co">#&gt; MGYA00643486                                                           233327</span></span>
-<span><span class="co">#&gt; MGYA00643485                                                           318625</span></span>
-<span><span class="co">#&gt; MGYA00643484                                                           341952</span></span>
-<span><span class="co">#&gt;              analysis_Reads with predicted CDS</span></span>
-<span><span class="co">#&gt; MGYA00652201                            223146</span></span>
-<span><span class="co">#&gt; MGYA00652185                            291506</span></span>
-<span><span class="co">#&gt; MGYA00643487                            159860</span></span>
-<span><span class="co">#&gt; MGYA00643486                            232596</span></span>
-<span><span class="co">#&gt; MGYA00643485                            317405</span></span>
-<span><span class="co">#&gt; MGYA00643484                            341116</span></span>
-<span><span class="co">#&gt;              analysis_Reads with predicted RNA</span></span>
-<span><span class="co">#&gt; MGYA00652201                              3008</span></span>
-<span><span class="co">#&gt; MGYA00652185                              4472</span></span>
-<span><span class="co">#&gt; MGYA00643487                              3518</span></span>
-<span><span class="co">#&gt; MGYA00643486                              3513</span></span>
-<span><span class="co">#&gt; MGYA00643485                              5420</span></span>
-<span><span class="co">#&gt; MGYA00643484                              4849</span></span>
-<span><span class="co">#&gt;              analysis_Reads with InterProScan match analysis_Predicted CDS</span></span>
-<span><span class="co">#&gt; MGYA00652201                                 182364                 489141</span></span>
-<span><span class="co">#&gt; MGYA00652185                                 241005                 674191</span></span>
-<span><span class="co">#&gt; MGYA00643487                                 124819                 519411</span></span>
-<span><span class="co">#&gt; MGYA00643486                                 192842                 542005</span></span>
-<span><span class="co">#&gt; MGYA00643485                                 259359                 893435</span></span>
-<span><span class="co">#&gt; MGYA00643484                                 280422                 826459</span></span>
-<span><span class="co">#&gt;              analysis_Predicted CDS with InterProScan match</span></span>
-<span><span class="co">#&gt; MGYA00652201                                         331022</span></span>
-<span><span class="co">#&gt; MGYA00652185                                         472354</span></span>
-<span><span class="co">#&gt; MGYA00643487                                         330317</span></span>
-<span><span class="co">#&gt; MGYA00643486                                         379304</span></span>
-<span><span class="co">#&gt; MGYA00643485                                         585352</span></span>
-<span><span class="co">#&gt; MGYA00643484                                         572175</span></span>
-<span><span class="co">#&gt;              analysis_Total InterProScan matches</span></span>
-<span><span class="co">#&gt; MGYA00652201                             1035846</span></span>
-<span><span class="co">#&gt; MGYA00652185                             1520845</span></span>
-<span><span class="co">#&gt; MGYA00643487                             1134950</span></span>
-<span><span class="co">#&gt; MGYA00643486                             1221863</span></span>
-<span><span class="co">#&gt; MGYA00643485                             1928199</span></span>
-<span><span class="co">#&gt; MGYA00643484                             1847000</span></span>
-<span><span class="co">#&gt;              analysis_Predicted SSU sequences analysis_Predicted LSU sequences</span></span>
-<span><span class="co">#&gt; MGYA00652201                              141                              222</span></span>
-<span><span class="co">#&gt; MGYA00652185                              268                              394</span></span>
-<span><span class="co">#&gt; MGYA00643487                              217                              330</span></span>
-<span><span class="co">#&gt; MGYA00643486                              199                              345</span></span>
-<span><span class="co">#&gt; MGYA00643485                              273                              431</span></span>
-<span><span class="co">#&gt; MGYA00643484                              243                              399</span></span>
-<span><span class="co">#&gt;              analysis_acc_type study_attributes.accession</span></span>
-<span><span class="co">#&gt; MGYA00652201     analysis-jobs               MGYS00006211</span></span>
-<span><span class="co">#&gt; MGYA00652185     analysis-jobs               MGYS00006211</span></span>
-<span><span class="co">#&gt; MGYA00643487     analysis-jobs               MGYS00006211</span></span>
-<span><span class="co">#&gt; MGYA00643486     analysis-jobs               MGYS00006211</span></span>
-<span><span class="co">#&gt; MGYA00643485     analysis-jobs               MGYS00006211</span></span>
-<span><span class="co">#&gt; MGYA00643484     analysis-jobs               MGYS00006211</span></span>
-<span><span class="co">#&gt;              study_attributes.bioproject study_attributes.samples-count</span></span>
-<span><span class="co">#&gt; MGYA00652201                  PRJEB58755                             23</span></span>
-<span><span class="co">#&gt; MGYA00652185                  PRJEB58755                             23</span></span>
-<span><span class="co">#&gt; MGYA00643487                  PRJEB58755                             23</span></span>
-<span><span class="co">#&gt; MGYA00643486                  PRJEB58755                             23</span></span>
-<span><span class="co">#&gt; MGYA00643485                  PRJEB58755                             23</span></span>
-<span><span class="co">#&gt; MGYA00643484                  PRJEB58755                             23</span></span>
-<span><span class="co">#&gt;              study_attributes.is-private study_attributes.secondary-accession</span></span>
-<span><span class="co">#&gt; MGYA00652201                       FALSE                            ERP143823</span></span>
-<span><span class="co">#&gt; MGYA00652185                       FALSE                            ERP143823</span></span>
-<span><span class="co">#&gt; MGYA00643487                       FALSE                            ERP143823</span></span>
-<span><span class="co">#&gt; MGYA00643486                       FALSE                            ERP143823</span></span>
-<span><span class="co">#&gt; MGYA00643485                       FALSE                            ERP143823</span></span>
-<span><span class="co">#&gt; MGYA00643484                       FALSE                            ERP143823</span></span>
-<span><span class="co">#&gt;              study_attributes.centre-name</span></span>
-<span><span class="co">#&gt; MGYA00652201  Leitat Technological Center</span></span>
-<span><span class="co">#&gt; MGYA00652185  Leitat Technological Center</span></span>
-<span><span class="co">#&gt; MGYA00643487  Leitat Technological Center</span></span>
-<span><span class="co">#&gt; MGYA00643486  Leitat Technological Center</span></span>
-<span><span class="co">#&gt; MGYA00643485  Leitat Technological Center</span></span>
-<span><span class="co">#&gt; MGYA00643484  Leitat Technological Center</span></span>
-<span><span class="co">#&gt;                                                                                                                                                                                           study_attributes.study-abstract</span></span>
-<span><span class="co">#&gt; MGYA00652201 Elimination of several antibiotics in water by bioelectrochemical cells. The main objective is study how the concentration of antibiotic resistant genes (ARG) changed depending on the voltage application.</span></span>
-<span><span class="co">#&gt; MGYA00652185 Elimination of several antibiotics in water by bioelectrochemical cells. The main objective is study how the concentration of antibiotic resistant genes (ARG) changed depending on the voltage application.</span></span>
-<span><span class="co">#&gt; MGYA00643487 Elimination of several antibiotics in water by bioelectrochemical cells. The main objective is study how the concentration of antibiotic resistant genes (ARG) changed depending on the voltage application.</span></span>
-<span><span class="co">#&gt; MGYA00643486 Elimination of several antibiotics in water by bioelectrochemical cells. The main objective is study how the concentration of antibiotic resistant genes (ARG) changed depending on the voltage application.</span></span>
-<span><span class="co">#&gt; MGYA00643485 Elimination of several antibiotics in water by bioelectrochemical cells. The main objective is study how the concentration of antibiotic resistant genes (ARG) changed depending on the voltage application.</span></span>
-<span><span class="co">#&gt; MGYA00643484 Elimination of several antibiotics in water by bioelectrochemical cells. The main objective is study how the concentration of antibiotic resistant genes (ARG) changed depending on the voltage application.</span></span>
-<span><span class="co">#&gt;                               study_attributes.study-name</span></span>
-<span><span class="co">#&gt; MGYA00652201 ARGs study in bioelectrochemical remediation</span></span>
-<span><span class="co">#&gt; MGYA00652185 ARGs study in bioelectrochemical remediation</span></span>
-<span><span class="co">#&gt; MGYA00643487 ARGs study in bioelectrochemical remediation</span></span>
-<span><span class="co">#&gt; MGYA00643486 ARGs study in bioelectrochemical remediation</span></span>
-<span><span class="co">#&gt; MGYA00643485 ARGs study in bioelectrochemical remediation</span></span>
-<span><span class="co">#&gt; MGYA00643484 ARGs study in bioelectrochemical remediation</span></span>
-<span><span class="co">#&gt;              study_attributes.data-origination study_attributes.last-update</span></span>
-<span><span class="co">#&gt; MGYA00652201                         SUBMITTED          2023-08-07T11:15:24</span></span>
-<span><span class="co">#&gt; MGYA00652185                         SUBMITTED          2023-08-07T11:15:24</span></span>
-<span><span class="co">#&gt; MGYA00643487                         SUBMITTED          2023-08-07T11:15:24</span></span>
-<span><span class="co">#&gt; MGYA00643486                         SUBMITTED          2023-08-07T11:15:24</span></span>
-<span><span class="co">#&gt; MGYA00643485                         SUBMITTED          2023-08-07T11:15:24</span></span>
-<span><span class="co">#&gt; MGYA00643484                         SUBMITTED          2023-08-07T11:15:24</span></span>
-<span><span class="co">#&gt;              study_accession study_acc_type sample_biosample sample_accession</span></span>
-<span><span class="co">#&gt; MGYA00652201    MGYS00006211        studies   SAMEA112288610      ERS14399436</span></span>
-<span><span class="co">#&gt; MGYA00652185    MGYS00006211        studies   SAMEA112288603      ERS14399429</span></span>
-<span><span class="co">#&gt; MGYA00643487    MGYS00006211        studies   SAMEA112288605      ERS14399431</span></span>
-<span><span class="co">#&gt; MGYA00643486    MGYS00006211        studies   SAMEA112288602      ERS14399428</span></span>
-<span><span class="co">#&gt; MGYA00643485    MGYS00006211        studies   SAMEA112288590      ERS14399416</span></span>
-<span><span class="co">#&gt; MGYA00643484    MGYS00006211        studies   SAMEA112288597      ERS14399423</span></span>
-<span><span class="co">#&gt;              sample_sample-desc               sample_environment-biome</span></span>
-<span><span class="co">#&gt; MGYA00652201            biofilm Laboratory environment (ENVO_01001405)</span></span>
-<span><span class="co">#&gt; MGYA00652185            biofilm Laboratory environment (ENVO_01001405)</span></span>
-<span><span class="co">#&gt; MGYA00643487            biomass                                   &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00643486            biofilm                                   &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00643485            biofilm                                   &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00643484            biofilm                                   &lt;NA&gt;</span></span>
-<span><span class="co">#&gt;                          sample_environment-feature</span></span>
-<span><span class="co">#&gt; MGYA00652201 Laboratory environment (ENVO_01001405)</span></span>
-<span><span class="co">#&gt; MGYA00652185 Laboratory environment (ENVO_01001405)</span></span>
-<span><span class="co">#&gt; MGYA00643487                                   &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00643486                                   &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00643485                                   &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00643484                                   &lt;NA&gt;</span></span>
-<span><span class="co">#&gt;                   sample_environment-material sample_sample-name</span></span>
-<span><span class="co">#&gt; MGYA00652201 Biofilm material (ENVO:01000156)            GREEN68</span></span>
-<span><span class="co">#&gt; MGYA00652185 Biofilm material (ENVO:01000156)            GREEN61</span></span>
-<span><span class="co">#&gt; MGYA00643487                             &lt;NA&gt;            GREEN63</span></span>
-<span><span class="co">#&gt; MGYA00643486                             &lt;NA&gt;            GREEN60</span></span>
-<span><span class="co">#&gt; MGYA00643485                             &lt;NA&gt;            GREEN48</span></span>
-<span><span class="co">#&gt; MGYA00643484                             &lt;NA&gt;            GREEN55</span></span>
-<span><span class="co">#&gt;              sample_sample-alias  sample_last-update</span></span>
-<span><span class="co">#&gt; MGYA00652201             GREEN68 2023-08-07T11:15:24</span></span>
-<span><span class="co">#&gt; MGYA00652185             GREEN61 2023-08-07T10:52:31</span></span>
-<span><span class="co">#&gt; MGYA00643487             GREEN63 2023-04-23T08:53:19</span></span>
-<span><span class="co">#&gt; MGYA00643486             GREEN60 2023-04-23T07:57:35</span></span>
-<span><span class="co">#&gt; MGYA00643485             GREEN48 2023-04-23T06:14:08</span></span>
-<span><span class="co">#&gt; MGYA00643484             GREEN55 2023-04-23T05:00:17</span></span>
-<span><span class="co">#&gt;                                       sample_project name</span></span>
-<span><span class="co">#&gt; MGYA00652201 ARGs study in bioelectrochemical remediation</span></span>
-<span><span class="co">#&gt; MGYA00652185 ARGs study in bioelectrochemical remediation</span></span>
-<span><span class="co">#&gt; MGYA00643487 ARGs study in bioelectrochemical remediation</span></span>
-<span><span class="co">#&gt; MGYA00643486 ARGs study in bioelectrochemical remediation</span></span>
-<span><span class="co">#&gt; MGYA00643485 ARGs study in bioelectrochemical remediation</span></span>
-<span><span class="co">#&gt; MGYA00643484 ARGs study in bioelectrochemical remediation</span></span>
-<span><span class="co">#&gt;              sample_geographic location (country and/or sea,region)</span></span>
-<span><span class="co">#&gt; MGYA00652201                                                  Spain</span></span>
-<span><span class="co">#&gt; MGYA00652185                                                  Spain</span></span>
-<span><span class="co">#&gt; MGYA00643487                                                  Spain</span></span>
-<span><span class="co">#&gt; MGYA00643486                                                  Spain</span></span>
-<span><span class="co">#&gt; MGYA00643485                                                  Spain</span></span>
-<span><span class="co">#&gt; MGYA00643484                                                  Spain</span></span>
-<span><span class="co">#&gt;              sample_collection date             sample_environment (biome)</span></span>
-<span><span class="co">#&gt; MGYA00652201             2022-09-14 Laboratory environment (ENVO_01001405)</span></span>
-<span><span class="co">#&gt; MGYA00652185             2022-09-14 Laboratory environment (ENVO_01001405)</span></span>
-<span><span class="co">#&gt; MGYA00643487             2022-09-14                                   &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00643486             2022-09-14                                   &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00643485             2022-09-14                                   &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00643484             2022-09-14                                   &lt;NA&gt;</span></span>
-<span><span class="co">#&gt;                        sample_environment (feature)</span></span>
-<span><span class="co">#&gt; MGYA00652201 Laboratory environment (ENVO_01001405)</span></span>
-<span><span class="co">#&gt; MGYA00652185 Laboratory environment (ENVO_01001405)</span></span>
-<span><span class="co">#&gt; MGYA00643487                                   &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00643486                                   &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00643485                                   &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00643484                                   &lt;NA&gt;</span></span>
-<span><span class="co">#&gt;                 sample_environment (material) sample_ENA checklist</span></span>
-<span><span class="co">#&gt; MGYA00652201 Biofilm material (ENVO:01000156)            ERC000023</span></span>
-<span><span class="co">#&gt; MGYA00652185 Biofilm material (ENVO:01000156)            ERC000023</span></span>
-<span><span class="co">#&gt; MGYA00643487                             &lt;NA&gt;            ERC000023</span></span>
-<span><span class="co">#&gt; MGYA00643486                             &lt;NA&gt;            ERC000023</span></span>
-<span><span class="co">#&gt; MGYA00643485                             &lt;NA&gt;            ERC000023</span></span>
-<span><span class="co">#&gt; MGYA00643484                             &lt;NA&gt;            ERC000023</span></span>
-<span><span class="co">#&gt;              sample_acc_type assembly_accession</span></span>
-<span><span class="co">#&gt; MGYA00652201         samples        ERZ20300939</span></span>
-<span><span class="co">#&gt; MGYA00652185         samples        ERZ20300942</span></span>
-<span><span class="co">#&gt; MGYA00643487         samples        ERZ16299686</span></span>
-<span><span class="co">#&gt; MGYA00643486         samples        ERZ16299690</span></span>
-<span><span class="co">#&gt; MGYA00643485         samples        ERZ16299649</span></span>
-<span><span class="co">#&gt; MGYA00643484         samples        ERZ16299683</span></span>
-<span><span class="co">#&gt;                                                      biome_string</span></span>
-<span><span class="co">#&gt; MGYA00652201 root:Environmental:Aquatic:Freshwater:Drinking water</span></span>
-<span><span class="co">#&gt; MGYA00652185 root:Environmental:Aquatic:Freshwater:Drinking water</span></span>
-<span><span class="co">#&gt; MGYA00643487 root:Environmental:Aquatic:Freshwater:Drinking water</span></span>
-<span><span class="co">#&gt; MGYA00643486 root:Environmental:Aquatic:Freshwater:Drinking water</span></span>
-<span><span class="co">#&gt; MGYA00643485 root:Environmental:Aquatic:Freshwater:Drinking water</span></span>
-<span><span class="co">#&gt; MGYA00643484 root:Environmental:Aquatic:Freshwater:Drinking water</span></span>
-<span><span class="co">#&gt;              sample_collection-date sample_latitude sample_longitude</span></span>
-<span><span class="co">#&gt; MGYA00652201                   &lt;NA&gt;            &lt;NA&gt;             &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00652185                   &lt;NA&gt;            &lt;NA&gt;             &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00643487             2022-09-14            &lt;NA&gt;             &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00643486             2022-09-14            &lt;NA&gt;             &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00643485             2022-09-14            &lt;NA&gt;             &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00643484             2022-09-14            &lt;NA&gt;             &lt;NA&gt;</span></span>
-<span><span class="co">#&gt;              sample_investigation type sample_geographic location (longitude)</span></span>
-<span><span class="co">#&gt; MGYA00652201                      &lt;NA&gt;                                   &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00652185                      &lt;NA&gt;                                   &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00643487                      &lt;NA&gt;                                   &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00643486                      &lt;NA&gt;                                   &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00643485                      &lt;NA&gt;                                   &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00643484                      &lt;NA&gt;                                   &lt;NA&gt;</span></span>
-<span><span class="co">#&gt;              sample_environmental package sample_sequencing method</span></span>
-<span><span class="co">#&gt; MGYA00652201                         &lt;NA&gt;                     &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00652185                         &lt;NA&gt;                     &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00643487                         &lt;NA&gt;                     &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00643486                         &lt;NA&gt;                     &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00643485                         &lt;NA&gt;                     &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00643484                         &lt;NA&gt;                     &lt;NA&gt;</span></span>
-<span><span class="co">#&gt;              sample_geographic location (latitude) run_accession</span></span>
-<span><span class="co">#&gt; MGYA00652201                                  &lt;NA&gt;          &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00652185                                  &lt;NA&gt;          &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00643487                                  &lt;NA&gt;          &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00643486                                  &lt;NA&gt;          &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00643485                                  &lt;NA&gt;          &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00643484                                  &lt;NA&gt;          &lt;NA&gt;</span></span>
-<span><span class="co">#&gt;              sample_analysis-completed sample_geo-loc-name</span></span>
-<span><span class="co">#&gt; MGYA00652201                      &lt;NA&gt;                &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00652185                      &lt;NA&gt;                &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00643487                      &lt;NA&gt;                &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00643486                      &lt;NA&gt;                &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00643485                      &lt;NA&gt;                &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00643484                      &lt;NA&gt;                &lt;NA&gt;</span></span>
-<span><span class="co">#&gt;              sample_instrument model</span></span>
-<span><span class="co">#&gt; MGYA00652201                    &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00652185                    &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00643487                    &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00643486                    &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00643485                    &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; MGYA00643484                    &lt;NA&gt;</span></span></code></pre></div>
+<p>The returned value is a <code>data.frame</code> that includes
+metadata includes for example information on how analysis was conducted
+and what kind of samples were analyzed.</p>
 </div>
 <div class="section level3">
 <h3 id="fetch-microbiome-data">Fetch microbiome data<a class="anchor" aria-label="anchor" href="#fetch-microbiome-data"></a>
@@ -640,9 +271,9 @@ only taxonomic profiling data, the output is a single
 <code>TreeSE</code>. If dataset includes also functional data, the
 output is multiple <code>TreeSE</code> objects that are linked together
 by utilizing <code>MAE</code>.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mae</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getResult.html">getResult</a></span><span class="op">(</span><span class="va">mg</span>, accession <span class="op">=</span> <span class="va">analyses_accessions</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mae</span></span>
 <span><span class="co">#&gt; A MultiAssayExperiment object of 6 listed</span></span>
 <span><span class="co">#&gt;  experiments with user-defined names and respective classes.</span></span>
@@ -663,7 +294,7 @@ by utilizing <code>MAE</code>.</p>
 <span><span class="co">#&gt;  exportClass() - save data to flat files</span></span></code></pre></div>
 <p>You can get access to individual <code>TreeSE</code> object in
 <code>MAE</code> by specifying index or name.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mae</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
 <span><span class="co">#&gt; class: TreeSummarizedExperiment </span></span>
 <span><span class="co">#&gt; dim: 3506 50 </span></span>
@@ -685,7 +316,7 @@ by utilizing <code>MAE</code>.</p>
 <code>SummarizedExperiment</code>-based microbiome data manipulation and
 visualization. Moreover, it enables access to <code>miaverse</code>
 tools. For example, we can estimate diversity of samples…</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mae</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/mia/man/estimateDiversity.html" class="external-link">estimateDiversity</a></span><span class="op">(</span><span class="va">mae</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, index <span class="op">=</span> <span class="st">"shannon"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://bioconductor.org/packages/scater/" class="external-link">scater</a></span><span class="op">)</span></span>
@@ -695,7 +326,7 @@ tools. For example, we can estimate diversity of samples…</p>
 <span><span class="fu"><a href="https://rdrr.io/pkg/scater/man/plotColData.html" class="external-link">plotColData</a></span><span class="op">(</span><span class="va">mae</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, <span class="st">"shannon"</span>, x <span class="op">=</span> <span class="st">"sample_environment..biome."</span><span class="op">)</span></span></code></pre></div>
 <p><img src="MGnifyR_files/figure-html/calculate_diversity-1.png" width="864"></p>
 <p>… and plot abundances of most abundant phyla.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Agglomerate data</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/SingleCellExperiment/man/altExps.html" class="external-link">altExps</a></span><span class="op">(</span><span class="va">mae</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/mia/man/splitByRanks.html" class="external-link">splitByRanks</a></span><span class="op">(</span><span class="va">mae</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
 <span></span>
@@ -708,7 +339,7 @@ tools. For example, we can estimate diversity of samples…</p>
 <p><img src="MGnifyR_files/figure-html/plot_abundance-1.png" width="700"></p>
 <p>We can also perform other analyses such as principal component
 analysis to microbial profiling data by utilizing miaverse tools.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Apply relative transformation</span></span>
 <span><span class="va">mae</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/mia/man/transformAssay.html" class="external-link">transformAssay</a></span><span class="op">(</span><span class="va">mae</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, method <span class="op">=</span> <span class="st">"relabundance"</span><span class="op">)</span></span>
 <span><span class="co"># Perform PCoA</span></span>
@@ -727,9 +358,9 @@ analysis to microbial profiling data by utilizing miaverse tools.</p>
 profiling data, <code><a href="../reference/getData.html">getData()</a></code> can be used more flexibly to
 retrieve any kind of data from the database. It returns data as simple
 data.frame or list format.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">publications</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getData.html">getData</a></span><span class="op">(</span><span class="va">mg</span>, type <span class="op">=</span> <span class="st">"publications"</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">publications</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   document.id         type       id attributes.pubmed-id</span></span>
 <span><span class="co">#&gt; 1           1 publications 36363763             36363763</span></span>
@@ -839,12 +470,12 @@ merged sequence reads, assembled contigs, and details of the functional
 analyses.</p>
 <p>With <code><a href="../reference/getFile.html">searchFile()</a></code>, we can search files from the
 database.</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dl_urls</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getFile.html">searchFile</a></span><span class="op">(</span><span class="va">mg</span>, <span class="va">analyses_accessions</span>, type <span class="op">=</span> <span class="st">"analyses"</span><span class="op">)</span></span></code></pre></div>
 <p>The returned table contains search results related to analyses that
 we fed as an input. The table contains information on file and also URL
 address from where the file can be loaded.</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">target_urls</span> <span class="op">&lt;-</span> <span class="va">dl_urls</span><span class="op">[</span></span>
 <span>    <span class="va">dl_urls</span><span class="op">$</span><span class="va">attributes.description.label</span> <span class="op">==</span> <span class="st">"Predicted alpha tmRNA"</span>, <span class="op">]</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">target_urls</span><span class="op">)</span></span>
@@ -926,18 +557,18 @@ address from where the file can be loaded.</p>
 <span><span class="co">#&gt; 228 MGYA00643485</span></span>
 <span><span class="co">#&gt; 279 MGYA00643484</span></span></code></pre></div>
 <p>Finally, we can download the files with <code><a href="../reference/getFile.html">getFile()</a></code>.</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Just select a single file from the target_urls list for demonstration.</span></span>
 <span><span class="va">file_url</span> <span class="op">&lt;-</span> <span class="va">target_urls</span><span class="op">$</span><span class="va">download_url</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
 <span><span class="va">cached_location</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getFile.html">getFile</a></span><span class="op">(</span><span class="va">mg</span>, <span class="va">file_url</span><span class="op">)</span></span></code></pre></div>
 <p>The function returns a path where the file is stored.</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Where are the files?</span></span>
 <span><span class="va">cached_location</span></span>
 <span><span class="co">#&gt; [1] "/.MGnifyR_cache/analyses/MGYA00652201/file/ERZ20300939_alpha_tmRNA.RF01849.fasta.gz"</span></span></code></pre></div>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; R Under development (unstable) (2024-03-13 r86113)</span></span>
+<span><span class="co">#&gt; R Under development (unstable) (2024-03-24 r86185)</span></span>
 <span><span class="co">#&gt; Platform: x86_64-pc-linux-gnu</span></span>
 <span><span class="co">#&gt; Running under: Ubuntu 22.04.4 LTS</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -963,14 +594,14 @@ address from where the file can be loaded.</p>
 <span><span class="co">#&gt; other attached packages:</span></span>
 <span><span class="co">#&gt;  [1] miaViz_1.11.0                   ggraph_2.2.1                   </span></span>
 <span><span class="co">#&gt;  [3] scater_1.31.2                   ggplot2_3.5.0                  </span></span>
-<span><span class="co">#&gt;  [5] scuttle_1.13.1                  MGnifyR_0.99.26                </span></span>
+<span><span class="co">#&gt;  [5] scuttle_1.13.1                  MGnifyR_0.99.27                </span></span>
 <span><span class="co">#&gt;  [7] biomformat_1.31.0               mia_1.11.1                     </span></span>
 <span><span class="co">#&gt;  [9] MultiAssayExperiment_1.29.1     TreeSummarizedExperiment_2.11.0</span></span>
-<span><span class="co">#&gt; [11] Biostrings_2.71.4               XVector_0.43.1                 </span></span>
+<span><span class="co">#&gt; [11] Biostrings_2.71.5               XVector_0.43.1                 </span></span>
 <span><span class="co">#&gt; [13] SingleCellExperiment_1.25.0     SummarizedExperiment_1.33.3    </span></span>
 <span><span class="co">#&gt; [15] Biobase_2.63.0                  GenomicRanges_1.55.4           </span></span>
 <span><span class="co">#&gt; [17] GenomeInfoDb_1.39.9             IRanges_2.37.1                 </span></span>
-<span><span class="co">#&gt; [19] S4Vectors_0.41.4                BiocGenerics_0.49.1            </span></span>
+<span><span class="co">#&gt; [19] S4Vectors_0.41.5                BiocGenerics_0.49.1            </span></span>
 <span><span class="co">#&gt; [21] MatrixGenerics_1.15.0           matrixStats_1.2.0              </span></span>
 <span><span class="co">#&gt; [23] knitr_1.45                      BiocStyle_2.31.0               </span></span>
 <span><span class="co">#&gt; </span></span>
@@ -982,22 +613,22 @@ address from where the file can be loaded.</p>
 <span><span class="co">#&gt;   [9] ragg_1.3.0                  vctrs_0.6.5                </span></span>
 <span><span class="co">#&gt;  [11] memoise_2.0.1               DelayedMatrixStats_1.25.1  </span></span>
 <span><span class="co">#&gt;  [13] RCurl_1.98-1.14             ggtree_3.11.1              </span></span>
-<span><span class="co">#&gt;  [15] htmltools_0.5.7             S4Arrays_1.3.6             </span></span>
+<span><span class="co">#&gt;  [15] htmltools_0.5.8             S4Arrays_1.3.6             </span></span>
 <span><span class="co">#&gt;  [17] BiocBaseUtils_1.5.1         BiocNeighbors_1.21.2       </span></span>
 <span><span class="co">#&gt;  [19] Rhdf5lib_1.25.1             gridGraphics_0.5-1         </span></span>
 <span><span class="co">#&gt;  [21] SparseArray_1.3.4           rhdf5_2.47.6               </span></span>
-<span><span class="co">#&gt;  [23] sass_0.4.9                  bslib_0.6.1                </span></span>
+<span><span class="co">#&gt;  [23] sass_0.4.9                  bslib_0.6.2                </span></span>
 <span><span class="co">#&gt;  [25] desc_1.4.3                  plyr_1.8.9                 </span></span>
 <span><span class="co">#&gt;  [27] DECIPHER_2.31.3             cachem_1.0.8               </span></span>
 <span><span class="co">#&gt;  [29] igraph_2.0.3                lifecycle_1.0.4            </span></span>
 <span><span class="co">#&gt;  [31] pkgconfig_2.0.3             rsvd_1.0.5                 </span></span>
-<span><span class="co">#&gt;  [33] Matrix_1.6-5                R6_2.5.1                   </span></span>
+<span><span class="co">#&gt;  [33] Matrix_1.7-0                R6_2.5.1                   </span></span>
 <span><span class="co">#&gt;  [35] fastmap_1.1.1               GenomeInfoDbData_1.2.11    </span></span>
 <span><span class="co">#&gt;  [37] aplot_0.2.2                 digest_0.6.35              </span></span>
 <span><span class="co">#&gt;  [39] ggnewscale_0.4.10           colorspace_2.1-0           </span></span>
 <span><span class="co">#&gt;  [41] patchwork_1.2.0             irlba_2.3.5.1              </span></span>
 <span><span class="co">#&gt;  [43] textshaping_0.3.7           vegan_2.6-4                </span></span>
-<span><span class="co">#&gt;  [45] beachmat_2.19.1             labeling_0.4.3             </span></span>
+<span><span class="co">#&gt;  [45] beachmat_2.19.2             labeling_0.4.3             </span></span>
 <span><span class="co">#&gt;  [47] fansi_1.0.6                 urltools_1.7.3             </span></span>
 <span><span class="co">#&gt;  [49] polyclip_1.10-6             httr_1.4.7                 </span></span>
 <span><span class="co">#&gt;  [51] abind_1.4-5                 mgcv_1.9-1                 </span></span>
@@ -1019,9 +650,9 @@ address from where the file can be loaded.</p>
 <span><span class="co">#&gt;  [83] stringr_1.5.1               yulab.utils_0.1.4          </span></span>
 <span><span class="co">#&gt;  [85] splines_4.4.0               tweenr_2.0.3               </span></span>
 <span><span class="co">#&gt;  [87] dplyr_1.1.4                 treeio_1.27.0              </span></span>
-<span><span class="co">#&gt;  [89] lattice_0.22-5              tidyselect_1.2.1           </span></span>
+<span><span class="co">#&gt;  [89] lattice_0.22-6              tidyselect_1.2.1           </span></span>
 <span><span class="co">#&gt;  [91] DirichletMultinomial_1.45.0 gridExtra_2.3              </span></span>
-<span><span class="co">#&gt;  [93] bookdown_0.38               xfun_0.42                  </span></span>
+<span><span class="co">#&gt;  [93] bookdown_0.38               xfun_0.43                  </span></span>
 <span><span class="co">#&gt;  [95] graphlayouts_1.1.1          stringi_1.8.3              </span></span>
 <span><span class="co">#&gt;  [97] ggfun_0.1.4                 lazyeval_0.2.2             </span></span>
 <span><span class="co">#&gt;  [99] yaml_2.3.8                  evaluate_0.23              </span></span>
