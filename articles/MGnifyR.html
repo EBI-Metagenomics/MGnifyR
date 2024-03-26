@@ -204,7 +204,7 @@ snippet creates this.</p>
 <span><span class="co">#&gt; [1] TRUE</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Slot "cacheDir":</span></span>
-<span><span class="co">#&gt; [1] "/tmp/RtmphXjp8W/.MGnifyR_cache"</span></span>
+<span><span class="co">#&gt; [1] "/tmp/RtmpeMUYT9/.MGnifyR_cache"</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Slot "showWarnings":</span></span>
 <span><span class="co">#&gt; [1] FALSE</span></span>
@@ -235,6 +235,10 @@ information drinking water samples.</p>
 <span>    max.hits <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
 <p>The result is a table containing accession IDs and description – in
 this case – on samples.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">samples</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "biosample"            "accession"            "sample-desc"         </span></span>
+<span><span class="co">#&gt; [4] "environment-biome"    "environment-feature"  "environment-material"</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="find-relevent-analyses-accessions">Find relevent <strong>analyses</strong> accessions<a class="anchor" aria-label="anchor" href="#find-relevent-analyses-accessions"></a>
@@ -242,10 +246,14 @@ this case – on samples.</p>
 <p>Now we want to find analysis accessions. Each sample might have
 multiple analyses. Each analysis ID corresponds to a single run of a
 particular pipeline on a single sample in a single study.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">analyses_accessions</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/searchAnalysis.html">searchAnalysis</a></span><span class="op">(</span><span class="va">mg</span>, <span class="st">"samples"</span>, <span class="va">samples</span><span class="op">$</span><span class="va">accession</span><span class="op">)</span></span></code></pre></div>
 <p>By running the <code><a href="../reference/searchAnalysis.html">searchAnalysis()</a></code> function, we get a
 vector of analysis IDs of samples that we fed as an input.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">analyses_accessions</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "MGYA00652201" "MGYA00652185" "MGYA00643487" "MGYA00643486" "MGYA00643485"</span></span>
+<span><span class="co">#&gt; [6] "MGYA00643484"</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="fetch-metadata">Fetch metadata<a class="anchor" aria-label="anchor" href="#fetch-metadata"></a>
@@ -253,11 +261,16 @@ vector of analysis IDs of samples that we fed as an input.</p>
 <p>We can now check the metadata to get hint of what kind of data we
 have. We use <code><a href="../reference/getMetadata.html">getMetadata()</a></code> function to fetch data based on
 analysis IDs.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">analyses_metadata</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getMetadata.html">getMetadata</a></span><span class="op">(</span><span class="va">mg</span>, <span class="va">analyses_accessions</span><span class="op">)</span></span></code></pre></div>
 <p>The returned value is a <code>data.frame</code> that includes
-metadata includes for example information on how analysis was conducted
-and what kind of samples were analyzed.</p>
+metadata for example on how analysis was conducted and what kind of
+samples were analyzed.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">analyses_metadata</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "analysis_analysis-status"  "analysis_pipeline-version"</span></span>
+<span><span class="co">#&gt; [3] "analysis_experiment-type"  "analysis_accession"       </span></span>
+<span><span class="co">#&gt; [5] "analysis_is-private"       "analysis_complete-time"</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="fetch-microbiome-data">Fetch microbiome data<a class="anchor" aria-label="anchor" href="#fetch-microbiome-data"></a>
@@ -271,9 +284,9 @@ only taxonomic profiling data, the output is a single
 <code>TreeSE</code>. If dataset includes also functional data, the
 output is multiple <code>TreeSE</code> objects that are linked together
 by utilizing <code>MAE</code>.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mae</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getResult.html">getResult</a></span><span class="op">(</span><span class="va">mg</span>, accession <span class="op">=</span> <span class="va">analyses_accessions</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mae</span></span>
 <span><span class="co">#&gt; A MultiAssayExperiment object of 6 listed</span></span>
 <span><span class="co">#&gt;  experiments with user-defined names and respective classes.</span></span>
@@ -294,7 +307,7 @@ by utilizing <code>MAE</code>.</p>
 <span><span class="co">#&gt;  exportClass() - save data to flat files</span></span></code></pre></div>
 <p>You can get access to individual <code>TreeSE</code> object in
 <code>MAE</code> by specifying index or name.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mae</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
 <span><span class="co">#&gt; class: TreeSummarizedExperiment </span></span>
 <span><span class="co">#&gt; dim: 3506 50 </span></span>
@@ -316,7 +329,7 @@ by utilizing <code>MAE</code>.</p>
 <code>SummarizedExperiment</code>-based microbiome data manipulation and
 visualization. Moreover, it enables access to <code>miaverse</code>
 tools. For example, we can estimate diversity of samples…</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mae</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/mia/man/estimateDiversity.html" class="external-link">estimateDiversity</a></span><span class="op">(</span><span class="va">mae</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, index <span class="op">=</span> <span class="st">"shannon"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://bioconductor.org/packages/scater/" class="external-link">scater</a></span><span class="op">)</span></span>
@@ -326,7 +339,7 @@ tools. For example, we can estimate diversity of samples…</p>
 <span><span class="fu"><a href="https://rdrr.io/pkg/scater/man/plotColData.html" class="external-link">plotColData</a></span><span class="op">(</span><span class="va">mae</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, <span class="st">"shannon"</span>, x <span class="op">=</span> <span class="st">"sample_environment..biome."</span><span class="op">)</span></span></code></pre></div>
 <p><img src="MGnifyR_files/figure-html/calculate_diversity-1.png" width="864"></p>
 <p>… and plot abundances of most abundant phyla.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Agglomerate data</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/SingleCellExperiment/man/altExps.html" class="external-link">altExps</a></span><span class="op">(</span><span class="va">mae</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/mia/man/splitByRanks.html" class="external-link">splitByRanks</a></span><span class="op">(</span><span class="va">mae</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
 <span></span>
@@ -339,7 +352,7 @@ tools. For example, we can estimate diversity of samples…</p>
 <p><img src="MGnifyR_files/figure-html/plot_abundance-1.png" width="700"></p>
 <p>We can also perform other analyses such as principal component
 analysis to microbial profiling data by utilizing miaverse tools.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Apply relative transformation</span></span>
 <span><span class="va">mae</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/mia/man/transformAssay.html" class="external-link">transformAssay</a></span><span class="op">(</span><span class="va">mae</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, method <span class="op">=</span> <span class="st">"relabundance"</span><span class="op">)</span></span>
 <span><span class="co"># Perform PCoA</span></span>
@@ -358,108 +371,15 @@ analysis to microbial profiling data by utilizing miaverse tools.</p>
 profiling data, <code><a href="../reference/getData.html">getData()</a></code> can be used more flexibly to
 retrieve any kind of data from the database. It returns data as simple
 data.frame or list format.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">publications</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getData.html">getData</a></span><span class="op">(</span><span class="va">mg</span>, type <span class="op">=</span> <span class="st">"publications"</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">publications</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   document.id         type       id attributes.pubmed-id</span></span>
-<span><span class="co">#&gt; 1           1 publications 36363763             36363763</span></span>
-<span><span class="co">#&gt; 2           2 publications 35614211             35614211</span></span>
-<span><span class="co">#&gt; 3           3 publications 35614182             35614182</span></span>
-<span><span class="co">#&gt; 4           4 publications 35208912             35208912</span></span>
-<span><span class="co">#&gt; 5           5 publications 35178461             35178461</span></span>
-<span><span class="co">#&gt; 6           6 publications 35154023             35154023</span></span>
-<span><span class="co">#&gt;   attributes.pubmed-central-id</span></span>
-<span><span class="co">#&gt; 1                           NA</span></span>
-<span><span class="co">#&gt; 2                           NA</span></span>
-<span><span class="co">#&gt; 3                           NA</span></span>
-<span><span class="co">#&gt; 4                           NA</span></span>
-<span><span class="co">#&gt; 5                           NA</span></span>
-<span><span class="co">#&gt; 6                           NA</span></span>
-<span><span class="co">#&gt;                                                                                                                                                                attributes.pub-title</span></span>
-<span><span class="co">#&gt; 1                                          Agricultural Crops Grown in Laboratory Conditions on Chernevaya Taiga Soil Demonstrate Unique Composition of the Rhizosphere Microbiota.</span></span>
-<span><span class="co">#&gt; 2                                                                                                     Discovery of bioactive microbial gene products in inflammatory bowel disease.</span></span>
-<span><span class="co">#&gt; 3                                                                                                              Lake microbiome and trophy fluctuations of the ancient hemp rettery.</span></span>
-<span><span class="co">#&gt; 4 Mycobiome-Host Coevolution? The Mycobiome of Ancestral Human Populations Seems to Be Different and Less Diverse Than Those of Extant Native and Urban-Industrialized Populations.</span></span>
-<span><span class="co">#&gt; 5                                                             Effects of triclosan on bacterial community composition and &lt;i&gt;Vibrio&lt;/i&gt; populations in natural seawater microcosms.</span></span>
-<span><span class="co">#&gt; 6                                                       Field Site-Specific Effects of an &lt;i&gt;Azospirillum&lt;/i&gt; Seed Inoculant on Key Microbial Functional Groups in the Rhizosphere.</span></span>
-<span><span class="co">#&gt;   attributes.pub-abstract</span></span>
-<span><span class="co">#&gt; 1                      NA</span></span>
-<span><span class="co">#&gt; 2                      NA</span></span>
-<span><span class="co">#&gt; 3                      NA</span></span>
-<span><span class="co">#&gt; 4                      NA</span></span>
-<span><span class="co">#&gt; 5                      NA</span></span>
-<span><span class="co">#&gt; 6                      NA</span></span>
-<span><span class="co">#&gt;                                                                                                                                                                                                                               attributes.authors</span></span>
-<span><span class="co">#&gt; 1                                                                                                                                                                         Kravchenko I, Rayko M, Tikhonova E, Konopkin A, Abakumov E, Lapidus A.</span></span>
-<span><span class="co">#&gt; 2 Zhang Y, Bhosle A, Bae S, McIver LJ, Pishchany G, Accorsi EK, Thompson KN, Arze C, Wang Y, Subramanian A, Kearney SM, Pawluk A, Plichta DR, Rahnavard A, Shafquat A, Xavier RJ, Vlamakis H, Garrett WS, Krueger A, Huttenhower C, Franzosa EA.</span></span>
-<span><span class="co">#&gt; 3                                                                                                                      Iwańska O, Latoch P, Suchora M, Pidek IA, Huber M, Bubak I, Kopik N, Kovalenko M, Gąsiorowski M, Armache JP, Starosta AL.</span></span>
-<span><span class="co">#&gt; 4                                                                                                                                                                       Reynoso-García J, Narganes-Storde Y, Santiago-Rodriguez TM, Toranzos GA.</span></span>
-<span><span class="co">#&gt; 5                                                                                                                                                                                      Lydon KA, Glinski DA, Westrich JR, Henderson WM, Lipp EK.</span></span>
-<span><span class="co">#&gt; 6                                                                                                                                                     Renoud S, Vacheron J, Abrouk D, Prigent-Combaret C, Legendre L, Muller D, Moënne-Loccoz Y.</span></span>
-<span><span class="co">#&gt;                   attributes.doi        attributes.isbn</span></span>
-<span><span class="co">#&gt; 1 10.3390/microorganisms10112171              2076-2607</span></span>
-<span><span class="co">#&gt; 2     10.1038/s41586-022-04648-7 0028-0836; 1476-4687; </span></span>
-<span><span class="co">#&gt; 3     10.1038/s41598-022-12761-w              2045-2322</span></span>
-<span><span class="co">#&gt; 4 10.3390/microorganisms10020459              2076-2607</span></span>
-<span><span class="co">#&gt; 5           10.1525/elementa.141              2325-1026</span></span>
-<span><span class="co">#&gt; 6      10.3389/fmicb.2021.760512              1664-302x</span></span>
-<span><span class="co">#&gt;   attributes.published-year               attributes.pub-type attributes.issue</span></span>
-<span><span class="co">#&gt; 1                      2022                   journal article               NA</span></span>
-<span><span class="co">#&gt; 2                      2022 research-article; journal article               NA</span></span>
-<span><span class="co">#&gt; 3                      2022                   journal article               NA</span></span>
-<span><span class="co">#&gt; 4                      2022                   journal article               NA</span></span>
-<span><span class="co">#&gt; 5                      2017                   journal article               NA</span></span>
-<span><span class="co">#&gt; 6                      2021                   journal article               NA</span></span>
-<span><span class="co">#&gt;   attributes.volume attributes.raw-pages attributes.iso-journal</span></span>
-<span><span class="co">#&gt; 1                10                 2171         Microorganisms</span></span>
-<span><span class="co">#&gt; 2               606              754-760                 Nature</span></span>
-<span><span class="co">#&gt; 3                12                 8846                Sci Rep</span></span>
-<span><span class="co">#&gt; 4                10                  n/a         Microorganisms</span></span>
-<span><span class="co">#&gt; 5                 5                 1-16    Elementa (Wash D C)</span></span>
-<span><span class="co">#&gt; 6                12               760512        Front Microbiol</span></span>
-<span><span class="co">#&gt;   attributes.medline-journal attributes.pub-url attributes.studies-count</span></span>
-<span><span class="co">#&gt; 1                         NA                 NA                        1</span></span>
-<span><span class="co">#&gt; 2                         NA                 NA                        1</span></span>
-<span><span class="co">#&gt; 3                         NA                 NA                        2</span></span>
-<span><span class="co">#&gt; 4                         NA                 NA                        1</span></span>
-<span><span class="co">#&gt; 5                         NA                 NA                        1</span></span>
-<span><span class="co">#&gt; 6                         NA                 NA                        3</span></span>
-<span><span class="co">#&gt;   attributes.samples-count</span></span>
-<span><span class="co">#&gt; 1                        5</span></span>
-<span><span class="co">#&gt; 2                      176</span></span>
-<span><span class="co">#&gt; 3                       18</span></span>
-<span><span class="co">#&gt; 4                       57</span></span>
-<span><span class="co">#&gt; 5                       24</span></span>
-<span><span class="co">#&gt; 6                        3</span></span>
-<span><span class="co">#&gt;                                                                    links.self</span></span>
-<span><span class="co">#&gt; 1 https://www.ebi.ac.uk/metagenomics/api/v1/publications/36363763?format=json</span></span>
-<span><span class="co">#&gt; 2 https://www.ebi.ac.uk/metagenomics/api/v1/publications/35614211?format=json</span></span>
-<span><span class="co">#&gt; 3 https://www.ebi.ac.uk/metagenomics/api/v1/publications/35614182?format=json</span></span>
-<span><span class="co">#&gt; 4 https://www.ebi.ac.uk/metagenomics/api/v1/publications/35208912?format=json</span></span>
-<span><span class="co">#&gt; 5 https://www.ebi.ac.uk/metagenomics/api/v1/publications/35178461?format=json</span></span>
-<span><span class="co">#&gt; 6 https://www.ebi.ac.uk/metagenomics/api/v1/publications/35154023?format=json</span></span>
-<span><span class="co">#&gt;                                                   relationships.studies.links.related</span></span>
-<span><span class="co">#&gt; 1 https://www.ebi.ac.uk/metagenomics/api/v1/publications/36363763/studies?format=json</span></span>
-<span><span class="co">#&gt; 2 https://www.ebi.ac.uk/metagenomics/api/v1/publications/35614211/studies?format=json</span></span>
-<span><span class="co">#&gt; 3 https://www.ebi.ac.uk/metagenomics/api/v1/publications/35614182/studies?format=json</span></span>
-<span><span class="co">#&gt; 4 https://www.ebi.ac.uk/metagenomics/api/v1/publications/35208912/studies?format=json</span></span>
-<span><span class="co">#&gt; 5 https://www.ebi.ac.uk/metagenomics/api/v1/publications/35178461/studies?format=json</span></span>
-<span><span class="co">#&gt; 6 https://www.ebi.ac.uk/metagenomics/api/v1/publications/35154023/studies?format=json</span></span>
-<span><span class="co">#&gt;                                                   relationships.samples.links.related</span></span>
-<span><span class="co">#&gt; 1 https://www.ebi.ac.uk/metagenomics/api/v1/publications/36363763/samples?format=json</span></span>
-<span><span class="co">#&gt; 2 https://www.ebi.ac.uk/metagenomics/api/v1/publications/35614211/samples?format=json</span></span>
-<span><span class="co">#&gt; 3 https://www.ebi.ac.uk/metagenomics/api/v1/publications/35614182/samples?format=json</span></span>
-<span><span class="co">#&gt; 4 https://www.ebi.ac.uk/metagenomics/api/v1/publications/35208912/samples?format=json</span></span>
-<span><span class="co">#&gt; 5 https://www.ebi.ac.uk/metagenomics/api/v1/publications/35178461/samples?format=json</span></span>
-<span><span class="co">#&gt; 6 https://www.ebi.ac.uk/metagenomics/api/v1/publications/35154023/samples?format=json</span></span>
-<span><span class="co">#&gt;         ..JSON</span></span>
-<span><span class="co">#&gt; 1 publicat....</span></span>
-<span><span class="co">#&gt; 2 publicat....</span></span>
-<span><span class="co">#&gt; 3 publicat....</span></span>
-<span><span class="co">#&gt; 4 publicat....</span></span>
-<span><span class="co">#&gt; 5 publicat....</span></span>
-<span><span class="co">#&gt; 6 publicat....</span></span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">publications</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "document.id"                  "type"                        </span></span>
+<span><span class="co">#&gt; [3] "id"                           "attributes.pubmed-id"        </span></span>
+<span><span class="co">#&gt; [5] "attributes.pubmed-central-id" "attributes.pub-title"</span></span></code></pre></div>
+<p>The result is a <code>data.frame</code> by default. In this case, it
+includes information on publications fetched from the data portal.</p>
 </div>
 <div class="section level3">
 <h3 id="fetch-sequence-files">Fetch sequence files<a class="anchor" aria-label="anchor" href="#fetch-sequence-files"></a>
@@ -470,103 +390,30 @@ merged sequence reads, assembled contigs, and details of the functional
 analyses.</p>
 <p>With <code><a href="../reference/getFile.html">searchFile()</a></code>, we can search files from the
 database.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dl_urls</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getFile.html">searchFile</a></span><span class="op">(</span><span class="va">mg</span>, <span class="va">analyses_accessions</span>, type <span class="op">=</span> <span class="st">"analyses"</span><span class="op">)</span></span></code></pre></div>
 <p>The returned table contains search results related to analyses that
 we fed as an input. The table contains information on file and also URL
 address from where the file can be loaded.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">target_urls</span> <span class="op">&lt;-</span> <span class="va">dl_urls</span><span class="op">[</span></span>
 <span>    <span class="va">dl_urls</span><span class="op">$</span><span class="va">attributes.description.label</span> <span class="op">==</span> <span class="st">"Predicted alpha tmRNA"</span>, <span class="op">]</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">target_urls</span><span class="op">)</span></span>
-<span><span class="co">#&gt;         type                                       id</span></span>
-<span><span class="co">#&gt; 24  analyses ERZ20300939_alpha_tmRNA.RF01849.fasta.gz</span></span>
-<span><span class="co">#&gt; 75  analyses ERZ20300942_alpha_tmRNA.RF01849.fasta.gz</span></span>
-<span><span class="co">#&gt; 126 analyses ERZ16299686_alpha_tmRNA.RF01849.fasta.gz</span></span>
-<span><span class="co">#&gt; 177 analyses ERZ16299690_alpha_tmRNA.RF01849.fasta.gz</span></span>
-<span><span class="co">#&gt; 228 analyses ERZ16299649_alpha_tmRNA.RF01849.fasta.gz</span></span>
-<span><span class="co">#&gt; 279 analyses ERZ16299683_alpha_tmRNA.RF01849.fasta.gz</span></span>
-<span><span class="co">#&gt;                             attributes.alias attributes.file.format.name</span></span>
-<span><span class="co">#&gt; 24  ERZ20300939_alpha_tmRNA.RF01849.fasta.gz                       FASTA</span></span>
-<span><span class="co">#&gt; 75  ERZ20300942_alpha_tmRNA.RF01849.fasta.gz                       FASTA</span></span>
-<span><span class="co">#&gt; 126 ERZ16299686_alpha_tmRNA.RF01849.fasta.gz                       FASTA</span></span>
-<span><span class="co">#&gt; 177 ERZ16299690_alpha_tmRNA.RF01849.fasta.gz                       FASTA</span></span>
-<span><span class="co">#&gt; 228 ERZ16299649_alpha_tmRNA.RF01849.fasta.gz                       FASTA</span></span>
-<span><span class="co">#&gt; 279 ERZ16299683_alpha_tmRNA.RF01849.fasta.gz                       FASTA</span></span>
-<span><span class="co">#&gt;     attributes.file.format.extension attributes.file.format.compression</span></span>
-<span><span class="co">#&gt; 24                             fasta                               TRUE</span></span>
-<span><span class="co">#&gt; 75                             fasta                               TRUE</span></span>
-<span><span class="co">#&gt; 126                            fasta                               TRUE</span></span>
-<span><span class="co">#&gt; 177                            fasta                               TRUE</span></span>
-<span><span class="co">#&gt; 228                            fasta                               TRUE</span></span>
-<span><span class="co">#&gt; 279                            fasta                               TRUE</span></span>
-<span><span class="co">#&gt;     attributes.description.label</span></span>
-<span><span class="co">#&gt; 24         Predicted alpha tmRNA</span></span>
-<span><span class="co">#&gt; 75         Predicted alpha tmRNA</span></span>
-<span><span class="co">#&gt; 126        Predicted alpha tmRNA</span></span>
-<span><span class="co">#&gt; 177        Predicted alpha tmRNA</span></span>
-<span><span class="co">#&gt; 228        Predicted alpha tmRNA</span></span>
-<span><span class="co">#&gt; 279        Predicted alpha tmRNA</span></span>
-<span><span class="co">#&gt;                                 attributes.description.description</span></span>
-<span><span class="co">#&gt; 24  Predicted Alphaproteobacteria transfer-messenger RNA (RF01849)</span></span>
-<span><span class="co">#&gt; 75  Predicted Alphaproteobacteria transfer-messenger RNA (RF01849)</span></span>
-<span><span class="co">#&gt; 126 Predicted Alphaproteobacteria transfer-messenger RNA (RF01849)</span></span>
-<span><span class="co">#&gt; 177 Predicted Alphaproteobacteria transfer-messenger RNA (RF01849)</span></span>
-<span><span class="co">#&gt; 228 Predicted Alphaproteobacteria transfer-messenger RNA (RF01849)</span></span>
-<span><span class="co">#&gt; 279 Predicted Alphaproteobacteria transfer-messenger RNA (RF01849)</span></span>
-<span><span class="co">#&gt;     attributes.group.type attributes.file.checksum.checksum</span></span>
-<span><span class="co">#&gt; 24        non-coding RNAs                                  </span></span>
-<span><span class="co">#&gt; 75        non-coding RNAs                                  </span></span>
-<span><span class="co">#&gt; 126       non-coding RNAs                                  </span></span>
-<span><span class="co">#&gt; 177       non-coding RNAs                                  </span></span>
-<span><span class="co">#&gt; 228       non-coding RNAs                                  </span></span>
-<span><span class="co">#&gt; 279       non-coding RNAs                                  </span></span>
-<span><span class="co">#&gt;     attributes.file.checksum.checksum.algorithm</span></span>
-<span><span class="co">#&gt; 24                                             </span></span>
-<span><span class="co">#&gt; 75                                             </span></span>
-<span><span class="co">#&gt; 126                                            </span></span>
-<span><span class="co">#&gt; 177                                            </span></span>
-<span><span class="co">#&gt; 228                                            </span></span>
-<span><span class="co">#&gt; 279                                            </span></span>
-<span><span class="co">#&gt;     relationships.pipeline.data.type relationships.pipeline.data.id</span></span>
-<span><span class="co">#&gt; 24                         pipelines                            5.0</span></span>
-<span><span class="co">#&gt; 75                         pipelines                            5.0</span></span>
-<span><span class="co">#&gt; 126                        pipelines                            5.0</span></span>
-<span><span class="co">#&gt; 177                        pipelines                            5.0</span></span>
-<span><span class="co">#&gt; 228                        pipelines                            5.0</span></span>
-<span><span class="co">#&gt; 279                        pipelines                            5.0</span></span>
-<span><span class="co">#&gt;                                          relationships.pipeline.related</span></span>
-<span><span class="co">#&gt; 24  https://www.ebi.ac.uk/metagenomics/api/v1/pipelines/5.0?format=json</span></span>
-<span><span class="co">#&gt; 75  https://www.ebi.ac.uk/metagenomics/api/v1/pipelines/5.0?format=json</span></span>
-<span><span class="co">#&gt; 126 https://www.ebi.ac.uk/metagenomics/api/v1/pipelines/5.0?format=json</span></span>
-<span><span class="co">#&gt; 177 https://www.ebi.ac.uk/metagenomics/api/v1/pipelines/5.0?format=json</span></span>
-<span><span class="co">#&gt; 228 https://www.ebi.ac.uk/metagenomics/api/v1/pipelines/5.0?format=json</span></span>
-<span><span class="co">#&gt; 279 https://www.ebi.ac.uk/metagenomics/api/v1/pipelines/5.0?format=json</span></span>
-<span><span class="co">#&gt;                                                                                                      download_url</span></span>
-<span><span class="co">#&gt; 24  https://www.ebi.ac.uk/metagenomics/api/v1/analyses/MGYA00652201/file/ERZ20300939_alpha_tmRNA.RF01849.fasta.gz</span></span>
-<span><span class="co">#&gt; 75  https://www.ebi.ac.uk/metagenomics/api/v1/analyses/MGYA00652185/file/ERZ20300942_alpha_tmRNA.RF01849.fasta.gz</span></span>
-<span><span class="co">#&gt; 126 https://www.ebi.ac.uk/metagenomics/api/v1/analyses/MGYA00643487/file/ERZ16299686_alpha_tmRNA.RF01849.fasta.gz</span></span>
-<span><span class="co">#&gt; 177 https://www.ebi.ac.uk/metagenomics/api/v1/analyses/MGYA00643486/file/ERZ16299690_alpha_tmRNA.RF01849.fasta.gz</span></span>
-<span><span class="co">#&gt; 228 https://www.ebi.ac.uk/metagenomics/api/v1/analyses/MGYA00643485/file/ERZ16299649_alpha_tmRNA.RF01849.fasta.gz</span></span>
-<span><span class="co">#&gt; 279 https://www.ebi.ac.uk/metagenomics/api/v1/analyses/MGYA00643484/file/ERZ16299683_alpha_tmRNA.RF01849.fasta.gz</span></span>
-<span><span class="co">#&gt;        accession</span></span>
-<span><span class="co">#&gt; 24  MGYA00652201</span></span>
-<span><span class="co">#&gt; 75  MGYA00652185</span></span>
-<span><span class="co">#&gt; 126 MGYA00643487</span></span>
-<span><span class="co">#&gt; 177 MGYA00643486</span></span>
-<span><span class="co">#&gt; 228 MGYA00643485</span></span>
-<span><span class="co">#&gt; 279 MGYA00643484</span></span></code></pre></div>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">target_urls</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "type"                               "id"                                </span></span>
+<span><span class="co">#&gt; [3] "attributes.alias"                   "attributes.file.format.name"       </span></span>
+<span><span class="co">#&gt; [5] "attributes.file.format.extension"   "attributes.file.format.compression"</span></span></code></pre></div>
 <p>Finally, we can download the files with <code><a href="../reference/getFile.html">getFile()</a></code>.</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Just select a single file from the target_urls list for demonstration.</span></span>
 <span><span class="va">file_url</span> <span class="op">&lt;-</span> <span class="va">target_urls</span><span class="op">$</span><span class="va">download_url</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
 <span><span class="va">cached_location</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getFile.html">getFile</a></span><span class="op">(</span><span class="va">mg</span>, <span class="va">file_url</span><span class="op">)</span></span></code></pre></div>
 <p>The function returns a path where the file is stored.</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Where are the files?</span></span>
 <span><span class="va">cached_location</span></span>
 <span><span class="co">#&gt; [1] "/.MGnifyR_cache/analyses/MGYA00652201/file/ERZ20300939_alpha_tmRNA.RF01849.fasta.gz"</span></span></code></pre></div>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; R Under development (unstable) (2024-03-24 r86185)</span></span>
 <span><span class="co">#&gt; Platform: x86_64-pc-linux-gnu</span></span>
