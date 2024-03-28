@@ -256,6 +256,8 @@ microbiome data manipulation and visualization. Moreover, it enables access
 to `miaverse` tools. For example, we can estimate diversity of samples.
 
 ```{r calculate_diversity}
+library(mia)
+
 tse <- estimateDiversity(tse, index = "shannon")
 
 library(scater)
