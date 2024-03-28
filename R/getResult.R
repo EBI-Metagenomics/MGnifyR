@@ -158,6 +158,11 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
     }
     # Get microbial profiling data
     if( get.taxa ){
+        # The fetched BIOM files are parsed with mia::loadFromBiom, however,
+        # mia does not import biomformat, it is only in its "suggests". This is
+        # why we have to check that biomformat is available
+        .require_package("biomformat")
+        #
         taxa_res <- .mgnify_get_analyses_treese(
             client = x, accession = accession, ...)
     } else{

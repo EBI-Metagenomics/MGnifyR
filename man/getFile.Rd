@@ -81,7 +81,7 @@ of downloads available for a given accession (or list thereof). Returns a
 single data.frame containing all available downloads and associated
 metadata, including the url location and description. This can then be
 filtered to extract the urls of interest, before actually
-retrieving the files using \code{mgnify_download}
+retrieving the files using \code{fetFile()}
 }
 \examples{
 # Make a client object
