@@ -53,7 +53,9 @@
 #' @param complete_url -
 #'
 #' @param qopts -
-#'
+#' 
+#' @return -
+#' 
 #' @name deprecate
 NULL
 
@@ -124,7 +126,7 @@ mgnify_download <- function(
 #' @rdname deprecate
 #' @export
 mgnify_get_analyses_results <- function(
-        client  =NULL, accessions, retrievelist = c(), compact_results = TRUE,
+        client  = NULL, accessions, retrievelist = c(), compact_results = TRUE,
         usecache = TRUE, bulk_dl = FALSE, ...){
     .Deprecated("getResult")
     if( length(retrievelist) == 0 ){
@@ -162,7 +164,7 @@ mgnify_get_analyses_metadata <- function(
 #' @export
 mgnify_retrieve_json <- function(
         client, path = "biomes", complete_url = NULL, qopts = NULL,
-        maxhits = 200, usecache = FALSE, Debug = FALSE){
+        maxhits = 200, usecache = FALSE, Debug = FALSE, ...){
     .Deprecated(msg = "'mgnify_retrieve_json' is deprecated.\n",
                 "See other functions and use them instead.\n",
                 "See help('Deprecated')")

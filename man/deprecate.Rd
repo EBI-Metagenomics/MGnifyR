@@ -85,7 +85,8 @@ mgnify_retrieve_json(
   qopts = NULL,
   maxhits = 200,
   usecache = FALSE,
-  Debug = FALSE
+  Debug = FALSE,
+  ...
 )
 }
 \arguments{
@@ -142,6 +143,9 @@ mgnify_retrieve_json(
 \item{complete_url}{-}
 
 \item{qopts}{-}
+}
+\value{
+-
 }
 \description{
 These functions will be deprecated. Please use other functions instead.

@@ -107,7 +107,7 @@ setMethod("getFile", signature = c(x = "MgnifyClient"), function(
 #' single data.frame containing all available downloads and associated
 #' metadata, including the url location and description. This can then be
 #' filtered to extract the urls of interest, before actually
-#' retrieving the files using \code{mgnify_download}
+#' retrieving the files using \code{fetFile()}
 #'
 #' @param accession A single character value or a vector of character values
 #' specifying accession IDs to return results for.
