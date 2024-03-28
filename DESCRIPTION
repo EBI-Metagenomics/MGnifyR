@@ -1,6 +1,6 @@
 Package: MGnifyR
 Type: Package
-Version: 0.99.27
+Version: 0.99.28
 Authors@R:
     c(person(given = "Tuomas", family = "Borman", role = c("aut", "cre"),
              email = "tuomas.v.borman@utu.fi",
@@ -21,13 +21,12 @@ License: Artistic-2.0 | file LICENSE
 Encoding: UTF-8
 Depends:
     R(>= 4.4.0),
-    mia,
     MultiAssayExperiment,
     TreeSummarizedExperiment,
     SummarizedExperiment,
-    biomformat,
     BiocGenerics
 Imports:
+    mia,
     ape,
     dplyr,
     httr,
@@ -35,11 +34,11 @@ Imports:
     plyr,
     reshape2,
     S4Vectors,
-    stats,
     urltools,
     utils,
     tidyjson
 Suggests:
+    biomformat,
     broom,
     ggplot2,
     knitr,
