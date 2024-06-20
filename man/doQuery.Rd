@@ -22,7 +22,7 @@ doQuery(x, ...)
 
 \item{...}{Remaining parameter key/value pairs may be supplied to filter
 the returned values. Available options differ between \code{types}.
-See discussion above for details.}
+See discussion Details section for details.}
 
 \item{type}{A single character value specifying the type of objects to
 query. Must be one of the following options: \code{studies}, \code{samples},
@@ -67,10 +67,10 @@ assemblies, and genomes.
 power of the JSONAPI MGnify search filters. Search results may be filtered
 by metadata value, associated study/sample/analyse etc.
 
-See [Api browser](https://www.ebi.ac.uk/metagenomics/api/v1/) for
+See \href{https://www.ebi.ac.uk/metagenomics/api/v1/}{Api browser} for
 information on MGnify database filters.
 You can find help on customizing queries from
-[here](https://emg-docs.readthedocs.io/en/latest/api.html#customising-queries).
+\href{https://emg-docs.readthedocs.io/en/latest/api.html#customising-queries}{here}.
 
 For example the following filters are available:
 \itemize{

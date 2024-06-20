@@ -24,19 +24,6 @@ multi-omics data. Its primary objective is to deepen our understanding of the
 interactions between hosts and their microbiomes. You can find more information
 on [FindingPheno website](https://findingpheno.eu/).
 
-## Requirements
-
-```
-devtools # for installation
-mia
-plyr
-dplyr
-reshape2
-
-httr
-urltools
-```
-
 ## Installation
 
 ### Bioc-release

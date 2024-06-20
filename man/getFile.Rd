@@ -30,11 +30,11 @@ searchFile(x, ...)
 we wish to download.}
 
 \item{file}{A single character value or NULL specifying an
-optional local filename to use for saving the file. If NULL (default),
+optional local filename to use for saving the file. If \code{NULL},
 MGNify local cache settings will be used. If the file is intended to be
 processed in a separate program, it may be sensible to provide a
 meaningful \code{file}, rather than having to hunt through the
-cache folders. If \code{file} is NULL \emph{and} \code{useCache(client)}
+cache folders. If \code{file} is \code{NULL} and \code{useCache(client)}
 is \code{FALSE}, the \code{read.func} parameter must be supplied or the
 file will be downloaded and then deleted.
 (By default: \code{file = NULL})}
@@ -56,13 +56,13 @@ query. Must be one of the following options: \code{analysis}, \code{samples},
 (By default: \code{type = "samples"})}
 }
 \value{
-Either the local filename of the downloaded file, be it either the
-location in the MGNifyR cache or file. If \code{read.func} is
-used, its result will be returned.
+For \code{getFile()}, either the local filename of the downloaded
+file, be it either the location in the MGNifyR cache or file. If
+\code{read.func} is used, its result will be returned.
 
-\code{data.frame} containing all discovered downloads. If
-multiple \code{accessions} are queried, the \code{accessions} column
-may to filter the results - since rownames are not set (and wouldn;'t
+For \code{searchFile()} \code{data.frame} containing all discovered
+downloads. If multiple \code{accessions} are queried, the \code{accessions}
+column may to filter the results - since rownames are not set (and wouldn't
 make sense as each query will return multiple items)
 }
 \description{
@@ -76,12 +76,12 @@ Listing files available for download
 downloading functionality in R, taking care of things like local
 caching and authentication.
 
-THe function is a wrapper function allowing easy enumeration
-of downloads available for a given accession (or list thereof). Returns a
-single data.frame containing all available downloads and associated
+\code{searchFile()} function is a wrapper function allowing easy
+enumeration of downloads available for a given accession IDs.
+Returns a single data.frame containing all available downloads and associated
 metadata, including the url location and description. This can then be
 filtered to extract the urls of interest, before actually
-retrieving the files using \code{fetFile()}
+retrieving the files using \code{getFile()}
 }
 \examples{
 # Make a client object

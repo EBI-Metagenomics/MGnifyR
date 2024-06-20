@@ -13,44 +13,51 @@
 #' specifying accession IDs to return results for.
 #'
 #' @param output A single character value specifying the format of an output.
-#' Must be one of the following options: "TreeSE", "list", or "phyloseq".
-#' (By default: \code{output = "TreeSE"})
+#' Must be one of the following options: \code{"TreeSE"}, \code{"list"}, or 
+#' \code{"phyloseq"}. (By default: \code{output = "TreeSE"})
 #'
-#' @param get.taxa A boolean value specifying whether to retrieve metagenomic
-#' data. (By default: \code{get.taxa = TRUE})
+#' @param get.taxa A boolean value specifying whether to retrieve taxonomy
+#' data (OTU table). See \code{taxa.su} for specifying taxonomy type. The
+#' data is retrieved as BIOM files which are subsequently parsed.
+#' (By default: \code{get.taxa = TRUE})
 #'
 #' @param get.func A boolean value or a single character value or a vector
 #' character values specifying functional analysis types to retrieve. If
 #' \code{get.func = TRUE}, all available functional datatypes are retrieved,
 #' and if \code{FALSE}, functional data is not retrieved. The current list of
-#' available types is "antismash-gene-clusters", "go-slim", "go-terms",
-#' "interpro-identifiers", "taxonomy", "taxonomy-itsonedb",
-#' "taxonomy-itsunite", "taxonomy-lsu", and "taxonomy-ssu". Note that
-#' depending on the particular analysis type, pipeline version etc., not all
-#' functional results will be available. (By default: \code{get.func = TRUE})
+#' available types is \code{"antismash-gene-clusters"}, \code{"go-slim"},
+#' \code{"go-terms"}, \code{"interpro-identifiers"}, \code{"taxonomy"},
+#' \code{"taxonomy-itsonedb"}, \code{"taxonomy-itsunite"}, \code{"taxonomy-lsu"},
+#' and \code{"taxonomy-ssu"}. Note that depending on the particular analysis
+#' type, pipeline version etc., not all functional results will be available.
+#' Furthermore, taxonomy is also available via \code{get.func}, and loading
+#' the data might be considerable faster if \code{bulk.dl = TRUE}. However,
+#' phylogeny is available only via \code{get.taxa}.
+#' (By default: \code{get.func = TRUE})
 #'
 #' @param ... optional arguments:
 #' \itemize{
 #'   
 #'   \item \strong{taxa.su} A single character value specifying which taxa
-#'   subunit results should be selected? Currently, taxonomy assignments in the
+#'   subunit results should be selected. Currently, taxonomy assignments in the
 #'   MGnify pipelines rely on rRNA matches to existing databases
 #'   (GreenGenes and SILVA), with later pipelines checking both the SSU and
 #'   LSU portions of the rRNA sequence. \code{taxa.su} allows then selection
-#'   of either the Small subunit (SSU) or Large subunit results
-#'   in the final \code{TreeSummarizedExperiment} object. Older pipeline
+#'   of either the Small subunit (\code{"SSU"}) or Large subunit (\code{"LSU"})
+#'   results in the final \code{TreeSummarizedExperiment} object. Older pipeline
 #'   versions do not report results for both subunits, and thus for some
 #'   accessions this value will have no effect.
 #'
 #'   \item \strong{get.tree} A single boolean value specifying whether to
 #'   include available phylogenetic trees in the \code{TreeSummarizedExperiment}
-#'   object. (By default: \code{get.tree = TRUE})
+#'   object. Available when \code{get.taxa = TRUE}.
+#'   (By default: \code{get.tree = TRUE})
 #'
 #'   \item \strong{as.df} A single boolean value enabled when
 #'   \code{output = "list"}. The argument specifies whether return functional
 #'   data as a named list (one entry per element in the output list) of
 #'   data.frames, with each data.frame containing results for all requested
-#'   accessions. If \code{FALSE}, The function returns a list of lists, each
+#'   accessions. If \code{FALSE}, the function returns a list of lists, each
 #'   element consisting of results for a single accession. (By default:
 #'   \code{as.df = TRUE})
 #'
@@ -69,13 +76,13 @@
 #' }
 #'
 #' @return
-#' If only metagenomic data is retrieved, the result is returned in
+#' If only taxonomy data is retrieved, the result is returned in
 #' \code{TreeSummarizedExperiment} object by default. The result can also be
 #' returned as a \code{phyloseq} object or as a list of \code{data.frames}.
 #' Note that \code{phyloseq} object can include only one phylogenetic tree
 #' meaning that some taxa might be lost when data is subsetted based on tree.
 #'
-#' When functional data is retrieved in addition to metagenomic data, the result
+#' When functional data is retrieved in addition to taxonomy data, the result
 #' is returned as a \code{MultiAssayExperiment} object. Other options are a list
 #' containing \code{phyloseq} object and \code{data.frames} or just
 #' \code{data.frames}.
@@ -158,7 +165,7 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
     }
     # Get microbial profiling data
     if( get.taxa ){
-        # The fetched BIOM files are parsed with mia::loadFromBiom, however,
+        # The fetched BIOM files are parsed with mia::importBIOM, however,
         # mia does not import biomformat, it is only in its "suggests". This is
         # why we have to check that biomformat is available
         .require_package("biomformat")

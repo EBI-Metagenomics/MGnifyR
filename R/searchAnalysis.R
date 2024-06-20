@@ -2,7 +2,12 @@
 #'
 #' @details
 #' Retrieve analysis accession IDs associated with the supplied study or
-#' sample accession.
+#' sample accession.  In MGnify, an analysis accession refers to a certain
+#' pipeline analysis, such as specific 16S rRNA or shotgun metagenomic mapping.
+#' Studies can include multiple samples, and each sample can undergo multiple
+#' analyses using these pipelines. Each analysis is identified by a unique
+#' accession ID, allowing precise tracking and retrieval of analysis results
+#' within the MGnify database.
 #'
 #' @param x A \code{MgnifyClient} object.
 #'
@@ -15,7 +20,7 @@
 #'
 #' @param ... Optional arguments; not currently used.
 #'
-#' @return vector of analysis accession IDs.
+#' @return Vector of analysis accession IDs.
 #'
 #' @examples
 #' # Create a client object
