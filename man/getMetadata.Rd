@@ -3,7 +3,7 @@
 \name{getMetadata}
 \alias{getMetadata}
 \alias{getMetadata,MgnifyClient-method}
-\title{Get all Study, Sample and Analysis metadata for the supplied analyses
+\title{Get all study, sample and analysis metadata for the supplied analysis
 accessions}
 \usage{
 getMetadata(x, ...)
@@ -19,16 +19,16 @@ getMetadata(x, ...)
 IDs specifying accessions to retrieve data for.}
 }
 \value{
-\code{data.frame} of metadata for each analysis in the
-\code{accession} list.
+A \code{data.frame} containing metadata for each analysis in the
+\code{accession} list. Each row represents a single analysis.
 }
 \description{
-Get all Study, Sample and Analysis metadata for the supplied analyses
+Get all study, sample and analysis metadata for the supplied analysis
 accessions
 }
 \details{
-The function retrieves all associated study, sample and analysis
-metadata attributes as a list of analyses accessions.
+The function retrieves all study, sample and analysis metadata associated
+with provided analysis accessions.
 }
 \examples{
 # Create a client object

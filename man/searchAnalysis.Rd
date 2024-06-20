@@ -22,14 +22,19 @@ specifying study or sample accession IDs that are used to retrieve analyses
 IDs.}
 }
 \value{
-vector of analysis accession IDs.
+Vector of analysis accession IDs.
 }
 \description{
 Look up analysis accession IDs for one or more study or sample accessions
 }
 \details{
 Retrieve analysis accession IDs associated with the supplied study or
-sample accession.
+sample accession.  In MGnify, an analysis accession refers to a certain
+pipeline analysis, such as specific 16S rRNA or shotgun metagenomic mapping.
+Studies can include multiple samples, and each sample can undergo multiple
+analyses using these pipelines. Each analysis is identified by a unique
+accession ID, allowing precise tracking and retrieval of analysis results
+within the MGnify database.
 }
 \examples{
 # Create a client object
