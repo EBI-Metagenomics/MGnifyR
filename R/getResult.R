@@ -383,7 +383,7 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
 
 # Get a single biom file and convert it to TreeSummarizedExperiment format
 #
-#' @importFrom mia loadFromBiom
+#' @importFrom mia importBIOM
 #' @importFrom mia checkTaxonomy
 #' @importFrom urltools parameters parameters<-
 #' @importFrom httr GET
@@ -498,9 +498,9 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
     }
 
     # Load in the TreeSummarizedExperiment object
-    tse <- loadFromBiom(
-        biom_path, removeTaxaPrefixes = TRUE, only.taxa.col = TRUE,
-        rankFromPrefix = TRUE, remove.artifacts = TRUE)
+    tse <- importBIOM(
+        biom_path, rank.from.prefix = TRUE, set.ranks = TRUE, verbose = FALSE,
+        prefix.rm = TRUE, artifact.rm = TRUE)
     # If the file was not in store already but fetched from database, and cache
     # storing is disabled
     if( fetched_from_url && !use.cache ){
