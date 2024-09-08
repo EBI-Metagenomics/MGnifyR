@@ -1,9 +1,9 @@
-#' Get all Study, Sample and Analysis metadata for the supplied analyses
+#' Get all study, sample and analysis metadata for the supplied analysis
 #' accessions
 #'
 #' @details
-#' The function retrieves all associated study, sample and analysis
-#' metadata attributes as a list of analyses accessions.
+#' The function retrieves all study, sample and analysis metadata associated
+#' with provided analysis accessions.
 #'
 #' @param x A \code{MgnifyClient} object.
 #'
@@ -12,8 +12,8 @@
 #' 
 #' @param ... Optional arguments; not currently used.
 #'
-#' @return \code{data.frame} of metadata for each analysis in the
-#' \code{accession} list.
+#' @return A \code{data.frame} containing metadata for each analysis in the
+#' \code{accession} list. Each row represents a single analysis.
 #'
 #' @examples
 #' # Create a client object

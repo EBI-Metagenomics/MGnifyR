@@ -64,10 +64,9 @@ A MgnifyClient object
 }
 \details{
 All functions in the MGnifyR package take a \code{MgnifyClient} object as
-their first argument. While not essential to querying the raw MGnify API
-(which is exposed as relative standard JSONAPI), the object allows the
-simple handling of both user authentication and access to private data,
-and local on-disk caching of results.
+their first argument. The object allows the simple handling of both user
+authentication and access to private data, and manages general options for
+querying the MGnify database.
 
 An object that are required by functions of MGnifyR package.
 }
