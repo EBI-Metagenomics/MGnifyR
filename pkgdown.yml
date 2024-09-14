@@ -1,8 +1,7 @@
-pandoc: '3.2'
-pkgdown: 2.0.9
+pandoc: '3.3'
+pkgdown: 2.1.0
 pkgdown_sha: ~
 articles:
   MGnifyR_long: MGnifyR_long.html
   MGnifyR: MGnifyR.html
-last_built: 2024-06-20T14:26Z
-
+last_built: 2024-09-14T18:24Z
