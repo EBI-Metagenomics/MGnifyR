@@ -59,7 +59,7 @@
 
       <h1>MGnifyR, extended vignette</h1>
             
-            <h4 data-toc-skip class="date">2024-09-19</h4>
+            <h4 data-toc-skip class="date">2024-09-23</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/EBI-Metagenomics/MGnifyR/blob/mgnify_course/vignettes/MGnifyR_long.Rmd" class="external-link"><code>vignettes/MGnifyR_long.Rmd</code></a></small>
       <div class="d-none name"><code>MGnifyR_long.Rmd</code></div>
@@ -309,7 +309,11 @@ diversity of samples.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">miaViz</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/miaViz/man/plotAbundance.html" class="external-link">plotAbundance</a></span><span class="op">(</span><span class="va">tse</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">rowData</a></span><span class="op">(</span><span class="va">tse</span><span class="op">)</span><span class="op">[[</span><span class="st">"Kingdom"</span><span class="op">]</span><span class="op">]</span> <span class="op">)</span>, <span class="op">]</span>, rank <span class="op">=</span> <span class="st">"Kingdom"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/pkg/miaViz/man/plotAbundance.html" class="external-link">plotAbundance</a></span><span class="op">(</span></span>
+<span>    <span class="va">tse</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">rowData</a></span><span class="op">(</span><span class="va">tse</span><span class="op">)</span><span class="op">[[</span><span class="st">"Kingdom"</span><span class="op">]</span><span class="op">]</span> <span class="op">)</span>, <span class="op">]</span>,</span>
+<span>    rank <span class="op">=</span> <span class="st">"Kingdom"</span>,</span>
+<span>    as.relative <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>    <span class="op">)</span></span></code></pre></div>
 <p>If needed, <code>TreeSE</code> can be converted to
 <code>phyloseq</code>.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
