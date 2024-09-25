@@ -194,7 +194,11 @@ library(miaViz)
 
 # Plot top taxa
 top_taxa <- getTopFeatures(altExp(mae[[1]], "Phylum"), 10)
-plotAbundance(altExp(mae[[1]], "Phylum")[top_taxa, ], rank = "Phylum")
+plotAbundance(
+    altExp(mae[[1]], "Phylum")[top_taxa, ],
+    rank = "Phylum",
+    as.relative = TRUE
+    )
 ```
 
 We can also perform other analyses such as principal component analysis to

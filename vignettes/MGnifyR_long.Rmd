@@ -268,7 +268,11 @@ plotColData(tse, "shannon", x = "sample_geo.loc.name")
 ```{r plot_abundance}
 library(miaViz)
 
-plotAbundance(tse[!is.na( rowData(tse)[["Kingdom"]] ), ], rank = "Kingdom")
+plotAbundance(
+    tse[!is.na( rowData(tse)[["Kingdom"]] ), ],
+    rank = "Kingdom",
+    as.relative = TRUE
+    )
 ```
 
 If needed, `TreeSE` can be converted to `phyloseq`.

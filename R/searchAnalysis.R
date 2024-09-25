@@ -104,9 +104,14 @@ setMethod("searchAnalysis", signature = c(x = "MgnifyClient"), function(
             res <- accurl
             warning("\nAnalyses not found for studies ", x, call. = FALSE)
         }
+        # Add accession as name. There might be multiple analyses for each
+        # accession. This helps to determine which analyses belong to which
+        # study.
+        if( length(res) > 0 ){
+            names(res) <- rep(x, length(res))
+        }
         return(res)
     }, .progress=show.messages)
-    names(analyses_accessions) <- accession
     res <- unlist(analyses_accessions)
     return(res)
 }
@@ -145,9 +150,14 @@ setMethod("searchAnalysis", signature = c(x = "MgnifyClient"), function(
             # Just need the accession ID
             temp <- lapply(jsondat, function(x) x$id)
         }
+        # Add accession as name. There might be multiple analyses for each
+        # accession. This helps to determine which analyses belong to which
+        # study.
+        if( length(temp) > 0 ){
+            names(temp) <- rep(x, length(temp))
+        }
         return(temp)
         }, .progress = show.messages)
-    names(analyses_accessions) <- accession
     res <- unlist(analyses_accessions)
     return(res)
 }

@@ -1,6 +1,7 @@
 # MGnifyR <img src="man/figures//mgnifyr_logo.png" align="right" width="120" />
 
-An R package for searching and retrieving data from the EBI Metagenomics resource. 
+An R package for searching and retrieving data from the
+[EBI Metagenomics resource](https://www.ebi.ac.uk/metagenomics). 
 In most cases, MGnifyR interacts directly with the JSONAPI, rather than relying
 on downloading analyses outputs as TSV files. Thus it is more general - allowing
 for example the intuitive combining of multiple studies and analyses
