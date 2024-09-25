@@ -71,23 +71,24 @@
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
 <p>In this notebook we aim to demonstrate how the <code>MGnifyR</code>
-tool can be used to fetch data of a MGnify metagenomic analysis. Then we
-show how to analyse the data utilizing cutting-edge tools for microbiome
-data science including estimating alpha and beta diversity along with
-differential abundance analysis.</p>
+tool can be used to fetch data of a MGnify microbiome data resource. We
+then showcase how to analyze the datausing advanced microbiome data
+science tools, including estimating alpha and beta diversity, as well as
+performing differential abundance analysis.</p>
 <p><a href="https://www.bioconductor.org/packages/release/bioc/html/MGnifyR.html" class="external-link"><code>MGnifyR</code></a>
-is a R/Bioconductor package that provides a set of tools for easily
+is an R/Bioconductor package that provides a set of tools for easily
 accessing and processing MGnify data in R, making queries to MGnify
 databases through the <a href="https://www.ebi.ac.uk/metagenomics/api/v1/" class="external-link">MGnify API</a>.</p>
-<p>The benefit of <code>MGnifyR</code> is that data can either be
-fetched in tsv format or be directly combined in a <a href="https://microbiome.github.io/OMA/docs/devel/pages/containers.html" class="external-link"><code>TreeSummarizedExperiment</code>
-(<code>TreeSE</code>)</a> object to run an analysis in a custom
-workflow.</p>
-<p>Utilizing <code>TreeSE</code> enables an access to wide range of
-tools in Bioconductor’s <code>SummarizedExperiment</code>
-(<code>SE</code>) ecosystem, <a href="https://microbiome.github.io/mia/" class="external-link"><code>mia</code> package</a>
-covering the microbiome-specific methods in the <code>SE</code>
-ecosystem.</p>
+<p>The benefit of <code>MGnifyR</code> is that it streamlines data
+access, allowing users to fetch data either in its “raw” format or
+directly as a <a href="https://microbiome.github.io/OMA/docs/devel/pages/containers.html" class="external-link"><code>TreeSummarizedExperiment</code>
+(<code>TreeSE</code>)</a> object. This enables seamless integration with
+custom workflows for analysis.</p>
+<p>Utilizing <code>TreeSE</code> provides access to a wide range of
+tools within Bioconductor’s <code>SummarizedExperiment</code>
+(<code>SE</code>) ecosystem. It also integrates with the <a href="https://microbiome.github.io/mia/" class="external-link"><code>mia</code> package</a>,
+which offers microbiome-specific methods within the <code>SE</code>
+framework.</p>
 <p>For more information on microbiome data science in Bioconductor,
 refer to <a href="https://microbiome.github.io/OMA/docs/devel/" class="external-link">Orchestrating
 Microbiome Analysis (OMA) online book</a>.</p>
@@ -97,20 +98,17 @@ Microbiome Analysis (OMA) online book</a>.</p>
 </h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># List of packages that we need</span></span>
-<span><span class="va">packages</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ANCOMBC"</span>, <span class="st">"caret"</span>, <span class="st">"MGnifyR"</span>, <span class="st">"mia"</span>,  <span class="st">"miaViz"</span>, <span class="st">"scater"</span><span class="op">)</span></span>
+<span><span class="va">packages</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ANCOMBC"</span>, <span class="st">"MGnifyR"</span>, <span class="st">"mia"</span>,  <span class="st">"miaViz"</span>, <span class="st">"scater"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Get packages that are already installed</span></span>
 <span><span class="va">packages_already_installed</span> <span class="op">&lt;-</span> <span class="va">packages</span><span class="op">[</span> <span class="va">packages</span> <span class="op"><a href="https://rdrr.io/pkg/BiocGenerics/man/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/utils/installed.packages.html" class="external-link">installed.packages</a></span><span class="op">(</span><span class="op">)</span> <span class="op">]</span></span>
-<span></span>
 <span><span class="co"># Get packages that need to be installed</span></span>
 <span><span class="va">packages_need_to_install</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/sets.html" class="external-link">setdiff</a></span><span class="op">(</span> <span class="va">packages</span>, <span class="va">packages_already_installed</span> <span class="op">)</span></span>
-<span></span>
 <span><span class="co"># Loads BiocManager into the session. Install it if it is not already installed.</span></span>
 <span><span class="kw">if</span><span class="op">(</span> <span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://bioconductor.github.io/BiocManager/" class="external-link">"BiocManager"</a></span><span class="op">)</span> <span class="op">)</span><span class="op">{</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span></span>
 <span>    <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://bioconductor.github.io/BiocManager/" class="external-link">"BiocManager"</a></span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
-<span></span>
 <span><span class="co"># If there are packages that need to be installed, installs them with BiocManager</span></span>
 <span><span class="co"># Updates old packages.</span></span>
 <span><span class="kw">if</span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">packages_need_to_install</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span> <span class="op">)</span> <span class="op">{</span></span>
@@ -130,35 +128,33 @@ Microbiome Analysis (OMA) online book</a>.</p>
 <div class="section level2">
 <h2 id="data-import">Data import<a class="anchor" aria-label="anchor" href="#data-import"></a>
 </h2>
-<p>In this example, we are going to fetch MGnify analysis results and
-metadata for a dataset on the human gut microbiome viewed across age and
-geography.</p>
+<p>In this example, we will fetch taxonomy annotations and metadata from
+a specified study. The dataset focuses on the human gut microbiome,
+analyzed across different geographic regions.</p>
 <p>To interact with the MGnify database, we need to create a
-<code>MgnifyClient</code> object. This object allows us to fetch data
-from MGnify, and we can configure it to use a cache for efficiency.</p>
+<code>MgnifyClient</code> object. This object allows us to store options
+for data fetching. For instance, we can configure it to use a cache for
+improved efficiency.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create the MgnifyClient object with caching enabled</span></span>
 <span><span class="va">mg</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/MgnifyClient.html">MgnifyClient</a></span><span class="op">(</span></span>
 <span>  useCache <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  <span class="co"># cacheDir = "/home/trainers"</span></span>
-<span>  cacheDir <span class="op">=</span> <span class="st">"/home/tvborm/Downloads/.mgnify_cache"</span></span>
+<span>  cacheDir <span class="op">=</span> <span class="st">"/home/trainers"</span> <span class="co"># Set this to your desired cache directory</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<p>Using the <code>MgnifyClient</code> object, we can search for all
-analyses associated with the study. The analysis refers to metagenomic
-runs performed to samples. Each sample can have multiple runs made,
-which is why we work with analyses and not with samples; analysis
-identifier points to a single entity.</p>
+<p>We can now search for all analyses associated with the certain study.
+The analysis refers to metagenomic runs performed to samples. Each
+sample can have multiple runs made, which is why we work with analyses
+and not with samples; analysis identifier points to a single entity.</p>
 <p>In the MGnify database, each study has unique identifier. The study
 that we are interested has accession ID <a href="https://www.ebi.ac.uk/metagenomics/studies/MGYS00005154" class="external-link">“MGYS00005154”</a>.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">study_id</span> <span class="op">&lt;-</span> <span class="st">"MGYS00005154"</span></span>
-<span><span class="va">analysis_id</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/searchAnalysis.html">searchAnalysis</a></span><span class="op">(</span><span class="va">mg</span>, <span class="st">"studies"</span>, <span class="va">study_id</span><span class="op">)</span></span>
-<span><span class="va">analysis_id</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">analysis_id</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/searchAnalysis.html">searchAnalysis</a></span><span class="op">(</span><span class="va">mg</span>, <span class="st">"studies"</span>, <span class="va">study_id</span><span class="op">)</span></span></code></pre></div>
 <p>Now we are ready to load the metadata on the analyses to get idea on
 what kind of data we are dealing with.</p>
 <p>There are currently (17 Sep 2024) almost 1,000 analyses available.
-Downloading whole dataset will take some time which is why we use memory
-cache.</p>
+Downloading whole dataset will take some time, which is why we use
+memory cache.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">metadata</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getMetadata.html">getMetadata</a></span><span class="op">(</span><span class="va">mg</span>, accession <span class="op">=</span> <span class="va">analysis_id</span><span class="op">)</span></span></code></pre></div>
 <p>We can see that there are analyses that are performed with different
@@ -168,7 +164,7 @@ pipeline version 5.0.</p>
 <code class="sourceCode R"><span><span class="va">metadata</span> <span class="op">&lt;-</span> <span class="va">metadata</span><span class="op">[</span><span class="va">metadata</span><span class="op">[[</span><span class="st">"analysis_pipeline-version"</span><span class="op">]</span><span class="op">]</span> <span class="op">==</span> <span class="st">"5.0"</span>, <span class="op">]</span></span></code></pre></div>
 <p>We have now analyses that each point to unique sample. The final step
 is to fetch abundance tables in <code>TreeSummarizedExperiment</code>
-format.</p>
+(<code>TreeSE</code>) format.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">tse</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getResult.html">getResult</a></span><span class="op">(</span></span>
 <span>    <span class="va">mg</span>,</span>
@@ -183,9 +179,10 @@ online book</a> on how to handle the data in this format.</p>
 <div class="section level2">
 <h2 id="preprocessing">Preprocessing<a class="anchor" aria-label="anchor" href="#preprocessing"></a>
 </h2>
-<p>Below we agglomerate the data to Order level which means that we
-summarize the abundances in this specific level. OMA provides you <a href="https://microbiome.github.io/OMA/docs/devel/pages/agglomeration.html" class="external-link">chapter</a>
-which explains agglomeration in more detail.</p>
+<p>Below, we agglomerate the data to the Order level, meaning we
+summarize the abundances at this specific taxonomic rank. The OMA
+provides a detailed <a href="https://microbiome.github.io/OMA/docs/devel/pages/agglomeration.html" class="external-link">chapter</a>
+explaining agglomeration in more depth.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">tse_order</span> <span class="op">&lt;-</span> <span class="fu">agglomerateByRank</span><span class="op">(</span><span class="va">tse</span>, rank <span class="op">=</span> <span class="st">"Order"</span><span class="op">)</span></span></code></pre></div>
 <p>Because of the unique properties of microbiome data, we have to apply
@@ -203,7 +200,7 @@ can find more information on transformations from <a href="https://microbiome.gi
 <div class="section level2">
 <h2 id="alpha-diversity">Alpha diversity<a class="anchor" aria-label="anchor" href="#alpha-diversity"></a>
 </h2>
-<p>Alpha diversity measures community diversity within a sample. Leanr
+<p>Alpha diversity measures community diversity within a sample. Learn
 more on community diversity from <a href="https://microbiome.github.io/OMA/docs/devel/pages/alpha_diversity.html" class="external-link">here</a>.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Calculate alpha diversity</span></span>
@@ -230,11 +227,11 @@ significant. We utilize Mann Whithney U test (or Wilcoxon test).</p>
 <div class="section level2">
 <h2 id="beta-diversity">Beta diversity<a class="anchor" aria-label="anchor" href="#beta-diversity"></a>
 </h2>
-<p>We can evaluate how different the microbial compositions are between
-samples. The aim is to evaluate whether we can find patterns from data
-that associates with covariates.</p>
-<p>We perform Principal Coodinate Analysis (PCoA) with Bray-Curtis
-dissimilarity.</p>
+<p>We can assess the differences in microbial compositions between
+samples, aiming to identify patterns in the data that are associated
+with covariates.</p>
+<p>To achieve this, we perform Principal Coordinate Analysis (PCoA)
+using Bray-Curtis dissimilarity.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Perform PCoA</span></span>
 <span><span class="va">tse</span> <span class="op">&lt;-</span> <span class="fu">runMDS</span><span class="op">(</span></span>
@@ -254,10 +251,10 @@ dissimilarity.</p>
 similarity chapter</a> from OMA for more information.</p>
 </div>
 <div class="section level2">
-<h2 id="differetial-abundance-analysis-daa">Differetial abundance analysis (DAA)<a class="anchor" aria-label="anchor" href="#differetial-abundance-analysis-daa"></a>
+<h2 id="differential-abundance-analysis-daa">Differential abundance analysis (DAA)<a class="anchor" aria-label="anchor" href="#differential-abundance-analysis-daa"></a>
 </h2>
-<p>In DAA, we analyze if certain featues’ abundances differ between
-certain groups. Again, OMA has dedicated chapter also for this <a href="https://microbiome.github.io/OMA/docs/devel/pages/differential_abundance.html" class="external-link">topic</a>.</p>
+<p>In DAA, we analyze whether abundances of certain features vary
+between study groups. Again, OMA has a dedicated chapter also on this <a href="https://microbiome.github.io/OMA/docs/devel/pages/differential_abundance.html" class="external-link">topic</a>.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Perform DAA</span></span>
 <span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">ancombc2</span><span class="op">(</span></span>
@@ -266,7 +263,7 @@ certain groups. Again, OMA has dedicated chapter also for this <a href="https://
 <span>    fix_formula <span class="op">=</span> <span class="st">"sample_geographic.location..country.and.or.sea.region."</span>,</span>
 <span>    p_adj_method <span class="op">=</span> <span class="st">"fdr"</span>,</span>
 <span>    <span class="op">)</span></span></code></pre></div>
-<p>Next we visualize 5 features that have the lowest p-values.</p>
+<p>Next we visualize features that have the lowest p-values.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Get the most significant features</span></span>
 <span><span class="va">n_top</span> <span class="op">&lt;-</span> <span class="fl">4</span></span>
