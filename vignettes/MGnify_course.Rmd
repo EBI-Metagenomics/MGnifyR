@@ -22,22 +22,26 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, eval = FALS
 
 ## Introduction
 
-In this notebook we aim to demonstrate how the `MGnifyR` tool can be used to fetch 
-data of a MGnify metagenomic analysis. Then we show how to analyse the data
-utilizing cutting-edge tools for microbiome data science including estimating
-alpha and beta diversity along with differential abundance analysis.
+In this notebook we aim to demonstrate how the `MGnifyR` tool can be used to
+fetch data of a MGnify microbiome data resource. We then showcase how to analyze
+the datausing advanced microbiome data science tools, including estimating alpha
+and beta diversity, as well as performing differential abundance analysis.
 
-[`MGnifyR`](https://www.bioconductor.org/packages/release/bioc/html/MGnifyR.html) 
-is a R/Bioconductor package that provides a set of tools for easily accessing and processing 
-MGnify data in R, making queries to MGnify databases through the [MGnify API](https://www.ebi.ac.uk/metagenomics/api/v1/). 
+[`MGnifyR`](https://www.bioconductor.org/packages/release/bioc/html/MGnifyR.html)
+is an R/Bioconductor package that provides a set of tools for easily accessing
+and processing MGnify data in R, making queries to MGnify databases through the
+[MGnify API](https://www.ebi.ac.uk/metagenomics/api/v1/). 
 
-The benefit of `MGnifyR` is that data can either be fetched in tsv format or be directly 
-combined in a [`TreeSummarizedExperiment` (`TreeSE`)](https://microbiome.github.io/OMA/docs/devel/pages/containers.html)
-object to run an analysis in a custom workflow.
+The benefit of `MGnifyR` is that it streamlines data access, allowing users to 
+fetch data either in its "raw" format or directly as a 
+[`TreeSummarizedExperiment` (`TreeSE`)](https://microbiome.github.io/OMA/docs/devel/pages/containers.html) 
+object. This enables seamless integration with custom workflows for analysis.
 
-Utilizing `TreeSE` enables an access to wide range of tools in Bioconductor's
-`SummarizedExperiment` (`SE`) ecosystem, [`mia` package](https://microbiome.github.io/mia/)
-covering the microbiome-specific methods in the `SE` ecosystem.
+Utilizing `TreeSE` provides access to a wide range of tools within
+Bioconductor's `SummarizedExperiment` (`SE`) ecosystem. It also integrates
+with the 
+[`mia` package](https://microbiome.github.io/mia/), which offers
+microbiome-specific  methods within the `SE` framework.
 
 For more information
 on microbiome data science in Bioconductor, refer to 
@@ -47,20 +51,17 @@ on microbiome data science in Bioconductor, refer to
 
 ```{r install}
 # List of packages that we need
-packages <- c("ANCOMBC", "caret", "MGnifyR", "mia",  "miaViz", "scater")
+packages <- c("ANCOMBC", "MGnifyR", "mia",  "miaViz", "scater")
 
 # Get packages that are already installed
 packages_already_installed <- packages[ packages %in% installed.packages() ]
-
 # Get packages that need to be installed
 packages_need_to_install <- setdiff( packages, packages_already_installed )
-
 # Loads BiocManager into the session. Install it if it is not already installed.
 if( !require("BiocManager") ){
     install.packages("BiocManager")
     library("BiocManager")
 }
-
 # If there are packages that need to be installed, installs them with BiocManager
 # Updates old packages.
 if( length(packages_need_to_install) > 0 ) {
@@ -80,12 +81,13 @@ if( length(pkgs_not_loaded) > 0 ){
 
 ## Data import
 
-In this example, we are going to fetch MGnify analysis results and metadata for a 
-dataset on the human gut microbiome viewed across age and geography.
+In this example, we will fetch taxonomy annotations and metadata from a 
+specified study. The dataset focuses on the human gut microbiome, analyzed 
+across different geographic regions.
 
-To interact with the MGnify database, we need to create a `MgnifyClient` object. 
-This object allows us to fetch data from MGnify, and we can configure it to use 
-a cache for efficiency. 
+To interact with the MGnify database, we need to create a `MgnifyClient` object.
+This object allows us to store options for data fetching. For instance, we can
+configure it to use a cache for improved efficiency.
 
 ```{r create_mgnify_obj}
 #| output: false
@@ -93,32 +95,31 @@ a cache for efficiency.
 # Create the MgnifyClient object with caching enabled
 mg <- MgnifyClient(
   useCache = TRUE,
-  # cacheDir = "/home/trainers"
-  cacheDir = "/home/tvborm/Downloads/.mgnify_cache"
+  cacheDir = "/home/trainers" # Set this to your desired cache directory
   )
 ```
 
-Using the `MgnifyClient` object, we can search for all analyses associated with 
-the study. The analysis refers to metagenomic runs performed to samples. Each sample
-can have multiple runs made, which is why we work with analyses and not with samples;
-analysis identifier points to a single entity.
+We can now search for all analyses associated with the certain study.
+The analysis refers to metagenomic runs performed to samples. Each
+sample can have multiple runs made, which is why we work with analyses and not
+with samples; analysis identifier points to a single entity.
 
-In the MGnify database, each study has unique identifier. The study that we are interested
-has accession ID ["MGYS00005154"](https://www.ebi.ac.uk/metagenomics/studies/MGYS00005154).
+In the MGnify database, each study has unique identifier. The study that we are
+interested has accession ID
+["MGYS00005154"](https://www.ebi.ac.uk/metagenomics/studies/MGYS00005154).
 
 ```{r search_analysis}
 #| output: false
 
 study_id <- "MGYS00005154"
 analysis_id <- searchAnalysis(mg, "studies", study_id)
-analysis_id |> head()
 ```
 
 Now we are ready to load the metadata on the analyses to get idea on what
 kind of data we are dealing with.
 
 There are currently (17 Sep 2024) almost 1,000 analyses available. Downloading
-whole dataset will take some time which is why we use memory cache.
+whole dataset will take some time, which is why we use memory cache.
 
 ```{r load_meta}
 metadata <- getMetadata(mg, accession = analysis_id)
@@ -132,7 +133,7 @@ metadata <- metadata[metadata[["analysis_pipeline-version"]] == "5.0", ]
 ```
 
 We have now analyses that each point to unique sample. The final step is
-to fetch abundance tables in `TreeSummarizedExperiment` format.
+to fetch abundance tables in `TreeSummarizedExperiment` (`TreeSE`) format.
 
 ```{r import_treese}
 tse <- getResult(
@@ -149,19 +150,18 @@ on how to handle the data in this format.
 
 ## Preprocessing
 
-Below we agglomerate the data to Order level which means that we summarize the
-abundances in this specific level. OMA provides you
-[chapter](https://microbiome.github.io/OMA/docs/devel/pages/agglomeration.html)
-which explains agglomeration in more detail.
+Below, we agglomerate the data to the Order level, meaning we summarize the 
+abundances at this specific taxonomic rank. The OMA provides a detailed 
+[chapter](https://microbiome.github.io/OMA/docs/devel/pages/agglomeration.html) 
+explaining agglomeration in more depth.
 
 ```{r agg}
 tse_order <- agglomerateByRank(tse, rank = "Order")
 ```
 
-
-Because of the unique properties of microbiome data, we have to apply transformations.
-Here, we perform relative and CLR transformations. You can find more information
-on transformations from
+Because of the unique properties of microbiome data, we have to apply
+transformations. Here, we perform relative and CLR transformations. You can find
+more information on transformations from
 [OMA](https://microbiome.github.io/OMA/docs/devel/pages/transformation.html).
 
 ```{r preprocess}
@@ -176,7 +176,9 @@ tse_order <- transformAssay(tse_order, method = "rclr")
 
 ## Alpha diversity
 
-Alpha diversity measures community diversity within a sample. Leanr more on community diversity from [here](https://microbiome.github.io/OMA/docs/devel/pages/alpha_diversity.html).
+Alpha diversity measures community diversity within a sample. Learn more on
+community diversity from
+[here](https://microbiome.github.io/OMA/docs/devel/pages/alpha_diversity.html).
 
 ```{r alpha}
 # Calculate alpha diversity
@@ -203,15 +205,16 @@ pairwise.wilcox.test(
     )
 ```
 
-To add p-values to the plot, see [OMA](https://microbiome.github.io/OMA/docs/devel/pages/alpha_diversity.html#visualizing-significance-in-group-wise-comparisons).
+To add p-values to the plot, see
+[OMA](https://microbiome.github.io/OMA/docs/devel/pages/alpha_diversity.html#visualizing-significance-in-group-wise-comparisons).
 
 ## Beta diversity
 
-We can evaluate how different the microbial compositions are between samples.
-The aim is to evaluate whether we can find patterns from data that associates
-with covariates.
+We can assess the differences in microbial compositions between samples, aiming 
+to identify patterns in the data that are associated with covariates.
 
-We perform Principal Coodinate Analysis (PCoA) with Bray-Curtis dissimilarity.
+To achieve this, we perform Principal Coordinate Analysis (PCoA) using 
+Bray-Curtis dissimilarity.
 
 ```{r pcoa}
 # Perform PCoA
@@ -233,10 +236,11 @@ p
 See [community similarity chapter](https://microbiome.github.io/OMA/docs/devel/pages/beta_diversity.html)
 from OMA for more information.
 
-## Differetial abundance analysis (DAA)
+## Differential abundance analysis (DAA)
 
-In DAA, we analyze if certain featues' abundances differ between certain groups.
-Again, OMA has dedicated chapter also for this [topic](https://microbiome.github.io/OMA/docs/devel/pages/differential_abundance.html).
+In DAA, we analyze whether abundances of certain features vary between study
+groups. Again, OMA has a dedicated chapter also on this
+[topic](https://microbiome.github.io/OMA/docs/devel/pages/differential_abundance.html).
 
 ```{r daa1}
 # Perform DAA
@@ -248,7 +252,7 @@ res <- ancombc2(
     )
 ```
 
-Next we visualize 5 features that have the lowest p-values.
+Next we visualize features that have the lowest p-values.
 
 ```{r daa2}
 # Get the most significant features
