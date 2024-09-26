@@ -55,19 +55,19 @@ packages <- c("ANCOMBC", "MGnifyR", "mia",  "miaViz", "scater")
 update <- FALSE
 
 # Loads BiocManager into the session. Install it if it is not already installed.
-if( !require("BiocManager") ){
+if( !require("BiocManager", quietly = TRUE) ){
     install.packages("BiocManager")
-    library("BiocManager")
+    library("BiocManager", quietly = TRUE)
 }
 # If there are packages that need to be installed, installs them with
 # BiocManager
-install(packages, update = update, ask = FALSE)  |>
+install(packages, update = update, ask = FALSE) |>
     suppressWarnings() |> suppressMessages()
 
 # Load all packages into session. Stop if there are packages that were not
 # successfully loaded
-pkgs_not_loaded <- !sapply(
-    packages, require, quietly = TRUE, character.only = TRUE)
+pkgs_not_loaded <- !sapply(packages, require, character.only = TRUE) |>
+    suppressMessages()
 pkgs_not_loaded <- names(pkgs_not_loaded)[ pkgs_not_loaded ]
 if( length(pkgs_not_loaded) > 0 ){
     stop("Error in loading the following packages into the session: '",
