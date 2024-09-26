@@ -94,7 +94,7 @@ configure it to use a cache for improved efficiency.
 # Create the MgnifyClient object with caching enabled
 mg <- MgnifyClient(
   useCache = TRUE,
-  cacheDir = "/home/trainers" # Set this to your desired cache directory
+  cacheDir = "/home/training" # Set this to your desired cache directory
   )
 ```
 
