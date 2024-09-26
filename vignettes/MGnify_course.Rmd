@@ -55,16 +55,13 @@ packages <- c("ANCOMBC", "MGnifyR", "mia",  "miaViz", "scater")
 
 # Get packages that are already installed
 packages_already_installed <- packages[ packages %in% installed.packages() ]
-
 # Get packages that need to be installed
 packages_need_to_install <- setdiff( packages, packages_already_installed )
-
 # Loads BiocManager into the session. Install it if it is not already installed.
 if( !require("BiocManager") ){
     install.packages("BiocManager")
     library("BiocManager")
 }
-
 # If there are packages that need to be installed, installs them with BiocManager
 # Updates old packages.
 if( length(packages_need_to_install) > 0 ) {
