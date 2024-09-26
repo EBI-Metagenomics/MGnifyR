@@ -124,9 +124,6 @@ Microbiome Analysis (OMA) online book</a>.</p>
 <div class="section level2">
 <h2 id="data-import">Data import<a class="anchor" aria-label="anchor" href="#data-import"></a>
 </h2>
-<p>In this example, we will fetch taxonomy annotations and metadata from
-a specified study. The dataset focuses on the human gut microbiome,
-analyzed across different geographic regions.</p>
 <p>To interact with the MGnify database, we need to create a
 <code>MgnifyClient</code> object. This object allows us to store options
 for data fetching. For instance, we can configure it to use a cache for
@@ -137,12 +134,14 @@ improved efficiency.</p>
 <span>  useCache <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  cacheDir <span class="op">=</span> <span class="st">"/home/trainers"</span> <span class="co"># Set this to your desired cache directory</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
+<p>In this workflow, we will fetch taxonomy annotations and metadata
+from the study <a href="https://www.ebi.ac.uk/metagenomics/studies/MGYS00005154" class="external-link">“MGYS00005154”</a>.
+The dataset focuses on the human gut microbiome, analyzed across
+different geographic regions.</p>
 <p>We can now search for all analyses associated with the certain study.
 The analysis refers to metagenomic runs performed to samples. Each
 sample can have multiple runs made, which is why we work with analyses
 and not with samples; analysis identifier points to a single entity.</p>
-<p>In the MGnify database, each study has unique identifier. The study
-that we are interested has accession ID <a href="https://www.ebi.ac.uk/metagenomics/studies/MGYS00005154" class="external-link">“MGYS00005154”</a>.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">study_id</span> <span class="op">&lt;-</span> <span class="st">"MGYS00005154"</span></span>
 <span><span class="va">analysis_id</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/searchAnalysis.html">searchAnalysis</a></span><span class="op">(</span><span class="va">mg</span>, <span class="st">"studies"</span>, <span class="va">study_id</span><span class="op">)</span></span></code></pre></div>
