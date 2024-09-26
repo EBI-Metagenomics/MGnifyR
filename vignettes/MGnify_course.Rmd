@@ -154,18 +154,15 @@ tse_order <- agglomerateByRank(tse, rank = "Order")
 ```
 
 Because of the unique properties of microbiome data, we have to apply
-transformations. Here, we perform relative and CLR transformations. You can find
+transformations. Here, we perform relative transformation. You can find
 more information on transformations from
 [OMA](https://microbiome.github.io/OMA/docs/devel/pages/transformation.html).
 
 ```{r preprocess}
 # Transform the main TreeSE
 tse <- transformAssay(tse, method = "relabundance")
-tse <- transformAssay(tse, method = "rclr")
-
 # Transform the agglomerated TreeSE
 tse_order <- transformAssay(tse_order, method = "relabundance")
-tse_order <- transformAssay(tse_order, method = "rclr")
 ```
 
 ## Alpha diversity
