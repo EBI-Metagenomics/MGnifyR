@@ -61,11 +61,13 @@ if( !require("BiocManager") ){
 }
 # If there are packages that need to be installed, installs them with
 # BiocManager
-install(packages, update = update, ask = FALSE)
+install(packages, update = update, ask = FALSE)  |>
+    suppressWarnings() |> suppressMessages()
 
 # Load all packages into session. Stop if there are packages that were not
 # successfully loaded
-pkgs_not_loaded <- !sapply(packages, require, quietly = TRUE, character.only = TRUE)
+pkgs_not_loaded <- !sapply(
+    packages, require, quietly = TRUE, character.only = TRUE)
 pkgs_not_loaded <- names(pkgs_not_loaded)[ pkgs_not_loaded ]
 if( length(pkgs_not_loaded) > 0 ){
     stop("Error in loading the following packages into the session: '",
