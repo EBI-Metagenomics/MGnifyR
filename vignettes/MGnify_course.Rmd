@@ -77,10 +77,6 @@ if( length(pkgs_not_loaded) > 0 ){
 
 ## Data import
 
-In this example, we will fetch taxonomy annotations and metadata from a 
-specified study. The dataset focuses on the human gut microbiome, analyzed 
-across different geographic regions.
-
 To interact with the MGnify database, we need to create a `MgnifyClient` object.
 This object allows us to store options for data fetching. For instance, we can
 configure it to use a cache for improved efficiency.
@@ -95,14 +91,16 @@ mg <- MgnifyClient(
   )
 ```
 
+In this workflow, we will fetch taxonomy annotations and metadata from
+the study
+["MGYS00005154"](https://www.ebi.ac.uk/metagenomics/studies/MGYS00005154).
+The dataset focuses on the human gut microbiome, analyzed 
+across different geographic regions.
+
 We can now search for all analyses associated with the certain study.
 The analysis refers to metagenomic runs performed to samples. Each
 sample can have multiple runs made, which is why we work with analyses and not
 with samples; analysis identifier points to a single entity.
-
-In the MGnify database, each study has unique identifier. The study that we are
-interested has accession ID
-["MGYS00005154"](https://www.ebi.ac.uk/metagenomics/studies/MGYS00005154).
 
 ```{r search_analysis}
 #| output: false
