@@ -102,16 +102,13 @@ Microbiome Analysis (OMA) online book</a>.</p>
 <span></span>
 <span><span class="co"># Get packages that are already installed</span></span>
 <span><span class="va">packages_already_installed</span> <span class="op">&lt;-</span> <span class="va">packages</span><span class="op">[</span> <span class="va">packages</span> <span class="op"><a href="https://rdrr.io/pkg/BiocGenerics/man/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/utils/installed.packages.html" class="external-link">installed.packages</a></span><span class="op">(</span><span class="op">)</span> <span class="op">]</span></span>
-<span></span>
 <span><span class="co"># Get packages that need to be installed</span></span>
 <span><span class="va">packages_need_to_install</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/sets.html" class="external-link">setdiff</a></span><span class="op">(</span> <span class="va">packages</span>, <span class="va">packages_already_installed</span> <span class="op">)</span></span>
-<span></span>
 <span><span class="co"># Loads BiocManager into the session. Install it if it is not already installed.</span></span>
 <span><span class="kw">if</span><span class="op">(</span> <span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://bioconductor.github.io/BiocManager/" class="external-link">"BiocManager"</a></span><span class="op">)</span> <span class="op">)</span><span class="op">{</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span></span>
 <span>    <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://bioconductor.github.io/BiocManager/" class="external-link">"BiocManager"</a></span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
-<span></span>
 <span><span class="co"># If there are packages that need to be installed, installs them with BiocManager</span></span>
 <span><span class="co"># Updates old packages.</span></span>
 <span><span class="kw">if</span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">packages_need_to_install</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span> <span class="op">)</span> <span class="op">{</span></span>
