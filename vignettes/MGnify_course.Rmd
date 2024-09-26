@@ -81,10 +81,6 @@ if( length(pkgs_not_loaded) > 0 ){
 
 ## Data import
 
-In this example, we will fetch taxonomy annotations and metadata from a 
-specified study. The dataset focuses on the human gut microbiome, analyzed 
-across different geographic regions.
-
 To interact with the MGnify database, we need to create a `MgnifyClient` object.
 This object allows us to store options for data fetching. For instance, we can
 configure it to use a cache for improved efficiency.
@@ -95,18 +91,20 @@ configure it to use a cache for improved efficiency.
 # Create the MgnifyClient object with caching enabled
 mg <- MgnifyClient(
   useCache = TRUE,
-  cacheDir = "/home/trainers" # Set this to your desired cache directory
+  cacheDir = "/home/training" # Set this to your desired cache directory
   )
 ```
+
+In this workflow, we will fetch taxonomy annotations and metadata from
+the study
+["MGYS00005154"](https://www.ebi.ac.uk/metagenomics/studies/MGYS00005154).
+The dataset focuses on the human gut microbiome, analyzed 
+across different geographic regions.
 
 We can now search for all analyses associated with the certain study.
 The analysis refers to metagenomic runs performed to samples. Each
 sample can have multiple runs made, which is why we work with analyses and not
 with samples; analysis identifier points to a single entity.
-
-In the MGnify database, each study has unique identifier. The study that we are
-interested has accession ID
-["MGYS00005154"](https://www.ebi.ac.uk/metagenomics/studies/MGYS00005154).
 
 ```{r search_analysis}
 #| output: false
@@ -160,18 +158,15 @@ tse_order <- agglomerateByRank(tse, rank = "Order")
 ```
 
 Because of the unique properties of microbiome data, we have to apply
-transformations. Here, we perform relative and CLR transformations. You can find
+transformations. Here, we perform relative transformation. You can find
 more information on transformations from
 [OMA](https://microbiome.github.io/OMA/docs/devel/pages/transformation.html).
 
 ```{r preprocess}
 # Transform the main TreeSE
 tse <- transformAssay(tse, method = "relabundance")
-tse <- transformAssay(tse, method = "rclr")
-
 # Transform the agglomerated TreeSE
 tse_order <- transformAssay(tse_order, method = "relabundance")
-tse_order <- transformAssay(tse_order, method = "rclr")
 ```
 
 ## Alpha diversity
