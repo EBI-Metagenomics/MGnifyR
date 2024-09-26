@@ -180,16 +180,13 @@ explaining agglomeration in more depth.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">tse_order</span> <span class="op">&lt;-</span> <span class="fu">agglomerateByRank</span><span class="op">(</span><span class="va">tse</span>, rank <span class="op">=</span> <span class="st">"Order"</span><span class="op">)</span></span></code></pre></div>
 <p>Because of the unique properties of microbiome data, we have to apply
-transformations. Here, we perform relative and CLR transformations. You
-can find more information on transformations from <a href="https://microbiome.github.io/OMA/docs/devel/pages/transformation.html" class="external-link">OMA</a>.</p>
+transformations. Here, we perform relative transformation. You can find
+more information on transformations from <a href="https://microbiome.github.io/OMA/docs/devel/pages/transformation.html" class="external-link">OMA</a>.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Transform the main TreeSE</span></span>
 <span><span class="va">tse</span> <span class="op">&lt;-</span> <span class="fu">transformAssay</span><span class="op">(</span><span class="va">tse</span>, method <span class="op">=</span> <span class="st">"relabundance"</span><span class="op">)</span></span>
-<span><span class="va">tse</span> <span class="op">&lt;-</span> <span class="fu">transformAssay</span><span class="op">(</span><span class="va">tse</span>, method <span class="op">=</span> <span class="st">"rclr"</span><span class="op">)</span></span>
-<span></span>
 <span><span class="co"># Transform the agglomerated TreeSE</span></span>
-<span><span class="va">tse_order</span> <span class="op">&lt;-</span> <span class="fu">transformAssay</span><span class="op">(</span><span class="va">tse_order</span>, method <span class="op">=</span> <span class="st">"relabundance"</span><span class="op">)</span></span>
-<span><span class="va">tse_order</span> <span class="op">&lt;-</span> <span class="fu">transformAssay</span><span class="op">(</span><span class="va">tse_order</span>, method <span class="op">=</span> <span class="st">"rclr"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">tse_order</span> <span class="op">&lt;-</span> <span class="fu">transformAssay</span><span class="op">(</span><span class="va">tse_order</span>, method <span class="op">=</span> <span class="st">"relabundance"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="alpha-diversity">Alpha diversity<a class="anchor" aria-label="anchor" href="#alpha-diversity"></a>
