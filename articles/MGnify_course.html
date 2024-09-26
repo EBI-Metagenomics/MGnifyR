@@ -59,9 +59,9 @@
 
       <h1>Metagenomics bioinformatics at MGnify</h1>
             
-            <h4 data-toc-skip class="date">2024-09-25</h4>
+            <h4 data-toc-skip class="date">2024-09-26</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/EBI-Metagenomics/MGnifyR/blob/devel/vignettes/MGnify_course.Rmd" class="external-link"><code>vignettes/MGnify_course.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/EBI-Metagenomics/MGnifyR/blob/minor/vignettes/MGnify_course.Rmd" class="external-link"><code>vignettes/MGnify_course.Rmd</code></a></small>
       <div class="d-none name"><code>MGnify_course.Rmd</code></div>
     </div>
 
@@ -99,29 +99,23 @@ Microbiome Analysis (OMA) online book</a>.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># List of packages that we need</span></span>
 <span><span class="va">packages</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ANCOMBC"</span>, <span class="st">"MGnifyR"</span>, <span class="st">"mia"</span>,  <span class="st">"miaViz"</span>, <span class="st">"scater"</span><span class="op">)</span></span>
+<span><span class="va">update</span> <span class="op">&lt;-</span> <span class="cn">FALSE</span></span>
 <span></span>
-<span><span class="co"># Get packages that are already installed</span></span>
-<span><span class="va">packages_already_installed</span> <span class="op">&lt;-</span> <span class="va">packages</span><span class="op">[</span> <span class="va">packages</span> <span class="op"><a href="https://rdrr.io/pkg/BiocGenerics/man/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/utils/installed.packages.html" class="external-link">installed.packages</a></span><span class="op">(</span><span class="op">)</span> <span class="op">]</span></span>
-<span><span class="co"># Get packages that need to be installed</span></span>
-<span><span class="va">packages_need_to_install</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/sets.html" class="external-link">setdiff</a></span><span class="op">(</span> <span class="va">packages</span>, <span class="va">packages_already_installed</span> <span class="op">)</span></span>
 <span><span class="co"># Loads BiocManager into the session. Install it if it is not already installed.</span></span>
 <span><span class="kw">if</span><span class="op">(</span> <span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://bioconductor.github.io/BiocManager/" class="external-link">"BiocManager"</a></span><span class="op">)</span> <span class="op">)</span><span class="op">{</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span></span>
 <span>    <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://bioconductor.github.io/BiocManager/" class="external-link">"BiocManager"</a></span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
-<span><span class="co"># If there are packages that need to be installed, installs them with BiocManager</span></span>
-<span><span class="co"># Updates old packages.</span></span>
-<span><span class="kw">if</span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">packages_need_to_install</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span> <span class="op">)</span> <span class="op">{</span></span>
-<span>   <span class="fu"><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">install</a></span><span class="op">(</span><span class="va">packages_need_to_install</span>, ask <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="op">}</span></span>
+<span><span class="co"># If there are packages that need to be installed, installs them with</span></span>
+<span><span class="co"># BiocManager</span></span>
+<span><span class="fu"><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">install</a></span><span class="op">(</span><span class="va">packages_need_to_install</span>, update <span class="op">=</span> <span class="va">update</span>, ask <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Load all packages into session. Stop if there are packages that were not</span></span>
 <span><span class="co"># successfully loaded</span></span>
 <span><span class="va">pkgs_not_loaded</span> <span class="op">&lt;-</span> <span class="op">!</span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">packages</span>, <span class="va">require</span>, character.only <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">pkgs_not_loaded</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">pkgs_not_loaded</span><span class="op">)</span><span class="op">[</span> <span class="va">pkgs_not_loaded</span> <span class="op">]</span></span>
 <span><span class="kw">if</span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">pkgs_not_loaded</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span> <span class="op">)</span><span class="op">{</span></span>
-<span>    <span class="kw"><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop</a></span><span class="op">(</span></span>
-<span>        <span class="st">"Error in loading the following packages into the session: '"</span>,</span>
+<span>    <span class="kw"><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop</a></span><span class="op">(</span><span class="st">"Error in loading the following packages into the session: '"</span>,</span>
 <span>        <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">pkgs_not_loaded</span>, collapse <span class="op">=</span> <span class="st">"', '"</span><span class="op">)</span>, <span class="st">"'"</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
 </div>
