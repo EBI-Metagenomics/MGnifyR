@@ -52,29 +52,23 @@ on microbiome data science in Bioconductor, refer to
 ```{r install}
 # List of packages that we need
 packages <- c("ANCOMBC", "MGnifyR", "mia",  "miaViz", "scater")
+update <- FALSE
 
-# Get packages that are already installed
-packages_already_installed <- packages[ packages %in% installed.packages() ]
-# Get packages that need to be installed
-packages_need_to_install <- setdiff( packages, packages_already_installed )
 # Loads BiocManager into the session. Install it if it is not already installed.
 if( !require("BiocManager") ){
     install.packages("BiocManager")
     library("BiocManager")
 }
-# If there are packages that need to be installed, installs them with BiocManager
-# Updates old packages.
-if( length(packages_need_to_install) > 0 ) {
-   install(packages_need_to_install, ask = FALSE)
-}
+# If there are packages that need to be installed, installs them with
+# BiocManager
+install(packages_need_to_install, update = update, ask = FALSE)
 
 # Load all packages into session. Stop if there are packages that were not
 # successfully loaded
 pkgs_not_loaded <- !sapply(packages, require, character.only = TRUE)
 pkgs_not_loaded <- names(pkgs_not_loaded)[ pkgs_not_loaded ]
 if( length(pkgs_not_loaded) > 0 ){
-    stop(
-        "Error in loading the following packages into the session: '",
+    stop("Error in loading the following packages into the session: '",
         paste0(pkgs_not_loaded, collapse = "', '"), "'")
 }
 ```
