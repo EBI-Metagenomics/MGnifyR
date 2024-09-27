@@ -83,6 +83,52 @@ setMethod("searchAnalysis", signature = c(x = "MgnifyClient"), function(
         client, accession, type, "analyses", show.messages = show.messages, ...)
     # Check which study/sample ID resulted to found analysis ID
     not_found <- accession[ !accession %in% names(analysis_ids) ]
+    # If user is searching analyses based on samples, we can still try another
+    # approach. Sometimes, those "sample" IDs refer to runs instead.
+    if( length(not_found) > 0 && type == "samples" ){
+        # Finds runs based on samples
+        temp <- .get_all_analyses_ids(
+            client, accession, "samples", "runs",
+            show.messages = show.messages, ...)
+        # Create a data.frame that holds all the IDs to book keep matches
+        # between IDs.
+        id_df <- data.frame(sample = names(temp), run = temp)
+        # Based on those runs, search analyses
+        temp <- .get_all_analyses_ids(
+            client, id_df[["run"]], "runs", "analyses",
+            show.messages = show.messages, ...)
+        # Add found analysis IDs to data.frame
+        temp_df <- id_df[match(names(temp), id_df[["run"]]), ]
+        temp_df[["analyses"]] <- temp
+        id_df <- merge(id_df, temp_df, all = TRUE)
+        
+        # If there still are samples that were not found, we can try to get
+        # analyses from assemblies. That is why we try to first fetch assemblies
+        # based on runs.
+        temp <- .get_all_analyses_ids(
+            client, id_df[is.na(id_df[["analyses"]]), "run"], "runs",
+            "assemblies", show.messages = show.messages, ...)
+        # Add found analysis IDs to data.frame
+        temp_df <- id_df[match(names(temp), id_df[["run"]]), ]
+        temp_df[["assemblies"]] <- temp
+        id_df <- merge(id_df, temp_df, all = TRUE)
+        # Then based on assemblies, we can finally try to find analyses.
+        temp <- .get_all_analyses_ids(
+            client, id_df[is.na(id_df[["analyses"]]), "assemblies"],
+            "assemblies", "analyses", show.messages = show.messages, ...)
+        # Add found analysis IDs to data.frame
+        temp_df <- id_df[match(names(temp), id_df[["assemblies"]]), ]
+        temp_df[["analyses"]] <- temp
+        id_df <- merge(id_df, temp_df, all = TRUE)
+        # Now we should have a table that contains all the analyses that were
+        # possible to find. Add these analyses to the original result list.
+        temp <- id_df[["analyses"]]
+        names(temp) <- id_df[["sample"]]
+        temp <- temp[ !is.na(temp) ]
+        analysis_ids <- c(analysis_ids, temp)
+        # Update the "not found samples" vector
+        not_found <- accession[ !accession %in% names(analysis_ids) ]
+    }
     # If the data was not found for specified ID, give warning
     if( length(not_found) > 0 ){
         warning(
@@ -104,6 +150,8 @@ setMethod("searchAnalysis", signature = c(x = "MgnifyClient"), function(
             "'use.cache' must be a single boolean value", call. = FALSE)
     }
     #
+    # Get only unique IDs
+    ids <- unique(ids)
     # Loop through accessions
     analysis_ids <- llply(ids, function(id){
         # Get URL address of results that were found. For instance, URL address
