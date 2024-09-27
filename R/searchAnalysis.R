@@ -57,26 +57,17 @@ setMethod("searchAnalysis", signature = c(x = "MgnifyClient"), function(
     }
     ############################# INPUT CHECK END ##############################
     # Get analysis accession IDs based on sample or study accessions
-    if( type == "samples" ){
-        result <- .mgnify_analyses_from_samples(
-            client = x, accession = accession, ...)
-    } else{
-        result <- .mgnify_analyses_from_studies(
-            client = x, accession = accession, ...)
-    }
+    result <- .mgnify_analyses_from_studies_and_samples(
+        client = x, accession = accession, type = type, ...)
     return(result)
 })
 
 ################################ HELP FUNCTIONS ################################
-# Get analysis accessions based on studies
-.mgnify_analyses_from_studies <- function(
-        client, accession, use.cache = useCache(client),
-        show.messages = verbose(client), ...){
+# Get analysis accessions based on studies or samples. The result is a vector
+# of analyses IDs.
+.mgnify_analyses_from_studies_and_samples <- function(
+        client, accession, type, show.messages = verbose(client), ...){
     # Input check
-    if( !.is_a_bool(use.cache) ){
-        stop(
-            "'use.cache' must be a single boolean value", call. = FALSE)
-    }
     if( !.is_a_bool(show.messages) ){
         stop(
             "'show.messages' must be a single boolean value.", call. = FALSE)
@@ -87,153 +78,58 @@ setMethod("searchAnalysis", signature = c(x = "MgnifyClient"), function(
     if( show.messages == "text" ){
         message("Fetching analyses...")
     }
-    # Loop over studies, get analyses accessions
-    analyses_accessions <- llply(as.list(accession), function(x){
-        # Find analyses based on studies. Get URL address.
-        accurl <- .mgnify_get_x_for_y(
-            client, x, "studies","analyses", use.cache = use.cache, ...)
-        # If found
-        if( !is.null(accurl) ){
+    # Search analyses IDs
+    analysis_ids <- .get_all_analyses_ids(
+        client, accession, type, "analyses", show.messages = show.messages, ...)
+    # Check which study/sample ID resulted to found analysis ID
+    not_found <- accession[ !accession %in% names(analysis_ids) ]
+    # If the data was not found for specified ID, give warning
+    if( length(not_found) > 0 ){
+        warning(
+            "\nAnalyses not found for the following ", type, ": '",
+            paste(not_found, collapse = "', '"), "'", call. = FALSE)
+    }
+    return(analysis_ids)
+}
+
+# This function gets IDs type "type_from" as input and tries to fetch
+# corresponding IDs type "type_to".
+# based on those studies or samples.
+.get_all_analyses_ids <- function(
+        client, ids, type_from, type_to, show.messages,
+        use.cache = useCache(client), ...){
+    #
+    if( !.is_a_bool(use.cache) ){
+        stop(
+            "'use.cache' must be a single boolean value", call. = FALSE)
+    }
+    #
+    # Loop through accessions
+    analysis_ids <- llply(ids, function(id){
+        # Get URL address of results that were found. For instance, URL address
+        # of analyses based on study ID/accession
+        url <- .mgnify_get_x_for_y(
+            client, id, type_from, type_to, use.cache = use.cache,
+            ...)
+        # Check whether results were found or not
+        res <- NULL
+        if( !is.null(url) ){
             # Get data
-            jsondat <- .mgnify_retrieve_json(
-                client, complete_url = accurl, use.cache = use.cache,
+            json <- .mgnify_retrieve_json(
+                client, complete_url = url, use.cache = use.cache,
                 max.hits = NULL, ...)
-            # Just need the accession ID
-            res <- lapply(jsondat, function(x) x$id)
-        } else {
-            res <- accurl
-            warning("\nAnalyses not found for studies ", x, call. = FALSE)
-        }
-        # Add accession as name. There might be multiple analyses for each
-        # accession. This helps to determine which analyses belong to which
-        # study.
-        if( length(res) > 0 ){
-            names(res) <- rep(x, length(res))
-        }
-        return(res)
-    }, .progress=show.messages)
-    res <- unlist(analyses_accessions)
-    return(res)
-}
-
-# Get analysis accessions based on sample accessions
-.mgnify_analyses_from_samples <- function(
-        client, accession, use.cache = useCache(client),
-        show.messages = verbose(client), ...){
-    # Input check
-    if( !.is_a_bool(use.cache) ){
-        stop(
-            "'use.cache' must be a single boolean value", call. = FALSE)
-    }
-    if( !.is_a_bool(show.messages) ){
-        stop(
-            "'show.messages' must be a single boolean value.", call. = FALSE)
-    }
-    show.messages <- ifelse(show.messages, "text", "none")
-    #
-    # Give message about progress
-    if( show.messages == "text" ){
-        message("Fetching analyses...")
-    }
-    # Loop over sample accessions
-    analyses_accessions <- llply(as.list(accession), function(x){
-        accurl <- .mgnify_get_x_for_y(
-            client, x, "samples", "analyses", use.cache = use.cache, ...)
-        # For some reason, it appears you "sometimes" have to go from study
-        # to runs to analyses. Need to query this with the API people...
-        if( is.null(accurl) ){
-            temp <- .mgnify_analyses_from_samples_based_on_runs(
-                client, x, use.cache, ...)
-        } else {
-            jsondat <- .mgnify_retrieve_json(
-                client, complete_url = accurl, use.cache = use.cache, ...)
-            # Just need the accession ID
-            temp <- lapply(jsondat, function(x) x$id)
-        }
-        # Add accession as name. There might be multiple analyses for each
-        # accession. This helps to determine which analyses belong to which
-        # study.
-        if( length(temp) > 0 ){
-            names(temp) <- rep(x, length(temp))
-        }
-        return(temp)
-        }, .progress = show.messages)
-    res <- unlist(analyses_accessions)
-    return(res)
-}
-
-# Get analysis accessions based on runs or assemblies
-.mgnify_analyses_from_samples_based_on_runs <- function(
-        client, x, use.cache = useCache(client), ...){
-    # Input check
-    if( !.is_a_bool(use.cache) ){
-        stop(
-            "'use.cache' must be a single boolean value", call. = FALSE)
-    }
-    #
-    # Get urö for runs
-    runurl <- .mgnify_get_x_for_y(
-        client, x, "samples","runs", use.cache = use.cache, ...)
-    if(is.null(runurl)){
-        warning("\nAnalyses not found for samples ", x, call. = FALSE)
-        return(runurl)
-    }
-    # If found, get data for runs
-    jsondat <- .mgnify_retrieve_json(
-        client, complete_url = runurl, use.cache = use.cache, ...)
-    # Get accession ID for the runs
-    run_accs <- lapply(jsondat, function(y) y$id)
-    # Loop through runs
-    analyses_accessions <- lapply(as.list(run_accs), function(z){
-        # Get data url of related analyses
-        accurl <- .mgnify_get_x_for_y(
-            client, z, "runs","analyses", use.cache = use.cache, ...)
-        # If no data was found, end the searching.
-        if( is.null(accurl) ){
-            return(accurl)
-        }
-        # Get data of those analyses
-        jsondat <- .mgnify_retrieve_json(
-            client, complete_url = accurl, use.cache = use.cache, ...)
-        # Now... if jsondat is empty, it means we couldn't find an
-        # analysis for this run. This is known to occur when an assembly
-        # has been harvested (or something like that). There may be
-        # other cases as well. Anyway, what we'll do is go try and look
-        # for an assembly->analysis entry instead.
-        if(length(jsondat) == 0){
-            # Get url addresses for assemblies based on runs
-            assemurl <- .mgnify_get_x_for_y(
-                client, z, "runs","assemblies", use.cache = use.cache, ...)
-            # Get data on those assemblies
-            jsondat <- .mgnify_retrieve_json(
-                client, complete_url = assemurl, use.cache = use.cache, ...)
-            # Get accession IDs for assemblies
-            assemids <- lapply(jsondat, function(x) x$id)
-            if(length(assemids) > 0){
-                # Assumes that there's only one assembly ID per run...
-                # I hope that's okay.
-                # Get analyses based on assemblies
-                accurl <- .mgnify_get_x_for_y(
-                    client, assemids[[1]], "assemblies", "analyses",
-                    use.cache = use.cache, ...)
-                # Get the data on analyses
-                jsondat <- .mgnify_retrieve_json(
-                    client, complete_url = accurl, use.cache = use.cache, ...)
-            } else{
-                # If we've got to this point, I give up - just return an empty
-                # list...
-                warning(
-                    "\nFailed to find an analysis for sample ", x,
-                    call. = FALSE)
+            # We need just the accession ID
+            res <- lapply(json, function(x) x$id) |> unlist()
+            # Add accession as name. There might be multiple analyses for each
+            # accession. This helps to determine which analyses belong to which
+            # study.
+            if( length(res) > 0 ){
+                names(res) <- rep(id, length(res))
             }
         }
-        # Get analyses IDs
-        if( !is.null(jsondat) ){
-            temp <- lapply(jsondat, function(x) x$id)
-        } else{
-            temp <- NULL
-        }
-        return(temp)
-    })
-    analyses_accessions <- unlist(analyses_accessions)
+        return(res)
+    }, .progress = show.messages)
+    # Create a vector from results
+    analysis_ids <- analysis_ids |> unlist()
+    return(analysis_ids)
 }
