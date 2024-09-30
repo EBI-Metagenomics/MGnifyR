@@ -107,8 +107,8 @@ MgnifyClient <- function(
     ############################# INPUT CHECK END ##############################
     # Get the url address
     url <- .get_url_address(...)
-    # Authentication token is NA as default
-    authtok <- NA_character_
+    # Authentication token is NULL as default
+    authtok <- NULL
     # Check to see if we're going to try and get an authentication token:
     if (!is.null(username) && !is.null(password)){
         # Fetch username vs password data from database

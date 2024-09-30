@@ -233,7 +233,7 @@ setMethod("searchFile", signature = c(x = "MgnifyClient"), function(
         }
         # If there's an error we need to make sure the cache file isn't written
         # - by default it seems it is.
-        res <- GET(url, write_disk(file_path, overwrite = TRUE))
+        res <- GET(url, write_disk(file_path, overwrite = TRUE), progress())
         # If the file was not successfully downloaded
         if( res$status_code != 200 ){
             # Remove the downloaded file
