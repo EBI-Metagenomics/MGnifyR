@@ -16,7 +16,7 @@ Description:
     in R. The package can be used to import microbial data for instance into
     TreeSummarizedExperiment (TreeSE). In TreeSE format, the data is directly
     compatible with miaverse framework.
-biocViews: Infrastructure, DataImport, Metagenomics
+biocViews: Infrastructure, DataImport, Metagenomics, Microbiome, MicrobiomeData
 License: Artistic-2.0 | file LICENSE
 Encoding: UTF-8
 Depends:
