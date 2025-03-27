@@ -61,16 +61,16 @@ For more detailed instructions read the associated function help and vignette (`
 library(MGnifyR)
 
 # Set up the MGnify client instance
-mgclnt <- MgnifyClient(usecache = TRUE, cache_dir = '/tmp/MGnify_cache')
+mg <- MgnifyClient(useCache = TRUE, cacheDir = '/tmp/MGnify_cache')
 
 # Retrieve the list of analyses associated with a study
-accession_list <- searchAnalysis(mgclnt, "studies", "MGYS00005058", usecache = TRUE)
+accession_list <- searchAnalysis(mg, "studies", "MGYS00005058")
 
 # Download all associated study/sample and analysis metadata
-meta_dataframe <- getMetadata(mgclnt, accession_list, usecache = TRUE)
+meta_dataframe <- getMetadata(mg, accession_list)
 
 # Convert analyses outputs to a single `MultiAssayExperiment` object
-mae <- getResult(mgclnt, meta_dataframe$analysis_accession, usecache = TRUE)
+mae <- getResult(mg, meta_dataframe$analysis_accession)
 mae
 ```
 
