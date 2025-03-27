@@ -8,8 +8,8 @@
 <title>R interface to EBI MGnify metagenomics resource • MGnifyR</title>
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
-<link href="deps/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="R interface to EBI MGnify metagenomics resource">
 <meta name="description" content="Utility package to facilitate integration and analysis of EBI MGnify data in R. The package can be used to import microbial data for instance into TreeSummarizedExperiment (TreeSE). In TreeSE format, the data is directly compatible with miaverse framework.">
 <meta property="og:description" content="Utility package to facilitate integration and analysis of EBI MGnify data in R. The package can be used to import microbial data for instance into TreeSummarizedExperiment (TreeSE). In TreeSE format, the data is directly compatible with miaverse framework.">
@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">MGnifyR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.31</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -95,16 +95,16 @@
 <pre><code><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/EBI-Metagenomics/MGnifyR" class="external-link">MGnifyR</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Set up the MGnify client instance</span></span>
-<span><span class="va">mgclnt</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/MgnifyClient.html">MgnifyClient</a></span><span class="op">(</span>usecache <span class="op">=</span> <span class="cn">TRUE</span>, cache_dir <span class="op">=</span> <span class="st">'/tmp/MGnify_cache'</span><span class="op">)</span></span>
+<span><span class="va">mg</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/MgnifyClient.html">MgnifyClient</a></span><span class="op">(</span>useCache <span class="op">=</span> <span class="cn">TRUE</span>, cacheDir <span class="op">=</span> <span class="st">'/tmp/MGnify_cache'</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Retrieve the list of analyses associated with a study</span></span>
-<span><span class="va">accession_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/searchAnalysis.html">searchAnalysis</a></span><span class="op">(</span><span class="va">mgclnt</span>, <span class="st">"studies"</span>, <span class="st">"MGYS00005058"</span>, usecache <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">accession_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/searchAnalysis.html">searchAnalysis</a></span><span class="op">(</span><span class="va">mg</span>, <span class="st">"studies"</span>, <span class="st">"MGYS00005058"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Download all associated study/sample and analysis metadata</span></span>
-<span><span class="va">meta_dataframe</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/getMetadata.html">getMetadata</a></span><span class="op">(</span><span class="va">mgclnt</span>, <span class="va">accession_list</span>, usecache <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">meta_dataframe</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/getMetadata.html">getMetadata</a></span><span class="op">(</span><span class="va">mg</span>, <span class="va">accession_list</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Convert analyses outputs to a single `MultiAssayExperiment` object</span></span>
-<span><span class="va">mae</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/getResult.html">getResult</a></span><span class="op">(</span><span class="va">mgclnt</span>, <span class="va">meta_dataframe</span><span class="op">$</span><span class="va">analysis_accession</span>, usecache <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">mae</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/getResult.html">getResult</a></span><span class="op">(</span><span class="va">mg</span>, <span class="va">meta_dataframe</span><span class="op">$</span><span class="va">analysis_accession</span><span class="op">)</span></span>
 <span><span class="va">mae</span></span></code></pre>
 </div>
 </div>

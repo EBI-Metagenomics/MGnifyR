@@ -1,8 +1,8 @@
-pandoc: '3.3'
+pandoc: 3.6.3
 pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
   MGnify_course: MGnify_course.html
   MGnifyR_long: MGnifyR_long.html
   MGnifyR: MGnifyR.html
-last_built: 2024-09-27T12:13Z
+last_built: 2025-03-27T08:45Z
