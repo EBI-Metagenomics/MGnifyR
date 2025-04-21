@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">MGnifyR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -59,7 +59,7 @@
 
       <h1>MGnifyR, extended vignette</h1>
             
-            <h4 data-toc-skip class="date">2025-03-27</h4>
+            <h4 data-toc-skip class="date">2025-04-21</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/EBI-Metagenomics/MGnifyR/blob/devel/vignettes/MGnifyR_long.Rmd" class="external-link"><code>vignettes/MGnifyR_long.Rmd</code></a></small>
       <div class="d-none name"><code>MGnifyR_long.Rmd</code></div>
@@ -271,12 +271,12 @@ make sure ostensibly numeric entries are converted properly.</p>
 </h3>
 <p>Having selected the analyses we wish to examine further,
 <code><a href="../reference/getResult.html">getResult()</a></code> is used to both download associated OTU tables
-and taxonomy, and join all results into a single <em><a href="https://bioconductor.org/packages/3.21/TreeSummarizedExperiment" class="external-link">TreeSummarizedExperiment</a></em>
+and taxonomy, and join all results into a single <em><a href="https://bioconductor.org/packages/3.22/TreeSummarizedExperiment" class="external-link">TreeSummarizedExperiment</a></em>
 (<code>TreeSE</code>) object. TreeSE is becoming a defacto standard for
 taxonomic abundance <em>munging</em> in R. <code>TreeSE</code> objects
 integrate abundance, taxonomic, phylogenetic, sample and sequence data
 into a single object, with powerful facilities for filtering, processing
-and plotting the results. Compared to <em><a href="https://bioconductor.org/packages/3.21/phyloseq" class="external-link">phyloseq</a></em>
+and plotting the results. Compared to <em><a href="https://bioconductor.org/packages/3.22/phyloseq" class="external-link">phyloseq</a></em>
 object, <code>TreeSE</code> is more scalable and capable for efficient
 data analysis.</p>
 <p><code>miaverse</code> framework is developed around
@@ -294,7 +294,7 @@ output types from the function documentation.</p>
 <code class="sourceCode R"><span><span class="va">tse</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getResult.html">getResult</a></span><span class="op">(</span><span class="va">mg</span>, accession <span class="op">=</span> <span class="va">analyses_accessions</span>, get.func <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">tse</span></span></code></pre></div>
-<p><code>TreeSE</code> object is uniquely positioned to support <em><a href="https://bioconductor.org/packages/3.21/SummarizedExperiment" class="external-link">SummarizedExperiment</a></em>-based
+<p><code>TreeSE</code> object is uniquely positioned to support <em><a href="https://bioconductor.org/packages/3.22/SummarizedExperiment" class="external-link">SummarizedExperiment</a></em>-based
 microbiome data manipulation and visualization. Moreover, it enables
 access to <code>miaverse</code> tools. For example, we can estimate
 diversity of samples.</p>
@@ -422,7 +422,7 @@ the default <code>bulk.dl</code> will be switch to
 <code class="sourceCode R"><span><span class="va">mae</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getResult.html">getResult</a></span><span class="op">(</span><span class="va">mg</span>, <span class="va">all_accessions</span>, bulk.dl <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">mae</span></span></code></pre></div>
-<p>For metagenomic samples, the result is <em><a href="https://bioconductor.org/packages/3.21/MultiAssayExperiment" class="external-link">MultiAssayExperiment</a></em>
+<p>For metagenomic samples, the result is <em><a href="https://bioconductor.org/packages/3.22/MultiAssayExperiment" class="external-link">MultiAssayExperiment</a></em>
 (<code>MAE</code>) which links multiple <code>TreeSE</code> objects into
 one dataset. These <code>TreeSE</code> objects include taxonomic
 profiling data along with functional data in unique objects. Each
