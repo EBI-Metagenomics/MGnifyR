@@ -131,7 +131,7 @@ mg
 #> [1] TRUE
 #> 
 #> Slot "cacheDir":
-#> [1] "/tmp/RtmpYKIBDi/.MGnifyR_cache"
+#> [1] "/tmp/RtmpweaDEy/.MGnifyR_cache"
 #> 
 #> Slot "showWarnings":
 #> [1] FALSE
@@ -462,7 +462,7 @@ sessionInfo()
 #>  [1] miaViz_1.19.1                   ggraph_2.2.2                   
 #>  [3] scater_1.39.1                   ggplot2_4.0.1                  
 #>  [5] scuttle_1.21.0                  mia_1.19.2                     
-#>  [7] MGnifyR_1.7.1                   TreeSummarizedExperiment_2.19.0
+#>  [7] MGnifyR_1.7.0                   TreeSummarizedExperiment_2.19.0
 #>  [9] Biostrings_2.79.4               XVector_0.51.0                 
 #> [11] SingleCellExperiment_1.33.0     MultiAssayExperiment_1.37.2    
 #> [13] SummarizedExperiment_1.41.0     Biobase_2.71.0                 
