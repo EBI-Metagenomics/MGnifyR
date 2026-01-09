@@ -1,0 +1,152 @@
+# Get microbial and/or functional profiling data for a list of accessions
+
+Get microbial and/or functional profiling data for a list of accessions
+
+## Usage
+
+``` r
+getResult(x, ...)
+
+# S4 method for class 'MgnifyClient'
+getResult(
+  x,
+  accession,
+  get.taxa = TRUE,
+  get.func = TRUE,
+  output = "TreeSE",
+  ...
+)
+```
+
+## Arguments
+
+- x:
+
+  A `MgnifyClient` object.
+
+- ...:
+
+  optional arguments:
+
+  - **taxa.su** A single character value specifying which taxa subunit
+    results should be selected. Currently, taxonomy assignments in the
+    MGnify pipelines rely on rRNA matches to existing databases
+    (GreenGenes and SILVA), with later pipelines checking both the SSU
+    and LSU portions of the rRNA sequence. `taxa.su` allows then
+    selection of either the Small subunit (`"SSU"`) or Large subunit
+    (`"LSU"`) results in the final `TreeSummarizedExperiment` object.
+    Older pipeline versions do not report results for both subunits, and
+    thus for some accessions this value will have no effect.
+
+  - **get.tree** A single boolean value specifying whether to include
+    available phylogenetic trees in the `TreeSummarizedExperiment`
+    object. Available when `get.taxa = TRUE`. (By default:
+    `get.tree = TRUE`)
+
+  - **as.df** A single boolean value enabled when `output = "list"`. The
+    argument specifies whether return functional data as a named list
+    (one entry per element in the output list) of data.frames, with each
+    data.frame containing results for all requested accessions. If
+    `FALSE`, the function returns a list of lists, each element
+    consisting of results for a single accession. (By default:
+    `as.df = TRUE`)
+
+  - **bulk.dl** A single boolean value specifying should MGnifyR attempt
+    to speed things up by downloading relevant studies TSV results and
+    only extracting the required columns, rather than using the JSONAPI
+    interface. When getting results where multiple accessions share the
+    same study, this option may result in significantly faster
+    processing. However, there appear to be (quite a few) cases in the
+    database where the TSV result columns do NOT match the expected
+    accession names. This will hopefully be fixed in the future, but for
+    now `bulk.dl` defaults to TRUE. When it does work, it can be orders
+    of magnitude more efficient. (By default: `buld_dl = TRUE`)
+
+- accession:
+
+  A single character value or a vector of character values specifying
+  accession IDs to return results for.
+
+- get.taxa:
+
+  A boolean value specifying whether to retrieve taxonomy data (OTU
+  table). See `taxa.su` for specifying taxonomy type. The data is
+  retrieved as BIOM files which are subsequently parsed. (By default:
+  `get.taxa = TRUE`)
+
+- get.func:
+
+  A boolean value or a single character value or a vector character
+  values specifying functional analysis types to retrieve. If
+  `get.func = TRUE`, all available functional datatypes are retrieved,
+  and if `FALSE`, functional data is not retrieved. The current list of
+  available types is `"antismash-gene-clusters"`, `"go-slim"`,
+  `"go-terms"`, `"interpro-identifiers"`, `"taxonomy"`,
+  `"taxonomy-itsonedb"`, `"taxonomy-itsunite"`, `"taxonomy-lsu"`, and
+  `"taxonomy-ssu"`. Note that depending on the particular analysis type,
+  pipeline version etc., not all functional results will be available.
+  Furthermore, taxonomy is also available via `get.func`, and loading
+  the data might be considerable faster if `bulk.dl = TRUE`. However,
+  phylogeny is available only via `get.taxa`. (By default:
+  `get.func = TRUE`)
+
+- output:
+
+  A single character value specifying the format of an output. Must be
+  one of the following options: `"TreeSE"`, `"list"`, or `"phyloseq"`.
+  (By default: `output = "TreeSE"`)
+
+## Value
+
+If only taxonomy data is retrieved, the result is returned in
+`TreeSummarizedExperiment` object by default. The result can also be
+returned as a `phyloseq` object or as a list of `data.frames`. Note that
+`phyloseq` object can include only one phylogenetic tree meaning that
+some taxa might be lost when data is subsetted based on tree.
+
+When functional data is retrieved in addition to taxonomy data, the
+result is returned as a `MultiAssayExperiment` object. Other options are
+a list containing `phyloseq` object and `data.frames` or just
+`data.frames`.
+
+Functional data can be returned as a `MultiAssayExperiment` object or as
+a list of `data.frames`.
+
+## Details
+
+Given a set of analysis accessions and collection of annotation types,
+the function queries the MGNify API and returns the results. This
+function is convenient for retrieving highly structured (analysis vs
+counts) data on certain instances. For example, BIOM files are
+downloaded automatically. If you want just to retrieve raw data from the
+database, see `getData`.
+
+## See also
+
+[`getData`](getData.md)
+
+## Examples
+
+``` r
+# Create a client object
+mg <- MgnifyClient(useCache = FALSE)
+
+# Get OTU tables as TreeSE
+accession_list <- c("MGYA00377505")
+tse <- getResult(mg, accession_list, get.func=FALSE, get.taxa=TRUE)
+#> Fetching taxonomy data...
+#>   |                                                                              |                                                                      |   0%  |                                                                              |======================================================================| 100%
+#> Merging with full join...
+#> 1/1
+#> 
+
+if (FALSE) { # \dontrun{
+# Get functional data along with OTU tables as MAE
+mae <- getResult(mg, accession_list, get.func=TRUE, get.taxa=TRUE)
+
+# Get same data as list
+list <- getResult(
+    mg, accession_list, get.func=TRUE, get.taxa=TRUE, output = "list",
+    as.df = TRUE, use.cache = TRUE)
+} # }
+```
