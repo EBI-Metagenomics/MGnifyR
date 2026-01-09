@@ -15,13 +15,13 @@ Source:
 [`DESCRIPTION`](https://github.com/EBI-Metagenomics/MGnifyR/blob/devel/DESCRIPTION)
 
 Borman T, Allen B, Lahti L (2026). *MGnifyR: R interface to EBI MGnify
-metagenomics resource*. R package version 1.5.2,
+metagenomics resource*. R package version 1.7.1,
 <https://github.com/EBI-Metagenomics/MGnifyR>.
 
     @Manual{,
       title = {MGnifyR: R interface to EBI MGnify metagenomics resource},
       author = {Tuomas Borman and Ben Allen and Leo Lahti},
       year = {2026},
-      note = {R package version 1.5.2},
+      note = {R package version 1.7.1},
       url = {https://github.com/EBI-Metagenomics/MGnifyR},
     }
