@@ -138,13 +138,12 @@ setMethod(
     return(res)
 }
 
-#' @importFrom tidyjson spread_all
 #' @importFrom dplyr bind_rows
 .convert_json_list_to_df <- function(result){
     # Create data.frames from individual search results
     res <- lapply(result, function(x){
         if( !is.null(x) ){
-            x <- as.data.frame(spread_all(x))
+            x <- .flatten_single_result_to_df(x)
         }
         return(x)
     })
@@ -161,5 +160,30 @@ setMethod(
         nams <- rep( names(result), each = lengths(result))
         res[[ col_name ]] <- nams
     }
+    return(res)
+}
+
+.flatten_single_result_to_df <- function(x){
+    # First, get all unique names across all records
+    all_names <- lapply(x, function(rec)
+        names(unlist(rec, recursive = TRUE, use.names = TRUE))) |>
+        unlist() |>
+        unique()
+
+    # Then extract the data from nested list
+    res <- lapply(seq_along(x), function(i){
+        rec <- x[[i]]
+        vals <- unlist(rec, recursive = TRUE, use.names = TRUE)
+        # Make sure all columns exist, fill missing with NA
+        df <- setNames(vals[all_names], all_names) |>
+            as.list() |>
+            as.data.frame(, stringsAsFactors = FALSE)
+
+        df[["document.id"]] <- i
+        return(df)
+    })
+    # Combine to single df
+    res <- do.call(rbind, res)
+
     return(res)
 }
