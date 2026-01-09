@@ -1,6 +1,6 @@
 Package: MGnifyR
 Type: Package
-Version: 1.5.1
+Version: 1.5.2
 Authors@R:
     c(person(given = "Tuomas", family = "Borman", role = c("aut", "cre"),
              email = "tuomas.v.borman@utu.fi",
@@ -35,8 +35,7 @@ Imports:
     reshape2,
     S4Vectors,
     urltools,
-    utils,
-    tidyjson
+    utils
 Suggests:
     biomformat,
     broom,
