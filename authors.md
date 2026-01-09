@@ -12,7 +12,7 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/EBI-Metagenomics/MGnifyR/blob/rm_tidyjson/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/EBI-Metagenomics/MGnifyR/blob/devel/DESCRIPTION)
 
 Borman T, Allen B, Lahti L (2026). *MGnifyR: R interface to EBI MGnify
 metagenomics resource*. R package version 1.5.2,

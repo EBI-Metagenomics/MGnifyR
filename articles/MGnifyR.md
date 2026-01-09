@@ -131,7 +131,7 @@ mg
 #> [1] TRUE
 #> 
 #> Slot "cacheDir":
-#> [1] "/tmp/RtmprR0Eqp/.MGnifyR_cache"
+#> [1] "/tmp/Rtmp8vyLH6/.MGnifyR_cache"
 #> 
 #> Slot "showWarnings":
 #> [1] FALSE
