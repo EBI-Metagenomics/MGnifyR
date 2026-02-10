@@ -13,7 +13,7 @@
 #' specifying accession IDs to return results for.
 #'
 #' @param output A single character value specifying the format of an output.
-#' Must be one of the following options: \code{"TreeSE"}, \code{"list"}, or 
+#' Must be one of the following options: \code{"TreeSE"}, \code{"list"}, or
 #' \code{"phyloseq"}. (By default: \code{output = "TreeSE"})
 #'
 #' @param get.taxa A boolean value specifying whether to retrieve taxonomy
@@ -37,7 +37,7 @@
 #'
 #' @param ... optional arguments:
 #' \itemize{
-#'   
+#'
 #'   \item \strong{taxa.su} A single character value specifying which taxa
 #'   subunit results should be selected. Currently, taxonomy assignments in the
 #'   MGnify pipelines rely on rRNA matches to existing databases
@@ -455,14 +455,14 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
     group_type <- unlist(group_type)
     biom_position <- grepl(taxa.su, group_type)
     if( sum(biom_position) == 0 ){
-        if( show.warnings ){
-            warning(
-                "\nUnable to locate requested taxonomy type ", taxa.su, ". ",
-                "This is likely due to the current analysis having been ",
-                "performed on an older version of the MGnify pipeline. ",
-                "The available BIOM file will be used instead.",
-                call. = FALSE)
-        }
+        stop(
+            "\nUnable to locate requested taxonomy type '", taxa.su, "'. ",
+            "This is likely due to the current analysis having been ",
+            "performed on an older version of the MGnify pipeline. ",
+            "Use 'taxa.su' to specify the type. ",
+            "The available BIOM files include '",
+            paste0(group_type, collapse = "', '"), "'.",
+            call. = FALSE)
         biom_url <- available_biom_files[[1]]$links$self
     } else {
         biom_url <- available_biom_files[biom_position][[1]]$links$self
