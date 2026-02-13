@@ -53,7 +53,7 @@ Suggests:
 URL: https://github.com/EBI-Metagenomics/MGnifyR
 BugReports: https://github.com/EBI-Metagenomics/MGnifyR/issues
 VignetteBuilder: knitr
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.3
 Collate:
     'utils.R'
     'MgnifyClient.R'
