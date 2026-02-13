@@ -45,7 +45,7 @@ getResult(x, ...)
   expected accession names. This will hopefully be fixed in the future,
   but for now \code{bulk.dl} defaults to TRUE. When it does work, it can
   be orders of magnitude more efficient.
-  (By default: \code{buld.dl = TRUE})
+  (By default: \code{bulk.dl = TRUE})
 
 }}
 

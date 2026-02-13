@@ -60,7 +60,7 @@
 #'   expected accession names. This will hopefully be fixed in the future,
 #'   but for now \code{bulk.dl} defaults to TRUE. When it does work, it can
 #'   be orders of magnitude more efficient.
-#'   (By default: \code{buld.dl = TRUE})
+#'   (By default: \code{bulk.dl = TRUE})
 #'
 #' }
 #'
@@ -317,9 +317,9 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
     # get all unique taxonomic analysis names dynamically
     analysis_types <- unique(unlist(lapply(tse_list, names)))
     # Convert the nesting
-    grouped <- lapply(analysis_types, function(type) {
-        res <- lapply(names(tse_list), function(acc_name) {
-            if (type %in% names(tse_list[[acc_name]])) {
+    grouped <- lapply(analysis_types, function(type){
+        res <- lapply(names(tse_list), function(acc_name){
+            if( type %in% names(tse_list[[acc_name]]) ){
                 tse_list[[acc_name]][[type]]
             } else {
                 NULL
@@ -533,7 +533,8 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
     }
     if( length(taxa_to_fetch) == 0L ){
         warning(
-            "\nUnable to locate requested taxonomy type '", taxa.su, "'. ",
+            "\nUnable to locate requested, following taxonomy types: '",
+             paste0(taxa.su, collapse = "', '"), "'. ",
             "This is likely due to the current analysis having been ",
             "performed on an older version of the MGnify pipeline. ",
             "Use 'taxa.su' to specify the type. ",
