@@ -50,7 +50,7 @@ getResult(
     database where the TSV result columns do NOT match the expected
     accession names. This will hopefully be fixed in the future, but for
     now `bulk.dl` defaults to TRUE. When it does work, it can be orders
-    of magnitude more efficient. (By default: `buld.dl = TRUE`)
+    of magnitude more efficient. (By default: `bulk.dl = TRUE`)
 
 - accession:
 
