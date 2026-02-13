@@ -12,7 +12,7 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/EBI-Metagenomics/MGnifyR/blob/informative_error/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/EBI-Metagenomics/MGnifyR/blob/devel/DESCRIPTION)
 
 Borman T, Allen B, Lahti L (2026). *MGnifyR: R interface to EBI MGnify
 metagenomics resource*. R package version 1.7.2,
