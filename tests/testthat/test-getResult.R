@@ -29,7 +29,7 @@ test_that("getResult", {
 
     # Require internet access
     skip_if(httr::http_error("https://www.ebi.ac.uk/metagenomics/api/v1"))
-    
+
     # # To reduce the time used to build the package, these tests are commented
     # # Test that only functional data is fetched based on certain accession ID.
     # # Get data as list of data.frames
@@ -48,9 +48,9 @@ test_that("getResult", {
     res <- getResult(mg, "MGYA00097621", get.func = TRUE, verbose = FALSE)
     expect_is(res, "MultiAssayExperiment")
     expect_is(res[[1]], "TreeSummarizedExperiment")
-    expect_true(!is.null(rowTree(res[["microbiota"]])))
+    expect_true(!is.null(rowTree(res[["Taxonomic analysis"]])))
     expect_true(is.matrix(assay(res[[1]])))
-    expect_true("microbiota" %in% names(res) &&
+    expect_true("Taxonomic analysis" %in% names(res) &&
                     "go-terms" %in% names(res))
     expect_true(is.matrix(assay(res[[2]])))
     expect_true(is.matrix(assay(res[[3]])))

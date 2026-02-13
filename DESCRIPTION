@@ -1,6 +1,6 @@
 Package: MGnifyR
 Type: Package
-Version: 1.7.1
+Version: 1.7.2
 Authors@R:
     c(person(given = "Tuomas", family = "Borman", role = c("aut", "cre"),
              email = "tuomas.v.borman@utu.fi",
@@ -53,7 +53,7 @@ Suggests:
 URL: https://github.com/EBI-Metagenomics/MGnifyR
 BugReports: https://github.com/EBI-Metagenomics/MGnifyR/issues
 VignetteBuilder: knitr
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.3
 Collate:
     'utils.R'
     'MgnifyClient.R'

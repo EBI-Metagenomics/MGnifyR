@@ -10,7 +10,7 @@ getResult(x, ...)
 \S4method{getResult}{MgnifyClient}(
   x,
   accession,
-  get.taxa = TRUE,
+  get.taxa = "SSU",
   get.func = TRUE,
   output = "TreeSE",
   ...
@@ -21,16 +21,6 @@ getResult(x, ...)
 
 \item{...}{optional arguments:
 \itemize{
-  
-  \item \strong{taxa.su} A single character value specifying which taxa
-  subunit results should be selected. Currently, taxonomy assignments in the
-  MGnify pipelines rely on rRNA matches to existing databases
-  (GreenGenes and SILVA), with later pipelines checking both the SSU and
-  LSU portions of the rRNA sequence. \code{taxa.su} allows then selection
-  of either the Small subunit (\code{"SSU"}) or Large subunit (\code{"LSU"})
-  results in the final \code{TreeSummarizedExperiment} object. Older pipeline
-  versions do not report results for both subunits, and thus for some
-  accessions this value will have no effect.
 
   \item \strong{get.tree} A single boolean value specifying whether to
   include available phylogenetic trees in the \code{TreeSummarizedExperiment}
@@ -55,7 +45,7 @@ getResult(x, ...)
   expected accession names. This will hopefully be fixed in the future,
   but for now \code{bulk.dl} defaults to TRUE. When it does work, it can
   be orders of magnitude more efficient.
-  (By default: \code{buld_dl = TRUE})
+  (By default: \code{bulk.dl = TRUE})
 
 }}
 
@@ -63,18 +53,17 @@ getResult(x, ...)
 specifying accession IDs to return results for.}
 
 \item{get.taxa}{A boolean value specifying whether to retrieve taxonomy
-data (OTU table). See \code{taxa.su} for specifying taxonomy type. The
+data or character value specifying the type. If \code{bulk.dl=FALSE}, the
 data is retrieved as BIOM files which are subsequently parsed.
-(By default: \code{get.taxa = TRUE})}
+(By default: \code{get.taxa = "SSU"})}
 
 \item{get.func}{A boolean value or a single character value or a vector
 character values specifying functional analysis types to retrieve. If
 \code{get.func = TRUE}, all available functional datatypes are retrieved,
 and if \code{FALSE}, functional data is not retrieved. The current list of
 available types is \code{"antismash-gene-clusters"}, \code{"go-slim"},
-\code{"go-terms"}, \code{"interpro-identifiers"}, \code{"taxonomy"},
-\code{"taxonomy-itsonedb"}, \code{"taxonomy-itsunite"}, \code{"taxonomy-lsu"},
-and \code{"taxonomy-ssu"}. Note that depending on the particular analysis
+\code{"go-terms"}, and \code{"interpro-identifiers"}. Note that depending on
+the particular analysis
 type, pipeline version etc., not all functional results will be available.
 Furthermore, taxonomy is also available via \code{get.func}, and loading
 the data might be considerable faster if \code{bulk.dl = TRUE}. However,
@@ -82,7 +71,7 @@ phylogeny is available only via \code{get.taxa}.
 (By default: \code{get.func = TRUE})}
 
 \item{output}{A single character value specifying the format of an output.
-Must be one of the following options: \code{"TreeSE"}, \code{"list"}, or 
+Must be one of the following options: \code{"TreeSE"}, \code{"list"}, or
 \code{"phyloseq"}. (By default: \code{output = "TreeSE"})}
 }
 \value{
@@ -116,7 +105,7 @@ mg <- MgnifyClient(useCache = FALSE)
 
 # Get OTU tables as TreeSE
 accession_list <- c("MGYA00377505")
-tse <- getResult(mg, accession_list, get.func=FALSE, get.taxa=TRUE)
+tse <- getResult(mg, accession_list, get.func=FALSE)
 
 \dontrun{
 # Get functional data along with OTU tables as MAE

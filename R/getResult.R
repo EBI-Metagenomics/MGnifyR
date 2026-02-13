@@ -13,22 +13,21 @@
 #' specifying accession IDs to return results for.
 #'
 #' @param output A single character value specifying the format of an output.
-#' Must be one of the following options: \code{"TreeSE"}, \code{"list"}, or 
+#' Must be one of the following options: \code{"TreeSE"}, \code{"list"}, or
 #' \code{"phyloseq"}. (By default: \code{output = "TreeSE"})
 #'
 #' @param get.taxa A boolean value specifying whether to retrieve taxonomy
-#' data (OTU table). See \code{taxa.su} for specifying taxonomy type. The
+#' data or character value specifying the type. If \code{bulk.dl=FALSE}, the
 #' data is retrieved as BIOM files which are subsequently parsed.
-#' (By default: \code{get.taxa = TRUE})
+#' (By default: \code{get.taxa = "SSU"})
 #'
 #' @param get.func A boolean value or a single character value or a vector
 #' character values specifying functional analysis types to retrieve. If
 #' \code{get.func = TRUE}, all available functional datatypes are retrieved,
 #' and if \code{FALSE}, functional data is not retrieved. The current list of
 #' available types is \code{"antismash-gene-clusters"}, \code{"go-slim"},
-#' \code{"go-terms"}, \code{"interpro-identifiers"}, \code{"taxonomy"},
-#' \code{"taxonomy-itsonedb"}, \code{"taxonomy-itsunite"}, \code{"taxonomy-lsu"},
-#' and \code{"taxonomy-ssu"}. Note that depending on the particular analysis
+#' \code{"go-terms"}, and \code{"interpro-identifiers"}. Note that depending on
+#' the particular analysis
 #' type, pipeline version etc., not all functional results will be available.
 #' Furthermore, taxonomy is also available via \code{get.func}, and loading
 #' the data might be considerable faster if \code{bulk.dl = TRUE}. However,
@@ -37,16 +36,6 @@
 #'
 #' @param ... optional arguments:
 #' \itemize{
-#'   
-#'   \item \strong{taxa.su} A single character value specifying which taxa
-#'   subunit results should be selected. Currently, taxonomy assignments in the
-#'   MGnify pipelines rely on rRNA matches to existing databases
-#'   (GreenGenes and SILVA), with later pipelines checking both the SSU and
-#'   LSU portions of the rRNA sequence. \code{taxa.su} allows then selection
-#'   of either the Small subunit (\code{"SSU"}) or Large subunit (\code{"LSU"})
-#'   results in the final \code{TreeSummarizedExperiment} object. Older pipeline
-#'   versions do not report results for both subunits, and thus for some
-#'   accessions this value will have no effect.
 #'
 #'   \item \strong{get.tree} A single boolean value specifying whether to
 #'   include available phylogenetic trees in the \code{TreeSummarizedExperiment}
@@ -71,7 +60,7 @@
 #'   expected accession names. This will hopefully be fixed in the future,
 #'   but for now \code{bulk.dl} defaults to TRUE. When it does work, it can
 #'   be orders of magnitude more efficient.
-#'   (By default: \code{buld_dl = TRUE})
+#'   (By default: \code{bulk.dl = TRUE})
 #'
 #' }
 #'
@@ -96,7 +85,7 @@
 #'
 #' # Get OTU tables as TreeSE
 #' accession_list <- c("MGYA00377505")
-#' tse <- getResult(mg, accession_list, get.func=FALSE, get.taxa=TRUE)
+#' tse <- getResult(mg, accession_list, get.func=FALSE)
 #'
 #' \dontrun{
 #' # Get functional data along with OTU tables as MAE
@@ -121,7 +110,8 @@ NULL
 #' @include AllClasses.R AllGenerics.R MgnifyClient.R utils.R
 #' @export
 setMethod("getResult", signature = c(x = "MgnifyClient"), function(
-        x, accession, get.taxa = TRUE, get.func = TRUE, output = "TreeSE", ...){
+        x, accession, get.taxa = "SSU", get.func = TRUE, output = "TreeSE",
+        ...){
     ############################### INPUT CHECK ################################
     if( !(.is_non_empty_character(accession)) ){
         stop(
@@ -129,28 +119,79 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
             "character values specifying the MGnify accession identifier.",
             call. = FALSE)
     }
-    if( !.is_a_bool(get.taxa) ){
-        stop(
-            "'get.taxa' must be TRUE or FALSE.",
+
+    if( !(.is_a_bool(get.taxa) || is.character(get.taxa)) ){
+        stop("'get.taxa' must be TRUE or FALSE or character value.",
             call. = FALSE)
     }
-    if( !(.is_a_bool(get.func) ||
-        (is.character(get.func) &&
-        all(get.func %in% names(.analyses_results_type_parsers)))) ){
-        stop(
-            "'get.func' must be TRUE or FALSE or a single character value ",
-            "or a list of character values specifying functional analysis ",
-            "types.", call. = FALSE)
+    if( !(.is_a_bool(get.func) || is.character(get.func)) ){
+        stop("'get.func' must be TRUE or FALSE or character value.",
+            call. = FALSE)
     }
-    # Get all values, if TRUE
-    if(!is.character(get.func) && get.func){
-        get.func <- names(.analyses_results_type_parsers)
+    # If TRUE, fetch all the types
+    all_types <- names(.analyses_results_type_parsers)
+    supported_taxa <- all_types[ grepl("taxonomy", all_types) ]
+    supported_func <- all_types[ !grepl("taxonomy", all_types) ]
+    if( .is_a_bool(get.taxa) && get.taxa ){
+        get.taxa <- supported_taxa
+    }
+    if( .is_a_bool(get.func) && get.func ){
+        get.func <- supported_func
+    }
+    # Match the value with supported types
+    if( is.character(get.taxa) ){
+        get.taxa <- vapply(supported_taxa, function(x)
+            grepl(paste0(get.taxa, collapse = "|"), x, ignore.case = TRUE),
+            logical(1L))
+        get.taxa <- get.taxa[ get.taxa ] |> names()
+    }
+    if( length(get.taxa) == 0L ){
+        stop("'get.taxa' must be one of the following values: '",
+            paste0(supported_taxa, collapse = "', '"), "'", call. = FALSE)
+    }
+    if( is.character(get.func) ){
+        get.func <- vapply(supported_func, function(x)
+            grepl(paste0(get.func, collapse = "|"), x, ignore.case = TRUE),
+            logical(1L))
+        get.func <- get.func[ get.func ] |> names()
+    }
+
+    if( length(get.func) == 0L ){
+        stop("'get.func' must be one of the following values: '",
+            paste0(supported_func, collapse = "', '"), "'", call. = FALSE)
     }
     if( !(length(output) == 1 && output %in% c("list", "phyloseq", "TreeSE")) ){
         stop(
             "'output' must be a 'TreeSE', 'list' or 'phyloseq'.", call. = FALSE)
     }
     ############################# INPUT CHECK END ##############################
+    result <- .fetch_results(x, accession, get.func, get.taxa, output, ...)
+    # Convert results to specified output type
+    if( output != "list" ){
+        result <- .convert_results_to_object(result, output)
+    }
+    return(result)
+})
+
+################################ HELP FUNCTIONS ################################
+
+.fetch_results <- function(
+        client, accession, get.func, get.taxa, output,
+        use.cache = useCache(client), bulk.dl = FALSE, ...){
+    if( !.is_a_bool(use.cache) ){
+        stop("'use.cache' must be a single boolean value.", call. = FALSE)
+    }
+    if( !.is_a_bool(bulk.dl) ){
+        stop("'bulk.dl' must be TRUE or FALSE.", call. = FALSE)
+    }
+    # If user specifies to fetch functional results from API instead of from
+    # tsv files as bulk, the taxonomy data is available when fetching functional
+    # data.
+    if( bulk.dl ){
+        get.func <- c(get.func, get.taxa)
+        get.taxa <- FALSE
+    }
+
     # Get functional data if user specified
     if( is.character(get.func) ){
         # If single value, create a vector from it
@@ -158,72 +199,60 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
             get.func <- c(get.func)
         }
         func_res <- .mgnify_get_analyses_results(
-            client = x, accession = accession, retrievelist = get.func,
-            output = output, ...)
+            client = client, accession = accession, retrievelist = get.func,
+            output = output, bulk.dl = bulk.dl, ...)
+        # Put "taxonomy" first, then other taxonomy-related items, then the rest
+        taxonomy_first <- intersect("taxonomy", names(func_res))
+        taxonomy_related <- setdiff(
+            grep("taxonomy|phylo-tax", names(func_res), value = TRUE),
+            "taxonomy"
+        )
+        others <- setdiff(names(func_res), c(taxonomy_first, taxonomy_related))
+        func_res <- func_res[c(taxonomy_first, taxonomy_related, others)]
+        # In the old version, the "taxonomy" was called microbiota
+        names(func_res)[ names(func_res) == "taxonomy" ] <- "microbiota"
     } else{
         func_res <- NULL
     }
     # Get microbial profiling data
-    if( get.taxa ){
+    if( is.character(get.taxa) ){
         # The fetched BIOM files are parsed with mia::importBIOM, however,
         # mia does not import biomformat, it is only in its "suggests". This is
         # why we have to check that biomformat is available
         .require_package("biomformat")
         #
         taxa_res <- .mgnify_get_analyses_treese(
-            client = x, accession = accession, ...)
+            client = client, accession = accession, get.taxa = get.taxa, ...)
     } else{
         taxa_res <- NULL
     }
-    # Convert results to specified output type
-    if( output != "list" ){
-        result <- .convert_results_to_object(
-            taxa_res, func_res, output)
-    } else{
-        # Create a final result list, if output is specified to be a list
-        result <- append(taxa_res, func_res)
-    }
-    return(result)
-})
 
-################################ HELP FUNCTIONS ################################
+    # The sample_data has been corrupted by doing the merge (names get messed
+    # up and duplicated), so just regrab it with another lapply/rbind
+    col_data <- lapply(accession, function(x){
+        .mgnify_get_single_analysis_metadata(client, x, use.cache = use.cache)})
+
+    result <- list(taxa = taxa_res, func = func_res, col_data = col_data)
+
+    return(result)
+}
 
 # Convert results to TreeSE, MultiAssayExperiment or phyloseq.
 #' @importFrom methods is
 #' @importFrom dplyr bind_rows
-.convert_results_to_object <- function(taxa_res, func_res, output){
+.convert_results_to_object <- function(res, output){
+    taxa_res <- res[["taxa"]]
+    func_res <- res[["func"]]
+    col_data <- res[["col_data"]]
     result <- NULL
     # If there are microbial profiling data, convert it to TreeSE or phyloseq
     if( !is.null(taxa_res) ){
-        # Get TreeSE objects
-        tse_list <- taxa_res$tse_objects
-        # Get sample metadata
-        col_data <- taxa_res$sample_metadata
-        # If some results were not found, remove them
-        ind <- !unlist(lapply(tse_list, is.null))
-        # If there are samples left after subsetting
-        if( any(ind) ){
-            tse_list <- tse_list[ind]
-            col_data <- col_data[ind]
-            # Bind sample metadata to one table
-            col_data <- do.call(bind_rows, col_data)
-            col_data <- DataFrame(col_data)
-            # Merge individual TreeSEs into one
-            result <- mergeSEs(
-                tse_list, assay.type = "counts", missing_values = 0)
-            # Order the sample metadata
-            col_data <- col_data[ colnames(result), , drop = FALSE]
-            # Add sample metadata to the object
-            colData(result) <- col_data
-            # If user wants phyloseq, convert TreeSE
-            if( output == "phyloseq" ){
-                result <- makePhyloseqFromTreeSE(result)
-            }
-        } else{
-            warning(
-                "\nNo taxonomy data was found for the dataset.",
-                call. = FALSE)
-        }
+        # Group based on analysis types
+        tse_list <- .group_tse_list(taxa_res)
+        # Merge data into TreeSE
+        result <- lapply(tse_list, function(x){
+            .merge_into_tse(x, col_data, output)
+        })
     }
     # If there are functional data
     if( !is.null(func_res) ){
@@ -238,52 +267,98 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
                 # Create TreeSE from functional data
                 func_res <- lapply(
                     func_res,
-                    .create_TreeSE_from_func_data, tse = result)
+                    .create_TreeSE_from_func_data,
+                    tse = result[[1L]], col_data = col_data)
                 # Get colData from microbial profiling data TreeSE,
                 # if it is included
                 args <- list()
                 # If taxa data is included get all the data. Otherwise, get only
                 # functional annotations.
                 if( !is.null(result) ){
-                    col_data <- colData(result)
-                    result <- list(microbiota = result)
-                    exp_list <- c(result, func_res)
+                    result <- c(result, func_res)
                 } else {
-                    exp_list <- func_res
-                    col_data <- NULL
-                }
-
-                # If there are more than 1 experiments, create MAE
-                if( length(exp_list) > 1 ){
-                    exp_list <- ExperimentList(exp_list)
-                    result <- MultiAssayExperiment(exp_list)
-                    # If sample metadata is not empty
-                    if( !is.null(col_data) ){
-                        # Ensure that colData has all samples present in dataset
-                        all_samples <- unique(unlist(colnames(result)))
-                        col_data <- col_data[match(
-                            all_samples, rownames(col_data)), ]
-                        rownames(col_data) <- all_samples
-                        # And then add to mae
-                        colData(result) <- col_data
-                    }
-                } else{
-                    # If there are only 1 experiment, give it as it is
-                    result <- exp_list[[1]]
+                    result <- func_res
                 }
             } else{
                 # If user wants output as a phyloseq, give a list of one
                 # phyloseq object and functional data
-                result <- list(microbiota = result)
                 result <- c(result, func_res)
                 # If there are only one experiment, take it out from the list
                 if( length(result) == 1 ){
                     result <- result[[1]]
                 }
             }
-        } else{
-            warning("\nNo functional data found for the dataset.", call. = FALSE)
         }
+    }
+    # If there are more than 1 experiments, create MAE
+    if( output == "TreeSE" && length(result) > 1 ){
+        col_data <- colData(result[[1L]])
+        result <- ExperimentList(result)
+        result <- MultiAssayExperiment(result)
+        # If sample metadata is not empty
+        if( !is.null(col_data) ){
+            # Ensure that colData has all samples present in dataset
+            all_samples <- unique(unlist(colnames(result)))
+            col_data <- col_data[match(
+                all_samples, rownames(col_data)), ]
+            rownames(col_data) <- all_samples
+            # And then add to mae
+            colData(result) <- col_data
+        }
+    } else if( output == "TreeSE" ){
+        # If there are only 1 experiment, give it as it is
+        result <- result[[1]]
+    }
+    return(result)
+}
+
+# Convert a list of accession-type to type-accession
+.group_tse_list <- function(tse_list){
+    # get all unique taxonomic analysis names dynamically
+    analysis_types <- unique(unlist(lapply(tse_list, names)))
+    # Convert the nesting
+    grouped <- lapply(analysis_types, function(type){
+        res <- lapply(names(tse_list), function(acc_name){
+            if( type %in% names(tse_list[[acc_name]]) ){
+                tse_list[[acc_name]][[type]]
+            } else {
+                NULL
+            }
+        })
+        names(res) <- names(tse_list)
+        res <- Filter(Negate(is.null), res)
+        return(res)
+    })
+    names(grouped) <- analysis_types
+    return(grouped)
+}
+
+.merge_into_tse <- function(tse_list, col_data, output){
+    result <- NULL
+    # If some results were not found, remove them
+    ind <- !unlist(lapply(tse_list, is.null))
+    # If there are samples left after subsetting
+    if( any(ind) ){
+        tse_list <- tse_list[ind]
+        col_data <- col_data[ind]
+        # Merge individual TreeSEs into one
+        result <- mergeSEs(
+            tse_list, assay.type = "counts", missing_values = 0)
+        # Bind sample metadata to one table
+        col_data <- do.call(bind_rows, col_data)
+        col_data <- DataFrame(col_data)
+        # Order the sample metadata
+        col_data <- col_data[ colnames(result), , drop = FALSE]
+        # Add sample metadata to the object
+        colData(result) <- col_data
+        # If user wants phyloseq, convert TreeSE
+        if( output == "phyloseq" ){
+            result <- makePhyloseqFromTreeSE(result)
+        }
+    } else{
+        warning(
+            "\nNo taxonomy data was found for the dataset.",
+            call. = FALSE)
     }
     return(result)
 }
@@ -291,7 +366,7 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
 # Create a TreeSE from single functional data data.frame
 #' @importFrom S4Vectors SimpleList
 #' @importFrom dplyr %>% mutate_all na_if
-.create_TreeSE_from_func_data <- function(x, tse_microbiota){
+.create_TreeSE_from_func_data <- function(x, tse_microbiota, col_data){
     # If data was provided
     if( !is.null(x) ){
         # Get assay
@@ -330,17 +405,22 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
         # Get arguments for TreeSE
         args <- list(assays = assays, rowData = row_data)
         # Get sample metadata
-        if( !is.null(tse_microbiota) ){
-            col_data <- colData(tse_microbiota)
-            # Order coldata.
-            col_data <- col_data[match(colnames(assay), rownames(col_data)), ]
-            # Add colnames to ensure that all rows have name (if some samples
-            # were missing from the col_data)
-            rownames(col_data) <- colnames(assay)
-            args$colData <- col_data
-        }
+        # Bind sample metadata to one table
+        col_data <- do.call(bind_rows, col_data)
+        col_data <- DataFrame(col_data)
+        # Order coldata.
+        col_data <- col_data[match(colnames(assay), rownames(col_data)), ]
+        # Add colnames to ensure that all rows have name (if some samples
+        # were missing from the col_data)
+        rownames(col_data) <- colnames(assay)
+        args$colData <- col_data
         # Create TreeSE
         tse <- do.call(TreeSummarizedExperiment, args)
+        # If there are taxonomy ranks, the data includes taxonomy. Replace
+        # names with tidier format.
+        if( length(taxonomyRanks(tse)) > 1L ){
+            rownames(tse) <- getTaxonomyLabels(tse)
+        }
     } else{
         tse <- NULL
     }
@@ -350,12 +430,12 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
 # Helper function for importing microbial profiling data.
 .mgnify_get_analyses_treese <- function(
         client, accession, use.cache = useCache(client),
-        show.messages = verbose(client), taxa.su = "SSU", ...){
+        show.messages = verbose(client), taxa.su = get.taxa,
+        get.taxa = "SSU", ...){
     ############################### INPUT CHECK ################################
-    if( !(.is_non_empty_string(taxa.su)) ){
+    if( !(.is_a_bool(taxa.su) || is.character(taxa.su)) ){
         stop(
-            "'taxa.su' must be a single character value specifying taxa ",
-            "subunit.",
+            "'taxa.su' must be TRUE or FALSE.",
             call. = FALSE)
     }
     if( !.is_a_bool(use.cache) ){
@@ -368,22 +448,13 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
     }
     show.messages <- ifelse(show.messages, "text", "none")
     ############################# INPUT CHECK END ##############################
-    # Give message about progress
-    if( show.messages =="text" ){
-        message("Fetching taxonomy data...")
-    }
     # Get TreeSE objects
+    names(accession) <- accession
     tse_list <- llply(accession, function(x) {
             .mgnify_get_single_analysis_treese(
                 client, x, use.cache = use.cache, taxa.su = taxa.su, ...)
     }, .progress = show.messages)
-    # The sample_data has been corrupted by doing the merge (names get messed
-    # up and duplicated), so just regrab it with another lapply/rbind
-    col_data <- lapply(accession, function(x){
-        .mgnify_get_single_analysis_metadata(client, x, use.cache = use.cache)})
-    # If user wants result as list
-    result <- list(tse_objects=tse_list, sample_metadata = col_data)
-    return(result)
+    return(tse_list)
 }
 
 ################################ HELP FUNCTIONS ################################
@@ -453,20 +524,27 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
     group_type <- lapply(
         available_biom_files, function(x){ x$attributes$`group-type` } )
     group_type <- unlist(group_type)
-    biom_position <- grepl(taxa.su, group_type)
-    if( sum(biom_position) == 0 ){
-        if( show.warnings ){
-            warning(
-                "\nUnable to locate requested taxonomy type ", taxa.su, ". ",
-                "This is likely due to the current analysis having been ",
-                "performed on an older version of the MGnify pipeline. ",
-                "The available BIOM file will be used instead.",
-                call. = FALSE)
-        }
-        biom_url <- available_biom_files[[1]]$links$self
-    } else {
-        biom_url <- available_biom_files[biom_position][[1]]$links$self
+    names(available_biom_files) <- group_type
+    taxa_to_fetch <- available_biom_files
+    if( !.is_a_bool(taxa.su) ){
+        pattern <- gsub("taxonomy-", "", paste0(taxa.su, collapse = "|"))
+        biom_position <- grepl(pattern, group_type, ignore.case = TRUE)
+        taxa_to_fetch <- available_biom_files[biom_position]
     }
+    if( length(taxa_to_fetch) == 0L ){
+        warning(
+            "\nUnable to locate requested, following taxonomy types: '",
+             paste0(taxa.su, collapse = "', '"), "'. ",
+            "This is likely due to the current analysis having been ",
+            "performed on an older version of the MGnify pipeline. ",
+            "Use 'taxa.su' to specify the type. ",
+            "The available BIOM files include '",
+            paste0(group_type, collapse = "', '"), "'. Retrieving all of them.",
+            call. = FALSE)
+        taxa_to_fetch <- available_biom_files
+    }
+    biom_url <- lapply(
+        taxa_to_fetch, function(x) x[["links"]][["self"]]) |> unlist()
 
     # Can specify a separate dir for saving biom files, otherwise they end up
     # in the cacheDir(client) folder, under "bioms"
@@ -475,6 +553,22 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
         dir.create(
             downloadDIR, recursive = TRUE, showWarnings = show.warnings)
     }
+
+    # Fetch BIOM files
+    tse_list <- lapply(biom_url, function(url){
+        .fetch_single_biom_with_tree(
+            biom_url = url, downloadDIR = downloadDIR, use.cache = use.cache,
+            clear.cache = clear.cache, get.tree = get.tree,
+            analysis_downloads = analysis_downloads, accession = accession)
+    })
+    return(tse_list)
+}
+
+# This function fetches a single BIOM file based on provided BIOM url and
+# generates TreeSE from it.
+.fetch_single_biom_with_tree <- function(
+        biom_url, downloadDIR, use.cache, clear.cache, get.tree,
+        analysis_downloads, accession){
     # Clear out any ?params after the main location - don't need them for this
     parameters(biom_url) <- NULL
     # Get the file name and path to it in local machine
@@ -521,8 +615,8 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
     # If user wants also phylogenetic tree
     if(get.tree){
         # Is there a tree?
-        data_types <- lapply(
-            analysis_downloads, function(x){x$attributes$`description`$label})
+        data_types <- lapply(analysis_downloads, function(x){
+            x[["attributes"]][["description"]][["label"]]})
         data_types <- unlist(data_types)
         tvec <- grepl('Phylogenetic tree', data_types)
         if( any(tvec) ){
@@ -595,10 +689,6 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
     }
     show.messages <- ifelse(show.messages, "text", "none")
     ############################# INPUT CHECK END ##############################
-    # Give message about progress
-    if( show.messages == "text" ){
-        message("Fetching functional data...")
-    }
     # Get functional results
     all_results <- llply(accession, function(x){
         .mgnify_get_single_analysis_results(
@@ -787,7 +877,8 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
     }
     # Check mem.cache.name
     if( !( length(mem.cache.name) == 1 && is.character(mem.cache.name) ) ){
-      stop("'mem.cache.name' must be a single character value.", call. = FALSE)
+        stop("'mem.cache.name' must be a single character value.",
+            call. = FALSE)
     }
     if( exists(mem.cache.name) && use.mem.cache ){
         mgnify_memory_cache <- get(mem.cache.name)
