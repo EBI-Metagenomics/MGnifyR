@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">MGnifyR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.7.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.7.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,7 +34,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Get microbial and/or functional profiling data for a list of accessions</h1>
-      <small class="dont-index">Source: <a href="https://github.com/EBI-Metagenomics/MGnifyR/blob/devel/R/AllGenerics.R" class="external-link"><code>R/AllGenerics.R</code></a>, <a href="https://github.com/EBI-Metagenomics/MGnifyR/blob/devel/R/getResult.R" class="external-link"><code>R/getResult.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/EBI-Metagenomics/MGnifyR/blob/informative_error/R/AllGenerics.R" class="external-link"><code>R/AllGenerics.R</code></a>, <a href="https://github.com/EBI-Metagenomics/MGnifyR/blob/informative_error/R/getResult.R" class="external-link"><code>R/getResult.R</code></a></small>
       <div class="d-none name"><code>getResult.Rd</code></div>
     </div>
 
@@ -50,7 +50,7 @@
 <span><span class="fu">getResult</span><span class="op">(</span></span>
 <span>  <span class="va">x</span>,</span>
 <span>  <span class="va">accession</span>,</span>
-<span>  get.taxa <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  get.taxa <span class="op">=</span> <span class="st">"SSU"</span>,</span>
 <span>  get.func <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  output <span class="op">=</span> <span class="st">"TreeSE"</span>,</span>
 <span>  <span class="va">...</span></span>
@@ -66,16 +66,7 @@
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>optional arguments:</p><ul><li><p><strong>taxa.su</strong> A single character value specifying which taxa
-  subunit results should be selected. Currently, taxonomy assignments in the
-  MGnify pipelines rely on rRNA matches to existing databases
-  (GreenGenes and SILVA), with later pipelines checking both the SSU and
-  LSU portions of the rRNA sequence. <code>taxa.su</code> allows then selection
-  of either the Small subunit (<code>"SSU"</code>) or Large subunit (<code>"LSU"</code>)
-  results in the final <code>TreeSummarizedExperiment</code> object. Older pipeline
-  versions do not report results for both subunits, and thus for some
-  accessions this value will have no effect.</p></li>
-<li><p><strong>get.tree</strong> A single boolean value specifying whether to
+<dd><p>optional arguments:</p><ul><li><p><strong>get.tree</strong> A single boolean value specifying whether to
   include available phylogenetic trees in the <code>TreeSummarizedExperiment</code>
   object. Available when <code>get.taxa = TRUE</code>.
   (By default: <code>get.tree = TRUE</code>)</p></li>
@@ -96,7 +87,7 @@
   expected accession names. This will hopefully be fixed in the future,
   but for now <code>bulk.dl</code> defaults to TRUE. When it does work, it can
   be orders of magnitude more efficient.
-  (By default: <code>buld_dl = TRUE</code>)</p></li>
+  (By default: <code>buld.dl = TRUE</code>)</p></li>
 </ul></dd>
 
 
@@ -107,9 +98,9 @@ specifying accession IDs to return results for.</p></dd>
 
 <dt id="arg-get-taxa">get.taxa<a class="anchor" aria-label="anchor" href="#arg-get-taxa"></a></dt>
 <dd><p>A boolean value specifying whether to retrieve taxonomy
-data (OTU table). See <code>taxa.su</code> for specifying taxonomy type. The
+data or character value specifying the type. If <code>bulk.dl=FALSE</code>, the
 data is retrieved as BIOM files which are subsequently parsed.
-(By default: <code>get.taxa = TRUE</code>)</p></dd>
+(By default: <code>get.taxa = "SSU"</code>)</p></dd>
 
 
 <dt id="arg-get-func">get.func<a class="anchor" aria-label="anchor" href="#arg-get-func"></a></dt>
@@ -118,9 +109,8 @@ character values specifying functional analysis types to retrieve. If
 <code>get.func = TRUE</code>, all available functional datatypes are retrieved,
 and if <code>FALSE</code>, functional data is not retrieved. The current list of
 available types is <code>"antismash-gene-clusters"</code>, <code>"go-slim"</code>,
-<code>"go-terms"</code>, <code>"interpro-identifiers"</code>, <code>"taxonomy"</code>,
-<code>"taxonomy-itsonedb"</code>, <code>"taxonomy-itsunite"</code>, <code>"taxonomy-lsu"</code>,
-and <code>"taxonomy-ssu"</code>. Note that depending on the particular analysis
+<code>"go-terms"</code>, and <code>"interpro-identifiers"</code>. Note that depending on
+the particular analysis
 type, pipeline version etc., not all functional results will be available.
 Furthermore, taxonomy is also available via <code>get.func</code>, and loading
 the data might be considerable faster if <code>bulk.dl = TRUE</code>. However,
@@ -168,8 +158,7 @@ If you want just to retrieve raw data from the database, see <code>getData</code
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Get OTU tables as TreeSE</span></span></span>
 <span class="r-in"><span><span class="va">accession_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"MGYA00377505"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">tse</span> <span class="op">&lt;-</span> <span class="fu">getResult</span><span class="op">(</span><span class="va">mg</span>, <span class="va">accession_list</span>, get.func<span class="op">=</span><span class="cn">FALSE</span>, get.taxa<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Fetching taxonomy data...</span>
+<span class="r-in"><span><span class="va">tse</span> <span class="op">&lt;-</span> <span class="fu">getResult</span><span class="op">(</span><span class="va">mg</span>, <span class="va">accession_list</span>, get.func<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |======================================================================| 100%</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Merging with full join...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 1/1</span>

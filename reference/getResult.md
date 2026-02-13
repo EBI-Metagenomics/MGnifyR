@@ -11,7 +11,7 @@ getResult(x, ...)
 getResult(
   x,
   accession,
-  get.taxa = TRUE,
+  get.taxa = "SSU",
   get.func = TRUE,
   output = "TreeSE",
   ...
@@ -27,16 +27,6 @@ getResult(
 - ...:
 
   optional arguments:
-
-  - **taxa.su** A single character value specifying which taxa subunit
-    results should be selected. Currently, taxonomy assignments in the
-    MGnify pipelines rely on rRNA matches to existing databases
-    (GreenGenes and SILVA), with later pipelines checking both the SSU
-    and LSU portions of the rRNA sequence. `taxa.su` allows then
-    selection of either the Small subunit (`"SSU"`) or Large subunit
-    (`"LSU"`) results in the final `TreeSummarizedExperiment` object.
-    Older pipeline versions do not report results for both subunits, and
-    thus for some accessions this value will have no effect.
 
   - **get.tree** A single boolean value specifying whether to include
     available phylogenetic trees in the `TreeSummarizedExperiment`
@@ -60,7 +50,7 @@ getResult(
     database where the TSV result columns do NOT match the expected
     accession names. This will hopefully be fixed in the future, but for
     now `bulk.dl` defaults to TRUE. When it does work, it can be orders
-    of magnitude more efficient. (By default: `buld_dl = TRUE`)
+    of magnitude more efficient. (By default: `buld.dl = TRUE`)
 
 - accession:
 
@@ -69,10 +59,10 @@ getResult(
 
 - get.taxa:
 
-  A boolean value specifying whether to retrieve taxonomy data (OTU
-  table). See `taxa.su` for specifying taxonomy type. The data is
+  A boolean value specifying whether to retrieve taxonomy data or
+  character value specifying the type. If `bulk.dl=FALSE`, the data is
   retrieved as BIOM files which are subsequently parsed. (By default:
-  `get.taxa = TRUE`)
+  `get.taxa = "SSU"`)
 
 - get.func:
 
@@ -81,14 +71,12 @@ getResult(
   `get.func = TRUE`, all available functional datatypes are retrieved,
   and if `FALSE`, functional data is not retrieved. The current list of
   available types is `"antismash-gene-clusters"`, `"go-slim"`,
-  `"go-terms"`, `"interpro-identifiers"`, `"taxonomy"`,
-  `"taxonomy-itsonedb"`, `"taxonomy-itsunite"`, `"taxonomy-lsu"`, and
-  `"taxonomy-ssu"`. Note that depending on the particular analysis type,
-  pipeline version etc., not all functional results will be available.
-  Furthermore, taxonomy is also available via `get.func`, and loading
-  the data might be considerable faster if `bulk.dl = TRUE`. However,
-  phylogeny is available only via `get.taxa`. (By default:
-  `get.func = TRUE`)
+  `"go-terms"`, and `"interpro-identifiers"`. Note that depending on the
+  particular analysis type, pipeline version etc., not all functional
+  results will be available. Furthermore, taxonomy is also available via
+  `get.func`, and loading the data might be considerable faster if
+  `bulk.dl = TRUE`. However, phylogeny is available only via `get.taxa`.
+  (By default: `get.func = TRUE`)
 
 - output:
 
@@ -133,8 +121,7 @@ mg <- MgnifyClient(useCache = FALSE)
 
 # Get OTU tables as TreeSE
 accession_list <- c("MGYA00377505")
-tse <- getResult(mg, accession_list, get.func=FALSE, get.taxa=TRUE)
-#> Fetching taxonomy data...
+tse <- getResult(mg, accession_list, get.func=FALSE)
 #>   |                                                                              |                                                                      |   0%  |                                                                              |======================================================================| 100%
 #> Merging with full join...
 #> 1/1
