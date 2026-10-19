@@ -19,6 +19,9 @@ class
 
 Authors:
 
+- Tuomas Borman <tuomas.v.borman@utu.fi>
+  ([ORCID](https://orcid.org/0000-0002-8563-8884))
+
 - Ben Allen <ben.allen@ncl.ac.uk>
 
 - Leo Lahti <leo.lahti@iki.fi>

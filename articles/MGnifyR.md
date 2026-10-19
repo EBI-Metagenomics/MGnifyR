@@ -129,7 +129,7 @@ this object. The following snippet creates this.
 `#> [1] TRUE`\
 `#> `\
 `#> Slot "cacheDir":`\
-`#> [1] "/tmp/RtmpHuiKuk/.MGnifyR_cache"`\
+`#> [1] "/tmp/RtmpnCg0UT/.MGnifyR_cache"`\
 `#> `\
 `#> Slot "showWarnings":`\
 `#> [1] FALSE`\
@@ -427,7 +427,7 @@ The function returns a path where the file is stored.
 `#>  [1] miaViz_1.21.7                   ggraph_2.2.2                   `\
 `#>  [3] scater_1.41.2                   ggplot2_4.0.3                  `\
 `#>  [5] scuttle_1.23.2                  mia_1.21.11                    `\
-`#>  [7] MGnifyR_1.9.0                   TreeSummarizedExperiment_2.21.0`\
+`#>  [7] MGnifyR_1.9.1                   TreeSummarizedExperiment_2.21.0`\
 `#>  [9] Biostrings_2.81.9               XVector_0.53.0                 `\
 `#> [11] SingleCellExperiment_1.35.2     MultiAssayExperiment_1.39.1    `\
 `#> [13] SummarizedExperiment_1.43.0     Biobase_2.73.2                 `\
