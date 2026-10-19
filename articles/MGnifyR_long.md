@@ -27,19 +27,15 @@ tutorial book that offers valuable guidance and support.
 `MGnifyR` is currently hosted on GitHub, and can be installed using via
 `devtools`. `MGnifyR` should be built using the following snippet.
 
-``` r
-
-BiocManager::install("MGnifyR")
-```
+\
+`BiocManager``::`[`install`](https://bioconductor.github.io/BiocManager/reference/install.html)`(``"MGnifyR"``)`
 
 ## Load `MGnifyR` package
 
 Once installed, `MGnifyR` is made available in the usual way.
 
-``` r
-
-library(MGnifyR)
-```
+\
+[`library`](https://rdrr.io/r/base/library.html)`(`[`MGnifyR`](https://github.com/EBI-Metagenomics/MGnifyR)`)`
 
 ## Create a client
 
@@ -48,11 +44,9 @@ track of the JSONAPI url, disk cache location and user access tokens.
 Thus the first thing to do when starting any analysis is to instantiate
 this object. The following snippet creates this.
 
-``` r
-
-mg <- MgnifyClient()
-mg
-```
+\
+`mg`` ``<-`` `[`MgnifyClient`](../reference/MgnifyClient.md)`(``)`\
+`mg`
 
 It’s recommended that local caching is enabled with `useCache = TRUE`.
 Queries to the MGnify API can be quite slow, particularly when
@@ -69,11 +63,9 @@ creation, causing `MGnifyR` to attempt retrieval of an authentication
 token from the API. Doing so gives access to non-public results, such as
 those currently under an author imposed embargo period.
 
-``` r
-
-mg <- MgnifyClient(
-    username = "Webin-username", password = "your-password", useCache = TRUE)
-```
+\
+`mg`` ``<-`` `[`MgnifyClient`](../reference/MgnifyClient.md)`(`\
+`    username ``=`` ``"Webin-username"``, password ``=`` ``"your-password"``, useCache ``=`` ``TRUE``)`
 
 ## Functions for fetching the data
 
@@ -114,25 +106,21 @@ parameters are given in [`help(doQuery)`](../reference/doQuery.md). By
 way of example though, supposing we are interested in amplicon Illumina
 samples from the arctic, we might try the following query:
 
-``` r
-
-northpolar <- doQuery(
-    mg, "samples", latitude_gte=60.0, experiment_type="amplicon",
-    biome_name="Soil", instrument_platform = "Illumina", max.hits = 10)
-
-head(northpolar)
-```
+\
+`northpolar`` ``<-`` `[`doQuery`](../reference/doQuery.md)`(`\
+`    ``mg``, ``"samples"``, latitude_gte``=``60.0``, experiment_type``=``"amplicon"``,`\
+`    biome_name``=``"Soil"``, instrument_platform ``=`` ``"Illumina"``, max.hits ``=`` ``10``)`\
+\
+[`head`](https://rdrr.io/r/utils/head.html)`(``northpolar``)`
 
 Specifying an `accession` parameter will restrict results to just those
 matching that particular entry, be it a study, sample or run. For
 example, to retrieve information for study “MGYS00002891”:
 
-``` r
-
-study_samples <- doQuery(mg, "studies", accession="MGYS00002891")
-
-head(study_samples)
-```
+\
+`study_samples`` ``<-`` `[`doQuery`](../reference/doQuery.md)`(``mg``, ``"studies"``, accession``=``"MGYS00002891"``)`\
+\
+[`head`](https://rdrr.io/r/utils/head.html)`(``study_samples``)`
 
 ### Find relevent **analyses** accessions
 
@@ -153,13 +141,11 @@ conversion - [`searchAnalysis()`](../reference/searchAnalysis.md).
 Following on from our previous search, we have a list of `study`
 accessions, so to convert to corresponding `analyses` we use:
 
-``` r
-
-analyses_accessions <- searchAnalysis(
-    mg, type="studies", accession = study_samples$accession)
-
-head(analyses_accessions)
-```
+\
+`analyses_accessions`` ``<-`` `[`searchAnalysis`](../reference/searchAnalysis.md)`(`\
+`    ``mg``, type``=``"studies"``, accession ``=`` ``study_samples``$``accession``)`\
+\
+[`head`](https://rdrr.io/r/utils/head.html)`(``analyses_accessions``)`
 
 A useful side effect of the above call is that some attribute metadata
 for each sample has now been retrieved and stored in the local cache.
@@ -182,12 +168,10 @@ duplicates) corresponding to the samples previously found. We use the
 `run` and `study` metadata, which we then filter as required to include
 only the rows we want.
 
-``` r
-
-analyses_metadata <- getMetadata(mg, analyses_accessions)
-
-head(analyses_metadata)
-```
+\
+`analyses_metadata`` ``<-`` `[`getMetadata`](../reference/getMetadata.md)`(``mg``, ``analyses_accessions``)`\
+\
+[`head`](https://rdrr.io/r/utils/head.html)`(``analyses_metadata``)`
 
 The resulting data.frame has columns with names prefixed with their
 source type. For example, “sample_xxx” columns correspond to metadata
@@ -208,26 +192,24 @@ data from MGnifyR is initially retrieved as type `character`, and it’s
 up to the user to make sure ostensibly numeric entries are converted
 properly.
 
-``` r
-
-known_depths <- analyses_metadata[
-    !is.na(as.numeric(analyses_metadata$sample_depth)), ]
-# How many are left?
-dim(known_depths)
-```
+\
+`known_depths`` ``<-`` ``analyses_metadata``[`\
+`    ``!`[`is.na`](https://rdrr.io/r/base/NA.html)`(`[`as.numeric`](https://rdrr.io/r/base/numeric.html)`(``analyses_metadata``$``sample_depth``)``)``, ``]`\
+`# How many are left?`\
+[`dim`](https://rdrr.io/r/base/dim.html)`(``known_depths``)`
 
 ### Fetch microbiome data
 
 Having selected the analyses we wish to examine further,
 [`getResult()`](../reference/getResult.md) is used to both download
 associated OTU tables and taxonomy, and join all results into a single
-*[TreeSummarizedExperiment](https://bioconductor.org/packages/3.23/TreeSummarizedExperiment)*
+*[TreeSummarizedExperiment](https://bioconductor.org/packages/3.24/TreeSummarizedExperiment)*
 (`TreeSE`) object. TreeSE is becoming a defacto standard for taxonomic
 abundance *munging* in R. `TreeSE` objects integrate abundance,
 taxonomic, phylogenetic, sample and sequence data into a single object,
 with powerful facilities for filtering, processing and plotting the
 results. Compared to
-*[phyloseq](https://bioconductor.org/packages/3.23/phyloseq)* object,
+*[phyloseq](https://bioconductor.org/packages/3.24/phyloseq)* object,
 `TreeSE` is more scalable and capable for efficient data analysis.
 
 `miaverse` framework is developed around `TreeSE` data container. It
@@ -243,48 +225,40 @@ does not include function predictions,
 a `TreeSE` by default. See other output types from the function
 documentation.
 
-``` r
-
-tse <- getResult(mg, accession = analyses_accessions, get.func = FALSE)
-
-tse
-```
+\
+`tse`` ``<-`` `[`getResult`](../reference/getResult.md)`(``mg``, accession ``=`` ``analyses_accessions``, get.func ``=`` ``FALSE``)`\
+\
+`tse`
 
 `TreeSE` object is uniquely positioned to support
-*[SummarizedExperiment](https://bioconductor.org/packages/3.23/SummarizedExperiment)*-based
+*[SummarizedExperiment](https://bioconductor.org/packages/3.24/SummarizedExperiment)*-based
 microbiome data manipulation and visualization. Moreover, it enables
 access to `miaverse` tools. For example, we can estimate diversity of
 samples.
 
-``` r
+\
+[`library`](https://rdrr.io/r/base/library.html)`(`[`mia`](https://microbiome.github.io/mia/)`)`\
+\
+`tse`` ``<-`` `[`estimateDiversity`](https://microbiome.github.io/mia/reference/deprecate.html)`(``tse``, index ``=`` ``"shannon"``)`\
+\
+[`library`](https://rdrr.io/r/base/library.html)`(`[`scater`](http://bioconductor.org/packages/scater/)`)`\
+\
+[`plotColData`](https://rdrr.io/pkg/scater/man/plotColData.html)`(``tse``, ``"shannon"``, x ``=`` ``"sample_geo.loc.name"``)`
 
-library(mia)
-
-tse <- estimateDiversity(tse, index = "shannon")
-
-library(scater)
-
-plotColData(tse, "shannon", x = "sample_geo.loc.name")
-```
-
-``` r
-
-library(miaViz)
-
-plotAbundance(
-    tse[!is.na( rowData(tse)[["Kingdom"]] ), ],
-    rank = "Kingdom",
-    as.relative = TRUE
-    )
-```
+\
+[`library`](https://rdrr.io/r/base/library.html)`(`[`miaViz`](https://github.com/microbiome/miaViz)`)`\
+\
+[`plotAbundance`](https://rdrr.io/pkg/miaViz/man/plotAbundance.html)`(`\
+`    ``tse``[``!`[`is.na`](https://rdrr.io/r/base/NA.html)`(`` `[`rowData`](https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html)`(``tse``)``[[``"Kingdom"``]``]`` ``)``, ``]``,`\
+`    rank ``=`` ``"Kingdom"``,`\
+`    as.relative ``=`` ``TRUE`\
+`    ``)`
 
 If needed, `TreeSE` can be converted to `phyloseq`.
 
-``` r
-
-pseq <- makePhyloseqFromTreeSE(tse)
-pseq
-```
+\
+`pseq`` ``<-`` `[`makePhyloseqFromTreeSE`](https://microbiome.github.io/mia/reference/deprecate.html)`(``tse``)`\
+`pseq`
 
 #### Metagenomics
 
@@ -309,17 +283,15 @@ each study will be used. Furthermore, the intention is only to
 demonstrate the functionality of the MGnifyR package, rather than
 produce scientifically rigorous results.
 
-``` r
-
-soil <- searchAnalysis(mg, "studies", "MGYS00001447")
-human <- searchAnalysis(mg, "studies", "MGYS00001442")
-marine <- searchAnalysis(mg, "studies", "MGYS00001282")
-
-# Combine analyses
-all_accessions <- c(soil, human, marine)
-
-head(all_accessions)
-```
+\
+`soil`` ``<-`` `[`searchAnalysis`](../reference/searchAnalysis.md)`(``mg``, ``"studies"``, ``"MGYS00001447"``)`\
+`human`` ``<-`` `[`searchAnalysis`](../reference/searchAnalysis.md)`(``mg``, ``"studies"``, ``"MGYS00001442"``)`\
+`marine`` ``<-`` `[`searchAnalysis`](../reference/searchAnalysis.md)`(``mg``, ``"studies"``, ``"MGYS00001282"``)`\
+\
+`# Combine analyses`\
+`all_accessions`` ``<-`` `[`c`](https://rdrr.io/r/base/c.html)`(``soil``, ``human``, ``marine``)`\
+\
+[`head`](https://rdrr.io/r/utils/head.html)`(``all_accessions``)`
 
 The first step with this new accession list is, as previously, to
 retrieve the associated metadata using
@@ -329,13 +301,11 @@ retrieve the associated metadata using
 flexible, the column names can be a little difficult to predict, but
 examining `colnames(full_metadata)` should make things clearer.
 
-``` r
-
-full_metadata <- getMetadata(mg, all_accessions)
-
-colnames(full_metadata)
-head(full_metadata)
-```
+\
+`full_metadata`` ``<-`` `[`getMetadata`](../reference/getMetadata.md)`(``mg``, ``all_accessions``)`\
+\
+[`colnames`](https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html)`(``full_metadata``)`\
+[`head`](https://rdrr.io/r/utils/head.html)`(``full_metadata``)`
 
 From `full_metadata` we get an idea of the type of data we’re dealing
 with, and can extract useul information such as sequencing platform,
@@ -346,25 +316,23 @@ sort of normalization procedure when comparing across samples. We might
 also want to drop particularly low read coverage samples from further
 analysis.
 
-``` r
-
-# Load ggplot2 
-library(ggplot2)
-
-#Distribution of sample source material:
-table(full_metadata$`sample_environment-material`)
-
-#What sequencing machine(s) were used?
-table(full_metadata$`sample_instrument model`)
-
-# Boxplot of raw read counts:
-ggplot(
-    full_metadata, aes(x=study_accession, y=log(
-        as.numeric(`analysis_Submitted nucleotide sequences`)))) +
-    geom_boxplot(aes(group=study_accession)) +
-    theme_bw() +
-    ylab("log(submitted reads)")
-```
+\
+`# Load ggplot2 `\
+[`library`](https://rdrr.io/r/base/library.html)`(`[`ggplot2`](https://ggplot2.tidyverse.org)`)`\
+\
+`#Distribution of sample source material:`\
+[`table`](https://rdrr.io/pkg/BiocGenerics/man/table.html)`(``full_metadata``$``` `sample_environment-material` ```)`\
+\
+`#What sequencing machine(s) were used?`\
+[`table`](https://rdrr.io/pkg/BiocGenerics/man/table.html)`(``full_metadata``$``` `sample_instrument model` ```)`\
+\
+`# Boxplot of raw read counts:`\
+[`ggplot`](https://ggplot2.tidyverse.org/reference/ggplot.html)`(`\
+`    ``full_metadata``, `[`aes`](https://ggplot2.tidyverse.org/reference/aes.html)`(``x``=``study_accession``, y``=`[`log`](https://rdrr.io/r/base/Log.html)`(`\
+`        `[`as.numeric`](https://rdrr.io/r/base/numeric.html)`(``` `analysis_Submitted nucleotide sequences` ```)``)``)``)`` ``+`\
+`    `[`geom_boxplot`](https://ggplot2.tidyverse.org/reference/geom_boxplot.html)`(`[`aes`](https://ggplot2.tidyverse.org/reference/aes.html)`(``group``=``study_accession``)``)`` ``+`\
+`    `[`theme_bw`](https://ggplot2.tidyverse.org/reference/ggtheme.html)`(``)`` ``+`\
+`    `[`ylab`](https://ggplot2.tidyverse.org/reference/labs.html)`(``"log(submitted reads)"``)`
 
 Again, we can fetch the data by calling
 [`getResult()`](../reference/getResult.md). `bulk.dl=TRUE` has the
@@ -396,40 +364,34 @@ while though. Hopefully in the future the sample/analysis correspondence
 mismatches will be fixed and the default `bulk.dl` will be switch to
 `TRUE`.
 
-``` r
-
-mae <- getResult(mg, all_accessions, bulk.dl = TRUE)
-
-mae
-```
+\
+`mae`` ``<-`` `[`getResult`](../reference/getResult.md)`(``mg``, ``all_accessions``, bulk.dl ``=`` ``TRUE``)`\
+\
+`mae`
 
 For metagenomic samples, the result is
-*[MultiAssayExperiment](https://bioconductor.org/packages/3.23/MultiAssayExperiment)*
+*[MultiAssayExperiment](https://bioconductor.org/packages/3.24/MultiAssayExperiment)*
 (`MAE`) which links multiple `TreeSE` objects into one dataset. These
 `TreeSE` objects include taxonomic profiling data along with functional
 data in unique objects. Each objects is linked with each other by their
 sample names. You can get access to individual object or experiment by
 specifying index or name.
 
-``` r
-
-mae[[2]]
-```
+\
+`mae``[[``2``]``]`
 
 We can perform principal component analysis to microbial profiling data
 by utilizing miaverse tools.
 
-``` r
-
-# Apply relative transformation
-mae[[1]] <- transformAssay(mae[[1]], method = "relabundance")
-# Perform PCoA
-mae[[1]] <- runMDS(
-    mae[[1]], assay.type = "relabundance",
-    FUN = vegan::vegdist, method = "bray")
-# Plot
-plotReducedDim(mae[[1]], "MDS", colour_by = "sample_environment.feature")
-```
+\
+`# Apply relative transformation`\
+`mae``[[``1``]``]`` ``<-`` `[`transformAssay`](https://microbiome.github.io/mia/reference/transformAssay.html)`(``mae``[[``1``]``]``, method ``=`` ``"relabundance"``)`\
+`# Perform PCoA`\
+`mae``[[``1``]``]`` ``<-`` `[`runMDS`](https://rdrr.io/pkg/scater/man/runMDS.html)`(`\
+`    ``mae``[[``1``]``]``, assay.type ``=`` ``"relabundance"``,`\
+`    FUN ``=`` ``vegan``::`[`vegdist`](https://vegandevs.github.io/vegan/reference/vegdist.html)`, method ``=`` ``"bray"``)`\
+`# Plot`\
+[`plotReducedDim`](https://rdrr.io/pkg/scater/man/plotReducedDim.html)`(``mae``[[``1``]``]``, ``"MDS"``, colour_by ``=`` ``"sample_environment.feature"``)`
 
 ### Fetch raw files
 
@@ -439,14 +401,12 @@ retrieve microbial profiling data,
 retrieve any kind of data from the database. It returns data as simple
 data.frame or list format.
 
-``` r
-
-kegg <- getData(
-    mg, type = "kegg-modules", accession = "MGYA00642773",
-    accession.type = "analyses")
-
-head(kegg)
-```
+\
+`kegg`` ``<-`` `[`getData`](../reference/getData.md)`(`\
+`    ``mg``, type ``=`` ``"kegg-modules"``, accession ``=`` ``"MGYA00642773"``,`\
+`    accession.type ``=`` ``"analyses"``)`\
+\
+[`head`](https://rdrr.io/r/utils/head.html)`(``kegg``)`
 
 ### Fetch sequence files
 
@@ -466,26 +426,22 @@ a data.frame containing all available downloads for each accession we’ve
 been examining previously. It then filters this to retain only those
 files corresponding retain the annotated amino acid sequence files.
 
-``` r
-
-# Find list of available downloads
-dl_urls <- searchFile(
-    mg, full_metadata$analysis_accession, type = "analyses")
-
-# Filter table
-target_urls <- dl_urls[
-    dl_urls$attributes.description.label == "Predicted CDS with annotation", ]
-
-head(target_urls)
-```
+\
+`# Find list of available downloads`\
+`dl_urls`` ``<-`` `[`searchFile`](../reference/getFile.md)`(`\
+`    ``mg``, ``full_metadata``$``analysis_accession``, type ``=`` ``"analyses"``)`\
+\
+`# Filter table`\
+`target_urls`` ``<-`` ``dl_urls``[`\
+`    ``dl_urls``$``attributes.description.label`` ``==`` ``"Predicted CDS with annotation"``, ``]`\
+\
+[`head`](https://rdrr.io/r/utils/head.html)`(``target_urls``)`
 
 To list the types of available files, and guide the filtering, something
 like the following might be useful.
 
-``` r
-
-table(dl_urls$attributes.description.label)
-```
+\
+[`table`](https://rdrr.io/pkg/BiocGenerics/man/table.html)`(``dl_urls``$``attributes.description.label``)`
 
 Unlike other `MGnifyR` functions,
 [`searchFile()`](../reference/getFile.md) is not limited to `analyses`,
@@ -494,12 +450,10 @@ instance, while general `genome` functionality is not yet integrated
 into `MGnifyR`, we can retrieve associated files for a particular
 `genome` accession with the following:
 
-``` r
-
-genome_urls <- searchFile(mg, "MGYG000433953", type = "genomes")
-
-genome_urls[ , c("id", "attributes.file.format.name", "download_url")]
-```
+\
+`genome_urls`` ``<-`` `[`searchFile`](../reference/getFile.md)`(``mg``, ``"MGYG000433953"``, type ``=`` ``"genomes"``)`\
+\
+`genome_urls``[`` , `[`c`](https://rdrr.io/r/base/c.html)`(``"id"``, ``"attributes.file.format.name"``, ``"download_url"``)``]`
 
 Having found the a set of target urls, the final step is to use
 [`getFile()`](../reference/getFile.md) to actually retrieve the file.
@@ -517,22 +471,20 @@ more awkward. Regardless, the default behaviour of
 in the parameter `url`, save it to disk, and return the filepath it was
 saved to.
 
-``` r
-
-# Just select a single file from the target_urls list for demonstration.
-
-# Default behavior - use local cache.
-cached_location1 = getFile(mg, target_urls$download_url[[1]])
-
-# Specifying a file
-cached_location2 <- getFile(
-    mg, target_urls$download_url[[1]])
-
-cached_location <- c(cached_location1, cached_location2)
-
-# Where are the files?
-cached_location
-```
+\
+`# Just select a single file from the target_urls list for demonstration.`\
+\
+`# Default behavior - use local cache.`\
+`cached_location1`` ``=`` `[`getFile`](../reference/getFile.md)`(``mg``, ``target_urls``$``download_url``[[``1``]``]``)`\
+\
+`# Specifying a file`\
+`cached_location2`` ``<-`` `[`getFile`](../reference/getFile.md)`(`\
+`    ``mg``, ``target_urls``$``download_url``[[``1``]``]``)`\
+\
+`cached_location`` ``<-`` `[`c`](https://rdrr.io/r/base/c.html)`(``cached_location1``, ``cached_location2``)`\
+\
+`# Where are the files?`\
+`cached_location`
 
 A second download option is available, which allows built-in parsing of
 the file. If we know ahead of time what processing will be performed, it
@@ -560,31 +512,25 @@ In this case the PFAM motif identifies sequences coding for the amoC
 gene, found in both ammonia and methane oxidizing organisms, but any
 other filtering method could be used.
 
-``` r
-
-library(Biostrings)
-
-# Simple function to a count of unique sequences matching PFAM amoC/mmoC motif
-getAmoCseqs <- function(fname){
-    sequences <- readAAStringSet(fname)
-    tgtvec <- grepl("PF04896", names(sequences))
-    as.data.frame(as.list(table(as.character(sequences[tgtvec]))))
-}
-```
+\
+[`library`](https://rdrr.io/r/base/library.html)`(`[`Biostrings`](https://bioconductor.org/packages/Biostrings)`)`\
+\
+`# Simple function to a count of unique sequences matching PFAM amoC/mmoC motif`\
+`getAmoCseqs`` ``<-`` ``function``(``fname``)``{`\
+`    ``sequences`` ``<-`` `[`readAAStringSet`](https://rdrr.io/pkg/Biostrings/man/XStringSet-io.html)`(``fname``)`\
+`    ``tgtvec`` ``<-`` `[`grepl`](https://rdrr.io/pkg/BiocGenerics/man/grep.html)`(``"PF04896"``, `[`names`](https://rdrr.io/r/base/names.html)`(``sequences``)``)`\
+`    `[`as.data.frame`](https://rdrr.io/pkg/BiocGenerics/man/as.data.frame.html)`(`[`as.list`](https://rdrr.io/pkg/BiocGenerics/man/as.list.html)`(`[`table`](https://rdrr.io/pkg/BiocGenerics/man/table.html)`(`[`as.character`](https://rdrr.io/r/base/character.html)`(``sequences``[``tgtvec``]``)``)``)``)`\
+`}`
 
 Having defined the function, it just remains to include it in the call
 to [`getFile()`](../reference/getFile.md).
 
-``` r
+\
+`# Just download a single accession for demonstration, specifying a read_function`\
+`amoC_seq_counts`` ``<-`` `[`getFile`](../reference/getFile.md)`(`\
+`    ``mg``, ``target_urls``$``download_url``[[``1``]``]``, read_func ``=`` ``getAmoCseqs``)`\
+\
+`amoC_seq_counts`
 
-# Just download a single accession for demonstration, specifying a read_function
-amoC_seq_counts <- getFile(
-    mg, target_urls$download_url[[1]], read_func = getAmoCseqs)
-
-amoC_seq_counts
-```
-
-``` r
-
-sessionInfo()
-```
+\
+[`sessionInfo`](https://rdrr.io/r/utils/sessionInfo.html)`(``)`

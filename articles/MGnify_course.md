@@ -32,36 +32,34 @@ book](https://microbiome.github.io/OMA/docs/devel/).
 
 ## Load packages
 
-``` r
-
-# List of packages that we need
-packages <- c("ANCOMBC", "MGnifyR", "mia",  "miaViz", "scater")
-
-# Get packages that are already installed
-packages_already_installed <- packages[ packages %in% installed.packages() ]
-# Get packages that need to be installed
-packages_need_to_install <- setdiff( packages, packages_already_installed )
-# Loads BiocManager into the session. Install it if it is not already installed.
-if( !require("BiocManager") ){
-    install.packages("BiocManager")
-    library("BiocManager")
-}
-# If there are packages that need to be installed, installs them with BiocManager
-# Updates old packages.
-if( length(packages_need_to_install) > 0 ) {
-   install(packages_need_to_install, ask = FALSE)
-}
-
-# Load all packages into session. Stop if there are packages that were not
-# successfully loaded
-pkgs_not_loaded <- !sapply(packages, require, character.only = TRUE)
-pkgs_not_loaded <- names(pkgs_not_loaded)[ pkgs_not_loaded ]
-if( length(pkgs_not_loaded) > 0 ){
-    stop(
-        "Error in loading the following packages into the session: '",
-        paste0(pkgs_not_loaded, collapse = "', '"), "'")
-}
-```
+\
+`# List of packages that we need`\
+`packages`` ``<-`` `[`c`](https://rdrr.io/r/base/c.html)`(``"ANCOMBC"``, ``"MGnifyR"``, ``"mia"``,  ``"miaViz"``, ``"scater"``)`\
+\
+`# Get packages that are already installed`\
+`packages_already_installed`` ``<-`` ``packages``[`` ``packages`` `[`%in%`](https://rdrr.io/pkg/BiocGenerics/man/match.html)` `[`installed.packages`](https://rdrr.io/r/utils/installed.packages.html)`(``)`` ``]`\
+`# Get packages that need to be installed`\
+`packages_need_to_install`` ``<-`` `[`setdiff`](https://generics.r-lib.org/reference/setops.html)`(`` ``packages``, ``packages_already_installed`` ``)`\
+`# Loads BiocManager into the session. Install it if it is not already installed.`\
+`if``(`` ``!`[`require`](https://rdrr.io/r/base/library.html)`(`[`"BiocManager"`](https://bioconductor.github.io/BiocManager/)`)`` ``)``{`\
+`    `[`install.packages`](https://rdrr.io/r/utils/install.packages.html)`(``"BiocManager"``)`\
+`    `[`library`](https://rdrr.io/r/base/library.html)`(`[`"BiocManager"`](https://bioconductor.github.io/BiocManager/)`)`\
+`}`\
+`# If there are packages that need to be installed, installs them with BiocManager`\
+`# Updates old packages.`\
+`if``(`` `[`length`](https://rdrr.io/r/base/length.html)`(``packages_need_to_install``)`` ``>`` ``0`` ``)`` ``{`\
+`   `[`install`](https://bioconductor.github.io/BiocManager/reference/install.html)`(``packages_need_to_install``, ask ``=`` ``FALSE``)`\
+`}`\
+\
+`# Load all packages into session. Stop if there are packages that were not`\
+`# successfully loaded`\
+`pkgs_not_loaded`` ``<-`` ``!`[`sapply`](https://rdrr.io/pkg/BiocGenerics/man/lapply.html)`(``packages``, ``require``, character.only ``=`` ``TRUE``)`\
+`pkgs_not_loaded`` ``<-`` `[`names`](https://rdrr.io/r/base/names.html)`(``pkgs_not_loaded``)``[`` ``pkgs_not_loaded`` ``]`\
+`if``(`` `[`length`](https://rdrr.io/r/base/length.html)`(``pkgs_not_loaded``)`` ``>`` ``0`` ``)``{`\
+`    `[`stop`](https://rdrr.io/r/base/stop.html)`(`\
+`        ``"Error in loading the following packages into the session: '"``,`\
+`        `[`paste0`](https://rdrr.io/r/base/paste.html)`(``pkgs_not_loaded``, collapse ``=`` ``"', '"``)``, ``"'"``)`\
+`}`
 
 ## Data import
 
@@ -69,14 +67,12 @@ To interact with the MGnify database, we need to create a `MgnifyClient`
 object. This object allows us to store options for data fetching. For
 instance, we can configure it to use a cache for improved efficiency.
 
-``` r
-
-# Create the MgnifyClient object with caching enabled
-mg <- MgnifyClient(
-  useCache = TRUE,
-  cacheDir = "/home/training" # Set this to your desired cache directory
-  )
-```
+\
+`# Create the MgnifyClient object with caching enabled`\
+`mg`` ``<-`` `[`MgnifyClient`](../reference/MgnifyClient.md)`(`\
+`  useCache ``=`` ``TRUE``,`\
+`  cacheDir ``=`` ``"/home/training"`` ``# Set this to your desired cache directory`\
+`  ``)`
 
 In this workflow, we will fetch taxonomy annotations and metadata from
 the study
@@ -89,11 +85,9 @@ The analysis refers to metagenomic runs performed to samples. Each
 sample can have multiple runs made, which is why we work with analyses
 and not with samples; analysis identifier points to a single entity.
 
-``` r
-
-study_id <- "MGYS00005154"
-analysis_id <- searchAnalysis(mg, "studies", study_id)
-```
+\
+`study_id`` ``<-`` ``"MGYS00005154"`\
+`analysis_id`` ``<-`` `[`searchAnalysis`](../reference/searchAnalysis.md)`(``mg``, ``"studies"``, ``study_id``)`
 
 Now we are ready to load the metadata on the analyses to get idea on
 what kind of data we are dealing with.
@@ -102,33 +96,27 @@ There are currently (17 Sep 2024) almost 1,000 analyses available.
 Downloading whole dataset will take some time, which is why we use
 memory cache.
 
-``` r
-
-metadata <- getMetadata(mg, accession = analysis_id)
-```
+\
+`metadata`` ``<-`` `[`getMetadata`](../reference/getMetadata.md)`(``mg``, accession ``=`` ``analysis_id``)`
 
 We can see that there are analyses that are performed with different
 pipelines. Let’s take only those analyses that are generated with the
 pipeline version 5.0.
 
-``` r
-
-metadata <- metadata[metadata[["analysis_pipeline-version"]] == "5.0", ]
-```
+\
+`metadata`` ``<-`` ``metadata``[``metadata``[[``"analysis_pipeline-version"``]``]`` ``==`` ``"5.0"``, ``]`
 
 We have now analyses that each point to unique sample. The final step is
 to fetch abundance tables in `TreeSummarizedExperiment` (`TreeSE`)
 format.
 
-``` r
-
-tse <- getResult(
-    mg,
-    accession = metadata[["analysis_accession"]],
-    get.func = FALSE
-    )
-tse
-```
+\
+`tse`` ``<-`` `[`getResult`](../reference/getResult.md)`(`\
+`    ``mg``,`\
+`    accession ``=`` ``metadata``[[``"analysis_accession"``]``]``,`\
+`    get.func ``=`` ``FALSE`\
+`    ``)`\
+`tse`
 
 The fetched data is `TreeSE` object, including taxonomy annotations. See
 [OMA online
@@ -143,23 +131,19 @@ detailed
 [chapter](https://microbiome.github.io/OMA/docs/devel/pages/agglomeration.html)
 explaining agglomeration in more depth.
 
-``` r
-
-tse_order <- agglomerateByRank(tse, rank = "Order")
-```
+\
+`tse_order`` ``<-`` ``agglomerateByRank``(``tse``, rank ``=`` ``"Order"``)`
 
 Because of the unique properties of microbiome data, we have to apply
 transformations. Here, we perform relative transformation. You can find
 more information on transformations from
 [OMA](https://microbiome.github.io/OMA/docs/devel/pages/transformation.html).
 
-``` r
-
-# Transform the main TreeSE
-tse <- transformAssay(tse, method = "relabundance")
-# Transform the agglomerated TreeSE
-tse_order <- transformAssay(tse_order, method = "relabundance")
-```
+\
+`# Transform the main TreeSE`\
+`tse`` ``<-`` ``transformAssay``(``tse``, method ``=`` ``"relabundance"``)`\
+`# Transform the agglomerated TreeSE`\
+`tse_order`` ``<-`` ``transformAssay``(``tse_order``, method ``=`` ``"relabundance"``)`
 
 ## Alpha diversity
 
@@ -167,32 +151,28 @@ Alpha diversity measures community diversity within a sample. Learn more
 on community diversity from
 [here](https://microbiome.github.io/OMA/docs/devel/pages/alpha_diversity.html).
 
-``` r
-
-# Calculate alpha diversity
-tse <- addAlpha(tse)
-
-# Create a plot
-p <- plotColData(
-  tse,
-  y = "shannon_diversity",
-  x = "sample_geographic.location..country.and.or.sea.region.",
-  show_boxplot = TRUE
-  )
-p
-```
+\
+`# Calculate alpha diversity`\
+`tse`` ``<-`` ``addAlpha``(``tse``)`\
+\
+`# Create a plot`\
+`p`` ``<-`` ``plotColData``(`\
+`  ``tse``,`\
+`  y ``=`` ``"shannon_diversity"``,`\
+`  x ``=`` ``"sample_geographic.location..country.and.or.sea.region."``,`\
+`  show_boxplot ``=`` ``TRUE`\
+`  ``)`\
+`p`
 
 We can test whether the diversity differences are statistically
 significant. We utilize Mann Whithney U test (or Wilcoxon test).
 
-``` r
-
-pairwise.wilcox.test(
-    tse[["shannon_diversity"]],
-    tse[["sample_geographic.location..country.and.or.sea.region."]],
-    p.adjust.method = "fdr"
-    )
-```
+\
+[`pairwise.wilcox.test`](https://rdrr.io/r/stats/pairwise.wilcox.test.html)`(`\
+`    ``tse``[[``"shannon_diversity"``]``]``,`\
+`    ``tse``[[``"sample_geographic.location..country.and.or.sea.region."``]``]``,`\
+`    p.adjust.method ``=`` ``"fdr"`\
+`    ``)`
 
 To add p-values to the plot, see
 [OMA](https://microbiome.github.io/OMA/docs/devel/pages/alpha_diversity.html#visualizing-significance-in-group-wise-comparisons).
@@ -206,23 +186,21 @@ covariates.
 To achieve this, we perform Principal Coordinate Analysis (PCoA) using
 Bray-Curtis dissimilarity.
 
-``` r
-
-# Perform PCoA
-tse <- runMDS(
-  tse,
-  FUN = getDissimilarity,
-  method = "bray",
-  assay.type = "relabundance"
-)
-# Visualize PCoA
-p <- plotReducedDim(
-  tse,
-  dimred = "MDS",
-  colour_by = "sample_geographic.location..country.and.or.sea.region."
-  )
-p
-```
+\
+`# Perform PCoA`\
+`tse`` ``<-`` ``runMDS``(`\
+`  ``tse``,`\
+`  FUN ``=`` ``getDissimilarity``,`\
+`  method ``=`` ``"bray"``,`\
+`  assay.type ``=`` ``"relabundance"`\
+`)`\
+`# Visualize PCoA`\
+`p`` ``<-`` ``plotReducedDim``(`\
+`  ``tse``,`\
+`  dimred ``=`` ``"MDS"``,`\
+`  colour_by ``=`` ``"sample_geographic.location..country.and.or.sea.region."`\
+`  ``)`\
+`p`
 
 See [community similarity
 chapter](https://microbiome.github.io/OMA/docs/devel/pages/beta_diversity.html)
@@ -234,42 +212,36 @@ In DAA, we analyze whether abundances of certain features vary between
 study groups. Again, OMA has a dedicated chapter also on this
 [topic](https://microbiome.github.io/OMA/docs/devel/pages/differential_abundance.html).
 
-``` r
-
-# Perform DAA
-res <- ancombc2(
-    data = tse_order,
-    assay.type = "counts",
-    fix_formula = "sample_geographic.location..country.and.or.sea.region.",
-    p_adj_method = "fdr",
-    )
-```
+\
+`# Perform DAA`\
+`res`` ``<-`` ``ancombc2``(`\
+`    data ``=`` ``tse_order``,`\
+`    assay.type ``=`` ``"counts"``,`\
+`    fix_formula ``=`` ``"sample_geographic.location..country.and.or.sea.region."``,`\
+`    p_adj_method ``=`` ``"fdr"``,`\
+`    ``)`
 
 Next we visualize features that have the lowest p-values.
 
-``` r
-
-# Get the most significant features
-n_top <- 4
-res_tab <- res[["res"]]
-res_tab <- res_tab[order(res_tab[["q_(Intercept)"]]), ]
-top_feat <- res_tab[seq_len(n_top), "taxon"]
-
-# Create a plot
-p <- plotExpression(
-  tse_order,
-  features = top_feat,
-  assay.type = "relabundance",
-  x = "sample_geographic.location..country.and.or.sea.region.",
-  show_boxplot = TRUE, show_violin = FALSE, point_shape = NA
-  ) +
-  scale_y_log10()
-p
-```
+\
+`# Get the most significant features`\
+`n_top`` ``<-`` ``4`\
+`res_tab`` ``<-`` ``res``[[``"res"``]``]`\
+`res_tab`` ``<-`` ``res_tab``[`[`order`](https://rdrr.io/pkg/BiocGenerics/man/order.html)`(``res_tab``[[``"q_(Intercept)"``]``]``)``, ``]`\
+`top_feat`` ``<-`` ``res_tab``[`[`seq_len`](https://rdrr.io/r/base/seq.html)`(``n_top``)``, ``"taxon"``]`\
+\
+`# Create a plot`\
+`p`` ``<-`` ``plotExpression``(`\
+`  ``tse_order``,`\
+`  features ``=`` ``top_feat``,`\
+`  assay.type ``=`` ``"relabundance"``,`\
+`  x ``=`` ``"sample_geographic.location..country.and.or.sea.region."``,`\
+`  show_boxplot ``=`` ``TRUE``, show_violin ``=`` ``FALSE``, point_shape ``=`` ``NA`\
+`  ``)`` ``+`\
+`  ``scale_y_log10``(``)`\
+`p`
 
 ## Session info
 
-``` r
-
-sessionInfo()
-```
+\
+[`sessionInfo`](https://rdrr.io/r/utils/sessionInfo.html)`(``)`
