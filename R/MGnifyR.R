@@ -6,11 +6,9 @@
 #' information, and
 #' \href{https://emg-docs.readthedocs.io/en/latest/api.html}{API documentation} for
 #' details about the JSONAPI implementation.
-#' @name MGnifyR-package
 #' @aliases MGnifyR
-#' @docType package
 #' @seealso \link[TreeSummarizedExperiment:TreeSummarizedExperiment-class]{TreeSummarizedExperiment} class
-NULL
+"_PACKAGE"
 
 #' @import mia
 #' @import TreeSummarizedExperiment
