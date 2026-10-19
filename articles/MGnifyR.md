@@ -129,7 +129,7 @@ this object. The following snippet creates this.
 `#> [1] TRUE`\
 `#> `\
 `#> Slot "cacheDir":`\
-`#> [1] "/tmp/RtmpnCg0UT/.MGnifyR_cache"`\
+`#> [1] "/tmp/RtmpUMs1Rh/.MGnifyR_cache"`\
 `#> `\
 `#> Slot "showWarnings":`\
 `#> [1] FALSE`\
