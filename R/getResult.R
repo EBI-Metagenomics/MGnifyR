@@ -454,6 +454,11 @@ setMethod("getResult", signature = c(x = "MgnifyClient"), function(
             .mgnify_get_single_analysis_treese(
                 client, x, use.cache = use.cache, taxa.su = taxa.su, ...)
     }, .progress = show.messages)
+    # Drop accessions without data, e.g., when the database was not reachable
+    tse_list <- tse_list[ lengths(tse_list) > 0L ]
+    if( length(tse_list) == 0L ){
+        tse_list <- NULL
+    }
     return(tse_list)
 }
 

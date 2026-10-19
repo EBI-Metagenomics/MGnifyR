@@ -27,6 +27,14 @@ test_that("getResult", {
     expect_error(getResult(mg, accession = "test", get.func = c(TRUE, TRUE)))
     expect_error(getResult(mg, accession = "test", get.func = "test"))
 
+    # When nothing could be fetched (e.g., the database returns 500 error),
+    # return NULL with a warning instead of failing
+    expect_null(with_mocked_bindings(
+        MGnifyR:::.mgnify_get_analyses_treese(mg, "MGYA00377505"),
+        .mgnify_get_single_analysis_treese = function(...) NULL))
+    empty <- list(taxa = NULL, func = NULL, col_data = list())
+    expect_null(MGnifyR:::.convert_results_to_object(empty, "TreeSE"))
+
     # Require internet access
     skip_if(httr::http_error("https://www.ebi.ac.uk/metagenomics/api/v1"))
 

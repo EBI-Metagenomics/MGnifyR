@@ -58,28 +58,43 @@ import(MultiAssayExperiment)
 import(TreeSummarizedExperiment)
 import(mia)
 importFrom(S4Vectors,SimpleList)
-importFrom(SummarizedExperiment,"rowData<-")
-importFrom(SummarizedExperiment,rowData)
+importFrom(SummarizedExperiment,
+  "rowData<-",
+  rowData
+)
 importFrom(TreeSummarizedExperiment,rowTree)
 importFrom(ape,read.tree)
-importFrom(dplyr,"%>%")
-importFrom(dplyr,bind_rows)
-importFrom(dplyr,mutate_all)
-importFrom(dplyr,na_if)
-importFrom(httr,GET)
-importFrom(httr,POST)
-importFrom(httr,add_headers)
-importFrom(httr,config)
-importFrom(httr,content)
-importFrom(httr,timeout)
-importFrom(httr,write_disk)
-importFrom(methods,is)
-importFrom(methods,new)
-importFrom(mia,checkTaxonomy)
-importFrom(mia,importBIOM)
-importFrom(plyr,llply)
-importFrom(plyr,rbind.fill)
+importFrom(dplyr,
+  "%>%",
+  bind_rows,
+  mutate_all,
+  na_if
+)
+importFrom(httr,
+  GET,
+  POST,
+  add_headers,
+  config,
+  content,
+  timeout,
+  write_disk
+)
+importFrom(methods,
+  is,
+  new
+)
+importFrom(mia,
+  checkTaxonomy,
+  importBIOM
+)
+importFrom(plyr,
+  llply,
+  rbind.fill
+)
 importFrom(reshape2,dcast)
-importFrom(urltools,"parameters<-")
-importFrom(urltools,parameters)
+importFrom(stats,setNames)
+importFrom(urltools,
+  "parameters<-",
+  parameters
+)
 importFrom(utils,read.csv2)

@@ -163,6 +163,7 @@ setMethod(
     return(res)
 }
 
+#' @importFrom stats setNames
 .flatten_single_result_to_df <- function(x){
     # First, get all unique names across all records
     all_names <- lapply(x, function(rec)
