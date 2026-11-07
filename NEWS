@@ -1,3 +1,10 @@
+Version: 1.99.0
+Date: 2026-11-07
++ Supports MGnify API v2
++ Substantially faster: what took minutes takes seconds, and tens of thousands of analyses can be fetched in minutes
++ Focuses on abundance tables: fetchStudies and fetchAnalyses return taxonomic and functional profiles as TreeSummarizedExperiment or MultiAssayExperiment
++ Additional features of earlier versions, e.g., fetching files, are deprecated
+
 Version: 1.9.1
 Date: 2026-10-19
 + getResult returns NULL with a warning instead of failing when no data could be fetched

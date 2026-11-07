@@ -1,0 +1,241 @@
+---
+title: "MGnifyR"
+date: today
+format:
+    html:
+        toc: true
+        toc-depth: 2
+knitr:
+    opts_chunk:
+        collapse: true
+        comment: "#>"
+vignette: >
+    %\VignetteIndexEntry{MGnifyR}
+    %\VignetteEngine{quarto::html}
+    %\VignetteEncoding{UTF-8}
+---
+
+# Introduction
+
+`MGnifyR` fetches microbiome data from
+[MGnify](https://www.ebi.ac.uk/metagenomics), EBI's resource for the
+analysis of metagenomic, metatranscriptomic and amplicon data. In MGnify,
+
+- a **study** (e.g., `MGYS00005116`) is a collection of samples,
+- a **sample** (e.g., `SAMN02595037`) is a biological specimen, e.g., a
+stool or soil sample,
+- a **run** (e.g., `SRR1144937`) is a sequencing of a sample, i.e., its
+reads. A sample can have multiple runs, e.g., an amplicon and a metagenome.
+- an **assembly** (e.g., `ERZ1746131`) is made of the reads of one or more
+runs, and
+- an **analysis** (e.g., `MGYA00383350`) is a run or an assembly processed with
+an MGnify **pipeline**. The data is fetched by analysis, so each column of
+the result is an analysis. A run can be analysed with multiple pipeline
+versions, so it can have multiple analyses. An analysis usually has one run,
+but some have multiple runs, e.g., runs that were analysed together.
+
+`MGnifyR` returns the data as a `TreeSummarizedExperiment`, so that it can be
+analysed directly with the [Orchestrating Microbiome Analysis with
+Bioconductor (OMA)](https://microbiome.github.io/) tools. See the
+[OMA book](https://microbiome.github.io/OMA/) for analysis examples.
+
+# Installation
+
+```{r}
+#| label: install
+#| eval: false
+BiocManager::install("MGnifyR")
+```
+
+```{r}
+#| label: load
+library(MGnifyR)
+```
+
+# Browse studies
+
+`searchStudies()` returns a table of studies. Studies can be filtered by
+biome, pipeline version and text search, and sorted with `order`. The
+available biomes are listed in the
+[MGnify website](https://www.ebi.ac.uk/metagenomics/browse/biomes).
+
+```{r}
+#| label: search_studies
+studies <- searchStudies(
+    biome = "root:Engineered:Built environment", max.hits = 10)
+studies[, c("accession", "title", "biome_lineage")]
+```
+
+# Fetch data
+
+Give the studies, or their accessions, to `fetchStudies()`. The taxonomic
+profiles of all the studies are fetched and combined into a single
+`TreeSummarizedExperiment`. Taxa are matched across studies by their taxonomy.
+
+```{r}
+#| label: fetch_studies
+tse <- fetchStudies("MGYS00005116")
+tse
+```
+
+The `colData` includes the accessions of the analysis, study, sample and run,
+the pipeline version and the other fields of the analyses in MGnify, e.g., the
+title of the sample (`sample_sample_title`). More metadata can be added from
+other sources: the samples in MGnify (`samples = TRUE`) and in BioSamples
+(`biosamples = TRUE`), and the studies (`studies = TRUE`). BioSamples has all
+the attributes of the samples, including study-specific variables, e.g.,
+disease status or treatment. Each source needs its own requests, so they are
+not added by default. The data is cached, so adding a source later fetches
+only the new data.
+
+```{r}
+#| label: coldata
+tse <- fetchStudies("MGYS00005116", biosamples = TRUE, studies = TRUE)
+colData(tse)[, c(
+    "study_accession", "pipeline_version", "sample_accession", "run_accession",
+    "study_biome_lineage")]
+# Columns of each source
+table(sub("_.*", "", colnames(colData(tse))))
+```
+
+The `rowData` includes the taxonomy.
+
+```{r}
+#| label: rowdata
+head(rowData(tse))
+```
+
+## Pipeline versions
+
+The taxonomies of different pipeline versions are based on different
+reference databases, so they might not be directly comparable. To fetch
+analyses of a single pipeline version, select them with `searchAnalyses()` as
+shown below.
+
+# Types of profiles
+
+By default, small subunit rRNA (`"SSU"`) profiles are fetched. `type` tells
+which profile is fetched, e.g., `"mOTUs"` for metagenomes and
+metatranscriptomes, large subunit rRNA (`"LSU"`), `"UNITE"`, `"ITSoneDB"` or
+`"PR2"`. Only the analyses that have the type are fetched. See
+`?fetchStudies` for all the types.
+
+```{r}
+#| label: types
+tse_lsu <- fetchStudies("MGYS00005116", type = "LSU")
+tse_lsu
+```
+
+# Functional profiles
+
+Metagenomes, metatranscriptomes and assemblies also have functional profiles:
+
+- `"InterPro"`, `"GO"` and `"GO-slim"`: pipelines v1-v6
+- `"Pfam"` and `"KO"` (KEGG orthologs): pipelines v5-v6
+- `"antiSMASH"` (biosynthetic gene clusters): assemblies of pipelines v5-v6
+
+In pipeline v6, only assemblies have functional profiles. Amplicons have no
+functional profiles. The rows are, e.g., GO terms, and `rowData` has their
+descriptions.
+
+```{r}
+#| label: functional
+analyses <- searchAnalyses("MGYS00001442")
+analyses <- analyses[1:3, ]
+tse_go <- fetchAnalyses(analyses, type = "GO-slim")
+head(rowData(tse_go))
+```
+
+# Multiple profiles
+
+To fetch multiple types, give them all to `type`. The result is a
+`MultiAssayExperiment` with a `TreeSummarizedExperiment` for each type.
+The profiles are linked by the sample that was analysed, so, e.g., the
+taxonomic profile of an amplicon and the functional profile of a metagenome
+of the same sample are linked. Types that have no data are left out.
+
+```{r}
+#| label: multiple
+mae <- fetchAnalyses(analyses, type = c("SSU", "GO-slim", "InterPro"))
+mae
+```
+
+Each profile is a `TreeSummarizedExperiment`, and the sample metadata is in
+`colData`.
+
+```{r}
+#| label: multiple_access
+mae[["GO-slim"]]
+colData(mae)
+```
+
+# Select analyses
+
+To select specific analyses, e.g., based on sample metadata, use
+`searchAnalyses()`. It returns one row per analysis with the same columns as
+the `colData`. Filter the table and give it to `fetchAnalyses()`.
+
+```{r}
+#| label: select_analyses
+analyses <- searchAnalyses("MGYS00005116")
+analyses[, c("analysis_accession", "pipeline_version", "sample_accession")]
+
+analyses <- analyses[analyses[["pipeline_version"]] == "V6", ]
+tse <- fetchAnalyses(analyses)
+tse
+```
+
+A study can have several experiment types, e.g., metatranscriptomes and
+assemblies. Select them by `experiment_type`.
+
+```{r}
+#| label: select_experiment_type
+analyses <- searchAnalyses("MGYS00006572")
+table(analyses[["experiment_type"]])
+
+analyses <- analyses[analyses[["experiment_type"]] == "Metatranscriptomic", ]
+mae <- fetchAnalyses(analyses, type = c("SSU", "GO-slim"))
+mae
+```
+
+`fetchAnalyses()` also accepts analysis accessions, and `searchSamples()`
+returns the samples of studies.
+
+The arguments `samples`, `biosamples` and `studies` (see Fetch data) choose
+the sources of metadata in `searchAnalyses()` too. Also the details of the
+analyses (`analyses = TRUE`), e.g., the quality control of pipeline v6, and of
+the assemblies (`assemblies = TRUE`) can be added. They need one request per
+analysis or assembly.
+
+```{r}
+#| label: sources
+analyses <- searchAnalyses("MGYS00005116", analyses = TRUE)
+table(sub("_.*", "", colnames(analyses)))
+```
+
+# Caching and private data
+
+Downloaded data is cached for the R session, so repeated calls are fast. To
+keep the cache between sessions, set a cache directory.
+
+```{r}
+#| label: cache
+#| eval: false
+options(MGnifyR.cache = "path/to/cache")
+```
+
+Most MGnify data is public. To access private data, log in with ENA Webin
+credentials.
+
+```{r}
+#| label: login
+#| eval: false
+mgnifyLogin("Webin-1122334", "SecretPassword")
+```
+
+# Session info
+
+```{r}
+#| label: session_info
+sessionInfo()
+```

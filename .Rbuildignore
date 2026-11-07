@@ -7,3 +7,6 @@ MGnifyR/vignettes/MGnifyR_cache
 ^pkgdown$
 ^doc$
 ^Meta$
+^dev$
+^\.quarto$
+^vignettes/path$

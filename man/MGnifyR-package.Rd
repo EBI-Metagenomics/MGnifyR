@@ -6,15 +6,17 @@
 \alias{MGnifyR}
 \title{\code{MGnifyR} Package.}
 \description{
-\code{MGnifyR} implements an interface to the EBI MGnify database.
-See the vignette for a general introduction to this package.
-\href{https://www.ebi.ac.uk/metagenomics/about}{About MGnify} for general MGnify
-information, and
-\href{https://emg-docs.readthedocs.io/en/latest/api.html}{API documentation} for
-details about the JSONAPI implementation.
+\code{MGnifyR} fetches data from the EBI MGnify database into R. Browse
+studies with \code{\link{searchStudies}} and fetch their taxonomic profiles
+as \code{TreeSummarizedExperiment} with \code{\link{fetchStudies}}. See the
+vignette for an introduction,
+\href{https://www.ebi.ac.uk/metagenomics/about}{About MGnify} for general
+MGnify information, and
+\href{https://www.ebi.ac.uk/metagenomics/api/v2/}{API documentation} for
+details about MGnify API v2.
 }
 \seealso{
-\link[TreeSummarizedExperiment:TreeSummarizedExperiment-class]{TreeSummarizedExperiment} class
+\code{\link[TreeSummarizedExperiment]{TreeSummarizedExperiment}}
 }
 \author{
 \strong{Maintainer}: Tuomas Borman \email{tuomas.v.borman@utu.fi} (\href{https://orcid.org/0000-0002-8563-8884}{ORCID})

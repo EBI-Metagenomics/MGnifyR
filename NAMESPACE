@@ -13,10 +13,13 @@ export(cacheDir)
 export(clearCache)
 export(databaseUrl)
 export(doQuery)
+export(fetchAnalyses)
+export(fetchStudies)
 export(getData)
 export(getFile)
 export(getMetadata)
 export(getResult)
+export(mgnifyLogin)
 export(mgnify_analyses_from_samples)
 export(mgnify_analyses_from_studies)
 export(mgnify_client)
@@ -27,74 +30,41 @@ export(mgnify_get_analyses_results)
 export(mgnify_get_download_urls)
 export(mgnify_query)
 export(mgnify_retrieve_json)
+export(searchAnalyses)
 export(searchAnalysis)
 export(searchFile)
+export(searchSamples)
+export(searchStudies)
 export(showWarnings)
 export(useCache)
 export(verbose)
-exportClasses(MgnifyClient)
-exportMethods("authTok<-")
-exportMethods("cacheDir<-")
-exportMethods("clearCache<-")
-exportMethods("databaseUrl<-")
-exportMethods("showWarnings<-")
-exportMethods("useCache<-")
-exportMethods("verbose<-")
-exportMethods(authTok)
-exportMethods(cacheDir)
-exportMethods(clearCache)
-exportMethods(databaseUrl)
-exportMethods(doQuery)
-exportMethods(getData)
-exportMethods(getFile)
-exportMethods(getMetadata)
-exportMethods(getResult)
-exportMethods(searchAnalysis)
-exportMethods(searchFile)
-exportMethods(showWarnings)
-exportMethods(useCache)
-exportMethods(verbose)
-import(MultiAssayExperiment)
 import(TreeSummarizedExperiment)
-import(mia)
-importFrom(S4Vectors,SimpleList)
-importFrom(SummarizedExperiment,
-  "rowData<-",
-  rowData
+importFrom(Matrix,sparseMatrix)
+importFrom(MultiAssayExperiment,
+  ExperimentList,
+  MultiAssayExperiment
 )
-importFrom(TreeSummarizedExperiment,rowTree)
-importFrom(ape,read.tree)
-importFrom(dplyr,
-  "%>%",
-  bind_rows,
-  mutate_all,
-  na_if
+importFrom(S4Vectors,
+  DataFrame,
+  SimpleList
 )
-importFrom(httr,
-  GET,
-  POST,
-  add_headers,
-  config,
-  content,
-  timeout,
-  write_disk
+importFrom(curl,
+  curl_escape,
+  curl_fetch_memory,
+  handle_setheaders,
+  handle_setopt,
+  multi_download,
+  new_handle
 )
-importFrom(methods,
-  is,
-  new
+importFrom(jsonlite,
+  parse_json,
+  read_json,
+  toJSON
 )
-importFrom(mia,
-  checkTaxonomy,
-  importBIOM
-)
-importFrom(plyr,
-  llply,
-  rbind.fill
-)
-importFrom(reshape2,dcast)
 importFrom(stats,setNames)
-importFrom(urltools,
-  "parameters<-",
-  parameters
+importFrom(tools,md5sum)
+importFrom(utils,
+  head,
+  read.delim,
+  type.convert
 )
-importFrom(utils,read.csv2)
