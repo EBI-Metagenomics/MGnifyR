@@ -7,50 +7,39 @@
 
   `MGnifyR` Package.
 
-- [`databaseUrl()`](MgnifyClient-accessors.md)
-  [`authTok()`](MgnifyClient-accessors.md)
-  [`useCache()`](MgnifyClient-accessors.md)
-  [`cacheDir()`](MgnifyClient-accessors.md)
-  [`showWarnings()`](MgnifyClient-accessors.md)
-  [`clearCache()`](MgnifyClient-accessors.md)
-  [`verbose()`](MgnifyClient-accessors.md)
-  [`` `databaseUrl<-`() ``](MgnifyClient-accessors.md)
-  [`` `authTok<-`() ``](MgnifyClient-accessors.md)
-  [`` `useCache<-`() ``](MgnifyClient-accessors.md)
-  [`` `cacheDir<-`() ``](MgnifyClient-accessors.md)
-  [`` `showWarnings<-`() ``](MgnifyClient-accessors.md)
-  [`` `clearCache<-`() ``](MgnifyClient-accessors.md)
-  [`` `verbose<-`() ``](MgnifyClient-accessors.md) : MgnifyClient
-  accessors and mutators
+- [`MgnifyClient()`](deprecated.md) [`getResult()`](deprecated.md)
+  [`searchAnalysis()`](deprecated.md) [`getMetadata()`](deprecated.md)
+  [`doQuery()`](deprecated.md) [`getData()`](deprecated.md)
+  [`searchFile()`](deprecated.md) [`getFile()`](deprecated.md)
+  [`databaseUrl()`](deprecated.md) [`authTok()`](deprecated.md)
+  [`useCache()`](deprecated.md) [`cacheDir()`](deprecated.md)
+  [`showWarnings()`](deprecated.md) [`clearCache()`](deprecated.md)
+  [`verbose()`](deprecated.md) [`` `databaseUrl<-`() ``](deprecated.md)
+  [`` `authTok<-`() ``](deprecated.md)
+  [`` `useCache<-`() ``](deprecated.md)
+  [`` `cacheDir<-`() ``](deprecated.md)
+  [`` `showWarnings<-`() ``](deprecated.md)
+  [`` `clearCache<-`() ``](deprecated.md)
+  [`` `verbose<-`() ``](deprecated.md)
+  [`mgnify_client()`](deprecated.md) [`mgnify_query()`](deprecated.md)
+  [`mgnify_analyses_from_samples()`](deprecated.md)
+  [`mgnify_analyses_from_studies()`](deprecated.md)
+  [`mgnify_get_download_urls()`](deprecated.md)
+  [`mgnify_download()`](deprecated.md)
+  [`mgnify_get_analyses_results()`](deprecated.md)
+  [`mgnify_get_analyses_phyloseq()`](deprecated.md)
+  [`mgnify_get_analyses_metadata()`](deprecated.md)
+  [`mgnify_retrieve_json()`](deprecated.md) : Deprecated and defunct
+  functions
 
-- [`MgnifyClient()`](MgnifyClient.md) : Constructor for creating a
-  MgnifyClient object to allow the access to MGnify database.
+- [`fetchStudies()`](fetchStudies.md)
+  [`fetchAnalyses()`](fetchStudies.md) : Fetch taxonomic and functional
+  profiles
 
-- [`mgnify_client()`](deprecate.md) [`mgnify_query()`](deprecate.md)
-  [`mgnify_analyses_from_samples()`](deprecate.md)
-  [`mgnify_analyses_from_studies()`](deprecate.md)
-  [`mgnify_get_download_urls()`](deprecate.md)
-  [`mgnify_download()`](deprecate.md)
-  [`mgnify_get_analyses_results()`](deprecate.md)
-  [`mgnify_get_analyses_phyloseq()`](deprecate.md)
-  [`mgnify_get_analyses_metadata()`](deprecate.md)
-  [`mgnify_retrieve_json()`](deprecate.md) : These functions will be
-  deprecated. Please use other functions instead.
+- [`mgnifyLogin()`](mgnifyLogin.md) : Log in to MGnify to access private
+  data
 
-- [`doQuery()`](doQuery.md) : Search MGnify database for studies,
-  samples, runs, analyses, biomes, assemblies, and genomes.
-
-- [`getData()`](getData.md) : Versatile function to retrieve raw results
-
-- [`getFile()`](getFile.md) [`searchFile()`](getFile.md) : Download any
-  MGnify files, also including processed reads and identified protein
-  sequences
-
-- [`getMetadata()`](getMetadata.md) : Get all study, sample and analysis
-  metadata for the supplied analysis accessions
-
-- [`getResult()`](getResult.md) : Get microbial and/or functional
-  profiling data for a list of accessions
-
-- [`searchAnalysis()`](searchAnalysis.md) : Look up analysis accession
-  IDs for one or more study or sample accessions
+- [`searchStudies()`](searchStudies.md)
+  [`searchSamples()`](searchStudies.md)
+  [`searchAnalyses()`](searchStudies.md) : Search MGnify studies,
+  samples and analyses

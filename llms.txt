@@ -1,14 +1,11 @@
 # MGnifyR ![](reference/figures//mgnifyr_logo.png)
 
 An R package for searching and retrieving data from the [EBI
-Metagenomics resource](https://www.ebi.ac.uk/metagenomics). In most
-cases, MGnifyR interacts directly with the JSONAPI, rather than relying
-on downloading analyses outputs as TSV files. Thus it is more general -
-allowing for example the intuitive combining of multiple studies and
-analyses into a single workflow, but is in some cases slower than the
-afformentioned direct access. Local caching of results on disk is
-implemented to help counter some of the overheads, but data downloads
-can be slow - particularly for functional annotation retrieval.
+Metagenomics resource](https://www.ebi.ac.uk/metagenomics) (MGnify).
+Browse studies, and fetch their taxonomic profiles as a single
+`TreeSummarizedExperiment`. The data is retrieved from the summary
+tables that MGnify provides for each study, so fetching even hundreds of
+studies is fast.
 
 MGnifyR package is part of [miaverse](https://microbiome.github.io/)
 microbiome analysis ecosystem enabling usage of
@@ -40,7 +37,7 @@ website](https://findingpheno.eu/).
     if (!requireNamespace("BiocManager", quietly = TRUE))
         install.packages("BiocManager")
 
-    # The following initializes usage of Bioc devel
+    # The following initialises usage of Bioc devel
     BiocManager::install(version='devel')
 
     BiocManager::install("MGnifyR")
@@ -51,23 +48,20 @@ website](https://findingpheno.eu/).
 
 ## Basic usage
 
-For more detailed instructions read the associated function help and
-vignette (`vignette("MGNifyR")`)
+For more detailed instructions, read the function help and the vignette
+([`vignette("MGnifyR")`](articles/MGnifyR.md)).
 
     library(MGnifyR)
 
-    # Set up the MGnify client instance
-    mg <- MgnifyClient(useCache = TRUE, cacheDir = '/tmp/MGnify_cache')
+    # Browse studies
+    studies <- searchStudies(biome = "root:Host-associated:Human", max.hits = 10)
 
-    # Retrieve the list of analyses associated with a study
-    accession_list <- searchAnalysis(mg, "studies", "MGYS00005058")
+    # Fetch their taxonomic profiles as a single TreeSummarizedExperiment
+    tse <- fetchStudies(studies)
 
-    # Download all associated study/sample and analysis metadata
-    meta_dataframe <- getMetadata(mg, accession_list)
-
-    # Convert analyses outputs to a single `MultiAssayExperiment` object
-    mae <- getResult(mg, meta_dataframe$analysis_accession)
-    mae
+    # Or select specific analyses, e.g., based on sample metadata
+    analyses <- searchAnalyses("MGYS00005116")
+    tse <- fetchAnalyses(analyses[analyses$pipeline_version == "V5", ])
 
 # Package index
 
@@ -78,58 +72,45 @@ vignette (`vignette("MGNifyR")`)
 
   `MGnifyR` Package.
 
-- [`databaseUrl()`](MgnifyClient-accessors.md)
-  [`authTok()`](MgnifyClient-accessors.md)
-  [`useCache()`](MgnifyClient-accessors.md)
-  [`cacheDir()`](MgnifyClient-accessors.md)
-  [`showWarnings()`](MgnifyClient-accessors.md)
-  [`clearCache()`](MgnifyClient-accessors.md)
-  [`verbose()`](MgnifyClient-accessors.md)
-  [`` `databaseUrl<-`() ``](MgnifyClient-accessors.md)
-  [`` `authTok<-`() ``](MgnifyClient-accessors.md)
-  [`` `useCache<-`() ``](MgnifyClient-accessors.md)
-  [`` `cacheDir<-`() ``](MgnifyClient-accessors.md)
-  [`` `showWarnings<-`() ``](MgnifyClient-accessors.md)
-  [`` `clearCache<-`() ``](MgnifyClient-accessors.md)
-  [`` `verbose<-`() ``](MgnifyClient-accessors.md) : MgnifyClient
-  accessors and mutators
+- [`MgnifyClient()`](deprecated.md) [`getResult()`](deprecated.md)
+  [`searchAnalysis()`](deprecated.md) [`getMetadata()`](deprecated.md)
+  [`doQuery()`](deprecated.md) [`getData()`](deprecated.md)
+  [`searchFile()`](deprecated.md) [`getFile()`](deprecated.md)
+  [`databaseUrl()`](deprecated.md) [`authTok()`](deprecated.md)
+  [`useCache()`](deprecated.md) [`cacheDir()`](deprecated.md)
+  [`showWarnings()`](deprecated.md) [`clearCache()`](deprecated.md)
+  [`verbose()`](deprecated.md) [`` `databaseUrl<-`() ``](deprecated.md)
+  [`` `authTok<-`() ``](deprecated.md)
+  [`` `useCache<-`() ``](deprecated.md)
+  [`` `cacheDir<-`() ``](deprecated.md)
+  [`` `showWarnings<-`() ``](deprecated.md)
+  [`` `clearCache<-`() ``](deprecated.md)
+  [`` `verbose<-`() ``](deprecated.md)
+  [`mgnify_client()`](deprecated.md) [`mgnify_query()`](deprecated.md)
+  [`mgnify_analyses_from_samples()`](deprecated.md)
+  [`mgnify_analyses_from_studies()`](deprecated.md)
+  [`mgnify_get_download_urls()`](deprecated.md)
+  [`mgnify_download()`](deprecated.md)
+  [`mgnify_get_analyses_results()`](deprecated.md)
+  [`mgnify_get_analyses_phyloseq()`](deprecated.md)
+  [`mgnify_get_analyses_metadata()`](deprecated.md)
+  [`mgnify_retrieve_json()`](deprecated.md) : Deprecated and defunct
+  functions
 
-- [`MgnifyClient()`](MgnifyClient.md) : Constructor for creating a
-  MgnifyClient object to allow the access to MGnify database.
+- [`fetchStudies()`](fetchStudies.md)
+  [`fetchAnalyses()`](fetchStudies.md) : Fetch taxonomic and functional
+  profiles
 
-- [`mgnify_client()`](deprecate.md) [`mgnify_query()`](deprecate.md)
-  [`mgnify_analyses_from_samples()`](deprecate.md)
-  [`mgnify_analyses_from_studies()`](deprecate.md)
-  [`mgnify_get_download_urls()`](deprecate.md)
-  [`mgnify_download()`](deprecate.md)
-  [`mgnify_get_analyses_results()`](deprecate.md)
-  [`mgnify_get_analyses_phyloseq()`](deprecate.md)
-  [`mgnify_get_analyses_metadata()`](deprecate.md)
-  [`mgnify_retrieve_json()`](deprecate.md) : These functions will be
-  deprecated. Please use other functions instead.
+- [`mgnifyLogin()`](mgnifyLogin.md) : Log in to MGnify to access private
+  data
 
-- [`doQuery()`](doQuery.md) : Search MGnify database for studies,
-  samples, runs, analyses, biomes, assemblies, and genomes.
-
-- [`getData()`](getData.md) : Versatile function to retrieve raw results
-
-- [`getFile()`](getFile.md) [`searchFile()`](getFile.md) : Download any
-  MGnify files, also including processed reads and identified protein
-  sequences
-
-- [`getMetadata()`](getMetadata.md) : Get all study, sample and analysis
-  metadata for the supplied analysis accessions
-
-- [`getResult()`](getResult.md) : Get microbial and/or functional
-  profiling data for a list of accessions
-
-- [`searchAnalysis()`](searchAnalysis.md) : Look up analysis accession
-  IDs for one or more study or sample accessions
+- [`searchStudies()`](searchStudies.md)
+  [`searchSamples()`](searchStudies.md)
+  [`searchAnalyses()`](searchStudies.md) : Search MGnify studies,
+  samples and analyses
 
 # Articles
 
 ### All vignettes
 
-- [Metagenomics bioinformatics at MGnify](MGnify_course.md):
-- [MGnifyR, extended vignette](MGnifyR_long.md):
 - [MGnifyR](MGnifyR.md):

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">MGnifyR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.99.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -17,11 +17,6 @@
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/MGnifyR.html">Get started</a></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
-<li class="nav-item dropdown">
-  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/MGnify_course.html">Metagenomics bioinformatics at MGnify</a></li>
-    <li><a class="dropdown-item" href="../articles/MGnifyR_long.html">MGnifyR, extended vignette</a></li>
-  </ul></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/EBI-Metagenomics/MGnifyR/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
@@ -55,66 +50,31 @@
 
         <dt>
 
-          <code><a href="MgnifyClient-accessors.html">databaseUrl()</a></code> <code><a href="MgnifyClient-accessors.html">authTok()</a></code> <code><a href="MgnifyClient-accessors.html">useCache()</a></code> <code><a href="MgnifyClient-accessors.html">cacheDir()</a></code> <code><a href="MgnifyClient-accessors.html">showWarnings()</a></code> <code><a href="MgnifyClient-accessors.html">clearCache()</a></code> <code><a href="MgnifyClient-accessors.html">verbose()</a></code> <code><a href="MgnifyClient-accessors.html">`databaseUrl&lt;-`()</a></code> <code><a href="MgnifyClient-accessors.html">`authTok&lt;-`()</a></code> <code><a href="MgnifyClient-accessors.html">`useCache&lt;-`()</a></code> <code><a href="MgnifyClient-accessors.html">`cacheDir&lt;-`()</a></code> <code><a href="MgnifyClient-accessors.html">`showWarnings&lt;-`()</a></code> <code><a href="MgnifyClient-accessors.html">`clearCache&lt;-`()</a></code> <code><a href="MgnifyClient-accessors.html">`verbose&lt;-`()</a></code>
+          <code><a href="deprecated.html">MgnifyClient()</a></code> <code><a href="deprecated.html">getResult()</a></code> <code><a href="deprecated.html">searchAnalysis()</a></code> <code><a href="deprecated.html">getMetadata()</a></code> <code><a href="deprecated.html">doQuery()</a></code> <code><a href="deprecated.html">getData()</a></code> <code><a href="deprecated.html">searchFile()</a></code> <code><a href="deprecated.html">getFile()</a></code> <code><a href="deprecated.html">databaseUrl()</a></code> <code><a href="deprecated.html">authTok()</a></code> <code><a href="deprecated.html">useCache()</a></code> <code><a href="deprecated.html">cacheDir()</a></code> <code><a href="deprecated.html">showWarnings()</a></code> <code><a href="deprecated.html">clearCache()</a></code> <code><a href="deprecated.html">verbose()</a></code> <code><a href="deprecated.html">`databaseUrl&lt;-`()</a></code> <code><a href="deprecated.html">`authTok&lt;-`()</a></code> <code><a href="deprecated.html">`useCache&lt;-`()</a></code> <code><a href="deprecated.html">`cacheDir&lt;-`()</a></code> <code><a href="deprecated.html">`showWarnings&lt;-`()</a></code> <code><a href="deprecated.html">`clearCache&lt;-`()</a></code> <code><a href="deprecated.html">`verbose&lt;-`()</a></code> <code><a href="deprecated.html">mgnify_client()</a></code> <code><a href="deprecated.html">mgnify_query()</a></code> <code><a href="deprecated.html">mgnify_analyses_from_samples()</a></code> <code><a href="deprecated.html">mgnify_analyses_from_studies()</a></code> <code><a href="deprecated.html">mgnify_get_download_urls()</a></code> <code><a href="deprecated.html">mgnify_download()</a></code> <code><a href="deprecated.html">mgnify_get_analyses_results()</a></code> <code><a href="deprecated.html">mgnify_get_analyses_phyloseq()</a></code> <code><a href="deprecated.html">mgnify_get_analyses_metadata()</a></code> <code><a href="deprecated.html">mgnify_retrieve_json()</a></code>
 
         </dt>
-        <dd>MgnifyClient accessors and mutators</dd>
+        <dd>Deprecated and defunct functions</dd>
 
         <dt>
 
-          <code><a href="MgnifyClient.html">MgnifyClient()</a></code>
+          <code><a href="fetchStudies.html">fetchStudies()</a></code> <code><a href="fetchStudies.html">fetchAnalyses()</a></code>
 
         </dt>
-        <dd>Constructor for creating a MgnifyClient object to allow the access to MGnify database.</dd>
+        <dd>Fetch taxonomic and functional profiles</dd>
 
         <dt>
 
-          <code><a href="deprecate.html">mgnify_client()</a></code> <code><a href="deprecate.html">mgnify_query()</a></code> <code><a href="deprecate.html">mgnify_analyses_from_samples()</a></code> <code><a href="deprecate.html">mgnify_analyses_from_studies()</a></code> <code><a href="deprecate.html">mgnify_get_download_urls()</a></code> <code><a href="deprecate.html">mgnify_download()</a></code> <code><a href="deprecate.html">mgnify_get_analyses_results()</a></code> <code><a href="deprecate.html">mgnify_get_analyses_phyloseq()</a></code> <code><a href="deprecate.html">mgnify_get_analyses_metadata()</a></code> <code><a href="deprecate.html">mgnify_retrieve_json()</a></code>
+          <code><a href="mgnifyLogin.html">mgnifyLogin()</a></code>
 
         </dt>
-        <dd>These functions will be deprecated. Please use other functions instead.</dd>
+        <dd>Log in to MGnify to access private data</dd>
 
         <dt>
 
-          <code><a href="doQuery.html">doQuery()</a></code>
+          <code><a href="searchStudies.html">searchStudies()</a></code> <code><a href="searchStudies.html">searchSamples()</a></code> <code><a href="searchStudies.html">searchAnalyses()</a></code>
 
         </dt>
-        <dd>Search MGnify database for studies, samples, runs, analyses, biomes, assemblies, and genomes.</dd>
-
-        <dt>
-
-          <code><a href="getData.html">getData()</a></code>
-
-        </dt>
-        <dd>Versatile function to retrieve raw results</dd>
-
-        <dt>
-
-          <code><a href="getFile.html">getFile()</a></code> <code><a href="getFile.html">searchFile()</a></code>
-
-        </dt>
-        <dd>Download any MGnify files, also including processed reads and identified protein sequences</dd>
-
-        <dt>
-
-          <code><a href="getMetadata.html">getMetadata()</a></code>
-
-        </dt>
-        <dd>Get all study, sample and analysis metadata for the supplied analysis accessions</dd>
-
-        <dt>
-
-          <code><a href="getResult.html">getResult()</a></code>
-
-        </dt>
-        <dd>Get microbial and/or functional profiling data for a list of accessions</dd>
-
-        <dt>
-
-          <code><a href="searchAnalysis.html">searchAnalysis()</a></code>
-
-        </dt>
-        <dd>Look up analysis accession IDs for one or more study or sample accessions</dd>
+        <dd>Search MGnify studies, samples and analyses</dd>
       </dl></div>
   </main></div>
 

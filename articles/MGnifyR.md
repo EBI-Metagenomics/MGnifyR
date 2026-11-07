@@ -2,29 +2,40 @@
 
 ## Introduction
 
-`MGnifyR` is a package designed to ease access to the EBI’s
-[MGnify](https://www.ebi.ac.uk/metagenomics) resource, allowing
-searching and retrieval of multiple datasets for downstream analysis.
+`MGnifyR` fetches microbiome data from
+[MGnify](https://www.ebi.ac.uk/metagenomics), EBI’s resource for the
+analysis of metagenomic, metatranscriptomic and amplicon data. In
+MGnify,
 
-The latest version of MGnifyR seamlessly integrates with the [miaverse
-framework](https://microbiome.github.io/) providing access to
-cutting-edge tools in microbiome down-stream analytics.
+- a **study** (e.g., `MGYS00005116`) is a collection of samples,
+- a **sample** (e.g., `SAMN02595037`) is a biological specimen, e.g., a
+  stool or soil sample,
+- a **run** (e.g., `SRR1144937`) is a sequencing of a sample, i.e., its
+  reads. A sample can have multiple runs, e.g., an amplicon and a
+  metagenome.
+- an **assembly** (e.g., `ERZ1746131`) is made of the reads of one or
+  more runs, and
+- an **analysis** (e.g., `MGYA00383350`) is a run or an assembly
+  processed with an MGnify **pipeline**. The data is fetched by
+  analysis, so each column of the result is an analysis. A run can be
+  analysed with multiple pipeline versions, so it can have multiple
+  analyses. An analysis usually has one run, but some have multiple
+  runs, e.g., runs that were analysed together.
+
+`MGnifyR` returns the data as a `TreeSummarizedExperiment`, so that it
+can be analysed directly with the [Orchestrating Microbiome Analysis
+with Bioconductor (OMA)](https://microbiome.github.io/) tools. See the
+[OMA book](https://microbiome.github.io/OMA/) for analysis examples.
 
 ## Installation
-
-`MGnifyR` is hosted on Bioconductor, and can be installed using via
-`BiocManager`.
 
 \
 `BiocManager``::`[`install`](https://bioconductor.github.io/BiocManager/reference/install.html)`(``"MGnifyR"``)`
 
-## Load `MGnifyR` package
-
-Once installed, `MGnifyR` is made available in the usual way.
-
 \
 [`library`](https://rdrr.io/r/base/library.html)`(`[`MGnifyR`](https://github.com/EBI-Metagenomics/MGnifyR)`)`\
-`#> Loading required package: MultiAssayExperiment`\
+`#> Loading required package: TreeSummarizedExperiment`\
+`#> Loading required package: SingleCellExperiment`\
 `#> Loading required package: SummarizedExperiment`\
 `#> Loading required package: MatrixGenerics`\
 `#> Loading required package: matrixStats`\
@@ -98,8 +109,6 @@ Once installed, `MGnifyR` is made available in the usual way.
 `#> The following objects are masked from 'package:matrixStats':`\
 `#> `\
 `#>     anyMissing, rowMedians`\
-`#> Loading required package: TreeSummarizedExperiment`\
-`#> Loading required package: SingleCellExperiment`\
 `#> Loading required package: Biostrings`\
 `#> Loading required package: XVector`\
 `#> `\
@@ -108,129 +117,284 @@ Once installed, `MGnifyR` is made available in the usual way.
 `#> `\
 `#>     strsplit`
 
-## Create a client
+## Browse studies
 
-All functions in `MGnifyR` make use of a `MgnifyClient` object to keep
-track of the JSONAPI url, disk cache location and user access tokens.
-Thus the first thing to do when starting any analysis is to instantiate
-this object. The following snippet creates this.
+[`searchStudies()`](../reference/searchStudies.md) returns a table of
+studies. Studies can be filtered by biome, pipeline version and text
+search, and sorted with `order`. The available biomes are listed in the
+[MGnify website](https://www.ebi.ac.uk/metagenomics/browse/biomes).
 
 \
-`mg`` ``<-`` `[`MgnifyClient`](../reference/MgnifyClient.md)`(``useCache ``=`` ``TRUE``)`\
-`mg`\
-`#> An object of class "MgnifyClient"`\
-`#> Slot "databaseUrl":`\
-`#> [1] "https://www.ebi.ac.uk/metagenomics/api/v1"`\
+`studies`` ``<-`` `[`searchStudies`](../reference/searchStudies.md)`(`\
+`    biome ``=`` ``"root:Engineered:Built environment"``, max.hits ``=`` ``10``)`\
+`studies``[``, `[`c`](https://rdrr.io/r/base/c.html)`(``"accession"``, ``"title"``, ``"biome_lineage"``)``]`\
+`#>       accession`\
+`#> 1  MGYS00001928`\
+`#> 2  MGYS00002607`\
+`#> 3  MGYS00004734`\
+`#> 4  MGYS00005116`\
+`#> 5  MGYS00005117`\
+`#> 6  MGYS00005289`\
+`#> 7  MGYS00005290`\
+`#> 8  MGYS00005291`\
+`#> 9  MGYS00005292`\
+`#> 10 MGYS00005293`\
+`#>                                                                                                                                   title`\
+`#> 1                                                                                                         Hot water plumbing microbiome`\
+`#> 2                                                                                                          Marine Aggregates Metagenome`\
+`#> 3                                                                                                                       ISS Metagenomes`\
+`#> 4                                                                  International Space Station vacuum cleaner bag Targeted Locus (Loci)`\
+`#> 5                                                                             Analysis of dust samples from the Russian part of the ISS`\
+`#> 6  Preparing for the manned Mars journey: Microbiome dynamics in the confined MARS 500 habitat during simulated Mars flight and landing`\
+`#> 7                                                                               Microbial diversity on kitchen sinks and bathroom tiles`\
+`#> 8                                                                                         Inflated Lunar/Mars Analog Habitat Microbiome`\
+`#> 9                                                               International Space Station Microbial Observatory - Microbial Diversity`\
+`#> 10                                                                            International Space Station flight project EXTREMOPHILES.`\
+`#>                        biome_lineage`\
+`#> 1  root:Engineered:Built environment`\
+`#> 2  root:Engineered:Built environment`\
+`#> 3  root:Engineered:Built environment`\
+`#> 4  root:Engineered:Built environment`\
+`#> 5  root:Engineered:Built environment`\
+`#> 6  root:Engineered:Built environment`\
+`#> 7  root:Engineered:Built environment`\
+`#> 8  root:Engineered:Built environment`\
+`#> 9  root:Engineered:Built environment`\
+`#> 10 root:Engineered:Built environment`
+
+## Fetch data
+
+Give the studies, or their accessions, to
+[`fetchStudies()`](../reference/fetchStudies.md). The taxonomic profiles
+of all the studies are fetched and combined into a single
+`TreeSummarizedExperiment`. Taxa are matched across studies by their
+taxonomy.
+
+\
+`tse`` ``<-`` `[`fetchStudies`](../reference/fetchStudies.md)`(``"MGYS00005116"``)`\
+`#> Fetching 2 analyses one by one, because they are missing from the summary tables of studies. This can take a while.`\
+`#> The data includes analyses from multiple pipeline versions (V4.1, V5, V6). Their profiles are based on different reference databases. Consider subsetting the result of searchAnalyses() and fetching the analyses with fetchAnalyses().`\
+`tse`\
+`#> class: TreeSummarizedExperiment `\
+`#> dim: 1014 6 `\
+`#> metadata(0):`\
+`#> assays(1): counts`\
+`#> rownames(1014): sk__Bacteria sk__Bacteria;k__;p__Acidobacteria ...`\
+`#>   sk__Eukaryota;k__Viridiplantae;p__Streptophyta;c__Magnoliopsida;o__Poales;f__Poaceae;g__Triticum`\
+`#>   sk__Eukaryota;k__Viridiplantae;p__Streptophyta;c__Magnoliopsida;o__Solanales;f__Solanaceae;g__Nicotiana;s__Nicotiana_attenuata`\
+`#> rowData names(8): superkingdom kingdom ... genus species`\
+`#> colnames(6): MGYA00383350 MGYA00383351 ... MGYA01026512 MGYA01026513`\
+`#> colData names(16): analysis_accession study_accession ...`\
+`#>   sample_updated_at abundance_table`\
+`#> reducedDimNames(0):`\
+`#> mainExpName: NULL`\
+`#> altExpNames(0):`\
+`#> rowLinks: NULL`\
+`#> rowTree: NULL`\
+`#> colLinks: NULL`\
+`#> colTree: NULL`
+
+The `colData` includes the accessions of the analysis, study, sample and
+run, the pipeline version and the other fields of the analyses in
+MGnify, e.g., the title of the sample (`sample_sample_title`). More
+metadata can be added from other sources: the samples in MGnify
+(`samples = TRUE`) and in BioSamples (`biosamples = TRUE`), and the
+studies (`studies = TRUE`). BioSamples has all the attributes of the
+samples, including study-specific variables, e.g., disease status or
+treatment. Each source needs its own requests, so they are not added by
+default. The data is cached, so adding a source later fetches only the
+new data.
+
+\
+`tse`` ``<-`` `[`fetchStudies`](../reference/fetchStudies.md)`(``"MGYS00005116"``, biosamples ``=`` ``TRUE``, studies ``=`` ``TRUE``)`\
+`#> Fetching 2 analyses one by one, because they are missing from the summary tables of studies. This can take a while.`\
+`#> The data includes analyses from multiple pipeline versions (V4.1, V5, V6). Their profiles are based on different reference databases. Consider subsetting the result of searchAnalyses() and fetching the analyses with fetchAnalyses().`\
+`colData``(``tse``)``[``, `[`c`](https://rdrr.io/r/base/c.html)`(`\
+`    ``"study_accession"``, ``"pipeline_version"``, ``"sample_accession"``, ``"run_accession"``,`\
+`    ``"study_biome_lineage"``)``]`\
+`#> DataFrame with 6 rows and 5 columns`\
+`#>              study_accession pipeline_version sample_accession run_accession`\
+`#>                  <character>      <character>      <character>   <character>`\
+`#> MGYA00383350    MGYS00005116             V4.1     SAMN02594912    SRR1139729`\
+`#> MGYA00383351    MGYS00005116             V4.1     SAMN02595037    SRR1144937`\
+`#> MGYA00571587    MGYS00005116               V5     SAMN02594912    SRR1139729`\
+`#> MGYA00571730    MGYS00005116               V5     SAMN02595037    SRR1144937`\
+`#> MGYA01026512    MGYS00005116               V6     SAMN02595037    SRR1144937`\
+`#> MGYA01026513    MGYS00005116               V6     SAMN02594912    SRR1139729`\
+`#>                 study_biome_lineage`\
+`#>                         <character>`\
+`#> MGYA00383350 root:Engineered:Buil..`\
+`#> MGYA00383351 root:Engineered:Buil..`\
+`#> MGYA00571587 root:Engineered:Buil..`\
+`#> MGYA00571730 root:Engineered:Buil..`\
+`#> MGYA01026512 root:Engineered:Buil..`\
+`#> MGYA01026513 root:Engineered:Buil..`\
+`# Columns of each source`\
+[`table`](https://rdrr.io/r/base/table.html)`(`[`sub`](https://rdrr.io/r/base/grep.html)`(``"_.*"``, ``""``, `[`colnames`](https://rdrr.io/r/base/colnames.html)`(``colData``(``tse``)``)``)``)`\
 `#> `\
-`#> Slot "authTok":`\
-`#> [1] NA`\
-`#> `\
-`#> Slot "useCache":`\
-`#> [1] TRUE`\
-`#> `\
-`#> Slot "cacheDir":`\
-`#> [1] "/tmp/RtmpUMs1Rh/.MGnifyR_cache"`\
-`#> `\
-`#> Slot "showWarnings":`\
-`#> [1] FALSE`\
-`#> `\
-`#> Slot "clearCache":`\
-`#> [1] FALSE`\
-`#> `\
-`#> Slot "verbose":`\
-`#> [1] TRUE`
+`#>  abundance   analysis   assembly biosamples experiment instrument   pipeline `\
+`#>          1          1          1         24          1          2          1 `\
+`#>        run     sample      study `\
+`#>          4          4         13`
 
-The `MgnifyClient` object contains slots for each of the previously
-mentioned settings.
-
-## Functions for fetching the data
-
-### Search data
-
-[`doQuery()`](../reference/doQuery.md) function can be utilized to
-search results such as samples and studies from MGnify database. Below,
-we fetch information drinking water samples.
+The `rowData` includes the taxonomy.
 
 \
-`# Fetch studies`\
-`samples`` ``<-`` `[`doQuery`](../reference/doQuery.md)`(`\
-`    ``mg``,`\
-`    type ``=`` ``"samples"``,`\
-`    biome_name ``=`` ``"root:Environmental:Aquatic:Freshwater:Drinking water"``,`\
-`    max.hits ``=`` ``10``)`
+[`head`](https://rdrr.io/r/utils/head.html)`(``rowData``(``tse``)``)`\
+`#> DataFrame with 6 rows and 8 columns`\
+`#>                                                                                                                superkingdom`\
+`#>                                                                                                                 <character>`\
+`#> sk__Bacteria                                                                                                       Bacteria`\
+`#> sk__Bacteria;k__;p__Acidobacteria                                                                                  Bacteria`\
+`#> sk__Bacteria;k__;p__Acidobacteria;c__Acidobacteriia;o__Acidobacteriales;f__Acidobacteriaceae                       Bacteria`\
+`#> sk__Bacteria;k__;p__Acidobacteria;c__Holophagae;o__Holophagales                                                    Bacteria`\
+`#> sk__Bacteria;k__;p__Actinobacteria                                                                                 Bacteria`\
+`#> sk__Bacteria;k__;p__Actinobacteria;c__Acidimicrobiia;o__Acidimicrobiales;f__Acidimicrobiaceae;g__Ilumatobacter     Bacteria`\
+`#>                                                                                                                    kingdom`\
+`#>                                                                                                                <character>`\
+`#> sk__Bacteria                                                                                                            NA`\
+`#> sk__Bacteria;k__;p__Acidobacteria                                                                                       NA`\
+`#> sk__Bacteria;k__;p__Acidobacteria;c__Acidobacteriia;o__Acidobacteriales;f__Acidobacteriaceae                            NA`\
+`#> sk__Bacteria;k__;p__Acidobacteria;c__Holophagae;o__Holophagales                                                         NA`\
+`#> sk__Bacteria;k__;p__Actinobacteria                                                                                      NA`\
+`#> sk__Bacteria;k__;p__Actinobacteria;c__Acidimicrobiia;o__Acidimicrobiales;f__Acidimicrobiaceae;g__Ilumatobacter          NA`\
+`#>                                                                                                                        phylum`\
+`#>                                                                                                                   <character>`\
+`#> sk__Bacteria                                                                                                               NA`\
+`#> sk__Bacteria;k__;p__Acidobacteria                                                                               Acidobacteria`\
+`#> sk__Bacteria;k__;p__Acidobacteria;c__Acidobacteriia;o__Acidobacteriales;f__Acidobacteriaceae                    Acidobacteria`\
+`#> sk__Bacteria;k__;p__Acidobacteria;c__Holophagae;o__Holophagales                                                 Acidobacteria`\
+`#> sk__Bacteria;k__;p__Actinobacteria                                                                             Actinobacteria`\
+`#> sk__Bacteria;k__;p__Actinobacteria;c__Acidimicrobiia;o__Acidimicrobiales;f__Acidimicrobiaceae;g__Ilumatobacter Actinobacteria`\
+`#>                                                                                                                         class`\
+`#>                                                                                                                   <character>`\
+`#> sk__Bacteria                                                                                                               NA`\
+`#> sk__Bacteria;k__;p__Acidobacteria                                                                                          NA`\
+`#> sk__Bacteria;k__;p__Acidobacteria;c__Acidobacteriia;o__Acidobacteriales;f__Acidobacteriaceae                   Acidobacteriia`\
+`#> sk__Bacteria;k__;p__Acidobacteria;c__Holophagae;o__Holophagales                                                    Holophagae`\
+`#> sk__Bacteria;k__;p__Actinobacteria                                                                                         NA`\
+`#> sk__Bacteria;k__;p__Actinobacteria;c__Acidimicrobiia;o__Acidimicrobiales;f__Acidimicrobiaceae;g__Ilumatobacter Acidimicrobiia`\
+`#>                                                                                                                           order`\
+`#>                                                                                                                     <character>`\
+`#> sk__Bacteria                                                                                                                 NA`\
+`#> sk__Bacteria;k__;p__Acidobacteria                                                                                            NA`\
+`#> sk__Bacteria;k__;p__Acidobacteria;c__Acidobacteriia;o__Acidobacteriales;f__Acidobacteriaceae                   Acidobacteriales`\
+`#> sk__Bacteria;k__;p__Acidobacteria;c__Holophagae;o__Holophagales                                                    Holophagales`\
+`#> sk__Bacteria;k__;p__Actinobacteria                                                                                           NA`\
+`#> sk__Bacteria;k__;p__Actinobacteria;c__Acidimicrobiia;o__Acidimicrobiales;f__Acidimicrobiaceae;g__Ilumatobacter Acidimicrobiales`\
+`#>                                                                                                                           family`\
+`#>                                                                                                                      <character>`\
+`#> sk__Bacteria                                                                                                                  NA`\
+`#> sk__Bacteria;k__;p__Acidobacteria                                                                                             NA`\
+`#> sk__Bacteria;k__;p__Acidobacteria;c__Acidobacteriia;o__Acidobacteriales;f__Acidobacteriaceae                   Acidobacteriaceae`\
+`#> sk__Bacteria;k__;p__Acidobacteria;c__Holophagae;o__Holophagales                                                               NA`\
+`#> sk__Bacteria;k__;p__Actinobacteria                                                                                            NA`\
+`#> sk__Bacteria;k__;p__Actinobacteria;c__Acidimicrobiia;o__Acidimicrobiales;f__Acidimicrobiaceae;g__Ilumatobacter Acidimicrobiaceae`\
+`#>                                                                                                                        genus`\
+`#>                                                                                                                  <character>`\
+`#> sk__Bacteria                                                                                                              NA`\
+`#> sk__Bacteria;k__;p__Acidobacteria                                                                                         NA`\
+`#> sk__Bacteria;k__;p__Acidobacteria;c__Acidobacteriia;o__Acidobacteriales;f__Acidobacteriaceae                              NA`\
+`#> sk__Bacteria;k__;p__Acidobacteria;c__Holophagae;o__Holophagales                                                           NA`\
+`#> sk__Bacteria;k__;p__Actinobacteria                                                                                        NA`\
+`#> sk__Bacteria;k__;p__Actinobacteria;c__Acidimicrobiia;o__Acidimicrobiales;f__Acidimicrobiaceae;g__Ilumatobacter Ilumatobacter`\
+`#>                                                                                                                    species`\
+`#>                                                                                                                <character>`\
+`#> sk__Bacteria                                                                                                            NA`\
+`#> sk__Bacteria;k__;p__Acidobacteria                                                                                       NA`\
+`#> sk__Bacteria;k__;p__Acidobacteria;c__Acidobacteriia;o__Acidobacteriales;f__Acidobacteriaceae                            NA`\
+`#> sk__Bacteria;k__;p__Acidobacteria;c__Holophagae;o__Holophagales                                                         NA`\
+`#> sk__Bacteria;k__;p__Actinobacteria                                                                                      NA`\
+`#> sk__Bacteria;k__;p__Actinobacteria;c__Acidimicrobiia;o__Acidimicrobiales;f__Acidimicrobiaceae;g__Ilumatobacter          NA`
 
-The result is a table containing accession IDs and description – in this
-case – on samples.
+### Pipeline versions
+
+The taxonomies of different pipeline versions are based on different
+reference databases, so they might not be directly comparable. To fetch
+analyses of a single pipeline version, select them with
+[`searchAnalyses()`](../reference/searchStudies.md) as shown below.
+
+## Types of profiles
+
+By default, small subunit rRNA (`"SSU"`) profiles are fetched. `type`
+tells which profile is fetched, e.g., `"mOTUs"` for metagenomes and
+metatranscriptomes, large subunit rRNA (`"LSU"`), `"UNITE"`,
+`"ITSoneDB"` or `"PR2"`. Only the analyses that have the type are
+fetched. See [`?fetchStudies`](../reference/fetchStudies.md) for all the
+types.
 
 \
-[`colnames`](https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html)`(``samples``)`` ``|>`` `[`head`](https://rdrr.io/r/utils/head.html)`(``)`\
-`#> [1] "biosample"            "accession"            "sample-desc"         `\
-`#> [4] "environment-biome"    "environment-feature"  "environment-material"`
+`tse_lsu`` ``<-`` `[`fetchStudies`](../reference/fetchStudies.md)`(``"MGYS00005116"``, type ``=`` ``"LSU"``)`\
+`#> Fetching 5 analyses one by one, because they are missing from the summary tables of studies. This can take a while.`\
+`#> No LSU abundance table could be fetched for 3 analyses (no such table, or it could not be downloaded): 'MGYA00383350', 'MGYA00383351', 'MGYA00571587'`\
+`#> The data includes analyses from multiple pipeline versions (V5, V6). Their profiles are based on different reference databases. Consider subsetting the result of searchAnalyses() and fetching the analyses with fetchAnalyses().`\
+`tse_lsu`\
+`#> class: TreeSummarizedExperiment `\
+`#> dim: 2 3 `\
+`#> metadata(0):`\
+`#> assays(1): counts`\
+`#> rownames(2):`\
+`#>   sk__Eukaryota;k__Fungi;p__Ascomycota;c__Saccharomycetes;o__Saccharomycetales`\
+`#>   Unclassified`\
+`#> rowData names(8): superkingdom kingdom ... genus species`\
+`#> colnames(3): MGYA00571730 MGYA01026512 MGYA01026513`\
+`#> colData names(16): analysis_accession study_accession ...`\
+`#>   sample_updated_at abundance_table`\
+`#> reducedDimNames(0):`\
+`#> mainExpName: NULL`\
+`#> altExpNames(0):`\
+`#> rowLinks: NULL`\
+`#> rowTree: NULL`\
+`#> colLinks: NULL`\
+`#> colTree: NULL`
 
-### Find relevent **analyses** accessions
+## Functional profiles
 
-Now we want to find analysis accessions. Each sample might have multiple
-analyses. Each analysis ID corresponds to a single run of a particular
-pipeline on a single sample in a single study.
+Metagenomes, metatranscriptomes and assemblies also have functional
+profiles:
 
-\
-`analyses_accessions`` ``<-`` `[`searchAnalysis`](../reference/searchAnalysis.md)`(``mg``, ``"samples"``, ``samples``$``accession``)`
+- `"InterPro"`, `"GO"` and `"GO-slim"`: pipelines v1-v6
+- `"Pfam"` and `"KO"` (KEGG orthologs): pipelines v5-v6
+- `"antiSMASH"` (biosynthetic gene clusters): assemblies of pipelines
+  v5-v6
 
-By running the [`searchAnalysis()`](../reference/searchAnalysis.md)
-function, we get a vector of analysis IDs of samples that we fed as an
-input.
-
-\
-`analyses_accessions`` ``|>`` `[`head`](https://rdrr.io/r/utils/head.html)`(``)`\
-`#> [1] "MGYA00652201" "MGYA00652185" "MGYA00643487" "MGYA00643486" "MGYA00643485"`\
-`#> [6] "MGYA00643484"`
-
-### Fetch metadata
-
-We can now check the metadata to get hint of what kind of data we have.
-We use [`getMetadata()`](../reference/getMetadata.md) function to fetch
-data based on analysis IDs.
-
-\
-`analyses_metadata`` ``<-`` `[`getMetadata`](../reference/getMetadata.md)`(``mg``, ``analyses_accessions``)`
-
-The returned value is a `data.frame` that includes metadata for example
-on how analysis was conducted and what kind of samples were analyzed.
-
-\
-[`colnames`](https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html)`(``analyses_metadata``)`` ``|>`` `[`head`](https://rdrr.io/r/utils/head.html)`(``)`\
-`#> [1] "analysis_analysis-status"  "analysis_pipeline-version"`\
-`#> [3] "analysis_experiment-type"  "analysis_accession"       `\
-`#> [5] "analysis_is-private"       "analysis_complete-time"`
-
-### Fetch microbiome data
-
-After we have selected the data to fetch, we can use
-[`getResult()`](../reference/getResult.md)
-
-The output is
-*[TreeSummarizedExperiment](https://bioconductor.org/packages/3.24/TreeSummarizedExperiment)*
-(`TreeSE`) or
-*[MultiAssayExperiment](https://bioconductor.org/packages/3.24/MultiAssayExperiment)*
-(`MAE`) depending on the dataset. If the dataset includes only taxonomic
-profiling data, the output is a single `TreeSE`. If dataset includes
-also functional data, the output is multiple `TreeSE` objects that are
-linked together by utilizing `MAE`.
+In pipeline v6, only assemblies have functional profiles. Amplicons have
+no functional profiles. The rows are, e.g., GO terms, and `rowData` has
+their descriptions.
 
 \
-`mae`` ``<-`` `[`getResult`](../reference/getResult.md)`(``mg``, accession ``=`` ``analyses_accessions``)`
+`analyses`` ``<-`` `[`searchAnalyses`](../reference/searchStudies.md)`(``"MGYS00001442"``)`\
+`analyses`` ``<-`` ``analyses``[``1``:``3``, ``]`\
+`tse_go`` ``<-`` `[`fetchAnalyses`](../reference/fetchStudies.md)`(``analyses``, type ``=`` ``"GO-slim"``)`\
+[`head`](https://rdrr.io/r/utils/head.html)`(``rowData``(``tse_go``)``)`\
+`#> DataFrame with 6 rows and 2 columns`\
+`#>                       description           category`\
+`#>                       <character>        <character>`\
+`#> GO:0000015 phosphopyruvate hydr.. cellular_component`\
+`#> GO:0000150   recombinase activity molecular_function`\
+`#> GO:0000160 phosphorelay signal .. biological_process`\
+`#> GO:0000166     nucleotide binding molecular_function`\
+`#> GO:0003674     molecular function molecular_function`\
+`#> GO:0003676   nucleic acid binding molecular_function`
+
+## Multiple profiles
+
+To fetch multiple types, give them all to `type`. The result is a
+`MultiAssayExperiment` with a `TreeSummarizedExperiment` for each type.
+The profiles are linked by the sample that was analysed, so, e.g., the
+taxonomic profile of an amplicon and the functional profile of a
+metagenome of the same sample are linked. Types that have no data are
+left out.
 
 \
+`mae`` ``<-`` `[`fetchAnalyses`](../reference/fetchStudies.md)`(``analyses``, type ``=`` `[`c`](https://rdrr.io/r/base/c.html)`(``"SSU"``, ``"GO-slim"``, ``"InterPro"``)``)`\
 `mae`\
-`#> A MultiAssayExperiment object of 6 listed`\
+`#> A MultiAssayExperiment object of 3 listed`\
 `#>  experiments with user-defined names and respective classes.`\
-`#>  Containing an ExperimentList class object of length 6:`\
-`#>  [1] microbiota: TreeSummarizedExperiment with 3506 rows and 50 columns`\
-`#>  [2] go-slim: TreeSummarizedExperiment with 116 rows and 38 columns`\
-`#>  [3] go-terms: TreeSummarizedExperiment with 3133 rows and 38 columns`\
-`#>  [4] interpro-identifiers: TreeSummarizedExperiment with 18223 rows and 38 columns`\
-`#>  [5] taxonomy: TreeSummarizedExperiment with 3617 rows and 50 columns`\
-`#>  [6] taxonomy-lsu: TreeSummarizedExperiment with 3378 rows and 42 columns`\
+`#>  Containing an ExperimentList class object of length 3:`\
+`#>  [1] SSU: TreeSummarizedExperiment with 441 rows and 3 columns`\
+`#>  [2] GO-slim: TreeSummarizedExperiment with 116 rows and 3 columns`\
+`#>  [3] InterPro: TreeSummarizedExperiment with 8495 rows and 3 columns`\
 `#> Functionality:`\
 `#>  experiments() - obtain the ExperimentList instance`\
 `#>  colData() - the primary/phenotype DataFrame`\
@@ -240,20 +404,81 @@ linked together by utilizing `MAE`.
 `#>  assays() - convert ExperimentList to a SimpleList of matrices`\
 `#>  exportClass() - save data to flat files`
 
-You can get access to individual `TreeSE` object in `MAE` by specifying
-index or name.
+Each profile is a `TreeSummarizedExperiment`, and the sample metadata is
+in `colData`.
 
 \
-`mae``[[``1``]``]`\
+`mae``[[``"GO-slim"``]``]`\
 `#> class: TreeSummarizedExperiment `\
-`#> dim: 3506 50 `\
+`#> dim: 116 3 `\
 `#> metadata(0):`\
 `#> assays(1): counts`\
-`#> rownames(3506): 82608 62797 ... 5820 6794`\
-`#> rowData names(9): Kingdom Phylum ... taxonomy1 taxonomy`\
-`#> colnames(50): MGYA00144458 MGYA00144419 ... MGYA00652185 MGYA00652201`\
-`#> colData names(64): analysis_analysis.status analysis_pipeline.version`\
-`#>   ... sample_geo.loc.name sample_instrument.model`\
+`#> rownames(116): GO:0000015 GO:0000150 ... GO:1902494 GO:1990204`\
+`#> rowData names(2): description category`\
+`#> colnames(3): MGYA00096976 MGYA00096977 MGYA00096978`\
+`#> colData names(16): analysis_accession study_accession ...`\
+`#>   sample_updated_at abundance_table`\
+`#> reducedDimNames(0):`\
+`#> mainExpName: NULL`\
+`#> altExpNames(0):`\
+`#> rowLinks: NULL`\
+`#> rowTree: NULL`\
+`#> colLinks: NULL`\
+`#> colTree: NULL`\
+`colData``(``mae``)`\
+`#> DataFrame with 3 rows and 8 columns`\
+`#>               study_accession sample_accession run_experiment_type`\
+`#>                   <character>      <character>         <character>`\
+`#> SAMEA53400418    MGYS00001442    SAMEA53400418         Metagenomic`\
+`#> SAMEA53410918    MGYS00001442    SAMEA53410918         Metagenomic`\
+`#> SAMEA53405668    MGYS00001442    SAMEA53405668         Metagenomic`\
+`#>               run_sample_accession run_study_accession  sample_ena_accessions`\
+`#>                        <character>         <character>            <character>`\
+`#> SAMEA53400418        SAMEA53400418        MGYS00001442 ["SAMEA53400418","ER..`\
+`#> SAMEA53410918        SAMEA53410918        MGYS00001442 ["SAMEA53410918","ER..`\
+`#> SAMEA53405668        SAMEA53405668        MGYS00001442 ["ERS1509322","SAMEA..`\
+`#>                sample_sample_title      sample_updated_at`\
+`#>                        <character>            <character>`\
+`#> SAMEA53400418 human gut metagenome 2026-10-31T12:19:07...`\
+`#> SAMEA53410918 human gut metagenome 2026-10-31T12:18:47...`\
+`#> SAMEA53405668 human gut metagenome 2026-10-31T12:18:46...`
+
+## Select analyses
+
+To select specific analyses, e.g., based on sample metadata, use
+[`searchAnalyses()`](../reference/searchStudies.md). It returns one row
+per analysis with the same columns as the `colData`. Filter the table
+and give it to [`fetchAnalyses()`](../reference/fetchStudies.md).
+
+\
+`analyses`` ``<-`` `[`searchAnalyses`](../reference/searchStudies.md)`(``"MGYS00005116"``)`\
+`analyses``[``, `[`c`](https://rdrr.io/r/base/c.html)`(``"analysis_accession"``, ``"pipeline_version"``, ``"sample_accession"``)``]`\
+`#>   analysis_accession pipeline_version sample_accession`\
+`#> 1       MGYA01026512               V6     SAMN02595037`\
+`#> 2       MGYA01026513               V6     SAMN02594912`\
+`#> 3       MGYA00383350             V4.1     SAMN02594912`\
+`#> 4       MGYA00383351             V4.1     SAMN02595037`\
+`#> 5       MGYA00571587               V5     SAMN02594912`\
+`#> 6       MGYA00571730               V5     SAMN02595037`\
+\
+`analyses`` ``<-`` ``analyses``[``analyses``[[``"pipeline_version"``]``]`` ``==`` ``"V6"``, ``]`\
+`tse`` ``<-`` `[`fetchAnalyses`](../reference/fetchStudies.md)`(``analyses``)`\
+`#> Fetching 2 analyses one by one, because they are missing from the summary tables of studies. This can take a while.`\
+`tse`\
+`#> class: TreeSummarizedExperiment `\
+`#> dim: 520 2 `\
+`#> metadata(0):`\
+`#> assays(1): counts`\
+`#> rownames(520):`\
+`#>   sk__Bacteria;k__;p__Actinomycetota;c__Actinomycetes;o__Propionibacteriales;f__Propionibacteriaceae;g__Cutibacterium`\
+`#>   sk__Bacteria;k__;p__Bacillota;c__Bacilli;o__Bacillales;f__Staphylococcaceae;g__Staphylococcus`\
+`#>   ...`\
+`#>   sk__Eukaryota;k__Viridiplantae;p__Streptophyta;c__Magnoliopsida;o__Poales;f__Poaceae;g__Triticum`\
+`#>   sk__Eukaryota;k__Viridiplantae;p__Streptophyta;c__Magnoliopsida;o__Solanales;f__Solanaceae;g__Nicotiana;s__Nicotiana_attenuata`\
+`#> rowData names(8): superkingdom kingdom ... genus species`\
+`#> colnames(2): MGYA01026512 MGYA01026513`\
+`#> colData names(16): analysis_accession study_accession ...`\
+`#>   sample_updated_at abundance_table`\
 `#> reducedDimNames(0):`\
 `#> mainExpName: NULL`\
 `#> altExpNames(0):`\
@@ -262,141 +487,68 @@ index or name.
 `#> colLinks: NULL`\
 `#> colTree: NULL`
 
-`TreeSE` object is uniquely positioned to support
-`SummarizedExperiment`-based microbiome data manipulation and
-visualization. Moreover, it enables access to `miaverse` tools. For
-example, we can estimate diversity of samples…
+A study can have several experiment types, e.g., metatranscriptomes and
+assemblies. Select them by `experiment_type`.
 
 \
-[`library`](https://rdrr.io/r/base/library.html)`(`[`mia`](https://microbiome.github.io/mia/)`)`\
-`#> This is mia version 1.21.11`\
-`#> - Online documentation and vignettes: https://microbiome.github.io/mia/`\
-`#> - Online book 'Orchestrating Microbiome Analysis (OMA)': https://bioconductor.org/books/release/OMA/`\
-\
-`mae``[[``1``]``]`` ``<-`` `[`estimateDiversity`](https://microbiome.github.io/mia/reference/deprecate.html)`(``mae``[[``1``]``]``, index ``=`` ``"shannon"``)`\
-`#> Warning in estimateDiversity(mae[[1]], index = "shannon"): 'estimateDiversity'`\
-`#> is deprecated. Use 'addAlpha' instead.`\
-\
-[`library`](https://rdrr.io/r/base/library.html)`(`[`scater`](http://bioconductor.org/packages/scater/)`)`\
-`#> Loading required package: scuttle`\
-`#> Loading required package: ggplot2`\
-\
-[`plotColData`](https://rdrr.io/pkg/scater/man/plotColData.html)`(``mae``[[``1``]``]``, ``"shannon"``, x ``=`` ``"sample_environment..biome."``)`
-
-![](MGnifyR_files/figure-html/calculate_diversity-1.png)
-
-… and plot abundances of most abundant phyla.
-
-\
-`# Agglomerate data`\
-[`altExps`](https://rdrr.io/pkg/SingleCellExperiment/man/altExps.html)`(``mae``[[``1``]``]``)`` ``<-`` `[`splitByRanks`](https://microbiome.github.io/mia/reference/agglomerate-methods.html)`(``mae``[[``1``]``]``)`\
-`#> Duplicated labels were made unique.`\
-`#> Duplicated labels were made unique.`\
-\
-[`library`](https://rdrr.io/r/base/library.html)`(`[`miaViz`](https://github.com/microbiome/miaViz)`)`\
-`#> Loading required package: ggraph`\
+`analyses`` ``<-`` `[`searchAnalyses`](../reference/searchStudies.md)`(``"MGYS00006572"``)`\
+[`table`](https://rdrr.io/r/base/table.html)`(``analyses``[[``"experiment_type"``]``]``)`\
 `#> `\
-`#> Attaching package: 'miaViz'`\
-`#> The following object is masked from 'package:scater':`\
+`#>           Assembly Metatranscriptomic `\
+`#>                  2                  2`\
+\
+`analyses`` ``<-`` ``analyses``[``analyses``[[``"experiment_type"``]``]`` ``==`` ``"Metatranscriptomic"``, ``]`\
+`mae`` ``<-`` `[`fetchAnalyses`](../reference/fetchStudies.md)`(``analyses``, type ``=`` `[`c`](https://rdrr.io/r/base/c.html)`(``"SSU"``, ``"GO-slim"``)``)`\
+`mae`\
+`#> A MultiAssayExperiment object of 2 listed`\
+`#>  experiments with user-defined names and respective classes.`\
+`#>  Containing an ExperimentList class object of length 2:`\
+`#>  [1] SSU: TreeSummarizedExperiment with 403 rows and 2 columns`\
+`#>  [2] GO-slim: TreeSummarizedExperiment with 116 rows and 2 columns`\
+`#> Functionality:`\
+`#>  experiments() - obtain the ExperimentList instance`\
+`#>  colData() - the primary/phenotype DataFrame`\
+`#>  sampleMap() - the sample coordination DataFrame`\
+`` #>  `$`, `[`, `[[` - extract colData columns, subset, or experiment ``\
+`#>  *Format() - convert into a long or wide DataFrame`\
+`#>  assays() - convert ExperimentList to a SimpleList of matrices`\
+`#>  exportClass() - save data to flat files`
+
+[`fetchAnalyses()`](../reference/fetchStudies.md) also accepts analysis
+accessions, and [`searchSamples()`](../reference/searchStudies.md)
+returns the samples of studies.
+
+The arguments `samples`, `biosamples` and `studies` (see Fetch data)
+choose the sources of metadata in
+[`searchAnalyses()`](../reference/searchStudies.md) too. Also the
+details of the analyses (`analyses = TRUE`), e.g., the quality control
+of pipeline v6, and of the assemblies (`assemblies = TRUE`) can be
+added. They need one request per analysis or assembly.
+
+\
+`analyses`` ``<-`` `[`searchAnalyses`](../reference/searchStudies.md)`(``"MGYS00005116"``, analyses ``=`` ``TRUE``)`\
+[`table`](https://rdrr.io/r/base/table.html)`(`[`sub`](https://rdrr.io/r/base/grep.html)`(``"_.*"``, ``""``, `[`colnames`](https://rdrr.io/r/base/colnames.html)`(``analyses``)``)``)`\
 `#> `\
-`#>     plotHeatmap`\
-`#> The following object is masked from 'package:mia':`\
-`#> `\
-`#>     plotNMDS`\
-\
-`# Plot top taxa`\
-`top_taxa`` ``<-`` `[`getTopFeatures`](https://microbiome.github.io/mia/reference/deprecate.html)`(`[`altExp`](https://rdrr.io/pkg/SingleCellExperiment/man/altExps.html)`(``mae``[[``1``]``]``, ``"Phylum"``)``, ``10``)`\
-`#> Warning in getTopFeatures(altExp(mae[[1]], "Phylum"), 10): 'getTopFeatures' is`\
-`#> deprecated. Use 'getTop' instead.`\
-[`plotAbundance`](https://rdrr.io/pkg/miaViz/man/plotAbundance.html)`(`\
-`    `[`altExp`](https://rdrr.io/pkg/SingleCellExperiment/man/altExps.html)`(``mae``[[``1``]``]``, ``"Phylum"``)``[``top_taxa``, ``]``,`\
-`    rank ``=`` ``"Phylum"``,`\
-`    as.relative ``=`` ``TRUE`\
-`    ``)`\
-`` #> Warning: The following values are already present in `metadata` and will be ``\
-`#> overwritten: 'agglomerated_by_rank'. Consider using the 'name' argument to`\
-`#> specify alternative names.`\
-`#> Warning: Removed 107 rows containing missing values or values outside the scale range`\
-`` #> (`geom_bar()`). ``
+`#>   analysis   assembly experiment instrument   pipeline        run     sample `\
+`#>         48          1          1          2          1          4          4 `\
+`#>      study `\
+`#>          1`
 
-![](MGnifyR_files/figure-html/plot_abundance-1.png)
+## Caching and private data
 
-We can also perform other analyses such as principal component analysis
-to microbial profiling data by utilizing miaverse tools.
+Downloaded data is cached for the R session, so repeated calls are fast.
+To keep the cache between sessions, set a cache directory.
 
 \
-`# Apply relative transformation`\
-`mae``[[``1``]``]`` ``<-`` `[`transformAssay`](https://microbiome.github.io/mia/reference/transformAssay.html)`(``mae``[[``1``]``]``, method ``=`` ``"relabundance"``)`\
-`# Perform PCoA`\
-`mae``[[``1``]``]`` ``<-`` `[`runMDS`](https://rdrr.io/pkg/scater/man/runMDS.html)`(`\
-`    ``mae``[[``1``]``]``, assay.type ``=`` ``"relabundance"``,`\
-`    FUN ``=`` ``vegan``::`[`vegdist`](https://vegandevs.github.io/vegan/reference/vegdist.html)`, method ``=`` ``"bray"``)`\
-`# Plot`\
-[`plotReducedDim`](https://rdrr.io/pkg/scater/man/plotReducedDim.html)`(`\
-`    ``mae``[[``1``]``]``, ``"MDS"``, colour_by ``=`` ``"sample_environment..biome."``)`
+[`options`](https://rdrr.io/r/base/options.html)`(``MGnifyR.cache ``=`` ``"path/to/cache"``)`
 
-![](MGnifyR_files/figure-html/pcoa-1.png)
-
-### Fetch raw files
-
-While [`getResult()`](../reference/getResult.md) can be utilized to
-retrieve microbial profiling data,
-[`getData()`](../reference/getData.md) can be used more flexibly to
-retrieve any kind of data from the database. It returns data as simple
-data.frame or list format.
+Most MGnify data is public. To access private data, log in with ENA
+Webin credentials.
 
 \
-`publications`` ``<-`` `[`getData`](../reference/getData.md)`(``mg``, type ``=`` ``"publications"``)`
+[`mgnifyLogin`](../reference/mgnifyLogin.md)`(``"Webin-1122334"``, ``"SecretPassword"``)`
 
-\
-[`colnames`](https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html)`(``publications``)`` ``|>`` `[`head`](https://rdrr.io/r/utils/head.html)`(``)`\
-`#> [1] "document.id"                  "type"                        `\
-`#> [3] "id"                           "attributes.pubmed-id"        `\
-`#> [5] "attributes.pubmed-central-id" "attributes.pub-title"`
-
-The result is a `data.frame` by default. In this case, it includes
-information on publications fetched from the data portal.
-
-### Fetch sequence files
-
-Finally, we can use [`searchFile()`](../reference/getFile.md) and
-[`getFile()`](../reference/getFile.md) to retrieve other MGnify pipeline
-outputs such as merged sequence reads, assembled contigs, and details of
-the functional analyses.
-
-With [`searchFile()`](../reference/getFile.md), we can search files from
-the database.
-
-\
-`dl_urls`` ``<-`` `[`searchFile`](../reference/getFile.md)`(``mg``, ``analyses_accessions``, type ``=`` ``"analyses"``)`
-
-The returned table contains search results related to analyses that we
-fed as an input. The table contains information on file and also URL
-address from where the file can be loaded.
-
-\
-`target_urls`` ``<-`` ``dl_urls``[`\
-`    ``dl_urls``$``attributes.description.label`` ``==`` ``"Predicted alpha tmRNA"``, ``]`\
-\
-[`colnames`](https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html)`(``target_urls``)`` ``|>`` `[`head`](https://rdrr.io/r/utils/head.html)`(``)`\
-`#> [1] "type"                               "id"                                `\
-`#> [3] "attributes.alias"                   "attributes.file.format.name"       `\
-`#> [5] "attributes.file.format.extension"   "attributes.file.format.compression"`
-
-Finally, we can download the files with
-[`getFile()`](../reference/getFile.md).
-
-\
-`# Just select a single file from the target_urls list for demonstration.`\
-`file_url`` ``<-`` ``target_urls``$``download_url``[[``1``]``]`\
-`cached_location`` ``<-`` `[`getFile`](../reference/getFile.md)`(``mg``, ``file_url``)`
-
-The function returns a path where the file is stored.
-
-\
-`# Where are the files?`\
-`cached_location`\
-`#> [1] "/.MGnifyR_cache/analyses/MGYA00652201/file/ERZ20300939_alpha_tmRNA.RF01849.fasta.gz"`
+## Session info
 
 \
 [`sessionInfo`](https://rdrr.io/r/utils/sessionInfo.html)`(``)`\
@@ -424,78 +576,37 @@ The function returns a path where the file is stored.
 `#> [8] base     `\
 `#> `\
 `#> other attached packages:`\
-`#>  [1] miaViz_1.21.7                   ggraph_2.2.2                   `\
-`#>  [3] scater_1.41.2                   ggplot2_4.0.3                  `\
-`#>  [5] scuttle_1.23.2                  mia_1.21.11                    `\
-`#>  [7] MGnifyR_1.9.1                   TreeSummarizedExperiment_2.21.0`\
-`#>  [9] Biostrings_2.81.9               XVector_0.53.0                 `\
-`#> [11] SingleCellExperiment_1.35.2     MultiAssayExperiment_1.39.1    `\
-`#> [13] SummarizedExperiment_1.43.0     Biobase_2.73.2                 `\
-`#> [15] GenomicRanges_1.65.4            Seqinfo_1.3.2                  `\
-`#> [17] IRanges_2.47.5                  S4Vectors_0.51.10              `\
-`#> [19] BiocGenerics_0.59.12            generics_0.1.4                 `\
-`#> [21] MatrixGenerics_1.25.0           matrixStats_1.5.0              `\
-`#> [23] knitr_1.52                      BiocStyle_2.41.0               `\
+`#>  [1] MGnifyR_1.99.0                  TreeSummarizedExperiment_2.21.0`\
+`#>  [3] Biostrings_2.81.9               XVector_0.53.0                 `\
+`#>  [5] SingleCellExperiment_1.35.2     SummarizedExperiment_1.43.0    `\
+`#>  [7] Biobase_2.73.2                  GenomicRanges_1.65.4           `\
+`#>  [9] Seqinfo_1.3.2                   IRanges_2.47.5                 `\
+`#> [11] S4Vectors_0.51.10               BiocGenerics_0.59.12           `\
+`#> [13] generics_0.1.4                  MatrixGenerics_1.25.0          `\
+`#> [15] matrixStats_1.5.0              `\
 `#> `\
 `#> loaded via a namespace (and not attached):`\
-`#>   [1] RColorBrewer_1.1-3          jsonlite_2.0.0             `\
-`#>   [3] magrittr_2.0.5              ggbeeswarm_0.7.3           `\
-`#>   [5] farver_2.1.2                rmarkdown_2.32             `\
-`#>   [7] fs_2.1.0                    ragg_1.5.2                 `\
-`#>   [9] vctrs_0.7.3                 memoise_2.0.1              `\
-`#>  [11] DelayedMatrixStats_1.35.0   ggtree_4.3.0               `\
-`#>  [13] htmltools_0.5.9             S4Arrays_1.13.2            `\
-`#>  [15] BiocBaseUtils_1.15.1        BiocNeighbors_2.7.3        `\
-`#>  [17] janeaustenr_1.0.0           gridGraphics_0.5-1         `\
-`#>  [19] SparseArray_1.13.4          sass_0.4.10                `\
-`#>  [21] bslib_0.12.0                tokenizers_0.3.0           `\
-`#>  [23] htmlwidgets_1.6.4           desc_1.4.3                 `\
-`#>  [25] plyr_1.8.9                  DECIPHER_3.9.3             `\
-`#>  [27] cachem_1.1.0                igraph_2.3.4               `\
-`#>  [29] lifecycle_1.0.5             pkgconfig_2.0.3            `\
-`#>  [31] rsvd_1.0.6                  Matrix_1.7-6               `\
-`#>  [33] R6_2.6.1                    fastmap_1.2.0              `\
-`#>  [35] tidytext_0.4.3              digest_0.6.39              `\
-`#>  [37] aplot_0.3.2                 ggnewscale_0.5.2           `\
-`#>  [39] patchwork_1.3.2             irlba_2.4.1                `\
-`#>  [41] SnowballC_0.7.1             textshaping_1.0.5          `\
-`#>  [43] vegan_2.7-6                 beachmat_2.29.3            `\
-`#>  [45] labeling_0.4.3              urltools_1.7.3.1           `\
-`#>  [47] httr_1.4.9                  polyclip_1.10-7            `\
-`#>  [49] abind_1.4-8                 mgcv_1.9-4                 `\
-`#>  [51] compiler_4.6.1              fontquiver_0.2.1           `\
-`#>  [53] withr_3.0.3                 S7_0.2.2                   `\
-`#>  [55] BiocParallel_1.47.0         viridis_0.6.5              `\
-`#>  [57] DBI_1.3.0                   ggforce_0.5.0              `\
-`#>  [59] MASS_7.3-66                 rappdirs_0.3.4             `\
-`#>  [61] DelayedArray_0.39.8         bluster_1.23.1             `\
-`#>  [63] permute_0.9-10              tools_4.6.1                `\
-`#>  [65] vipor_0.4.7                 otel_0.2.0                 `\
-`#>  [67] beeswarm_0.4.0              ape_5.8-1                  `\
-`#>  [69] glue_1.8.1                  nlme_3.1-171               `\
-`#>  [71] grid_4.6.1                  cluster_2.1.8.3            `\
-`#>  [73] reshape2_1.4.5              gtable_0.3.6               `\
-`#>  [75] tidyr_1.3.2                 BiocSingular_1.29.2        `\
-`#>  [77] tidygraph_1.3.1             ScaledMatrix_1.21.0        `\
-`#>  [79] ggrepel_0.9.8               pillar_1.11.1              `\
-`#>  [81] stringr_1.6.0               yulab.utils_0.2.5          `\
-`#>  [83] splines_4.6.1               dplyr_1.2.1                `\
-`#>  [85] tweenr_2.0.3                treeio_1.37.1              `\
-`#>  [87] lattice_0.23-1              tidyselect_1.2.1           `\
-`#>  [89] DirichletMultinomial_1.55.1 fontLiberation_0.1.0       `\
-`#>  [91] fontBitstreamVera_0.1.1     gridExtra_2.3.1            `\
-`#>  [93] bookdown_0.48               xfun_0.62                  `\
-`#>  [95] graphlayouts_1.2.5          stringi_1.8.9              `\
-`#>  [97] ggfun_0.2.2                 lazyeval_0.2.3             `\
-`#>  [99] yaml_2.3.12                 evaluate_1.0.5             `\
-`#> [101] codetools_0.2-20            gdtools_0.5.2              `\
-`#> [103] tibble_3.3.1                BiocManager_1.30.27        `\
-`#> [105] ggplotify_0.1.4             cli_3.6.6                  `\
-`#> [107] systemfonts_1.3.2           jquerylib_0.1.4            `\
-`#> [109] Rcpp_1.1.2                  triebeard_0.4.1            `\
-`#> [111] parallel_4.6.1              pkgdown_2.2.1              `\
-`#> [113] sparseMatrixStats_1.25.0    decontam_1.33.0            `\
-`#> [115] viridisLite_0.4.3           tidytree_0.4.8             `\
-`#> [117] ggiraph_0.9.6               scales_1.4.0               `\
-`#> [119] purrr_1.2.2                 crayon_1.5.3               `\
-`#> [121] rlang_1.3.0`
+`#>  [1] yulab.utils_0.2.5           rappdirs_0.3.4             `\
+`#>  [3] tidyr_1.3.2                 SparseArray_1.13.4         `\
+`#>  [5] lattice_0.23-1              digest_0.6.39              `\
+`#>  [7] magrittr_2.0.5              evaluate_1.0.5             `\
+`#>  [9] grid_4.6.1                  fastmap_1.2.0              `\
+`#> [11] jsonlite_2.0.0              Matrix_1.7-6               `\
+`#> [13] ape_5.8-1                   purrr_1.2.2                `\
+`#> [15] lazyeval_0.2.3              codetools_0.2-20           `\
+`#> [17] abind_1.4-8                 cli_3.6.6                  `\
+`#> [19] rlang_1.3.0                 crayon_1.5.3               `\
+`#> [21] tidytree_0.4.8              DelayedArray_0.39.8        `\
+`#> [23] yaml_2.3.12                 otel_0.2.0                 `\
+`#> [25] S4Arrays_1.13.2             tools_4.6.1                `\
+`#> [27] parallel_4.6.1              BiocParallel_1.47.0        `\
+`#> [29] dplyr_1.2.1                 MultiAssayExperiment_1.39.1`\
+`#> [31] curl_8.1.0                  vctrs_0.7.3                `\
+`#> [33] R6_2.6.1                    lifecycle_1.0.5            `\
+`#> [35] fs_2.1.0                    treeio_1.37.1              `\
+`#> [37] pkgconfig_2.0.3             pillar_1.11.1              `\
+`#> [39] glue_1.8.1                  Rcpp_1.1.2                 `\
+`#> [41] xfun_0.62                   tibble_3.3.1               `\
+`#> [43] tidyselect_1.2.1            knitr_1.52                 `\
+`#> [45] htmltools_0.5.9             nlme_3.1-171               `\
+`#> [47] rmarkdown_2.32              compiler_4.6.1`

@@ -10,7 +10,9 @@
 <link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="MGnifyR">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><script src="MGnifyR_files/libs/quarto-html/popper.min.js"></script><script src="MGnifyR_files/libs/quarto-html/tippy.umd.min.js"></script><link href="MGnifyR_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="MGnifyR_files/libs/quarto-html/light-border.css" rel="stylesheet">
+<!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="MGnifyR">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -20,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">MGnifyR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.99.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -31,13 +33,6 @@
       <ul class="navbar-nav me-auto">
 <li class="active nav-item"><a class="nav-link" href="../articles/MGnifyR.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
-<li class="nav-item dropdown">
-  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/MGnify_course.html">Metagenomics bioinformatics at MGnify</a></li>
-    <li><a class="dropdown-item" href="../articles/MGnifyR_long.html">MGnifyR, extended vignette</a></li>
-  </ul>
-</li>
       </ul>
 <ul class="navbar-nav">
 <li class="nav-item"><form class="form-inline" role="search">
@@ -49,50 +44,46 @@
 
 
   </div>
-</nav><div class="container template-article">
-
-
-
-
+</nav><div class="container template-quarto">
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>MGnifyR</h1>
-            
-            <h4 data-toc-skip class="date">2026-10-19</h4>
-      
-      <small class="dont-index">Source: <a href="https://github.com/EBI-Metagenomics/MGnifyR/blob/devel/vignettes/MGnifyR.Rmd" class="external-link"><code>vignettes/MGnifyR.Rmd</code></a></small>
-      <div class="d-none name"><code>MGnifyR.Rmd</code></div>
+
+
+      <p class="date">2026-11-07</p>
+
+      <small class="dont-index">Source: <a href="https://github.com/EBI-Metagenomics/MGnifyR/blob/v2/vignettes/MGnifyR.qmd" class="external-link"><code>vignettes/MGnifyR.qmd</code></a></small>
+      <div class="d-none name"><code></code></div>
     </div>
 
-    
-    
-<div class="section level2">
-<h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
+
+
+
+
+
+    <section class="section level2"><h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
-<p><code>MGnifyR</code> is a package designed to ease access to the
-EBI’s <a href="https://www.ebi.ac.uk/metagenomics" class="external-link">MGnify</a> resource,
-allowing searching and retrieval of multiple datasets for downstream
-analysis.</p>
-<p>The latest version of MGnifyR seamlessly integrates with the <a href="https://microbiome.github.io/" class="external-link">miaverse framework</a> providing
-access to cutting-edge tools in microbiome down-stream analytics.</p>
-</div>
-<div class="section level2">
-<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+<p><code>MGnifyR</code> fetches microbiome data from <a href="https://www.ebi.ac.uk/metagenomics" class="external-link">MGnify</a>, EBI’s resource for the analysis of metagenomic, metatranscriptomic and amplicon data. In MGnify,</p>
+<ul>
+<li>a <strong>study</strong> (e.g., <code>MGYS00005116</code>) is a collection of samples,</li>
+<li>a <strong>sample</strong> (e.g., <code>SAMN02595037</code>) is a biological specimen, e.g., a stool or soil sample,</li>
+<li>a <strong>run</strong> (e.g., <code>SRR1144937</code>) is a sequencing of a sample, i.e., its reads. A sample can have multiple runs, e.g., an amplicon and a metagenome.</li>
+<li>an <strong>assembly</strong> (e.g., <code>ERZ1746131</code>) is made of the reads of one or more runs, and</li>
+<li>an <strong>analysis</strong> (e.g., <code>MGYA00383350</code>) is a run or an assembly processed with an MGnify <strong>pipeline</strong>. The data is fetched by analysis, so each column of the result is an analysis. A run can be analysed with multiple pipeline versions, so it can have multiple analyses. An analysis usually has one run, but some have multiple runs, e.g., runs that were analysed together.</li>
+</ul>
+<p><code>MGnifyR</code> returns the data as a <code>TreeSummarizedExperiment</code>, so that it can be analysed directly with the <a href="https://microbiome.github.io/" class="external-link">Orchestrating Microbiome Analysis with Bioconductor (OMA)</a> tools. See the <a href="https://microbiome.github.io/OMA/" class="external-link">OMA book</a> for analysis examples.</p>
+</section><section class="section level2"><h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p><code>MGnifyR</code> is hosted on Bioconductor, and can be installed
-using via <code>BiocManager</code>.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"MGnifyR"</span><span class="op">)</span></span></code></pre></div>
 </div>
-<div class="section level2">
-<h2 id="load-mgnifyr-package">Load <code>MGnifyR</code> package<a class="anchor" aria-label="anchor" href="#load-mgnifyr-package"></a>
-</h2>
-<p>Once installed, <code>MGnifyR</code> is made available in the usual
-way.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/EBI-Metagenomics/MGnifyR" class="external-link">MGnifyR</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; Loading required package: MultiAssayExperiment</span></span>
+<span><span class="co">#&gt; Loading required package: TreeSummarizedExperiment</span></span>
+<span><span class="co">#&gt; Loading required package: SingleCellExperiment</span></span>
 <span><span class="co">#&gt; Loading required package: SummarizedExperiment</span></span>
 <span><span class="co">#&gt; Loading required package: MatrixGenerics</span></span>
 <span><span class="co">#&gt; Loading required package: matrixStats</span></span>
@@ -166,8 +157,6 @@ way.</p>
 <span><span class="co">#&gt; The following objects are masked from 'package:matrixStats':</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;     anyMissing, rowMedians</span></span>
-<span><span class="co">#&gt; Loading required package: TreeSummarizedExperiment</span></span>
-<span><span class="co">#&gt; Loading required package: SingleCellExperiment</span></span>
 <span><span class="co">#&gt; Loading required package: Biostrings</span></span>
 <span><span class="co">#&gt; Loading required package: XVector</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -176,121 +165,253 @@ way.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;     strsplit</span></span></code></pre></div>
 </div>
-<div class="section level2">
-<h2 id="create-a-client">Create a client<a class="anchor" aria-label="anchor" href="#create-a-client"></a>
+</section><section class="section level2"><h2 id="browse-studies">Browse studies<a class="anchor" aria-label="anchor" href="#browse-studies"></a>
 </h2>
-<p>All functions in <code>MGnifyR</code> make use of a
-<code>MgnifyClient</code> object to keep track of the JSONAPI url, disk
-cache location and user access tokens. Thus the first thing to do when
-starting any analysis is to instantiate this object. The following
-snippet creates this.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">mg</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/MgnifyClient.html">MgnifyClient</a></span><span class="op">(</span>useCache <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="va">mg</span></span>
-<span><span class="co">#&gt; An object of class "MgnifyClient"</span></span>
-<span><span class="co">#&gt; Slot "databaseUrl":</span></span>
-<span><span class="co">#&gt; [1] "https://www.ebi.ac.uk/metagenomics/api/v1"</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Slot "authTok":</span></span>
-<span><span class="co">#&gt; [1] NA</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Slot "useCache":</span></span>
-<span><span class="co">#&gt; [1] TRUE</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Slot "cacheDir":</span></span>
-<span><span class="co">#&gt; [1] "/tmp/RtmpUMs1Rh/.MGnifyR_cache"</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Slot "showWarnings":</span></span>
-<span><span class="co">#&gt; [1] FALSE</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Slot "clearCache":</span></span>
-<span><span class="co">#&gt; [1] FALSE</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Slot "verbose":</span></span>
-<span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
-<p>The <code>MgnifyClient</code> object contains slots for each of the
-previously mentioned settings.</p>
+<p><code><a href="../reference/searchStudies.html">searchStudies()</a></code> returns a table of studies. Studies can be filtered by biome, pipeline version and text search, and sorted with <code>order</code>. The available biomes are listed in the <a href="https://www.ebi.ac.uk/metagenomics/browse/biomes" class="external-link">MGnify website</a>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">studies</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/searchStudies.html">searchStudies</a></span><span class="op">(</span></span>
+<span>    biome <span class="op">=</span> <span class="st">"root:Engineered:Built environment"</span>, max.hits <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
+<span><span class="va">studies</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"accession"</span>, <span class="st">"title"</span>, <span class="st">"biome_lineage"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt;       accession</span></span>
+<span><span class="co">#&gt; 1  MGYS00001928</span></span>
+<span><span class="co">#&gt; 2  MGYS00002607</span></span>
+<span><span class="co">#&gt; 3  MGYS00004734</span></span>
+<span><span class="co">#&gt; 4  MGYS00005116</span></span>
+<span><span class="co">#&gt; 5  MGYS00005117</span></span>
+<span><span class="co">#&gt; 6  MGYS00005289</span></span>
+<span><span class="co">#&gt; 7  MGYS00005290</span></span>
+<span><span class="co">#&gt; 8  MGYS00005291</span></span>
+<span><span class="co">#&gt; 9  MGYS00005292</span></span>
+<span><span class="co">#&gt; 10 MGYS00005293</span></span>
+<span><span class="co">#&gt;                                                                                                                                   title</span></span>
+<span><span class="co">#&gt; 1                                                                                                         Hot water plumbing microbiome</span></span>
+<span><span class="co">#&gt; 2                                                                                                          Marine Aggregates Metagenome</span></span>
+<span><span class="co">#&gt; 3                                                                                                                       ISS Metagenomes</span></span>
+<span><span class="co">#&gt; 4                                                                  International Space Station vacuum cleaner bag Targeted Locus (Loci)</span></span>
+<span><span class="co">#&gt; 5                                                                             Analysis of dust samples from the Russian part of the ISS</span></span>
+<span><span class="co">#&gt; 6  Preparing for the manned Mars journey: Microbiome dynamics in the confined MARS 500 habitat during simulated Mars flight and landing</span></span>
+<span><span class="co">#&gt; 7                                                                               Microbial diversity on kitchen sinks and bathroom tiles</span></span>
+<span><span class="co">#&gt; 8                                                                                         Inflated Lunar/Mars Analog Habitat Microbiome</span></span>
+<span><span class="co">#&gt; 9                                                               International Space Station Microbial Observatory - Microbial Diversity</span></span>
+<span><span class="co">#&gt; 10                                                                            International Space Station flight project EXTREMOPHILES.</span></span>
+<span><span class="co">#&gt;                        biome_lineage</span></span>
+<span><span class="co">#&gt; 1  root:Engineered:Built environment</span></span>
+<span><span class="co">#&gt; 2  root:Engineered:Built environment</span></span>
+<span><span class="co">#&gt; 3  root:Engineered:Built environment</span></span>
+<span><span class="co">#&gt; 4  root:Engineered:Built environment</span></span>
+<span><span class="co">#&gt; 5  root:Engineered:Built environment</span></span>
+<span><span class="co">#&gt; 6  root:Engineered:Built environment</span></span>
+<span><span class="co">#&gt; 7  root:Engineered:Built environment</span></span>
+<span><span class="co">#&gt; 8  root:Engineered:Built environment</span></span>
+<span><span class="co">#&gt; 9  root:Engineered:Built environment</span></span>
+<span><span class="co">#&gt; 10 root:Engineered:Built environment</span></span></code></pre></div>
 </div>
-<div class="section level2">
-<h2 id="functions-for-fetching-the-data">Functions for fetching the data<a class="anchor" aria-label="anchor" href="#functions-for-fetching-the-data"></a>
+</section><section class="section level2"><h2 id="fetch-data">Fetch data<a class="anchor" aria-label="anchor" href="#fetch-data"></a>
 </h2>
-<div class="section level3">
-<h3 id="search-data">Search data<a class="anchor" aria-label="anchor" href="#search-data"></a>
-</h3>
-<p><code><a href="../reference/doQuery.html">doQuery()</a></code> function can be utilized to search results
-such as samples and studies from MGnify database. Below, we fetch
-information drinking water samples.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Fetch studies</span></span>
-<span><span class="va">samples</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/doQuery.html">doQuery</a></span><span class="op">(</span></span>
-<span>    <span class="va">mg</span>,</span>
-<span>    type <span class="op">=</span> <span class="st">"samples"</span>,</span>
-<span>    biome_name <span class="op">=</span> <span class="st">"root:Environmental:Aquatic:Freshwater:Drinking water"</span>,</span>
-<span>    max.hits <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
-<p>The result is a table containing accession IDs and description – in
-this case – on samples.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">samples</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "biosample"            "accession"            "sample-desc"         </span></span>
-<span><span class="co">#&gt; [4] "environment-biome"    "environment-feature"  "environment-material"</span></span></code></pre></div>
+<p>Give the studies, or their accessions, to <code><a href="../reference/fetchStudies.html">fetchStudies()</a></code>. The taxonomic profiles of all the studies are fetched and combined into a single <code>TreeSummarizedExperiment</code>. Taxa are matched across studies by their taxonomy.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">tse</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fetchStudies.html">fetchStudies</a></span><span class="op">(</span><span class="st">"MGYS00005116"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Fetching 2 analyses one by one, because they are missing from the summary tables of studies. This can take a while.</span></span>
+<span><span class="co">#&gt; The data includes analyses from multiple pipeline versions (V4.1, V5, V6). Their profiles are based on different reference databases. Consider subsetting the result of searchAnalyses() and fetching the analyses with fetchAnalyses().</span></span>
+<span><span class="va">tse</span></span>
+<span><span class="co">#&gt; class: TreeSummarizedExperiment </span></span>
+<span><span class="co">#&gt; dim: 1014 6 </span></span>
+<span><span class="co">#&gt; metadata(0):</span></span>
+<span><span class="co">#&gt; assays(1): counts</span></span>
+<span><span class="co">#&gt; rownames(1014): sk__Bacteria sk__Bacteria;k__;p__Acidobacteria ...</span></span>
+<span><span class="co">#&gt;   sk__Eukaryota;k__Viridiplantae;p__Streptophyta;c__Magnoliopsida;o__Poales;f__Poaceae;g__Triticum</span></span>
+<span><span class="co">#&gt;   sk__Eukaryota;k__Viridiplantae;p__Streptophyta;c__Magnoliopsida;o__Solanales;f__Solanaceae;g__Nicotiana;s__Nicotiana_attenuata</span></span>
+<span><span class="co">#&gt; rowData names(8): superkingdom kingdom ... genus species</span></span>
+<span><span class="co">#&gt; colnames(6): MGYA00383350 MGYA00383351 ... MGYA01026512 MGYA01026513</span></span>
+<span><span class="co">#&gt; colData names(16): analysis_accession study_accession ...</span></span>
+<span><span class="co">#&gt;   sample_updated_at abundance_table</span></span>
+<span><span class="co">#&gt; reducedDimNames(0):</span></span>
+<span><span class="co">#&gt; mainExpName: NULL</span></span>
+<span><span class="co">#&gt; altExpNames(0):</span></span>
+<span><span class="co">#&gt; rowLinks: NULL</span></span>
+<span><span class="co">#&gt; rowTree: NULL</span></span>
+<span><span class="co">#&gt; colLinks: NULL</span></span>
+<span><span class="co">#&gt; colTree: NULL</span></span></code></pre></div>
 </div>
-<div class="section level3">
-<h3 id="find-relevent-analyses-accessions">Find relevent <strong>analyses</strong> accessions<a class="anchor" aria-label="anchor" href="#find-relevent-analyses-accessions"></a>
-</h3>
-<p>Now we want to find analysis accessions. Each sample might have
-multiple analyses. Each analysis ID corresponds to a single run of a
-particular pipeline on a single sample in a single study.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">analyses_accessions</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/searchAnalysis.html">searchAnalysis</a></span><span class="op">(</span><span class="va">mg</span>, <span class="st">"samples"</span>, <span class="va">samples</span><span class="op">$</span><span class="va">accession</span><span class="op">)</span></span></code></pre></div>
-<p>By running the <code><a href="../reference/searchAnalysis.html">searchAnalysis()</a></code> function, we get a
-vector of analysis IDs of samples that we fed as an input.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">analyses_accessions</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "MGYA00652201" "MGYA00652185" "MGYA00643487" "MGYA00643486" "MGYA00643485"</span></span>
-<span><span class="co">#&gt; [6] "MGYA00643484"</span></span></code></pre></div>
+<p>The <code>colData</code> includes the accessions of the analysis, study, sample and run, the pipeline version and the other fields of the analyses in MGnify, e.g., the title of the sample (<code>sample_sample_title</code>). More metadata can be added from other sources: the samples in MGnify (<code>samples = TRUE</code>) and in BioSamples (<code>biosamples = TRUE</code>), and the studies (<code>studies = TRUE</code>). BioSamples has all the attributes of the samples, including study-specific variables, e.g., disease status or treatment. Each source needs its own requests, so they are not added by default. The data is cached, so adding a source later fetches only the new data.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">tse</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fetchStudies.html">fetchStudies</a></span><span class="op">(</span><span class="st">"MGYS00005116"</span>, biosamples <span class="op">=</span> <span class="cn">TRUE</span>, studies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Fetching 2 analyses one by one, because they are missing from the summary tables of studies. This can take a while.</span></span>
+<span><span class="co">#&gt; The data includes analyses from multiple pipeline versions (V4.1, V5, V6). Their profiles are based on different reference databases. Consider subsetting the result of searchAnalyses() and fetching the analyses with fetchAnalyses().</span></span>
+<span><span class="fu">colData</span><span class="op">(</span><span class="va">tse</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    <span class="st">"study_accession"</span>, <span class="st">"pipeline_version"</span>, <span class="st">"sample_accession"</span>, <span class="st">"run_accession"</span>,</span>
+<span>    <span class="st">"study_biome_lineage"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt; DataFrame with 6 rows and 5 columns</span></span>
+<span><span class="co">#&gt;              study_accession pipeline_version sample_accession run_accession</span></span>
+<span><span class="co">#&gt;                  &lt;character&gt;      &lt;character&gt;      &lt;character&gt;   &lt;character&gt;</span></span>
+<span><span class="co">#&gt; MGYA00383350    MGYS00005116             V4.1     SAMN02594912    SRR1139729</span></span>
+<span><span class="co">#&gt; MGYA00383351    MGYS00005116             V4.1     SAMN02595037    SRR1144937</span></span>
+<span><span class="co">#&gt; MGYA00571587    MGYS00005116               V5     SAMN02594912    SRR1139729</span></span>
+<span><span class="co">#&gt; MGYA00571730    MGYS00005116               V5     SAMN02595037    SRR1144937</span></span>
+<span><span class="co">#&gt; MGYA01026512    MGYS00005116               V6     SAMN02595037    SRR1144937</span></span>
+<span><span class="co">#&gt; MGYA01026513    MGYS00005116               V6     SAMN02594912    SRR1139729</span></span>
+<span><span class="co">#&gt;                 study_biome_lineage</span></span>
+<span><span class="co">#&gt;                         &lt;character&gt;</span></span>
+<span><span class="co">#&gt; MGYA00383350 root:Engineered:Buil..</span></span>
+<span><span class="co">#&gt; MGYA00383351 root:Engineered:Buil..</span></span>
+<span><span class="co">#&gt; MGYA00571587 root:Engineered:Buil..</span></span>
+<span><span class="co">#&gt; MGYA00571730 root:Engineered:Buil..</span></span>
+<span><span class="co">#&gt; MGYA01026512 root:Engineered:Buil..</span></span>
+<span><span class="co">#&gt; MGYA01026513 root:Engineered:Buil..</span></span>
+<span><span class="co"># Columns of each source</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">sub</a></span><span class="op">(</span><span class="st">"_.*"</span>, <span class="st">""</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="fu">colData</span><span class="op">(</span><span class="va">tse</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;  abundance   analysis   assembly biosamples experiment instrument   pipeline </span></span>
+<span><span class="co">#&gt;          1          1          1         24          1          2          1 </span></span>
+<span><span class="co">#&gt;        run     sample      study </span></span>
+<span><span class="co">#&gt;          4          4         13</span></span></code></pre></div>
 </div>
-<div class="section level3">
-<h3 id="fetch-metadata">Fetch metadata<a class="anchor" aria-label="anchor" href="#fetch-metadata"></a>
-</h3>
-<p>We can now check the metadata to get hint of what kind of data we
-have. We use <code><a href="../reference/getMetadata.html">getMetadata()</a></code> function to fetch data based on
-analysis IDs.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">analyses_metadata</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getMetadata.html">getMetadata</a></span><span class="op">(</span><span class="va">mg</span>, <span class="va">analyses_accessions</span><span class="op">)</span></span></code></pre></div>
-<p>The returned value is a <code>data.frame</code> that includes
-metadata for example on how analysis was conducted and what kind of
-samples were analyzed.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">analyses_metadata</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "analysis_analysis-status"  "analysis_pipeline-version"</span></span>
-<span><span class="co">#&gt; [3] "analysis_experiment-type"  "analysis_accession"       </span></span>
-<span><span class="co">#&gt; [5] "analysis_is-private"       "analysis_complete-time"</span></span></code></pre></div>
+<p>The <code>rowData</code> includes the taxonomy.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu">rowData</span><span class="op">(</span><span class="va">tse</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; DataFrame with 6 rows and 8 columns</span></span>
+<span><span class="co">#&gt;                                                                                                                superkingdom</span></span>
+<span><span class="co">#&gt;                                                                                                                 &lt;character&gt;</span></span>
+<span><span class="co">#&gt; sk__Bacteria                                                                                                       Bacteria</span></span>
+<span><span class="co">#&gt; sk__Bacteria;k__;p__Acidobacteria                                                                                  Bacteria</span></span>
+<span><span class="co">#&gt; sk__Bacteria;k__;p__Acidobacteria;c__Acidobacteriia;o__Acidobacteriales;f__Acidobacteriaceae                       Bacteria</span></span>
+<span><span class="co">#&gt; sk__Bacteria;k__;p__Acidobacteria;c__Holophagae;o__Holophagales                                                    Bacteria</span></span>
+<span><span class="co">#&gt; sk__Bacteria;k__;p__Actinobacteria                                                                                 Bacteria</span></span>
+<span><span class="co">#&gt; sk__Bacteria;k__;p__Actinobacteria;c__Acidimicrobiia;o__Acidimicrobiales;f__Acidimicrobiaceae;g__Ilumatobacter     Bacteria</span></span>
+<span><span class="co">#&gt;                                                                                                                    kingdom</span></span>
+<span><span class="co">#&gt;                                                                                                                &lt;character&gt;</span></span>
+<span><span class="co">#&gt; sk__Bacteria                                                                                                            NA</span></span>
+<span><span class="co">#&gt; sk__Bacteria;k__;p__Acidobacteria                                                                                       NA</span></span>
+<span><span class="co">#&gt; sk__Bacteria;k__;p__Acidobacteria;c__Acidobacteriia;o__Acidobacteriales;f__Acidobacteriaceae                            NA</span></span>
+<span><span class="co">#&gt; sk__Bacteria;k__;p__Acidobacteria;c__Holophagae;o__Holophagales                                                         NA</span></span>
+<span><span class="co">#&gt; sk__Bacteria;k__;p__Actinobacteria                                                                                      NA</span></span>
+<span><span class="co">#&gt; sk__Bacteria;k__;p__Actinobacteria;c__Acidimicrobiia;o__Acidimicrobiales;f__Acidimicrobiaceae;g__Ilumatobacter          NA</span></span>
+<span><span class="co">#&gt;                                                                                                                        phylum</span></span>
+<span><span class="co">#&gt;                                                                                                                   &lt;character&gt;</span></span>
+<span><span class="co">#&gt; sk__Bacteria                                                                                                               NA</span></span>
+<span><span class="co">#&gt; sk__Bacteria;k__;p__Acidobacteria                                                                               Acidobacteria</span></span>
+<span><span class="co">#&gt; sk__Bacteria;k__;p__Acidobacteria;c__Acidobacteriia;o__Acidobacteriales;f__Acidobacteriaceae                    Acidobacteria</span></span>
+<span><span class="co">#&gt; sk__Bacteria;k__;p__Acidobacteria;c__Holophagae;o__Holophagales                                                 Acidobacteria</span></span>
+<span><span class="co">#&gt; sk__Bacteria;k__;p__Actinobacteria                                                                             Actinobacteria</span></span>
+<span><span class="co">#&gt; sk__Bacteria;k__;p__Actinobacteria;c__Acidimicrobiia;o__Acidimicrobiales;f__Acidimicrobiaceae;g__Ilumatobacter Actinobacteria</span></span>
+<span><span class="co">#&gt;                                                                                                                         class</span></span>
+<span><span class="co">#&gt;                                                                                                                   &lt;character&gt;</span></span>
+<span><span class="co">#&gt; sk__Bacteria                                                                                                               NA</span></span>
+<span><span class="co">#&gt; sk__Bacteria;k__;p__Acidobacteria                                                                                          NA</span></span>
+<span><span class="co">#&gt; sk__Bacteria;k__;p__Acidobacteria;c__Acidobacteriia;o__Acidobacteriales;f__Acidobacteriaceae                   Acidobacteriia</span></span>
+<span><span class="co">#&gt; sk__Bacteria;k__;p__Acidobacteria;c__Holophagae;o__Holophagales                                                    Holophagae</span></span>
+<span><span class="co">#&gt; sk__Bacteria;k__;p__Actinobacteria                                                                                         NA</span></span>
+<span><span class="co">#&gt; sk__Bacteria;k__;p__Actinobacteria;c__Acidimicrobiia;o__Acidimicrobiales;f__Acidimicrobiaceae;g__Ilumatobacter Acidimicrobiia</span></span>
+<span><span class="co">#&gt;                                                                                                                           order</span></span>
+<span><span class="co">#&gt;                                                                                                                     &lt;character&gt;</span></span>
+<span><span class="co">#&gt; sk__Bacteria                                                                                                                 NA</span></span>
+<span><span class="co">#&gt; sk__Bacteria;k__;p__Acidobacteria                                                                                            NA</span></span>
+<span><span class="co">#&gt; sk__Bacteria;k__;p__Acidobacteria;c__Acidobacteriia;o__Acidobacteriales;f__Acidobacteriaceae                   Acidobacteriales</span></span>
+<span><span class="co">#&gt; sk__Bacteria;k__;p__Acidobacteria;c__Holophagae;o__Holophagales                                                    Holophagales</span></span>
+<span><span class="co">#&gt; sk__Bacteria;k__;p__Actinobacteria                                                                                           NA</span></span>
+<span><span class="co">#&gt; sk__Bacteria;k__;p__Actinobacteria;c__Acidimicrobiia;o__Acidimicrobiales;f__Acidimicrobiaceae;g__Ilumatobacter Acidimicrobiales</span></span>
+<span><span class="co">#&gt;                                                                                                                           family</span></span>
+<span><span class="co">#&gt;                                                                                                                      &lt;character&gt;</span></span>
+<span><span class="co">#&gt; sk__Bacteria                                                                                                                  NA</span></span>
+<span><span class="co">#&gt; sk__Bacteria;k__;p__Acidobacteria                                                                                             NA</span></span>
+<span><span class="co">#&gt; sk__Bacteria;k__;p__Acidobacteria;c__Acidobacteriia;o__Acidobacteriales;f__Acidobacteriaceae                   Acidobacteriaceae</span></span>
+<span><span class="co">#&gt; sk__Bacteria;k__;p__Acidobacteria;c__Holophagae;o__Holophagales                                                               NA</span></span>
+<span><span class="co">#&gt; sk__Bacteria;k__;p__Actinobacteria                                                                                            NA</span></span>
+<span><span class="co">#&gt; sk__Bacteria;k__;p__Actinobacteria;c__Acidimicrobiia;o__Acidimicrobiales;f__Acidimicrobiaceae;g__Ilumatobacter Acidimicrobiaceae</span></span>
+<span><span class="co">#&gt;                                                                                                                        genus</span></span>
+<span><span class="co">#&gt;                                                                                                                  &lt;character&gt;</span></span>
+<span><span class="co">#&gt; sk__Bacteria                                                                                                              NA</span></span>
+<span><span class="co">#&gt; sk__Bacteria;k__;p__Acidobacteria                                                                                         NA</span></span>
+<span><span class="co">#&gt; sk__Bacteria;k__;p__Acidobacteria;c__Acidobacteriia;o__Acidobacteriales;f__Acidobacteriaceae                              NA</span></span>
+<span><span class="co">#&gt; sk__Bacteria;k__;p__Acidobacteria;c__Holophagae;o__Holophagales                                                           NA</span></span>
+<span><span class="co">#&gt; sk__Bacteria;k__;p__Actinobacteria                                                                                        NA</span></span>
+<span><span class="co">#&gt; sk__Bacteria;k__;p__Actinobacteria;c__Acidimicrobiia;o__Acidimicrobiales;f__Acidimicrobiaceae;g__Ilumatobacter Ilumatobacter</span></span>
+<span><span class="co">#&gt;                                                                                                                    species</span></span>
+<span><span class="co">#&gt;                                                                                                                &lt;character&gt;</span></span>
+<span><span class="co">#&gt; sk__Bacteria                                                                                                            NA</span></span>
+<span><span class="co">#&gt; sk__Bacteria;k__;p__Acidobacteria                                                                                       NA</span></span>
+<span><span class="co">#&gt; sk__Bacteria;k__;p__Acidobacteria;c__Acidobacteriia;o__Acidobacteriales;f__Acidobacteriaceae                            NA</span></span>
+<span><span class="co">#&gt; sk__Bacteria;k__;p__Acidobacteria;c__Holophagae;o__Holophagales                                                         NA</span></span>
+<span><span class="co">#&gt; sk__Bacteria;k__;p__Actinobacteria                                                                                      NA</span></span>
+<span><span class="co">#&gt; sk__Bacteria;k__;p__Actinobacteria;c__Acidimicrobiia;o__Acidimicrobiales;f__Acidimicrobiaceae;g__Ilumatobacter          NA</span></span></code></pre></div>
 </div>
-<div class="section level3">
-<h3 id="fetch-microbiome-data">Fetch microbiome data<a class="anchor" aria-label="anchor" href="#fetch-microbiome-data"></a>
+<section class="level2"><h3 id="pipeline-versions">Pipeline versions<a class="anchor" aria-label="anchor" href="#pipeline-versions"></a>
 </h3>
-<p>After we have selected the data to fetch, we can use
-<code><a href="../reference/getResult.html">getResult()</a></code></p>
-<p>The output is <em><a href="https://bioconductor.org/packages/3.24/TreeSummarizedExperiment" class="external-link">TreeSummarizedExperiment</a></em>
-(<code>TreeSE</code>) or <em><a href="https://bioconductor.org/packages/3.24/MultiAssayExperiment" class="external-link">MultiAssayExperiment</a></em>
-(<code>MAE</code>) depending on the dataset. If the dataset includes
-only taxonomic profiling data, the output is a single
-<code>TreeSE</code>. If dataset includes also functional data, the
-output is multiple <code>TreeSE</code> objects that are linked together
-by utilizing <code>MAE</code>.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">mae</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getResult.html">getResult</a></span><span class="op">(</span><span class="va">mg</span>, accession <span class="op">=</span> <span class="va">analyses_accessions</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">mae</span></span>
-<span><span class="co">#&gt; A MultiAssayExperiment object of 6 listed</span></span>
+<p>The taxonomies of different pipeline versions are based on different reference databases, so they might not be directly comparable. To fetch analyses of a single pipeline version, select them with <code><a href="../reference/searchStudies.html">searchAnalyses()</a></code> as shown below.</p>
+</section></section><section class="section level2"><h2 id="types-of-profiles">Types of profiles<a class="anchor" aria-label="anchor" href="#types-of-profiles"></a>
+</h2>
+<p>By default, small subunit rRNA (<code>"SSU"</code>) profiles are fetched. <code>type</code> tells which profile is fetched, e.g., <code>"mOTUs"</code> for metagenomes and metatranscriptomes, large subunit rRNA (<code>"LSU"</code>), <code>"UNITE"</code>, <code>"ITSoneDB"</code> or <code>"PR2"</code>. Only the analyses that have the type are fetched. See <code><a href="../reference/fetchStudies.html">?fetchStudies</a></code> for all the types.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">tse_lsu</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fetchStudies.html">fetchStudies</a></span><span class="op">(</span><span class="st">"MGYS00005116"</span>, type <span class="op">=</span> <span class="st">"LSU"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Fetching 5 analyses one by one, because they are missing from the summary tables of studies. This can take a while.</span></span>
+<span><span class="co">#&gt; No LSU abundance table could be fetched for 3 analyses (no such table, or it could not be downloaded): 'MGYA00383350', 'MGYA00383351', 'MGYA00571587'</span></span>
+<span><span class="co">#&gt; The data includes analyses from multiple pipeline versions (V5, V6). Their profiles are based on different reference databases. Consider subsetting the result of searchAnalyses() and fetching the analyses with fetchAnalyses().</span></span>
+<span><span class="va">tse_lsu</span></span>
+<span><span class="co">#&gt; class: TreeSummarizedExperiment </span></span>
+<span><span class="co">#&gt; dim: 2 3 </span></span>
+<span><span class="co">#&gt; metadata(0):</span></span>
+<span><span class="co">#&gt; assays(1): counts</span></span>
+<span><span class="co">#&gt; rownames(2):</span></span>
+<span><span class="co">#&gt;   sk__Eukaryota;k__Fungi;p__Ascomycota;c__Saccharomycetes;o__Saccharomycetales</span></span>
+<span><span class="co">#&gt;   Unclassified</span></span>
+<span><span class="co">#&gt; rowData names(8): superkingdom kingdom ... genus species</span></span>
+<span><span class="co">#&gt; colnames(3): MGYA00571730 MGYA01026512 MGYA01026513</span></span>
+<span><span class="co">#&gt; colData names(16): analysis_accession study_accession ...</span></span>
+<span><span class="co">#&gt;   sample_updated_at abundance_table</span></span>
+<span><span class="co">#&gt; reducedDimNames(0):</span></span>
+<span><span class="co">#&gt; mainExpName: NULL</span></span>
+<span><span class="co">#&gt; altExpNames(0):</span></span>
+<span><span class="co">#&gt; rowLinks: NULL</span></span>
+<span><span class="co">#&gt; rowTree: NULL</span></span>
+<span><span class="co">#&gt; colLinks: NULL</span></span>
+<span><span class="co">#&gt; colTree: NULL</span></span></code></pre></div>
+</div>
+</section><section class="section level2"><h2 id="functional-profiles">Functional profiles<a class="anchor" aria-label="anchor" href="#functional-profiles"></a>
+</h2>
+<p>Metagenomes, metatranscriptomes and assemblies also have functional profiles:</p>
+<ul>
+<li>
+<code>"InterPro"</code>, <code>"GO"</code> and <code>"GO-slim"</code>: pipelines v1-v6</li>
+<li>
+<code>"Pfam"</code> and <code>"KO"</code> (KEGG orthologs): pipelines v5-v6</li>
+<li>
+<code>"antiSMASH"</code> (biosynthetic gene clusters): assemblies of pipelines v5-v6</li>
+</ul>
+<p>In pipeline v6, only assemblies have functional profiles. Amplicons have no functional profiles. The rows are, e.g., GO terms, and <code>rowData</code> has their descriptions.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">analyses</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/searchStudies.html">searchAnalyses</a></span><span class="op">(</span><span class="st">"MGYS00001442"</span><span class="op">)</span></span>
+<span><span class="va">analyses</span> <span class="op">&lt;-</span> <span class="va">analyses</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, <span class="op">]</span></span>
+<span><span class="va">tse_go</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fetchStudies.html">fetchAnalyses</a></span><span class="op">(</span><span class="va">analyses</span>, type <span class="op">=</span> <span class="st">"GO-slim"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu">rowData</span><span class="op">(</span><span class="va">tse_go</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; DataFrame with 6 rows and 2 columns</span></span>
+<span><span class="co">#&gt;                       description           category</span></span>
+<span><span class="co">#&gt;                       &lt;character&gt;        &lt;character&gt;</span></span>
+<span><span class="co">#&gt; GO:0000015 phosphopyruvate hydr.. cellular_component</span></span>
+<span><span class="co">#&gt; GO:0000150   recombinase activity molecular_function</span></span>
+<span><span class="co">#&gt; GO:0000160 phosphorelay signal .. biological_process</span></span>
+<span><span class="co">#&gt; GO:0000166     nucleotide binding molecular_function</span></span>
+<span><span class="co">#&gt; GO:0003674     molecular function molecular_function</span></span>
+<span><span class="co">#&gt; GO:0003676   nucleic acid binding molecular_function</span></span></code></pre></div>
+</div>
+</section><section class="section level2"><h2 id="multiple-profiles">Multiple profiles<a class="anchor" aria-label="anchor" href="#multiple-profiles"></a>
+</h2>
+<p>To fetch multiple types, give them all to <code>type</code>. The result is a <code>MultiAssayExperiment</code> with a <code>TreeSummarizedExperiment</code> for each type. The profiles are linked by the sample that was analysed, so, e.g., the taxonomic profile of an amplicon and the functional profile of a metagenome of the same sample are linked. Types that have no data are left out.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">mae</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fetchStudies.html">fetchAnalyses</a></span><span class="op">(</span><span class="va">analyses</span>, type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SSU"</span>, <span class="st">"GO-slim"</span>, <span class="st">"InterPro"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">mae</span></span>
+<span><span class="co">#&gt; A MultiAssayExperiment object of 3 listed</span></span>
 <span><span class="co">#&gt;  experiments with user-defined names and respective classes.</span></span>
-<span><span class="co">#&gt;  Containing an ExperimentList class object of length 6:</span></span>
-<span><span class="co">#&gt;  [1] microbiota: TreeSummarizedExperiment with 3506 rows and 50 columns</span></span>
-<span><span class="co">#&gt;  [2] go-slim: TreeSummarizedExperiment with 116 rows and 38 columns</span></span>
-<span><span class="co">#&gt;  [3] go-terms: TreeSummarizedExperiment with 3133 rows and 38 columns</span></span>
-<span><span class="co">#&gt;  [4] interpro-identifiers: TreeSummarizedExperiment with 18223 rows and 38 columns</span></span>
-<span><span class="co">#&gt;  [5] taxonomy: TreeSummarizedExperiment with 3617 rows and 50 columns</span></span>
-<span><span class="co">#&gt;  [6] taxonomy-lsu: TreeSummarizedExperiment with 3378 rows and 42 columns</span></span>
+<span><span class="co">#&gt;  Containing an ExperimentList class object of length 3:</span></span>
+<span><span class="co">#&gt;  [1] SSU: TreeSummarizedExperiment with 441 rows and 3 columns</span></span>
+<span><span class="co">#&gt;  [2] GO-slim: TreeSummarizedExperiment with 116 rows and 3 columns</span></span>
+<span><span class="co">#&gt;  [3] InterPro: TreeSummarizedExperiment with 8495 rows and 3 columns</span></span>
 <span><span class="co">#&gt; Functionality:</span></span>
 <span><span class="co">#&gt;  experiments() - obtain the ExperimentList instance</span></span>
 <span><span class="co">#&gt;  colData() - the primary/phenotype DataFrame</span></span>
@@ -299,19 +420,78 @@ by utilizing <code>MAE</code>.</p>
 <span><span class="co">#&gt;  *Format() - convert into a long or wide DataFrame</span></span>
 <span><span class="co">#&gt;  assays() - convert ExperimentList to a SimpleList of matrices</span></span>
 <span><span class="co">#&gt;  exportClass() - save data to flat files</span></span></code></pre></div>
-<p>You can get access to individual <code>TreeSE</code> object in
-<code>MAE</code> by specifying index or name.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">mae</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
+</div>
+<p>Each profile is a <code>TreeSummarizedExperiment</code>, and the sample metadata is in <code>colData</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">mae</span><span class="op">[[</span><span class="st">"GO-slim"</span><span class="op">]</span><span class="op">]</span></span>
 <span><span class="co">#&gt; class: TreeSummarizedExperiment </span></span>
-<span><span class="co">#&gt; dim: 3506 50 </span></span>
+<span><span class="co">#&gt; dim: 116 3 </span></span>
 <span><span class="co">#&gt; metadata(0):</span></span>
 <span><span class="co">#&gt; assays(1): counts</span></span>
-<span><span class="co">#&gt; rownames(3506): 82608 62797 ... 5820 6794</span></span>
-<span><span class="co">#&gt; rowData names(9): Kingdom Phylum ... taxonomy1 taxonomy</span></span>
-<span><span class="co">#&gt; colnames(50): MGYA00144458 MGYA00144419 ... MGYA00652185 MGYA00652201</span></span>
-<span><span class="co">#&gt; colData names(64): analysis_analysis.status analysis_pipeline.version</span></span>
-<span><span class="co">#&gt;   ... sample_geo.loc.name sample_instrument.model</span></span>
+<span><span class="co">#&gt; rownames(116): GO:0000015 GO:0000150 ... GO:1902494 GO:1990204</span></span>
+<span><span class="co">#&gt; rowData names(2): description category</span></span>
+<span><span class="co">#&gt; colnames(3): MGYA00096976 MGYA00096977 MGYA00096978</span></span>
+<span><span class="co">#&gt; colData names(16): analysis_accession study_accession ...</span></span>
+<span><span class="co">#&gt;   sample_updated_at abundance_table</span></span>
+<span><span class="co">#&gt; reducedDimNames(0):</span></span>
+<span><span class="co">#&gt; mainExpName: NULL</span></span>
+<span><span class="co">#&gt; altExpNames(0):</span></span>
+<span><span class="co">#&gt; rowLinks: NULL</span></span>
+<span><span class="co">#&gt; rowTree: NULL</span></span>
+<span><span class="co">#&gt; colLinks: NULL</span></span>
+<span><span class="co">#&gt; colTree: NULL</span></span>
+<span><span class="fu">colData</span><span class="op">(</span><span class="va">mae</span><span class="op">)</span></span>
+<span><span class="co">#&gt; DataFrame with 3 rows and 8 columns</span></span>
+<span><span class="co">#&gt;               study_accession sample_accession run_experiment_type</span></span>
+<span><span class="co">#&gt;                   &lt;character&gt;      &lt;character&gt;         &lt;character&gt;</span></span>
+<span><span class="co">#&gt; SAMEA53400418    MGYS00001442    SAMEA53400418         Metagenomic</span></span>
+<span><span class="co">#&gt; SAMEA53410918    MGYS00001442    SAMEA53410918         Metagenomic</span></span>
+<span><span class="co">#&gt; SAMEA53405668    MGYS00001442    SAMEA53405668         Metagenomic</span></span>
+<span><span class="co">#&gt;               run_sample_accession run_study_accession  sample_ena_accessions</span></span>
+<span><span class="co">#&gt;                        &lt;character&gt;         &lt;character&gt;            &lt;character&gt;</span></span>
+<span><span class="co">#&gt; SAMEA53400418        SAMEA53400418        MGYS00001442 ["SAMEA53400418","ER..</span></span>
+<span><span class="co">#&gt; SAMEA53410918        SAMEA53410918        MGYS00001442 ["SAMEA53410918","ER..</span></span>
+<span><span class="co">#&gt; SAMEA53405668        SAMEA53405668        MGYS00001442 ["ERS1509322","SAMEA..</span></span>
+<span><span class="co">#&gt;                sample_sample_title      sample_updated_at</span></span>
+<span><span class="co">#&gt;                        &lt;character&gt;            &lt;character&gt;</span></span>
+<span><span class="co">#&gt; SAMEA53400418 human gut metagenome 2026-10-31T12:19:07...</span></span>
+<span><span class="co">#&gt; SAMEA53410918 human gut metagenome 2026-10-31T12:18:47...</span></span>
+<span><span class="co">#&gt; SAMEA53405668 human gut metagenome 2026-10-31T12:18:46...</span></span></code></pre></div>
+</div>
+</section><section class="section level2"><h2 id="select-analyses">Select analyses<a class="anchor" aria-label="anchor" href="#select-analyses"></a>
+</h2>
+<p>To select specific analyses, e.g., based on sample metadata, use <code><a href="../reference/searchStudies.html">searchAnalyses()</a></code>. It returns one row per analysis with the same columns as the <code>colData</code>. Filter the table and give it to <code><a href="../reference/fetchStudies.html">fetchAnalyses()</a></code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">analyses</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/searchStudies.html">searchAnalyses</a></span><span class="op">(</span><span class="st">"MGYS00005116"</span><span class="op">)</span></span>
+<span><span class="va">analyses</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"analysis_accession"</span>, <span class="st">"pipeline_version"</span>, <span class="st">"sample_accession"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt;   analysis_accession pipeline_version sample_accession</span></span>
+<span><span class="co">#&gt; 1       MGYA01026512               V6     SAMN02595037</span></span>
+<span><span class="co">#&gt; 2       MGYA01026513               V6     SAMN02594912</span></span>
+<span><span class="co">#&gt; 3       MGYA00383350             V4.1     SAMN02594912</span></span>
+<span><span class="co">#&gt; 4       MGYA00383351             V4.1     SAMN02595037</span></span>
+<span><span class="co">#&gt; 5       MGYA00571587               V5     SAMN02594912</span></span>
+<span><span class="co">#&gt; 6       MGYA00571730               V5     SAMN02595037</span></span>
+<span></span>
+<span><span class="va">analyses</span> <span class="op">&lt;-</span> <span class="va">analyses</span><span class="op">[</span><span class="va">analyses</span><span class="op">[[</span><span class="st">"pipeline_version"</span><span class="op">]</span><span class="op">]</span> <span class="op">==</span> <span class="st">"V6"</span>, <span class="op">]</span></span>
+<span><span class="va">tse</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fetchStudies.html">fetchAnalyses</a></span><span class="op">(</span><span class="va">analyses</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Fetching 2 analyses one by one, because they are missing from the summary tables of studies. This can take a while.</span></span>
+<span><span class="va">tse</span></span>
+<span><span class="co">#&gt; class: TreeSummarizedExperiment </span></span>
+<span><span class="co">#&gt; dim: 520 2 </span></span>
+<span><span class="co">#&gt; metadata(0):</span></span>
+<span><span class="co">#&gt; assays(1): counts</span></span>
+<span><span class="co">#&gt; rownames(520):</span></span>
+<span><span class="co">#&gt;   sk__Bacteria;k__;p__Actinomycetota;c__Actinomycetes;o__Propionibacteriales;f__Propionibacteriaceae;g__Cutibacterium</span></span>
+<span><span class="co">#&gt;   sk__Bacteria;k__;p__Bacillota;c__Bacilli;o__Bacillales;f__Staphylococcaceae;g__Staphylococcus</span></span>
+<span><span class="co">#&gt;   ...</span></span>
+<span><span class="co">#&gt;   sk__Eukaryota;k__Viridiplantae;p__Streptophyta;c__Magnoliopsida;o__Poales;f__Poaceae;g__Triticum</span></span>
+<span><span class="co">#&gt;   sk__Eukaryota;k__Viridiplantae;p__Streptophyta;c__Magnoliopsida;o__Solanales;f__Solanaceae;g__Nicotiana;s__Nicotiana_attenuata</span></span>
+<span><span class="co">#&gt; rowData names(8): superkingdom kingdom ... genus species</span></span>
+<span><span class="co">#&gt; colnames(2): MGYA01026512 MGYA01026513</span></span>
+<span><span class="co">#&gt; colData names(16): analysis_accession study_accession ...</span></span>
+<span><span class="co">#&gt;   sample_updated_at abundance_table</span></span>
 <span><span class="co">#&gt; reducedDimNames(0):</span></span>
 <span><span class="co">#&gt; mainExpName: NULL</span></span>
 <span><span class="co">#&gt; altExpNames(0):</span></span>
@@ -319,123 +499,61 @@ by utilizing <code>MAE</code>.</p>
 <span><span class="co">#&gt; rowTree: NULL</span></span>
 <span><span class="co">#&gt; colLinks: NULL</span></span>
 <span><span class="co">#&gt; colTree: NULL</span></span></code></pre></div>
-<p><code>TreeSE</code> object is uniquely positioned to support
-<code>SummarizedExperiment</code>-based microbiome data manipulation and
-visualization. Moreover, it enables access to <code>miaverse</code>
-tools. For example, we can estimate diversity of samples…</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://microbiome.github.io/mia/" class="external-link">mia</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; This is mia version 1.21.11</span></span>
-<span><span class="co">#&gt; - Online documentation and vignettes: https://microbiome.github.io/mia/</span></span>
-<span><span class="co">#&gt; - Online book 'Orchestrating Microbiome Analysis (OMA)': https://bioconductor.org/books/release/OMA/</span></span>
-<span></span>
-<span><span class="va">mae</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://microbiome.github.io/mia/reference/deprecate.html" class="external-link">estimateDiversity</a></span><span class="op">(</span><span class="va">mae</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, index <span class="op">=</span> <span class="st">"shannon"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning in estimateDiversity(mae[[1]], index = "shannon"): 'estimateDiversity'</span></span>
-<span><span class="co">#&gt; is deprecated. Use 'addAlpha' instead.</span></span>
-<span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://bioconductor.org/packages/scater/" class="external-link">scater</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; Loading required package: scuttle</span></span>
-<span><span class="co">#&gt; Loading required package: ggplot2</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/scater/man/plotColData.html" class="external-link">plotColData</a></span><span class="op">(</span><span class="va">mae</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, <span class="st">"shannon"</span>, x <span class="op">=</span> <span class="st">"sample_environment..biome."</span><span class="op">)</span></span></code></pre></div>
-<p><img src="MGnifyR_files/figure-html/calculate_diversity-1.png" class="r-plt" alt="" width="864"></p>
-<p>… and plot abundances of most abundant phyla.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Agglomerate data</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/SingleCellExperiment/man/altExps.html" class="external-link">altExps</a></span><span class="op">(</span><span class="va">mae</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://microbiome.github.io/mia/reference/agglomerate-methods.html" class="external-link">splitByRanks</a></span><span class="op">(</span><span class="va">mae</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Duplicated labels were made unique.</span></span>
-<span><span class="co">#&gt; Duplicated labels were made unique.</span></span>
-<span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/microbiome/miaViz" class="external-link">miaViz</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; Loading required package: ggraph</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Attaching package: 'miaViz'</span></span>
-<span><span class="co">#&gt; The following object is masked from 'package:scater':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     plotHeatmap</span></span>
-<span><span class="co">#&gt; The following object is masked from 'package:mia':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     plotNMDS</span></span>
-<span></span>
-<span><span class="co"># Plot top taxa</span></span>
-<span><span class="va">top_taxa</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://microbiome.github.io/mia/reference/deprecate.html" class="external-link">getTopFeatures</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SingleCellExperiment/man/altExps.html" class="external-link">altExp</a></span><span class="op">(</span><span class="va">mae</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, <span class="st">"Phylum"</span><span class="op">)</span>, <span class="fl">10</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning in getTopFeatures(altExp(mae[[1]], "Phylum"), 10): 'getTopFeatures' is</span></span>
-<span><span class="co">#&gt; deprecated. Use 'getTop' instead.</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/miaViz/man/plotAbundance.html" class="external-link">plotAbundance</a></span><span class="op">(</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/pkg/SingleCellExperiment/man/altExps.html" class="external-link">altExp</a></span><span class="op">(</span><span class="va">mae</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, <span class="st">"Phylum"</span><span class="op">)</span><span class="op">[</span><span class="va">top_taxa</span>, <span class="op">]</span>,</span>
-<span>    rank <span class="op">=</span> <span class="st">"Phylum"</span>,</span>
-<span>    as.relative <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span>    <span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: The following values are already present in `metadata` and will be</span></span>
-<span><span class="co">#&gt; overwritten: 'agglomerated_by_rank'. Consider using the 'name' argument to</span></span>
-<span><span class="co">#&gt; specify alternative names.</span></span>
-<span><span class="co">#&gt; Warning: Removed 107 rows containing missing values or values outside the scale range</span></span>
-<span><span class="co">#&gt; (`geom_bar()`).</span></span></code></pre></div>
-<p><img src="MGnifyR_files/figure-html/plot_abundance-1.png" class="r-plt" alt="" width="700"></p>
-<p>We can also perform other analyses such as principal component
-analysis to microbial profiling data by utilizing miaverse tools.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Apply relative transformation</span></span>
-<span><span class="va">mae</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://microbiome.github.io/mia/reference/transformAssay.html" class="external-link">transformAssay</a></span><span class="op">(</span><span class="va">mae</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, method <span class="op">=</span> <span class="st">"relabundance"</span><span class="op">)</span></span>
-<span><span class="co"># Perform PCoA</span></span>
-<span><span class="va">mae</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/scater/man/runMDS.html" class="external-link">runMDS</a></span><span class="op">(</span></span>
-<span>    <span class="va">mae</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, assay.type <span class="op">=</span> <span class="st">"relabundance"</span>,</span>
-<span>    FUN <span class="op">=</span> <span class="fu">vegan</span><span class="fu">::</span><span class="va"><a href="https://vegandevs.github.io/vegan/reference/vegdist.html" class="external-link">vegdist</a></span>, method <span class="op">=</span> <span class="st">"bray"</span><span class="op">)</span></span>
-<span><span class="co"># Plot</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/scater/man/plotReducedDim.html" class="external-link">plotReducedDim</a></span><span class="op">(</span></span>
-<span>    <span class="va">mae</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, <span class="st">"MDS"</span>, colour_by <span class="op">=</span> <span class="st">"sample_environment..biome."</span><span class="op">)</span></span></code></pre></div>
-<p><img src="MGnifyR_files/figure-html/pcoa-1.png" class="r-plt" alt="" width="700"></p>
 </div>
-<div class="section level3">
-<h3 id="fetch-raw-files">Fetch raw files<a class="anchor" aria-label="anchor" href="#fetch-raw-files"></a>
-</h3>
-<p>While <code><a href="../reference/getResult.html">getResult()</a></code> can be utilized to retrieve microbial
-profiling data, <code><a href="../reference/getData.html">getData()</a></code> can be used more flexibly to
-retrieve any kind of data from the database. It returns data as simple
-data.frame or list format.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">publications</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getData.html">getData</a></span><span class="op">(</span><span class="va">mg</span>, type <span class="op">=</span> <span class="st">"publications"</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">publications</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "document.id"                  "type"                        </span></span>
-<span><span class="co">#&gt; [3] "id"                           "attributes.pubmed-id"        </span></span>
-<span><span class="co">#&gt; [5] "attributes.pubmed-central-id" "attributes.pub-title"</span></span></code></pre></div>
-<p>The result is a <code>data.frame</code> by default. In this case, it
-includes information on publications fetched from the data portal.</p>
-</div>
-<div class="section level3">
-<h3 id="fetch-sequence-files">Fetch sequence files<a class="anchor" aria-label="anchor" href="#fetch-sequence-files"></a>
-</h3>
-<p>Finally, we can use <code><a href="../reference/getFile.html">searchFile()</a></code> and
-<code><a href="../reference/getFile.html">getFile()</a></code> to retrieve other MGnify pipeline outputs such as
-merged sequence reads, assembled contigs, and details of the functional
-analyses.</p>
-<p>With <code><a href="../reference/getFile.html">searchFile()</a></code>, we can search files from the
-database.</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">dl_urls</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getFile.html">searchFile</a></span><span class="op">(</span><span class="va">mg</span>, <span class="va">analyses_accessions</span>, type <span class="op">=</span> <span class="st">"analyses"</span><span class="op">)</span></span></code></pre></div>
-<p>The returned table contains search results related to analyses that
-we fed as an input. The table contains information on file and also URL
-address from where the file can be loaded.</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">target_urls</span> <span class="op">&lt;-</span> <span class="va">dl_urls</span><span class="op">[</span></span>
-<span>    <span class="va">dl_urls</span><span class="op">$</span><span class="va">attributes.description.label</span> <span class="op">==</span> <span class="st">"Predicted alpha tmRNA"</span>, <span class="op">]</span></span>
+<p>A study can have several experiment types, e.g., metatranscriptomes and assemblies. Select them by <code>experiment_type</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">analyses</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/searchStudies.html">searchAnalyses</a></span><span class="op">(</span><span class="st">"MGYS00006572"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">analyses</span><span class="op">[[</span><span class="st">"experiment_type"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;           Assembly Metatranscriptomic </span></span>
+<span><span class="co">#&gt;                  2                  2</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">target_urls</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "type"                               "id"                                </span></span>
-<span><span class="co">#&gt; [3] "attributes.alias"                   "attributes.file.format.name"       </span></span>
-<span><span class="co">#&gt; [5] "attributes.file.format.extension"   "attributes.file.format.compression"</span></span></code></pre></div>
-<p>Finally, we can download the files with <code><a href="../reference/getFile.html">getFile()</a></code>.</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Just select a single file from the target_urls list for demonstration.</span></span>
-<span><span class="va">file_url</span> <span class="op">&lt;-</span> <span class="va">target_urls</span><span class="op">$</span><span class="va">download_url</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
-<span><span class="va">cached_location</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getFile.html">getFile</a></span><span class="op">(</span><span class="va">mg</span>, <span class="va">file_url</span><span class="op">)</span></span></code></pre></div>
-<p>The function returns a path where the file is stored.</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Where are the files?</span></span>
-<span><span class="va">cached_location</span></span>
-<span><span class="co">#&gt; [1] "/.MGnifyR_cache/analyses/MGYA00652201/file/ERZ20300939_alpha_tmRNA.RF01849.fasta.gz"</span></span></code></pre></div>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<span><span class="va">analyses</span> <span class="op">&lt;-</span> <span class="va">analyses</span><span class="op">[</span><span class="va">analyses</span><span class="op">[[</span><span class="st">"experiment_type"</span><span class="op">]</span><span class="op">]</span> <span class="op">==</span> <span class="st">"Metatranscriptomic"</span>, <span class="op">]</span></span>
+<span><span class="va">mae</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fetchStudies.html">fetchAnalyses</a></span><span class="op">(</span><span class="va">analyses</span>, type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SSU"</span>, <span class="st">"GO-slim"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">mae</span></span>
+<span><span class="co">#&gt; A MultiAssayExperiment object of 2 listed</span></span>
+<span><span class="co">#&gt;  experiments with user-defined names and respective classes.</span></span>
+<span><span class="co">#&gt;  Containing an ExperimentList class object of length 2:</span></span>
+<span><span class="co">#&gt;  [1] SSU: TreeSummarizedExperiment with 403 rows and 2 columns</span></span>
+<span><span class="co">#&gt;  [2] GO-slim: TreeSummarizedExperiment with 116 rows and 2 columns</span></span>
+<span><span class="co">#&gt; Functionality:</span></span>
+<span><span class="co">#&gt;  experiments() - obtain the ExperimentList instance</span></span>
+<span><span class="co">#&gt;  colData() - the primary/phenotype DataFrame</span></span>
+<span><span class="co">#&gt;  sampleMap() - the sample coordination DataFrame</span></span>
+<span><span class="co">#&gt;  `$`, `[`, `[[` - extract colData columns, subset, or experiment</span></span>
+<span><span class="co">#&gt;  *Format() - convert into a long or wide DataFrame</span></span>
+<span><span class="co">#&gt;  assays() - convert ExperimentList to a SimpleList of matrices</span></span>
+<span><span class="co">#&gt;  exportClass() - save data to flat files</span></span></code></pre></div>
+</div>
+<p><code><a href="../reference/fetchStudies.html">fetchAnalyses()</a></code> also accepts analysis accessions, and <code><a href="../reference/searchStudies.html">searchSamples()</a></code> returns the samples of studies.</p>
+<p>The arguments <code>samples</code>, <code>biosamples</code> and <code>studies</code> (see Fetch data) choose the sources of metadata in <code><a href="../reference/searchStudies.html">searchAnalyses()</a></code> too. Also the details of the analyses (<code>analyses = TRUE</code>), e.g., the quality control of pipeline v6, and of the assemblies (<code>assemblies = TRUE</code>) can be added. They need one request per analysis or assembly.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">analyses</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/searchStudies.html">searchAnalyses</a></span><span class="op">(</span><span class="st">"MGYS00005116"</span>, analyses <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">sub</a></span><span class="op">(</span><span class="st">"_.*"</span>, <span class="st">""</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">analyses</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;   analysis   assembly experiment instrument   pipeline        run     sample </span></span>
+<span><span class="co">#&gt;         48          1          1          2          1          4          4 </span></span>
+<span><span class="co">#&gt;      study </span></span>
+<span><span class="co">#&gt;          1</span></span></code></pre></div>
+</div>
+</section><section class="section level2"><h2 id="caching-and-private-data">Caching and private data<a class="anchor" aria-label="anchor" href="#caching-and-private-data"></a>
+</h2>
+<p>Downloaded data is cached for the R session, so repeated calls are fast. To keep the cache between sessions, set a cache directory.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>MGnifyR.cache <span class="op">=</span> <span class="st">"path/to/cache"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<p>Most MGnify data is public. To access private data, log in with ENA Webin credentials.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/mgnifyLogin.html">mgnifyLogin</a></span><span class="op">(</span><span class="st">"Webin-1122334"</span>, <span class="st">"SecretPassword"</span><span class="op">)</span></span></code></pre></div>
+</div>
+</section><section class="section level2"><h2 id="session-info">Session info<a class="anchor" aria-label="anchor" href="#session-info"></a>
+</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; R version 4.6.1 (2026-06-24)</span></span>
 <span><span class="co">#&gt; Platform: x86_64-pc-linux-gnu</span></span>
@@ -461,87 +579,189 @@ address from where the file can be loaded.</p>
 <span><span class="co">#&gt; [8] base     </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; other attached packages:</span></span>
-<span><span class="co">#&gt;  [1] miaViz_1.21.7                   ggraph_2.2.2                   </span></span>
-<span><span class="co">#&gt;  [3] scater_1.41.2                   ggplot2_4.0.3                  </span></span>
-<span><span class="co">#&gt;  [5] scuttle_1.23.2                  mia_1.21.11                    </span></span>
-<span><span class="co">#&gt;  [7] MGnifyR_1.9.1                   TreeSummarizedExperiment_2.21.0</span></span>
-<span><span class="co">#&gt;  [9] Biostrings_2.81.9               XVector_0.53.0                 </span></span>
-<span><span class="co">#&gt; [11] SingleCellExperiment_1.35.2     MultiAssayExperiment_1.39.1    </span></span>
-<span><span class="co">#&gt; [13] SummarizedExperiment_1.43.0     Biobase_2.73.2                 </span></span>
-<span><span class="co">#&gt; [15] GenomicRanges_1.65.4            Seqinfo_1.3.2                  </span></span>
-<span><span class="co">#&gt; [17] IRanges_2.47.5                  S4Vectors_0.51.10              </span></span>
-<span><span class="co">#&gt; [19] BiocGenerics_0.59.12            generics_0.1.4                 </span></span>
-<span><span class="co">#&gt; [21] MatrixGenerics_1.25.0           matrixStats_1.5.0              </span></span>
-<span><span class="co">#&gt; [23] knitr_1.52                      BiocStyle_2.41.0               </span></span>
+<span><span class="co">#&gt;  [1] MGnifyR_1.99.0                  TreeSummarizedExperiment_2.21.0</span></span>
+<span><span class="co">#&gt;  [3] Biostrings_2.81.9               XVector_0.53.0                 </span></span>
+<span><span class="co">#&gt;  [5] SingleCellExperiment_1.35.2     SummarizedExperiment_1.43.0    </span></span>
+<span><span class="co">#&gt;  [7] Biobase_2.73.2                  GenomicRanges_1.65.4           </span></span>
+<span><span class="co">#&gt;  [9] Seqinfo_1.3.2                   IRanges_2.47.5                 </span></span>
+<span><span class="co">#&gt; [11] S4Vectors_0.51.10               BiocGenerics_0.59.12           </span></span>
+<span><span class="co">#&gt; [13] generics_0.1.4                  MatrixGenerics_1.25.0          </span></span>
+<span><span class="co">#&gt; [15] matrixStats_1.5.0              </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
-<span><span class="co">#&gt;   [1] RColorBrewer_1.1-3          jsonlite_2.0.0             </span></span>
-<span><span class="co">#&gt;   [3] magrittr_2.0.5              ggbeeswarm_0.7.3           </span></span>
-<span><span class="co">#&gt;   [5] farver_2.1.2                rmarkdown_2.32             </span></span>
-<span><span class="co">#&gt;   [7] fs_2.1.0                    ragg_1.5.2                 </span></span>
-<span><span class="co">#&gt;   [9] vctrs_0.7.3                 memoise_2.0.1              </span></span>
-<span><span class="co">#&gt;  [11] DelayedMatrixStats_1.35.0   ggtree_4.3.0               </span></span>
-<span><span class="co">#&gt;  [13] htmltools_0.5.9             S4Arrays_1.13.2            </span></span>
-<span><span class="co">#&gt;  [15] BiocBaseUtils_1.15.1        BiocNeighbors_2.7.3        </span></span>
-<span><span class="co">#&gt;  [17] janeaustenr_1.0.0           gridGraphics_0.5-1         </span></span>
-<span><span class="co">#&gt;  [19] SparseArray_1.13.4          sass_0.4.10                </span></span>
-<span><span class="co">#&gt;  [21] bslib_0.12.0                tokenizers_0.3.0           </span></span>
-<span><span class="co">#&gt;  [23] htmlwidgets_1.6.4           desc_1.4.3                 </span></span>
-<span><span class="co">#&gt;  [25] plyr_1.8.9                  DECIPHER_3.9.3             </span></span>
-<span><span class="co">#&gt;  [27] cachem_1.1.0                igraph_2.3.4               </span></span>
-<span><span class="co">#&gt;  [29] lifecycle_1.0.5             pkgconfig_2.0.3            </span></span>
-<span><span class="co">#&gt;  [31] rsvd_1.0.6                  Matrix_1.7-6               </span></span>
-<span><span class="co">#&gt;  [33] R6_2.6.1                    fastmap_1.2.0              </span></span>
-<span><span class="co">#&gt;  [35] tidytext_0.4.3              digest_0.6.39              </span></span>
-<span><span class="co">#&gt;  [37] aplot_0.3.2                 ggnewscale_0.5.2           </span></span>
-<span><span class="co">#&gt;  [39] patchwork_1.3.2             irlba_2.4.1                </span></span>
-<span><span class="co">#&gt;  [41] SnowballC_0.7.1             textshaping_1.0.5          </span></span>
-<span><span class="co">#&gt;  [43] vegan_2.7-6                 beachmat_2.29.3            </span></span>
-<span><span class="co">#&gt;  [45] labeling_0.4.3              urltools_1.7.3.1           </span></span>
-<span><span class="co">#&gt;  [47] httr_1.4.9                  polyclip_1.10-7            </span></span>
-<span><span class="co">#&gt;  [49] abind_1.4-8                 mgcv_1.9-4                 </span></span>
-<span><span class="co">#&gt;  [51] compiler_4.6.1              fontquiver_0.2.1           </span></span>
-<span><span class="co">#&gt;  [53] withr_3.0.3                 S7_0.2.2                   </span></span>
-<span><span class="co">#&gt;  [55] BiocParallel_1.47.0         viridis_0.6.5              </span></span>
-<span><span class="co">#&gt;  [57] DBI_1.3.0                   ggforce_0.5.0              </span></span>
-<span><span class="co">#&gt;  [59] MASS_7.3-66                 rappdirs_0.3.4             </span></span>
-<span><span class="co">#&gt;  [61] DelayedArray_0.39.8         bluster_1.23.1             </span></span>
-<span><span class="co">#&gt;  [63] permute_0.9-10              tools_4.6.1                </span></span>
-<span><span class="co">#&gt;  [65] vipor_0.4.7                 otel_0.2.0                 </span></span>
-<span><span class="co">#&gt;  [67] beeswarm_0.4.0              ape_5.8-1                  </span></span>
-<span><span class="co">#&gt;  [69] glue_1.8.1                  nlme_3.1-171               </span></span>
-<span><span class="co">#&gt;  [71] grid_4.6.1                  cluster_2.1.8.3            </span></span>
-<span><span class="co">#&gt;  [73] reshape2_1.4.5              gtable_0.3.6               </span></span>
-<span><span class="co">#&gt;  [75] tidyr_1.3.2                 BiocSingular_1.29.2        </span></span>
-<span><span class="co">#&gt;  [77] tidygraph_1.3.1             ScaledMatrix_1.21.0        </span></span>
-<span><span class="co">#&gt;  [79] ggrepel_0.9.8               pillar_1.11.1              </span></span>
-<span><span class="co">#&gt;  [81] stringr_1.6.0               yulab.utils_0.2.5          </span></span>
-<span><span class="co">#&gt;  [83] splines_4.6.1               dplyr_1.2.1                </span></span>
-<span><span class="co">#&gt;  [85] tweenr_2.0.3                treeio_1.37.1              </span></span>
-<span><span class="co">#&gt;  [87] lattice_0.23-1              tidyselect_1.2.1           </span></span>
-<span><span class="co">#&gt;  [89] DirichletMultinomial_1.55.1 fontLiberation_0.1.0       </span></span>
-<span><span class="co">#&gt;  [91] fontBitstreamVera_0.1.1     gridExtra_2.3.1            </span></span>
-<span><span class="co">#&gt;  [93] bookdown_0.48               xfun_0.62                  </span></span>
-<span><span class="co">#&gt;  [95] graphlayouts_1.2.5          stringi_1.8.9              </span></span>
-<span><span class="co">#&gt;  [97] ggfun_0.2.2                 lazyeval_0.2.3             </span></span>
-<span><span class="co">#&gt;  [99] yaml_2.3.12                 evaluate_1.0.5             </span></span>
-<span><span class="co">#&gt; [101] codetools_0.2-20            gdtools_0.5.2              </span></span>
-<span><span class="co">#&gt; [103] tibble_3.3.1                BiocManager_1.30.27        </span></span>
-<span><span class="co">#&gt; [105] ggplotify_0.1.4             cli_3.6.6                  </span></span>
-<span><span class="co">#&gt; [107] systemfonts_1.3.2           jquerylib_0.1.4            </span></span>
-<span><span class="co">#&gt; [109] Rcpp_1.1.2                  triebeard_0.4.1            </span></span>
-<span><span class="co">#&gt; [111] parallel_4.6.1              pkgdown_2.2.1              </span></span>
-<span><span class="co">#&gt; [113] sparseMatrixStats_1.25.0    decontam_1.33.0            </span></span>
-<span><span class="co">#&gt; [115] viridisLite_0.4.3           tidytree_0.4.8             </span></span>
-<span><span class="co">#&gt; [117] ggiraph_0.9.6               scales_1.4.0               </span></span>
-<span><span class="co">#&gt; [119] purrr_1.2.2                 crayon_1.5.3               </span></span>
-<span><span class="co">#&gt; [121] rlang_1.3.0</span></span></code></pre></div>
+<span><span class="co">#&gt;  [1] yulab.utils_0.2.5           rappdirs_0.3.4             </span></span>
+<span><span class="co">#&gt;  [3] tidyr_1.3.2                 SparseArray_1.13.4         </span></span>
+<span><span class="co">#&gt;  [5] lattice_0.23-1              digest_0.6.39              </span></span>
+<span><span class="co">#&gt;  [7] magrittr_2.0.5              evaluate_1.0.5             </span></span>
+<span><span class="co">#&gt;  [9] grid_4.6.1                  fastmap_1.2.0              </span></span>
+<span><span class="co">#&gt; [11] jsonlite_2.0.0              Matrix_1.7-6               </span></span>
+<span><span class="co">#&gt; [13] ape_5.8-1                   purrr_1.2.2                </span></span>
+<span><span class="co">#&gt; [15] lazyeval_0.2.3              codetools_0.2-20           </span></span>
+<span><span class="co">#&gt; [17] abind_1.4-8                 cli_3.6.6                  </span></span>
+<span><span class="co">#&gt; [19] rlang_1.3.0                 crayon_1.5.3               </span></span>
+<span><span class="co">#&gt; [21] tidytree_0.4.8              DelayedArray_0.39.8        </span></span>
+<span><span class="co">#&gt; [23] yaml_2.3.12                 otel_0.2.0                 </span></span>
+<span><span class="co">#&gt; [25] S4Arrays_1.13.2             tools_4.6.1                </span></span>
+<span><span class="co">#&gt; [27] parallel_4.6.1              BiocParallel_1.47.0        </span></span>
+<span><span class="co">#&gt; [29] dplyr_1.2.1                 MultiAssayExperiment_1.39.1</span></span>
+<span><span class="co">#&gt; [31] curl_8.1.0                  vctrs_0.7.3                </span></span>
+<span><span class="co">#&gt; [33] R6_2.6.1                    lifecycle_1.0.5            </span></span>
+<span><span class="co">#&gt; [35] fs_2.1.0                    treeio_1.37.1              </span></span>
+<span><span class="co">#&gt; [37] pkgconfig_2.0.3             pillar_1.11.1              </span></span>
+<span><span class="co">#&gt; [39] glue_1.8.1                  Rcpp_1.1.2                 </span></span>
+<span><span class="co">#&gt; [41] xfun_0.62                   tibble_3.3.1               </span></span>
+<span><span class="co">#&gt; [43] tidyselect_1.2.1            knitr_1.52                 </span></span>
+<span><span class="co">#&gt; [45] htmltools_0.5.9             nlme_3.1-171               </span></span>
+<span><span class="co">#&gt; [47] rmarkdown_2.32              compiler_4.6.1</span></span></code></pre></div>
 </div>
+</section><script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+      window.quartoDecorateExternalLinks = function (root) {
+     var links = (root || window.document).querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+          if (!link.classList.contains('no-external-icon')) {
+          }
+        }
+      }
+      };
+      window.quartoDecorateExternalLinks(window.document);
+    // Esc closes the popup (WCAG 1.4.13) and focus leaving both trigger and
+    // popup closes it (WCAG 2.4.11); tippy handles neither for interactive popups.
+    const hideOnEscAndFocusOut = {
+      name: 'hideOnEscAndFocusOut',
+      defaultValue: true,
+      fn(instance) {
+        const dismiss = () => {
+          // A show scheduled by the trigger delay would otherwise reopen it
+          instance.clearDelayTimeouts();
+          instance.hide();
+        };
+        const onKeyDown = (event) => {
+          if (event.key !== 'Escape') {
+            return;
+          }
+          // Keep Esc from also reaching page handlers (e.g. reveal.js overview),
+          // except an open reveal.js slide menu, which Esc should close too.
+          // The menu handles keys only when its keyboard option is on.
+          const menuHandlesEsc = window.Reveal?.getPlugin?.('menu')?.isOpen() &&
+            window.Reveal.getConfig().menu?.keyboard !== false;
+          if (!menuHandlesEsc) {
+            event.stopPropagation();
+          }
+          if (instance.popper.contains(window.document.activeElement)) {
+            // Disabled while refocusing so the focus trigger does not reopen it
+            instance.disable();
+            instance.reference.focus();
+            instance.enable();
+          }
+          dismiss();
+        };
+        const onFocusOut = (event) => {
+          const target = event.relatedTarget;
+          if (target && !instance.reference.contains(target) &&
+              !instance.popper.contains(target)) {
+            dismiss();
+          }
+        };
+        // On the trigger too: a click trigger (code-annotations: select) has no
+        // blur handling. Attached for the instance's lifetime so leaving the
+        // trigger also cancels a show still pending on the trigger delay.
+        instance.reference.addEventListener('focusout', onFocusOut);
+        return {
+          onShow() {
+            window.document.addEventListener('keydown', onKeyDown, true);
+            instance.popper.addEventListener('focusout', onFocusOut);
+          },
+          onHide() {
+            window.document.removeEventListener('keydown', onKeyDown, true);
+            instance.popper.removeEventListener('focusout', onFocusOut);
+          },
+          onDestroy() {
+            instance.reference.removeEventListener('focusout', onFocusOut);
+          },
+        };
+      },
+    };
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'light-border',
+        placement: 'bottom-start',
+        plugins: [hideOnEscAndFocusOut],
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config);
+    }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script></main>
 </div>
-  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
-    </nav></aside>
-</div>
-
 
 
     <footer><div class="pkgdown-footer-left">

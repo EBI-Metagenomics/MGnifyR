@@ -1,14 +1,11 @@
 # MGnifyR ![](reference/figures//mgnifyr_logo.png)
 
 An R package for searching and retrieving data from the [EBI
-Metagenomics resource](https://www.ebi.ac.uk/metagenomics). In most
-cases, MGnifyR interacts directly with the JSONAPI, rather than relying
-on downloading analyses outputs as TSV files. Thus it is more general -
-allowing for example the intuitive combining of multiple studies and
-analyses into a single workflow, but is in some cases slower than the
-afformentioned direct access. Local caching of results on disk is
-implemented to help counter some of the overheads, but data downloads
-can be slow - particularly for functional annotation retrieval.
+Metagenomics resource](https://www.ebi.ac.uk/metagenomics) (MGnify).
+Browse studies, and fetch their taxonomic profiles as a single
+`TreeSummarizedExperiment`. The data is retrieved from the summary
+tables that MGnify provides for each study, so fetching even hundreds of
+studies is fast.
 
 MGnifyR package is part of [miaverse](https://microbiome.github.io/)
 microbiome analysis ecosystem enabling usage of
@@ -40,7 +37,7 @@ website](https://findingpheno.eu/).
     if (!requireNamespace("BiocManager", quietly = TRUE))
         install.packages("BiocManager")
 
-    # The following initializes usage of Bioc devel
+    # The following initialises usage of Bioc devel
     BiocManager::install(version='devel')
 
     BiocManager::install("MGnifyR")
@@ -51,20 +48,17 @@ website](https://findingpheno.eu/).
 
 ## Basic usage
 
-For more detailed instructions read the associated function help and
-vignette (`vignette("MGNifyR")`)
+For more detailed instructions, read the function help and the vignette
+([`vignette("MGnifyR")`](articles/MGnifyR.md)).
 
     library(MGnifyR)
 
-    # Set up the MGnify client instance
-    mg <- MgnifyClient(useCache = TRUE, cacheDir = '/tmp/MGnify_cache')
+    # Browse studies
+    studies <- searchStudies(biome = "root:Host-associated:Human", max.hits = 10)
 
-    # Retrieve the list of analyses associated with a study
-    accession_list <- searchAnalysis(mg, "studies", "MGYS00005058")
+    # Fetch their taxonomic profiles as a single TreeSummarizedExperiment
+    tse <- fetchStudies(studies)
 
-    # Download all associated study/sample and analysis metadata
-    meta_dataframe <- getMetadata(mg, accession_list)
-
-    # Convert analyses outputs to a single `MultiAssayExperiment` object
-    mae <- getResult(mg, meta_dataframe$analysis_accession)
-    mae
+    # Or select specific analyses, e.g., based on sample metadata
+    analyses <- searchAnalyses("MGYS00005116")
+    tse <- fetchAnalyses(analyses[analyses$pipeline_version == "V5", ])
