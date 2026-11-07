@@ -25,7 +25,8 @@ MGnify,
 `MGnifyR` returns the data as a `TreeSummarizedExperiment`, so that it
 can be analysed directly with the [Orchestrating Microbiome Analysis
 with Bioconductor (OMA)](https://microbiome.github.io/) tools. See the
-[OMA book](https://microbiome.github.io/OMA/) for analysis examples.
+[OMA book](https://bioconductor.org/books/release/OMA/) for analysis
+examples.
 
 ## Installation
 
