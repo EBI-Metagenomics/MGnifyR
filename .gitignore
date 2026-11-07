@@ -23,3 +23,5 @@ vignettes/MGnifyR_cache
 docs
 /doc/
 /Meta/
+.quarto
+vignettes/*_files

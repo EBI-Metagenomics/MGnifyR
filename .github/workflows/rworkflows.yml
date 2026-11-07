@@ -38,6 +38,11 @@ jobs:
           cont: ~
           rspm: ~
     steps:
+    # The vignette is a Quarto document. The Bioconductor Docker image used
+    # on Linux has Quarto, but the macOS and Windows runners do not.
+    - name: Install Quarto
+      if: runner.os != 'Linux'
+      uses: quarto-dev/quarto-actions/setup@v2
     - uses: neurogenomics/rworkflows@master
       with:
         run_bioccheck: ${{ false }}
