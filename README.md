@@ -6,10 +6,10 @@ Browse studies, and fetch their taxonomic profiles as a single
 `TreeSummarizedExperiment`. The data is retrieved from the summary tables that
 MGnify provides for each study, so fetching even hundreds of studies is fast.
 
-MGnifyR package is part of [miaverse](https://microbiome.github.io/) 
-microbiome analysis ecosystem enabling usage of
+MGnifyR package is part of [Orchestrating Microbiome Analysis with Bioconductor (OMA)](https://microbiome.github.io/) 
+ecosystem enabling usage of
 [mia](https://bioconductor.org/packages/release/bioc/html/mia.html)
-and other miaverse packages.
+and other OMA packages.
 
 <img src="man/figures/findingpheno_logo.png" align="right" width="160" />
 
